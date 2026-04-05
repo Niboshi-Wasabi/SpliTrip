@@ -6,7 +6,7 @@
     "description": "Sign in with a social account to start splitting expenses",
     "supabaseNotConfigured": "Supabase is not configured. Set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY in .env.local at the project root, then restart the dev server.",
     "captchaHint": "Complete the verification below before continuing.",
-    "turnstileLoadFailed": "Could not load the verification widget. Check your network and browser extensions, then reload. Also verify your Cloudflare Turnstile hostname allowlist.",
+    "turnstileLoadFailed": "Could not load the verification widget. Try turning off your VPN and extensions, then reload—or use another browser or mobile data. Also verify Cloudflare Turnstile hostnames and the site key.",
     "googleLogin": "Continue with Google",
     "lineLogin": "Continue with LINE",
     "guestMode": "Continue as guest (no account)",

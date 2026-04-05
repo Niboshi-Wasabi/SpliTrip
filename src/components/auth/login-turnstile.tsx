@@ -28,10 +28,13 @@ export const LoginTurnstile = forwardRef<
   const t = useTranslations("Login");
   const siteKey = getTurnstileSiteKey();
   const [loadFailed, setLoadFailed] = useState(false);
+  /** Cloudflare error code, or `script` when api.js failed to load. / CF のエラーコード、または script 読み込み失敗。 */
+  const [failureDetail, setFailureDetail] = useState<string | null>(null);
 
   const handleSuccess = useCallback(
     (token: string) => {
       setLoadFailed(false);
+      setFailureDetail(null);
       onTokenChange(token);
     },
     [onTokenChange],
@@ -41,13 +44,18 @@ export const LoginTurnstile = forwardRef<
     onTokenChange(null);
   }, [onTokenChange]);
 
-  const handleError = useCallback(() => {
-    setLoadFailed(true);
-    onTokenChange(null);
-  }, [onTokenChange]);
+  const handleError = useCallback(
+    (code: string) => {
+      setLoadFailed(true);
+      setFailureDetail(code || "error");
+      onTokenChange(null);
+    },
+    [onTokenChange],
+  );
 
   const handleScriptError = useCallback(() => {
     setLoadFailed(true);
+    setFailureDetail("script-load");
     onTokenChange(null);
   }, [onTokenChange]);
 
@@ -63,6 +71,11 @@ export const LoginTurnstile = forwardRef<
           role="alert"
         >
           {t("turnstileLoadFailed")}
+          {failureDetail ? (
+            <span className="mt-1 block font-mono text-xs opacity-90">
+              [{failureDetail}]
+            </span>
+          ) : null}
         </p>
       ) : null}
       <div className="flex min-h-[65px] w-full max-w-[300px] justify-center">
