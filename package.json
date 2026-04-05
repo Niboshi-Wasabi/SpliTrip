@@ -10,6 +10,7 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "vercel:env:push": "node scripts/vercel-env-push-from-local.mjs",
+    "vercel:env:preview-staging": "node scripts/vercel-env-push-preview-staging.mjs",
     "github:push": "git push -u origin master",
     "vercel:git:connect": "vercel git connect https://github.com/Niboshi-Wasabi/SpliTrip.git --yes"
   },

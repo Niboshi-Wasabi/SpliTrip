@@ -20,6 +20,21 @@ import { spawnSync } from "node:child_process";
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const envPath = resolve(root, ".env.local");
 
+/**
+ * Production site origin for LINE callback (override with env `SPLITRIP_PRODUCTION_ORIGIN`).
+ * 本番のサイトオリジン（`SPLITRIP_PRODUCTION_ORIGIN` で上書き可）。`.env.local` が localhost でも本番 URI を誤登録しない。
+ */
+const PRODUCTION_ORIGIN =
+  process.env.SPLITRIP_PRODUCTION_ORIGIN?.trim() ||
+  "https://splitrip-zeta.vercel.app";
+
+function vercelSpawnArgs(args) {
+  if (process.platform === "win32") {
+    return { cmd: "vercel.cmd", args, shell: true };
+  }
+  return { cmd: "vercel", args, shell: false };
+}
+
 function parseEnvLocal(text) {
   /** @type {Array<{ key: string; value: string }>} */
   const out = [];
@@ -48,12 +63,13 @@ function vercelEnvAdd(key, value) {
   const args = ["env", "add", key, "production", "--yes", "--force"];
   if (isSensitiveKey(key)) args.push("--sensitive");
 
-  const r = spawnSync("vercel", args, {
+  const { cmd, args: a, shell } = vercelSpawnArgs(args);
+  const r = spawnSync(cmd, a, {
     cwd: root,
     input: value,
     encoding: "utf8",
     stdio: ["pipe", "inherit", "inherit"],
-    shell: false,
+    shell,
     env: process.env,
   });
 
@@ -67,6 +83,10 @@ const pairs = parseEnvLocal(raw);
 console.log(`[vercel-env-push] ${pairs.length} variable(s) from .env.local → Vercel Production`);
 
 for (const { key, value } of pairs) {
+  let v = value;
+  if (key === "NEXT_PUBLIC_LINE_REDIRECT_URI") {
+    v = `${PRODUCTION_ORIGIN}/api/auth/callback/line`;
+  }
   console.log(`[vercel-env-push] adding ${key} ...`);
-  vercelEnvAdd(key, value);
+  vercelEnvAdd(key, v);
 }
