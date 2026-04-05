@@ -1,0 +1,59 @@
+import { notFound } from "next/navigation";
+import { redirect } from "@/i18n/navigation";
+import { JoinGate } from "./join-gate";
+import { isInviteTokenFormat } from "@/lib/invite-token";
+import { createClient } from "@/utils/supabase/server";
+
+export const dynamic = "force-dynamic";
+
+type PageProps = { params: Promise<{ locale: string; token: string }> };
+
+/**
+ * Invite landing: authenticated users join via RPC; guests see `JoinGate`.
+ * 招待ランディング: ログイン済みは RPC で参加し、未ログインは `JoinGate` を表示する。
+ *
+ * Why hybrid: same `join_group_by_invite` RPC for both paths keeps RLS and token rules in one place.
+ * ハイブリッドの理由: 両経路で同一 RPC を使い、RLS とトークン検証を一箇所に集約する。
+ */
+export default async function JoinByInvitePage({ params }: PageProps) {
+  const { locale, token } = await params;
+  const trimmedToken = token.trim();
+
+  if (!isInviteTokenFormat(trimmedToken)) {
+    notFound();
+  }
+
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return <JoinGate token={trimmedToken} />;
+  }
+
+  const { data: groupId, error: joinError } = await supabase.rpc(
+    "join_group_by_invite",
+    {
+      p_token: trimmedToken,
+    },
+  );
+
+  if (joinError) {
+    if (joinError.message.includes("Could not find the function")) {
+      console.error(
+        "join_group_by_invite: RPC が Supabase にありません。SQL Editor で supabase/migrations/20260405160000_group_invite_token.sql を実行するか、Dashboard → Project Settings → API でスキーマをリロードしてください。",
+        joinError.message,
+      );
+    } else {
+      console.error("join_group_by_invite:", joinError.message);
+    }
+    notFound();
+  }
+
+  if (!groupId) {
+    notFound();
+  }
+
+  redirect({ href: `/groups/${groupId}`, locale });
+}

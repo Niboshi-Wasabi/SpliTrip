@@ -1,0 +1,91 @@
+{
+  "Login": {
+    "brandSubtitle": "SpliTrip",
+    "tagline": "Make group trip expenses simpler.",
+    "title": "Sign in",
+    "description": "Sign in with a social account to start splitting expenses",
+    "supabaseNotConfigured": "Supabase is not configured. Set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY in .env.local at the project root, then restart the dev server.",
+    "captchaHint": "Complete the verification below before continuing.",
+    "googleLogin": "Continue with Google",
+    "lineLogin": "Continue with LINE",
+    "guestMode": "Continue as guest (no account)",
+    "guestModeError": "Could not start guest mode. Check that anonymous sign-in is enabled in Supabase.",
+    "captchaIncomplete": "Please complete the verification.",
+    "terms": "Terms of Service",
+    "privacy": "Privacy Policy",
+    "termsPrivacyLead": "By signing in, you agree to the ",
+    "termsPrivacyJoin": " and ",
+    "termsPrivacyTrail": "."
+  },
+  "GroupNew": {
+    "backDashboard": "Dashboard",
+    "pageTitle": "Create a new trip (group)",
+    "pageDescription": "Record expenses together and share splits and settlement plans.",
+    "groupNameLabel": "Group name (trip name)",
+    "groupNamePlaceholder": "e.g. Okinawa 2026",
+    "currencyLabel": "Currency code",
+    "currencyPlaceholder": "JPY",
+    "submit": "Create",
+    "nameRequiredClient": "Please enter a group name.",
+    "createAnother": "Create another group",
+    "errors": {
+      "unauthorized": "You need to sign in.",
+      "name_required": "Please enter a group name.",
+      "insert_failed": "Could not create the group. Please try again later.",
+      "session_invalid": "Your session is invalid. Sign out and sign in again.",
+      "invalid_response": "Invalid response from server.",
+      "fallback": "Could not create the group ({code})."
+    },
+    "postCreate": {
+      "title": "Group created",
+      "description": "Invite members now. You can copy the link later from the group page too.",
+      "copy": "Copy invite link",
+      "copied": "Copied",
+      "openGroup": "Open group",
+      "copyError": "Could not copy. Please select the URL manually.",
+      "urlPending": "…"
+    }
+  },
+  "Theme": {
+    "ariaLabel": "Choose color theme",
+    "light": "Light",
+    "dark": "Dark",
+    "system": "Match system"
+  },
+  "Settings": {
+    "backDashboard": "Dashboard",
+    "languageTitle": "Display language",
+    "languageDescription": "While signed in, this choice is used first for the UI.",
+    "languageJa": "Japanese",
+    "languageEn": "English",
+    "saving": "Saving…",
+    "saved": "Saved.",
+    "saveError": "Could not save.",
+    "updateLanguage": "Update language",
+    "paymentMigrationHint": "To save payout handles, run the migration `supabase/migrations/20260405190000_user_profiles_payment_ids.sql` in the Supabase SQL Editor so `user_profiles` has `paypal_me_id` and `cash_app_cashtag`.",
+    "paymentSchemaSaveError": "Payout columns are missing in the database. Saving is disabled until an admin applies that migration."
+  },
+  "GroupExport": {
+    "exportCsv": "Export CSV",
+    "exportPdfPrint": "Export PDF (Print)",
+    "exportPngImage": "Export PNG (Image)",
+    "pngExporting": "Generating PNG…",
+    "pngExportError": "Could not export PNG. Please try again.",
+    "pngExportMissingTarget": "Export region not found. Please reload the page.",
+    "printedAt": "Printed at",
+    "csvMetaGroup": "Group",
+    "csvMetaCurrency": "Currency",
+    "csvMetaExported": "Exported at",
+    "csvSectionExpenses": "Expenses",
+    "csvColDate": "Date",
+    "csvColPayer": "Payer",
+    "csvColDescription": "Description",
+    "csvColAmount": "Amount",
+    "csvColSplits": "Split breakdown",
+    "csvSectionSettlements": "Settlements",
+    "csvColFrom": "Payer",
+    "csvColTo": "Payee",
+    "csvColSettlementAmount": "Amount",
+    "csvNoSettlementsRow": "No settlement needed (zero transfers)"
+  }
+}

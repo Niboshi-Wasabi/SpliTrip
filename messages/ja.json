@@ -1,0 +1,91 @@
+{
+  "Login": {
+    "brandSubtitle": "スプリトリップ",
+    "tagline": "グループ旅行の精算を、もっとシンプルに。",
+    "title": "ログイン",
+    "description": "SNSアカウントでログインして、旅の精算を始めましょう",
+    "supabaseNotConfigured": "Supabase の接続情報が未設定です。プロジェクト直下の .env.local に NEXT_PUBLIC_SUPABASE_URL と NEXT_PUBLIC_SUPABASE_ANON_KEY を設定し、開発サーバーを再起動してください。",
+    "captchaHint": "続行する前に、下の認証を完了してください。",
+    "googleLogin": "Googleでログイン",
+    "lineLogin": "LINEでログイン",
+    "guestMode": "アカウント作成せずに利用する（ゲストモード）",
+    "guestModeError": "ゲストモードで開始できませんでした。Supabase で匿名サインインが有効か確認してください。",
+    "captchaIncomplete": "確認を完了してください",
+    "terms": "利用規約",
+    "privacy": "プライバシーポリシー",
+    "termsPrivacyLead": "ログインすることで、",
+    "termsPrivacyJoin": "と",
+    "termsPrivacyTrail": "に同意したことになります。"
+  },
+  "GroupNew": {
+    "backDashboard": "ダッシュボード",
+    "pageTitle": "新しい旅行（グループ）を作成",
+    "pageDescription": "メンバー全員で出費を記録し、按分と精算プランを共有できます。",
+    "groupNameLabel": "グループ名（旅行名）",
+    "groupNamePlaceholder": "例: 沖縄旅行 2026",
+    "currencyLabel": "通貨コード",
+    "currencyPlaceholder": "JPY",
+    "submit": "作成する",
+    "nameRequiredClient": "グループ名を入力してください",
+    "createAnother": "別のグループを作成",
+    "errors": {
+      "unauthorized": "ログインが必要です。",
+      "name_required": "グループ名を入力してください",
+      "insert_failed": "作成に失敗しました。しばらくしてから再度お試しください。",
+      "session_invalid": "ログインセッションが無効です。一度ログアウトしてから再度ログインしてください。",
+      "invalid_response": "応答が不正です",
+      "fallback": "作成に失敗しました（{code}）"
+    },
+    "postCreate": {
+      "title": "グループを作成しました",
+      "description": "すぐにメンバーを招待できます。リンクは後からグループ画面でもコピーできます。",
+      "copy": "招待リンクをコピー",
+      "copied": "コピー済み",
+      "openGroup": "グループを開く",
+      "copyError": "コピーに失敗しました。URL を手動で選択してください。",
+      "urlPending": "…"
+    }
+  },
+  "Theme": {
+    "ariaLabel": "配色テーマを選ぶ",
+    "light": "ライト",
+    "dark": "ダーク",
+    "system": "システムに合わせる"
+  },
+  "Settings": {
+    "backDashboard": "ダッシュボード",
+    "languageTitle": "表示言語",
+    "languageDescription": "ログイン中はこの設定を最優先して表示します。",
+    "languageJa": "日本語",
+    "languageEn": "English",
+    "saving": "保存中…",
+    "saved": "保存しました",
+    "saveError": "保存に失敗しました。",
+    "updateLanguage": "言語を更新",
+    "paymentMigrationHint": "送金先を保存するには、Supabase の SQL Editor でマイグレーション「supabase/migrations/20260405190000_user_profiles_payment_ids.sql」を実行し、user_profiles に paypal_me_id / cash_app_cashtag カラムを追加してください。",
+    "paymentSchemaSaveError": "データベースに送金先用のカラムがありません。管理者が上記マイグレーションを適用するまで保存できません。"
+  },
+  "GroupExport": {
+    "exportCsv": "CSVを書き出し",
+    "exportPdfPrint": "PDFとして印刷",
+    "exportPngImage": "PNGを書き出し（画像）",
+    "pngExporting": "PNG を生成中…",
+    "pngExportError": "PNG の書き出しに失敗しました。もう一度お試しください。",
+    "pngExportMissingTarget": "書き出し対象の領域が見つかりません。ページを再読み込みしてください。",
+    "printedAt": "印刷日時",
+    "csvMetaGroup": "グループ",
+    "csvMetaCurrency": "通貨",
+    "csvMetaExported": "書き出し日時",
+    "csvSectionExpenses": "出費一覧",
+    "csvColDate": "日付",
+    "csvColPayer": "支払者",
+    "csvColDescription": "内容",
+    "csvColAmount": "金額",
+    "csvColSplits": "按分内訳",
+    "csvSectionSettlements": "精算結果",
+    "csvColFrom": "支払う人",
+    "csvColTo": "受け取る人",
+    "csvColSettlementAmount": "金額",
+    "csvNoSettlementsRow": "精算の必要はありません（送金0件）"
+  }
+}

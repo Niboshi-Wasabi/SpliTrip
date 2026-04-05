@@ -1,0 +1,55 @@
+# Cursor Rules for "SpliTrip"
+
+あなたは熟練のシニアエンジニアとして、以下のルールに従ってコードを生成・修正してください。
+
+## 1. 命名規則 (Naming Conventions)
+- **明確で説明的な名前:** 省略語を避け、目的がひと目でわかる名前を使用する。（例: `calc()` ではなく `calculateTotalExpense()`）
+- **真偽値:** boolean型は `is`, `has`, `should`, `can` などをプレフィックスにする。
+- **ケース規則:**
+  - TypeScript (変数・関数): `camelCase`
+  - TypeScript (コンポーネント・型): `PascalCase`
+  - データベース (テーブル・カラム・SQL): `snake_case`
+
+## 2. コード構造と可読性
+- **ネストを浅く (早期リターン):** `if`文のネストは極力避け、ガード句（Early Return）を用いて正常系の処理（Happy Path）がインデントなしで一番下に来るように記述する。
+- **マジックナンバーの禁止:** 意味のある数値や文字列は定数として抽出し、大文字のスネークケースで定義する。
+
+## 3. エラーハンドリング
+- **try-catchの抑制:** `try-catch` はネットワークエラーなどの「真に予期せぬ例外」にのみ使用する。
+- **Resultパターンの活用:** Supabase SDKのように、エラーを値として返す関数設計（`{ data, error }`）を優先し、エラーチェックは `if (error)` で明示的に処理する。
+
+## 4. データベース・SQL
+- データベースの変更（テーブル追加等）が必要な場合は、必ず実行可能なSQLスクリプト（DDL）をプロンプトと共に提示する。
+
+## 5. ルールの自己進化 【最重要】
+- 新機能実装やリファクタリング時、新しいパターンや取り決めが生まれた場合は、「この内容は .cursorrules に追記すべきです」と自ら提案し、追記用のMarkdownを出力する。
+
+## 6. コメントとドキュメンテーション (Comments & Documentation)
+- **Bilingual Comments (日英両方での記述):** コード内のすべてのコメント、JSDoc、TSDoc は、必ず英語と日本語の両方で記述すること。（例: `// Calculate the total amount / 合計金額を計算する`）
+- **Describe the "Why":** コードが「何をしているか（What）」ではなく、「なぜそうしているか（Why）」や「ビジネス上の意図（Intent）」を明確に残すこと。
+- **JSDoc/TSDoc for Functions:** サーバーアクション、ユーティリティ関数、コンポーネントには必ず JSDoc 形式で説明、引数、戻り値を日英両方で記述すること。
+- **Step-by-step Comments:** 複雑なロジックブロックの前には、その処理のステップを日英両方で簡潔にコメントすること。
+
+## 7. グループ作成・招待（ハイブリッド初期実装の方針）
+- **作成直後に招待情報を返す:** 新規グループ作成は `createGroupWithInviteAction`（Server Action）を優先し、DB の `invite_token` を同レスポンスで返して UI がコピー用 URL を即表示できるようにする。API `POST /api/groups` も同様に `invite_token` を返す。
+- **理由 / Intent:** 作成フローと招待共有を同一セッションで完結させ、離脱とサポート問い合わせを減らすため。
+
+## 8. UI: ボタンとリンク
+- **Base UI `Button`:** 本プロジェクトの `Button` は Radix の `asChild` を持たない。リンク見た目の遷移は `Link` に `buttonVariants({ variant, size })` を当てる。
+- **理由 / Intent:** 型エラーを避けつつ、キーボード操作とスタイルをボタンと揃えるため。
+- **サーバーでの `buttonVariants`:** `@/components/ui/button-variants` から import する（`Button` の client モジュールからは import しない）。
+
+## 9. 国際化 (Internationalization / i18n)
+- **No Hardcoded Strings (ハードコードの禁止):** UI に表示するテキストは、直接コードに記述せず、必ず辞書ファイル（例: `messages/ja.json`, `messages/en.json`）を介して取得すること。
+- **Auto-detection (自動検知):** 初回アクセス時はブラウザの `navigator.language` または `Accept-Language` ヘッダーから言語を自動判別し、適切な言語を表示するロジックを実装すること。
+- **Dynamic Translation (動的翻訳):** サーバーサイドとクライアントサイドの両方で、型安全な翻訳関数（`t('key')` 等）を使用すること。
+- **本リポジトリでの実装メモ（上記を満たすためのスタック）:**
+  - **next-intl:** 文言は `messages/ja.json` / `messages/en.json`。ルーティングは `src/i18n/routing.ts`（`localePrefix: as-needed`、既定 `ja`）。初回の言語推測は **プロキシ（`src/proxy.ts`）＋ next-intl** が `Accept-Language` 等を解釈（クライアントでは `navigator.language` と整合する一般的な挙動）。
+  - **ナビゲーション:** `Link` / `redirect` / `useRouter` は `@/i18n/navigation`。`redirect` は `{ href, locale }` 形式。
+  - **ログイン時の上書き:** `user_profiles.preferred_language` をミドルウェア側でリクエストの `NEXT_LOCALE` に反映し、辞書ベースの表示と一致させる（自動検知より優先）。
+  - **パス:** ロケール付き URL が必要なときは `@/lib/i18n/localized-paths`（`withLocalePrefix` / `localizedJoinPath` 等）。
+
+## 10. スタイリングとテーマ (Styling & Theming)
+- **Dark Mode Support (ダークモード対応):** Tailwind CSS の `dark:` モディファイアを活用し、すべてのUIコンポーネントはライトモードとダークモードの両方で美しく表示されるように設計すること。
+- **Theme Handling (テーマ管理):** テーマの切り替え（System / Light / Dark）は `SplitripThemeProvider`（`src/components/theme/splitrip-theme-provider.tsx`）と `public/theme-bootstrap.js`（初回ペイント用）で行い、直接 DOM を操作しないこと。
+- **Icons (アイコン):** アイコンには `lucide-react` を使用し、サイズや色は親要素のテキストカラー（`currentColor`）を継承するようにスタイリングすること。

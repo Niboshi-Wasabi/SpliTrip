@@ -1,0 +1,13 @@
+---
+description: SpliTrip（Next.js + Supabase）プロジェクトの前提と主要パス
+alwaysApply: true
+---
+
+# SpliTrip
+
+- **アプリ:** グループ旅行の精算 PWA（`package.json` の name は `splitrip`）。
+- **スタック:** Next.js App Router、TypeScript、Tailwind、Supabase（`@supabase/ssr`）、認証は Google（PKCE → `/auth/callback`）と LINE（`/api/auth/line` → `/api/auth/callback/line` + `signInWithIdToken`）。
+- **環境変数:** `.env.local`（リポジトリに含めない）。Supabase URL/anon キーに加え、LINE 用は `LINE_CHANNEL_ID`, `LINE_CHANNEL_SECRET`, `NEXT_PUBLIC_LINE_REDIRECT_URI`。
+- **主要コード:** `src/app/`（ページ・API Route）、`src/utils/supabase/`、`src/lib/`（`user-profile.ts`, `dashboard-data.ts` など）、仕様メモは `requirements.md`。
+
+コード変更は既存の命名・パターンに合わせ、依頼範囲外のリファクタや無関係ファイルの編集は避けること。
