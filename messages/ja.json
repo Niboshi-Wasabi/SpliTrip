@@ -18,6 +18,13 @@
     "termsPrivacyJoin": "と",
     "termsPrivacyTrail": "に同意したことになります。"
   },
+  "JoinGate": {
+    "title": "グループに参加",
+    "description": "Google または LINE でログインするか、ゲストとして参加できます。ログイン後はこの招待のままグループへ進みます。",
+    "joining": "参加処理中…",
+    "joinRpcError": "グループへの参加に失敗しました。",
+    "invalidInvite": "無効な招待リンクか、グループが見つかりません。"
+  },
   "GroupNew": {
     "backDashboard": "ダッシュボード",
     "pageTitle": "新しい旅行（グループ）を作成",

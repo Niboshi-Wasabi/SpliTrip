@@ -3,6 +3,7 @@ import {
   LINE_CAPTCHA_BRIDGE_COOKIE,
   LINE_OAUTH_CAPTCHA_COOKIE,
   LINE_OAUTH_NONCE_COOKIE,
+  LINE_OAUTH_RETURN_PATH_COOKIE,
   LINE_OAUTH_STATE_COOKIE,
 } from "@/lib/line-oauth-cookie-names";
 
@@ -10,6 +11,7 @@ export {
   LINE_CAPTCHA_BRIDGE_COOKIE,
   LINE_OAUTH_CAPTCHA_COOKIE,
   LINE_OAUTH_NONCE_COOKIE,
+  LINE_OAUTH_RETURN_PATH_COOKIE,
   LINE_OAUTH_STATE_COOKIE,
 } from "@/lib/line-oauth-cookie-names";
 
@@ -35,6 +37,7 @@ export function clearLineOAuthCookies(response: NextResponse): void {
   response.cookies.set(LINE_OAUTH_STATE_COOKIE, "", o);
   response.cookies.set(LINE_OAUTH_NONCE_COOKIE, "", o);
   response.cookies.set(LINE_OAUTH_CAPTCHA_COOKIE, "", o);
+  response.cookies.set(LINE_OAUTH_RETURN_PATH_COOKIE, "", o);
 }
 
 /** ブリッジ Cookie をサーバー応答で削除（httpOnly でないため path を合わせる） */

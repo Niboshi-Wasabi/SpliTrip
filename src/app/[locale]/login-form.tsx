@@ -28,6 +28,7 @@ import { isTurnstileConfigured } from "@/utils/turnstile-env";
 import { loginErrorMessageFromQueryParam } from "@/lib/auth/login-error-messages";
 import { setLineCaptchaBridgeCookie } from "@/lib/set-line-captcha-bridge";
 import { formatOAuthLoginError } from "@/lib/oauth-errors";
+import { getPublicSiteOrigin } from "@/utils/public-site-url";
 import type { Provider } from "@supabase/supabase-js";
 
 type LoginProvider = "google" | "line";
@@ -143,12 +144,13 @@ export function LoginForm() {
     }
 
     const supabase = createClient();
+    const siteOrigin = getPublicSiteOrigin();
     const oauthOptions: {
       redirectTo: string;
       queryParams?: Record<string, string>;
       captchaToken?: string;
     } = {
-      redirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(dashboardPath)}`,
+      redirectTo: `${siteOrigin}/auth/callback?next=${encodeURIComponent(dashboardPath)}`,
     };
     if (captchaToken) {
       oauthOptions.queryParams = { captcha_token: captchaToken };

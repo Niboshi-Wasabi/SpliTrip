@@ -1,17 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { AUTH_ERROR } from "@/lib/auth/auth-error-codes";
 import { redirectToLoginError } from "@/lib/auth/auth-redirects";
+import { sanitizeRedirectPath } from "@/lib/auth/sanitize-redirect-path";
 import { localizedDashboardPathFromRequest } from "@/lib/i18n/locale-from-request";
 import { upsertUserProfileFromAuth } from "@/lib/user-profile";
 import { createRouteHandlerSupabaseClient } from "@/utils/supabase/route-handler";
-
-function sanitizeRedirectPath(rawPath: string | null): string | null {
-  if (!rawPath) return null;
-  if (!rawPath.startsWith("/") || rawPath.startsWith("//")) {
-    return null;
-  }
-  return rawPath;
-}
 
 export async function GET(request: NextRequest) {
   const url = new URL(request.url);

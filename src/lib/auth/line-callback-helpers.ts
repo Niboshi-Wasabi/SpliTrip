@@ -3,6 +3,7 @@ import type { NextRequest } from "next/server";
 import {
   LINE_OAUTH_CAPTCHA_COOKIE,
   LINE_OAUTH_NONCE_COOKIE,
+  LINE_OAUTH_RETURN_PATH_COOKIE,
   LINE_OAUTH_STATE_COOKIE,
 } from "@/lib/line-oauth-cookie-names";
 
@@ -10,6 +11,7 @@ export type LineOAuthCookieBundle = {
   stateFromCookie: string | undefined;
   nonceFromCookie: string | undefined;
   captchaTokenFromCookie: string | undefined;
+  returnPathFromCookie: string | undefined;
 };
 
 export function readLineOAuthCookies(
@@ -21,6 +23,9 @@ export function readLineOAuthCookies(
     captchaTokenFromCookie: request.cookies
       .get(LINE_OAUTH_CAPTCHA_COOKIE)
       ?.value?.trim(),
+    returnPathFromCookie: request.cookies.get(
+      LINE_OAUTH_RETURN_PATH_COOKIE,
+    )?.value,
   };
 }
 

@@ -2,10 +2,12 @@ import { randomBytes, randomUUID } from "crypto";
 import { type NextRequest, NextResponse } from "next/server";
 import { AUTH_ERROR } from "@/lib/auth/auth-error-codes";
 import { redirectToLoginError } from "@/lib/auth/auth-redirects";
+import { sanitizeRedirectPath } from "@/lib/auth/sanitize-redirect-path";
 import {
   LINE_CAPTCHA_BRIDGE_COOKIE,
   LINE_OAUTH_CAPTCHA_COOKIE,
   LINE_OAUTH_NONCE_COOKIE,
+  LINE_OAUTH_RETURN_PATH_COOKIE,
   LINE_OAUTH_STATE_COOKIE,
   clearLineCaptchaBridgeCookie,
   lineOAuthPendingCookieOptions,
@@ -32,6 +34,9 @@ export async function GET(request: NextRequest) {
 
   const state = randomUUID();
   const nonce = randomBytes(16).toString("base64url");
+  const returnPath = sanitizeRedirectPath(
+    request.nextUrl.searchParams.get("next"),
+  );
 
   const authorizeQuery = new URLSearchParams({
     response_type: "code",
@@ -49,6 +54,9 @@ export async function GET(request: NextRequest) {
   const pending = lineOAuthPendingCookieOptions();
   redirectToLine.cookies.set(LINE_OAUTH_STATE_COOKIE, state, pending);
   redirectToLine.cookies.set(LINE_OAUTH_NONCE_COOKIE, nonce, pending);
+  if (returnPath) {
+    redirectToLine.cookies.set(LINE_OAUTH_RETURN_PATH_COOKIE, returnPath, pending);
+  }
 
   const trimmedBridge = bridgeToken?.trim();
   if (trimmedBridge) {

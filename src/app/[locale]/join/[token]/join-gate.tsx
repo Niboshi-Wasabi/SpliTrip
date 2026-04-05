@@ -1,18 +1,19 @@
 "use client";
 
 /**
- * Unauthenticated invite flow: optional Turnstile, anonymous sign-in, then the same
- * `join_group_by_invite` RPC used on the server path.
- * 未ログイン向け招待: Turnstile（任意）→ 匿名サインイン → サーバー経路と同じ `join_group_by_invite` RPC。
+ * Unauthenticated invite flow: Turnstile (optional), then OAuth (Google / LINE),
+ * anonymous sign-in, or existing guest path with `join_group_by_invite`.
+ * 未ログイン向け招待: Turnstile（任意）→ Google / LINE OAuth または匿名参加。
  *
- * Why mirror the server RPC on the client: after anonymous auth, `auth.uid()` is set so the RPC can run under RLS-safe definer rules.
- * クライアントでも同じ RPC を呼ぶ理由: 匿名認証後に `auth.uid()` が立ち、definer RPC を RLS 整合のまま実行できるため。
+ * OAuth returns to this invite URL via `next` (Google: `/auth/callback`, LINE: Cookie).
+ * OAuth 後は `next` でこの招待 URL に戻し、サーバーが RPC でグループへ誘導する。
  */
 
 import { useRef, useState } from "react";
-import { Link } from "@/i18n/navigation";
+import { useLocale, useTranslations } from "next-intl";
 import { Loader2 } from "lucide-react";
 import type { TurnstileInstance } from "@marsidev/react-turnstile";
+import type { Provider } from "@supabase/supabase-js";
 import { LoginTurnstile } from "@/components/auth/login-turnstile";
 import { Button } from "@/components/ui/button";
 import {
@@ -22,46 +23,154 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { formatOAuthLoginError } from "@/lib/oauth-errors";
+import { localizedJoinPath } from "@/lib/i18n/localized-paths";
+import { setLineCaptchaBridgeCookie } from "@/lib/set-line-captcha-bridge";
 import { createClient } from "@/utils/supabase/client";
 import { isSupabaseConfigured } from "@/utils/supabase/env";
+import { getPublicSiteOrigin } from "@/utils/public-site-url";
 import { isTurnstileConfigured } from "@/utils/turnstile-env";
 
-const CAPTCHA_INCOMPLETE_MESSAGE = "確認を完了してください";
-const SUPABASE_NOT_CONFIGURED_MESSAGE =
-  "Supabase の接続情報が未設定です。.env.local を確認してください。";
+type LoginProvider = "google" | "line";
+type LoadingAction = LoginProvider | "guest";
+
+function GoogleIcon() {
+  return (
+    <svg viewBox="0 0 24 24" className="h-5 w-5" aria-hidden="true">
+      <path
+        d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"
+        fill="#4285F4"
+      />
+      <path
+        d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+        fill="#34A853"
+      />
+      <path
+        d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
+        fill="#FBBC05"
+      />
+      <path
+        d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+        fill="#EA4335"
+      />
+    </svg>
+  );
+}
+
+function LineIcon() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      className="h-5 w-5"
+      fill="currentColor"
+      aria-hidden="true"
+    >
+      <path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63h2.386c.346 0 .627.285.627.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.271.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63.346 0 .628.285.628.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.282.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314" />
+    </svg>
+  );
+}
+
+const PROVIDER_CONFIG: {
+  id: LoginProvider;
+  labelKey: "googleLogin" | "lineLogin";
+  icon: React.FC;
+  buttonClassName: string;
+}[] = [
+  {
+    id: "google",
+    labelKey: "googleLogin",
+    icon: GoogleIcon,
+    buttonClassName:
+      "w-full justify-center gap-3 text-base font-medium border border-input bg-background hover:bg-accent hover:text-accent-foreground",
+  },
+  {
+    id: "line",
+    labelKey: "lineLogin",
+    icon: LineIcon,
+    buttonClassName:
+      "w-full justify-center gap-3 border-0 bg-[#06C755] text-base font-medium text-white hover:bg-[#05b34c]",
+  },
+];
 
 type Props = {
   /** Invite token string (UUID) / 招待トークン（UUID 文字列） */
   token: string;
 };
 
-/**
- * Guest + captcha gate before joining via anonymous session.
- * 匿名セッションで参加する前のゲスト・CAPTCHA ゲート。
- *
- * @param props - Invite context / 招待コンテキスト
- */
 export function JoinGate({ token }: Props) {
+  const locale = useLocale();
+  const t = useTranslations("JoinGate");
+  const tLogin = useTranslations("Login");
   const turnstileRef = useRef<TurnstileInstance | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [loadingAction, setLoadingAction] = useState<LoadingAction | null>(null);
   const [error, setError] = useState<string | null>(null);
   const captchaRequired = isTurnstileConfigured();
   const [captchaToken, setCaptchaToken] = useState<string | null>(null);
   const captchaOk = !captchaRequired || !!captchaToken;
 
-  // Step 1: validate env + captcha. Step 2: anonymous sign-in. Step 3: RPC join.
-  // 手順1: 環境と CAPTCHA を検証。手順2: 匿名サインイン。手順3: RPC で参加。
-  async function handleJoinAsGuest() {
-    if (!isSupabaseConfigured()) {
-      setError(SUPABASE_NOT_CONFIGURED_MESSAGE);
+  const supabaseReady = isSupabaseConfigured();
+  const joinPath = localizedJoinPath(locale, token);
+
+  function requireCaptchaForAction(): boolean {
+    if (!captchaRequired) return true;
+    if (captchaToken) return true;
+    setError(tLogin("captchaIncomplete"));
+    return false;
+  }
+
+  async function handleOAuthLogin(provider: LoginProvider) {
+    if (!supabaseReady) {
+      setError(tLogin("supabaseNotConfigured"));
       return;
     }
-    if (captchaRequired && !captchaToken) {
-      setError(CAPTCHA_INCOMPLETE_MESSAGE);
+    if (!requireCaptchaForAction()) return;
+
+    setLoadingAction(provider);
+    setError(null);
+
+    if (provider === "line") {
+      if (captchaToken) {
+        setLineCaptchaBridgeCookie(captchaToken);
+      }
+      const next = encodeURIComponent(joinPath);
+      window.location.assign(`/api/auth/line?next=${next}`);
       return;
     }
 
-    setLoading(true);
+    const supabase = createClient();
+    const siteOrigin = getPublicSiteOrigin();
+    const oauthOptions: {
+      redirectTo: string;
+      queryParams?: Record<string, string>;
+      captchaToken?: string;
+    } = {
+      redirectTo: `${siteOrigin}/auth/callback?next=${encodeURIComponent(joinPath)}`,
+    };
+    if (captchaToken) {
+      oauthOptions.queryParams = { captcha_token: captchaToken };
+      oauthOptions.captchaToken = captchaToken;
+    }
+
+    const { error: authError } = await supabase.auth.signInWithOAuth({
+      provider: provider as Provider,
+      options: oauthOptions as never,
+    });
+
+    if (authError) {
+      setError(formatOAuthLoginError(authError));
+      setLoadingAction(null);
+      turnstileRef.current?.reset();
+    }
+  }
+
+  async function handleJoinAsGuest() {
+    if (!supabaseReady) {
+      setError(tLogin("supabaseNotConfigured"));
+      return;
+    }
+    if (!requireCaptchaForAction()) return;
+
+    setLoadingAction("guest");
     setError(null);
 
     const supabase = createClient();
@@ -70,11 +179,8 @@ export function JoinGate({ token }: Props) {
     });
 
     if (authError) {
-      setError(
-        authError.message ||
-          "ゲストで参加できませんでした。匿名サインインが有効か確認してください。",
-      );
-      setLoading(false);
+      setError(authError.message || tLogin("guestModeError"));
+      setLoadingAction(null);
       turnstileRef.current?.reset();
       return;
     }
@@ -86,28 +192,29 @@ export function JoinGate({ token }: Props) {
 
     if (rpcError) {
       console.error("join_group_by_invite:", rpcError.message);
-      setError("グループへの参加に失敗しました。");
-      setLoading(false);
+      setError(t("joinRpcError"));
+      setLoadingAction(null);
       return;
     }
 
     if (!groupId) {
-      setError("無効な招待リンクか、グループが見つかりません。");
-      setLoading(false);
+      setError(t("invalidInvite"));
+      setLoadingAction(null);
       return;
     }
 
     window.location.assign(`/groups/${groupId}`);
   }
 
+  const authButtonsDisabled =
+    !supabaseReady || loadingAction !== null || !captchaOk;
+
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-background px-4 py-10">
       <Card className="w-full max-w-md">
         <CardHeader>
-          <CardTitle>グループに参加</CardTitle>
-          <CardDescription>
-            招待リンクから参加します。ゲストでも参加できます（端末内のセッションで識別されます）。
-          </CardDescription>
+          <CardTitle>{t("title")}</CardTitle>
+          <CardDescription>{t("description")}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           {captchaRequired ? (
@@ -118,28 +225,44 @@ export function JoinGate({ token }: Props) {
               {error}
             </p>
           ) : null}
+
+          {PROVIDER_CONFIG.map(
+            ({ id, labelKey, icon: Icon, buttonClassName }) => {
+              const isLoading = loadingAction === id;
+              return (
+                <Button
+                  key={id}
+                  type="button"
+                  variant="outline"
+                  size="lg"
+                  className={buttonClassName}
+                  disabled={authButtonsDisabled}
+                  onClick={() => void handleOAuthLogin(id)}
+                >
+                  {isLoading ? (
+                    <Loader2 className="h-5 w-5 shrink-0 animate-spin" />
+                  ) : (
+                    <Icon />
+                  )}
+                  {tLogin(labelKey)}
+                </Button>
+              );
+            },
+          )}
+
           <Button
             type="button"
-            className="w-full gap-2"
-            disabled={loading || !captchaOk}
+            variant="secondary"
+            size="lg"
+            className="flex w-full items-center justify-center gap-2 text-sm font-medium"
+            disabled={authButtonsDisabled}
             onClick={() => void handleJoinAsGuest()}
           >
-            {loading ? (
-              <>
-                <Loader2 className="size-4 shrink-0 animate-spin" />
-                参加処理中…
-              </>
-            ) : (
-              "ゲストで参加する"
-            )}
+            {loadingAction === "guest" ? (
+              <Loader2 className="size-4 shrink-0 animate-spin" />
+            ) : null}
+            {loadingAction === "guest" ? t("joining") : tLogin("guestMode")}
           </Button>
-          <p className="text-center text-xs text-muted-foreground">
-            Google / LINE でログインする場合は、
-            <Link href="/" className="text-primary underline-offset-4 hover:underline">
-              ログイン
-            </Link>
-            後にこのページを再読み込みしてください。
-          </p>
         </CardContent>
       </Card>
     </div>

@@ -18,6 +18,13 @@
     "termsPrivacyJoin": " and ",
     "termsPrivacyTrail": "."
   },
+  "JoinGate": {
+    "title": "Join the group",
+    "description": "Sign in with Google or LINE, or continue as a guest. After OAuth you’ll continue with this invite and enter the group.",
+    "joining": "Joining…",
+    "joinRpcError": "Could not join the group.",
+    "invalidInvite": "This invite link is invalid or the group was not found."
+  },
   "GroupNew": {
     "backDashboard": "Dashboard",
     "pageTitle": "Create a new trip (group)",

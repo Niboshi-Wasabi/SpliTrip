@@ -8,7 +8,10 @@ import {
   profileOverridesFromLineIdToken,
   readLineOAuthCookies,
 } from "@/lib/auth/line-callback-helpers";
+import { establishSupabaseSessionFromLineVerifyPayload } from "@/lib/auth/line-web-session";
+import { verifyLineIdTokenAtLineApi } from "@/lib/auth/verify-line-id-token-at-line";
 import { decodeJwtPayloadOrNull } from "@/lib/decode-jwt-payload";
+import { sanitizeRedirectPath } from "@/lib/auth/sanitize-redirect-path";
 import { clearLineOAuthCookies } from "@/lib/line-oauth-cookies";
 import { localizedDashboardPathFromRequest } from "@/lib/i18n/locale-from-request";
 import { upsertUserProfileFromAuth } from "@/lib/user-profile";
@@ -37,8 +40,14 @@ export async function GET(request: NextRequest) {
   }
 
   const cookies = readLineOAuthCookies(request);
+  const postAuthPath =
+    sanitizeRedirectPath(cookies.returnPathFromCookie) ??
+    localizedDashboardPathFromRequest(request);
 
   if (!isOAuthStateValid(cookies, state)) {
+    console.error(
+      "LINE callback: OAuth state invalid or missing cookie (reload / other tab / cookie blocked?)",
+    );
     return redirectLineOAuthFailed(origin, AUTH_ERROR.LINE_AUTH);
   }
 
@@ -51,7 +60,7 @@ export async function GET(request: NextRequest) {
     return redirectLineOAuthFailed(origin, AUTH_ERROR.LINE_AUTH);
   }
 
-  const { idToken, accessToken } = tokenResult;
+  const { idToken } = tokenResult;
 
   const idPayload = decodeJwtPayloadOrNull(idToken);
   if (!idPayload) {
@@ -60,12 +69,13 @@ export async function GET(request: NextRequest) {
 
   const nonceCookie = cookies.nonceFromCookie;
   if (!nonceCookie || !isOpenIdNonceValid(idPayload, nonceCookie)) {
+    console.error(
+      "LINE callback: OpenID nonce invalid or missing (id_token vs cookie)",
+    );
     return redirectLineOAuthFailed(origin, AUTH_ERROR.LINE_AUTH);
   }
 
-  const response = NextResponse.redirect(
-    `${origin}${localizedDashboardPathFromRequest(request)}`,
-  );
+  const response = NextResponse.redirect(`${origin}${postAuthPath}`);
   clearLineOAuthCookies(response);
 
   const supabase = createRouteHandlerSupabaseClient(request, response);
@@ -73,22 +83,33 @@ export async function GET(request: NextRequest) {
     return redirectLineOAuthFailed(origin, AUTH_ERROR.AUTH);
   }
 
-  const captcha = cookies.captchaTokenFromCookie;
-  const { data, error: signInError } = await supabase.auth.signInWithIdToken({
-    provider: "custom:line",
-    token: idToken,
-    ...(accessToken ? { access_token: accessToken } : {}),
-    nonce: nonceCookie,
-    ...(captcha ? { options: { captchaToken: captcha } } : {}),
-  });
-
-  if (signInError || !data.user) {
-    console.error("signInWithIdToken (custom:line):", signInError?.message);
+  const verified = await verifyLineIdTokenAtLineApi(idToken, lineEnv.channelId);
+  if (!verified.ok) {
     return redirectLineOAuthFailed(origin, AUTH_ERROR.LINE_AUTH);
   }
 
-  const overrides = profileOverridesFromLineIdToken(idPayload);
-  await upsertUserProfileFromAuth(supabase, data.user, overrides);
+  const sessionResult = await establishSupabaseSessionFromLineVerifyPayload(
+    verified.payload,
+    lineEnv.redirectUri,
+    postAuthPath,
+    origin,
+    supabase,
+  );
+
+  if (!sessionResult.ok) {
+    console.error("LINE web session:", sessionResult.message);
+    return redirectLineOAuthFailed(origin, AUTH_ERROR.LINE_AUTH);
+  }
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) {
+    return redirectLineOAuthFailed(origin, AUTH_ERROR.LINE_AUTH);
+  }
+
+  const overrides = profileOverridesFromLineIdToken(verified.payload);
+  await upsertUserProfileFromAuth(supabase, user, overrides);
 
   return response;
 }

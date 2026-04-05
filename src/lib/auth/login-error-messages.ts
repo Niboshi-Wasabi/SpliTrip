@@ -12,7 +12,7 @@ export const LOGIN_ERROR_MESSAGES: Record<AuthErrorCode, string> = {
   [AUTH_ERROR.AUTH]: "認証に失敗しました。もう一度お試しください。",
   [AUTH_ERROR.LINE_CONFIG]: LINE_ENV_HINT,
   [AUTH_ERROR.LINE_AUTH]:
-    "LINE ログインに失敗しました。Supabase の [Authentication] → [Providers] で LINE を有効化し、チャネル ID が .env の LINE_CHANNEL_ID と一致するか確認してください。",
+    "LINE ログインに失敗しました。Supabase [Authentication] → [Providers] の LINE でチャネル ID・シークレットを LINE Developers と揃え、Vercel の LINE_CHANNEL_ID / LINE_CHANNEL_SECRET も同じにしてください。NEXT_PUBLIC_LINE_REDIRECT_URI と LINE のコールバック URL も完全一致が必要です。詳細は Vercel ログの signInWithIdToken を参照してください。",
   [AUTH_ERROR.CAPTCHA_REQUIRED]:
     "人間確認（Turnstile）を完了してから、もう一度お試しください。",
 };
