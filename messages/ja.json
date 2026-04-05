@@ -6,6 +6,7 @@
     "description": "SNSアカウントでログインして、旅の精算を始めましょう",
     "supabaseNotConfigured": "Supabase の接続情報が未設定です。プロジェクト直下の .env.local に NEXT_PUBLIC_SUPABASE_URL と NEXT_PUBLIC_SUPABASE_ANON_KEY を設定し、開発サーバーを再起動してください。",
     "captchaHint": "続行する前に、下の認証を完了してください。",
+    "turnstileLoadFailed": "認証ウィジェットを表示できませんでした。ネットワークやブラウザ拡張を確認し、ページを再読み込みしてください。Cloudflare Turnstile のホスト名設定もご確認ください。",
     "googleLogin": "Googleでログイン",
     "lineLogin": "LINEでログイン",
     "guestMode": "アカウント作成せずに利用する（ゲストモード）",
