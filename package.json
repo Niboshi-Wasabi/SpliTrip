@@ -9,11 +9,7 @@
     "lint": "eslint",
     "test": "jest",
     "test:watch": "jest --watch",
-    "vercel:login": "vercel login",
-    "vercel:link": "vercel link --yes --project splitrip",
-    "vercel:env:preview": "node scripts/vercel-staging-setup.mjs --env-only",
-    "vercel:deploy:preview": "node scripts/vercel-staging-setup.mjs --deploy-only",
-    "vercel:staging": "node scripts/vercel-staging-setup.mjs"
+    "vercel:env:push": "node scripts/vercel-env-push-from-local.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.3.0",
