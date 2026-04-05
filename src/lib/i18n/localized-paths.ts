@@ -33,3 +33,14 @@ export function localizedDashboardPath(locale: string): string {
 export function localizedJoinPath(locale: string, token: string): string {
   return withLocalePrefix(locale, `/join/${token}`);
 }
+
+/**
+ * Invite success / public alias: `/groups/[id]` (rewritten per locale by middleware).
+ * 招待成功後のショート URL（`[locale]/groups/[id]` のエイリアス）。
+ */
+export function localizedGroupPublicPath(
+  locale: string,
+  groupId: string,
+): string {
+  return withLocalePrefix(locale, `/groups/${groupId}`);
+}

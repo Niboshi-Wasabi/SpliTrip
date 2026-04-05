@@ -9,7 +9,7 @@
  * OAuth 後は `next` でこの招待 URL に戻し、サーバーが RPC でグループへ誘導する。
  */
 
-import { useRef, useState } from "react";
+import { useRef, useState, type FC } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { Loader2 } from "lucide-react";
 import type { TurnstileInstance } from "@marsidev/react-turnstile";
@@ -24,7 +24,10 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { formatOAuthLoginError } from "@/lib/oauth-errors";
-import { localizedJoinPath } from "@/lib/i18n/localized-paths";
+import {
+  localizedGroupPublicPath,
+  localizedJoinPath,
+} from "@/lib/i18n/localized-paths";
 import { setLineCaptchaBridgeCookie } from "@/lib/set-line-captcha-bridge";
 import { createClient } from "@/utils/supabase/client";
 import { isSupabaseConfigured } from "@/utils/supabase/env";
@@ -73,7 +76,7 @@ function LineIcon() {
 const PROVIDER_CONFIG: {
   id: LoginProvider;
   labelKey: "googleLogin" | "lineLogin";
-  icon: React.FC;
+  icon: FC;
   buttonClassName: string;
 }[] = [
   {
@@ -203,7 +206,7 @@ export function JoinGate({ token }: Props) {
       return;
     }
 
-    window.location.assign(`/groups/${groupId}`);
+    window.location.assign(localizedGroupPublicPath(locale, groupId));
   }
 
   const authButtonsDisabled =

@@ -10,6 +10,7 @@ import {
   LINE_OAUTH_RETURN_PATH_COOKIE,
   LINE_OAUTH_STATE_COOKIE,
   clearLineCaptchaBridgeCookie,
+  lineOAuthCookieClearOptions,
   lineOAuthPendingCookieOptions,
 } from "@/lib/line-oauth-cookies";
 import { getLineOAuthEnv } from "@/utils/line-oauth-env";
@@ -56,6 +57,12 @@ export async function GET(request: NextRequest) {
   redirectToLine.cookies.set(LINE_OAUTH_NONCE_COOKIE, nonce, pending);
   if (returnPath) {
     redirectToLine.cookies.set(LINE_OAUTH_RETURN_PATH_COOKIE, returnPath, pending);
+  } else {
+    redirectToLine.cookies.set(
+      LINE_OAUTH_RETURN_PATH_COOKIE,
+      "",
+      lineOAuthCookieClearOptions(),
+    );
   }
 
   const trimmedBridge = bridgeToken?.trim();
