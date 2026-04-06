@@ -88,13 +88,7 @@ export default async function GroupDetailPage({ params }: PageProps) {
       userId: user.id,
       isAnonymous: user.is_anonymous,
     });
-    if (result.error === "group_not_found") {
-      notFound();
-    }
-    if (result.error === "forbidden") {
-      notFound();
-    }
-    throw new Error(result.error);
+    notFound();
   }
 
   const { group, members, expenses, settlements } = result.data;
