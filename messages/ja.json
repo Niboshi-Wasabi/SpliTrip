@@ -85,6 +85,10 @@
     "saving": "保存中…",
     "saved": "表示名を保存しました。",
     "skip": "あとで",
+    "edit": "変更",
+    "editTitle": "表示名を変更",
+    "cancel": "キャンセル",
+    "currentLabel": "表示名",
     "required": "表示名を入力してください。",
     "tooLong": "50文字以内で入力してください。",
     "saveError": "保存に失敗しました。"

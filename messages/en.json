@@ -85,6 +85,10 @@
     "saving": "Saving…",
     "saved": "Display name saved.",
     "skip": "Later",
+    "edit": "Edit",
+    "editTitle": "Change display name",
+    "cancel": "Cancel",
+    "currentLabel": "Display name",
     "required": "Please enter a display name.",
     "tooLong": "Must be 50 characters or fewer.",
     "saveError": "Could not save."

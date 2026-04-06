@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { Loader2, UserRound } from "lucide-react";
+import { Loader2, Pencil, UserRound } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
@@ -17,9 +17,10 @@ export function DisplayNamePrompt({ currentName, onSaved }: Props) {
   const [name, setName] = useState(isDefault ? "" : currentName);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [editing, setEditing] = useState(isDefault);
   const [dismissed, setDismissed] = useState(false);
 
-  if (dismissed || !isDefault) return null;
+  if (isDefault && dismissed) return null;
 
   async function handleSave() {
     const trimmed = name.trim();
@@ -51,6 +52,26 @@ export function DisplayNamePrompt({ currentName, onSaved }: Props) {
     window.location.reload();
   }
 
+  if (!editing) {
+    return (
+      <div className="flex items-center gap-2 rounded-lg border border-border bg-card px-4 py-2.5">
+        <UserRound className="h-4 w-4 text-muted-foreground" />
+        <span className="text-sm text-foreground">
+          {t("currentLabel")}: <strong>{currentName}</strong>
+        </span>
+        <Button
+          size="sm"
+          variant="ghost"
+          className="ml-auto gap-1.5 text-xs"
+          onClick={() => setEditing(true)}
+        >
+          <Pencil className="h-3 w-3" />
+          {t("edit")}
+        </Button>
+      </div>
+    );
+  }
+
   return (
     <div className="rounded-lg border border-blue-200 bg-blue-50 p-4 shadow-sm dark:border-blue-900/60 dark:bg-blue-950/30">
       <div className="flex items-start gap-3">
@@ -60,7 +81,7 @@ export function DisplayNamePrompt({ currentName, onSaved }: Props) {
         <div className="flex-1 space-y-3">
           <div>
             <p className="font-medium text-blue-900 dark:text-blue-100">
-              {t("title")}
+              {isDefault ? t("title") : t("editTitle")}
             </p>
             <p className="text-sm text-blue-700 dark:text-blue-300">
               {t("description")}
@@ -92,14 +113,29 @@ export function DisplayNamePrompt({ currentName, onSaved }: Props) {
                 t("save")
               )}
             </Button>
-            <Button
-              size="sm"
-              variant="ghost"
-              disabled={saving}
-              onClick={() => setDismissed(true)}
-            >
-              {t("skip")}
-            </Button>
+            {isDefault ? (
+              <Button
+                size="sm"
+                variant="ghost"
+                disabled={saving}
+                onClick={() => setDismissed(true)}
+              >
+                {t("skip")}
+              </Button>
+            ) : (
+              <Button
+                size="sm"
+                variant="ghost"
+                disabled={saving}
+                onClick={() => {
+                  setEditing(false);
+                  setName(currentName);
+                  setError(null);
+                }}
+              >
+                {t("cancel")}
+              </Button>
+            )}
           </div>
           {error ? (
             <p className="text-sm text-destructive">{error}</p>
