@@ -29,7 +29,7 @@ function emptyOriginSubscribe(): () => void {
   return () => {};
 }
 
-function readWindowOriginSnapshot(): string {
+function readWindowOriginSnapshotranslations(): string {
   if (typeof window === "undefined") {
     return "";
   }
@@ -48,7 +48,7 @@ type Props = {
  */
 export function PostCreateInviteCard({ groupId, inviteToken }: Props) {
   const locale = useLocale();
-  const t = useTranslations("GroupNew.postCreate");
+  const translations = useTranslations("GroupNew.postCreate");
   const origin = useSyncExternalStore(
     emptyOriginSubscribe,
     readWindowOriginSnapshot,
@@ -64,13 +64,13 @@ export function PostCreateInviteCard({ groupId, inviteToken }: Props) {
     setCopyError(null);
     setBusy(true);
     void navigator.clipboard
-      .writeText(inviteUrl)
+      .writeTextranslations(inviteUrl)
       .then(() => {
         setCopied(true);
-        window.setTimeout(() => setCopied(false), 2500);
+        window.setTimeoutranslations(() => setCopied(false), 2500);
       })
       .catch(() => {
-        setCopyError(t("copyError"));
+        setCopyError(translations("copyError"));
       })
       .finally(() => setBusy(false));
   }
@@ -80,12 +80,12 @@ export function PostCreateInviteCard({ groupId, inviteToken }: Props) {
   return (
     <Card className="border-emerald-200 bg-emerald-50/50 dark:border-emerald-900 dark:bg-emerald-950/20">
       <CardHeader>
-        <CardTitle className="text-base">{t("title")}</CardTitle>
-        <CardDescription>{t("description")}</CardDescription>
+        <CardTitle className="text-base">{translations("title")}</CardTitle>
+        <CardDescription>{translations("description")}</CardDescription>
       </CardHeader>
       <CardContent className="space-y-3">
         <div className="rounded-md border bg-background px-3 py-2 font-mono text-xs break-all text-muted-foreground">
-          {urlReady ? inviteUrl : t("urlPending")}
+          {urlReady ? inviteUrl : translations("urlPending")}
         </div>
         {copyError ? (
           <p className="text-xs text-destructive" role="alert">
@@ -106,13 +106,13 @@ export function PostCreateInviteCard({ groupId, inviteToken }: Props) {
             ) : copied ? (
               <Check className="size-3.5 text-emerald-600" aria-hidden />
             ) : null}
-            {copied ? t("copied") : t("copy")}
+            {copied ? translations("copied") : translations("copy")}
           </Button>
           <Link
             href={`/dashboard/groups/${groupId}`}
             className={cn(buttonVariants({ variant: "default", size: "sm" }))}
           >
-            {t("openGroup")}
+            {translations("openGroup")}
           </Link>
         </div>
       </CardContent>

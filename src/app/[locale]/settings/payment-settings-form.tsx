@@ -24,15 +24,15 @@ export function PaymentSettingsForm({
   initialCashAppCashtag,
   paymentSaveDisabled = false,
 }: Props) {
-  const t = useTranslations("Settings");
+  const translations = useTranslations("Settings");
   const [paypalMeId, setPaypalMeId] = useState(initialPaypalMeId);
   const [cashAppCashtag, setCashAppCashtag] = useState(initialCashAppCashtag);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  async function onSubmit(formEvent: React.FormEvent) {
-    formEvent.preventDefault();
+  async function onSubmitranslations(formEvent: React.FormEvent) {
+    formEvent.preventDefaultranslations();
     setSaving(true);
     setMessage(null);
     setError(null);
@@ -60,9 +60,9 @@ export function PaymentSettingsForm({
           "Cash App の $Cashtag の形式が正しくありません（英数字とアンダースコア、先頭は英字）。",
         );
       } else if (errorPayload.error === "schema_missing") {
-        setError(t("paymentSchemaSaveError"));
+        setError(translations("paymentSchemaSaveError"));
       } else {
-        setError(t("saveError"));
+        setError(translations("saveError"));
       }
       setSaving(false);
       return;
@@ -80,7 +80,7 @@ export function PaymentSettingsForm({
 
   return (
     <form
-      onSubmit={(formEvent) => void onSubmit(formEvent)}
+      onSubmit={(formEvent) => void onSubmitranslations(formEvent)}
       className="space-y-6"
     >
       <div className="space-y-2">

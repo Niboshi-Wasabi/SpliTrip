@@ -41,8 +41,8 @@ export async function updatePreferredLanguageAction(
     return { ok: false, errorCode: "update_failed" };
   }
 
-  for (const loc of routing.locales) {
-    revalidatePath(withLocalePrefix(loc, "/settings"));
+  for (const locale of routing.locales) {
+    revalidatePath(withLocalePrefix(locale, "/settings"));
   }
 
   return { ok: true };

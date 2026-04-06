@@ -111,10 +111,10 @@ export async function fetchDashboardData(): Promise<DashboardData> {
 
   const userIdsOrdered: string[] = [];
   const seenUserIds = new Set<string>();
-  for (const row of memberRows ?? []) {
-    if (!seenUserIds.has(row.user_id)) {
-      seenUserIds.add(row.user_id);
-      userIdsOrdered.push(row.user_id);
+  for (const memberRow of memberRows ?? []) {
+    if (!seenUserIds.has(memberRow.user_id)) {
+      seenUserIds.add(memberRow.user_id);
+      userIdsOrdered.push(memberRow.user_id);
     }
   }
   const userIds = userIdsOrdered;

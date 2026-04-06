@@ -20,7 +20,7 @@ import { PostCreateInviteCard } from "./post-create-invite-card";
  * グループを作成し、招待リンクを即表示するフォーム（ハイブリッド UX）。
  */
 export function CreateGroupForm() {
-  const t = useTranslations("GroupNew");
+  const translations = useTranslations("GroupNew");
   const tErr = useTranslations("GroupNew.errors");
   const [name, setName] = useState("");
   const [currency, setCurrency] = useState("JPY");
@@ -31,11 +31,11 @@ export function CreateGroupForm() {
   } | null>(null);
   const [isPending, startTransition] = useTransition();
 
-  function onSubmit(formEvent: React.FormEvent) {
-    formEvent.preventDefault();
+  function onSubmitranslations(formEvent: React.FormEvent) {
+    formEvent.preventDefaultranslations();
     const trimmedName = name.trim();
     if (!trimmedName) {
-      setError(t("nameRequiredClient"));
+      setError(translations("nameRequiredClient"));
       return;
     }
 
@@ -89,7 +89,7 @@ export function CreateGroupForm() {
           size="sm"
           onClick={() => setCreated(null)}
         >
-          {t("createAnother")}
+          {translations("createAnother")}
         </Button>
       </div>
     );
@@ -98,23 +98,23 @@ export function CreateGroupForm() {
   return (
     <form onSubmit={onSubmit} className="flex max-w-md flex-col gap-4">
       <div className="space-y-2">
-        <Label htmlFor="group-name">{t("groupNameLabel")}</Label>
+        <Label htmlFor="group-name">{translations("groupNameLabel")}</Label>
         <Input
           id="group-name"
           value={name}
           onChange={(changeEvent) => setName(changeEvent.target.value)}
-          placeholder={t("groupNamePlaceholder")}
+          placeholder={translations("groupNamePlaceholder")}
           disabled={isPending}
           required
         />
       </div>
       <div className="space-y-2">
-        <Label htmlFor="currency">{t("currencyLabel")}</Label>
+        <Label htmlFor="currency">{translations("currencyLabel")}</Label>
         <Input
           id="currency"
           value={currency}
           onChange={(changeEvent) => setCurrency(changeEvent.target.value)}
-          placeholder={t("currencyPlaceholder")}
+          placeholder={translations("currencyPlaceholder")}
           maxLength={3}
           disabled={isPending}
         />
@@ -128,7 +128,7 @@ export function CreateGroupForm() {
         {isPending ? (
           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
         ) : null}
-        {t("submit")}
+        {translations("submit")}
       </Button>
     </form>
   );

@@ -25,7 +25,7 @@ export const LoginTurnstile = forwardRef<
   TurnstileInstance | null,
   LoginTurnstileProps
 >(function LoginTurnstile({ onTokenChange }, ref) {
-  const t = useTranslations("Login");
+  const translations = useTranslations("Login");
   const siteKey = getTurnstileSiteKey();
   const [loadFailed, setLoadFailed] = useState(false);
   /** Cloudflare error code, or `script` when api.js failed to load. / CF のエラーコード、または script 読み込み失敗。 */
@@ -70,7 +70,7 @@ export const LoginTurnstile = forwardRef<
           className="max-w-sm text-center text-sm text-destructive"
           role="alert"
         >
-          {t("turnstileLoadFailed")}
+          {translations("turnstileLoadFailed")}
           {failureDetail ? (
             <span className="mt-1 block font-mono text-xs opacity-90">
               [{failureDetail}]

@@ -11,3 +11,10 @@ alwaysApply: true
 - **主要コード:** `src/app/`（ページ・API Route）、`src/utils/supabase/`、`src/lib/`（`user-profile.ts`, `dashboard-data.ts` など）、仕様メモは `requirements.md`。
 
 コード変更は既存の命名・パターンに合わせ、依頼範囲外のリファクタや無関係ファイルの編集は避けること。
+
+## コーディング規約
+
+- **変数・関数の命名:** 1文字変数（`s`, `v`, `g`, `d`, `i`, `m`, `e` 等）や意味の薄い省略形（`exp`, `mem`, `res`, `idx` 等）は禁止。ループ変数や短いコールバック引数も含め、何を表すかが名前だけで分かるようにする。
+  - 悪い例: `s`, `g`, `exp`, `res`, `d.amount`, `groups.map((g, i) => ...)`
+  - 良い例: `sum`, `groupItem`, `expense`, `response`, `entry.amount`, `groups.map((groupItem, groupIndex) => ...)`
+- **コメント:** コードの動作をそのまま繰り返すコメント（`// ループ`, `// 取得` 等）は不要。「なぜそうするか」や非自明な制約のみコメントする。

@@ -11,8 +11,8 @@ type Props = {
   onSaved?: (newName: string) => void;
 };
 
-export function DisplayNamePrompt({ currentName, onSaved }: Props) {
-  const t = useTranslations("DisplayName");
+export function DisplayNamePromptranslations({ currentName, onSaved }: Props) {
+  const translations = useTranslations("DisplayName");
   const isDefault = currentName === "ユーザー" || currentName === "User";
   const [name, setName] = useState(isDefault ? "" : currentName);
   const [saving, setSaving] = useState(false);
@@ -25,11 +25,11 @@ export function DisplayNamePrompt({ currentName, onSaved }: Props) {
   async function handleSave() {
     const trimmed = name.trim();
     if (trimmed.length === 0) {
-      setError(t("required"));
+      setError(translations("required"));
       return;
     }
     if (trimmed.length > 50) {
-      setError(t("tooLong"));
+      setError(translations("tooLong"));
       return;
     }
 
@@ -43,7 +43,7 @@ export function DisplayNamePrompt({ currentName, onSaved }: Props) {
     });
 
     if (!res.ok) {
-      setError(t("saveError"));
+      setError(translations("saveError"));
       setSaving(false);
       return;
     }
@@ -57,7 +57,7 @@ export function DisplayNamePrompt({ currentName, onSaved }: Props) {
       <div className="flex items-center gap-2 rounded-lg border border-border bg-card px-4 py-2.5">
         <UserRound className="h-4 w-4 text-muted-foreground" />
         <span className="text-sm text-foreground">
-          {t("currentLabel")}: <strong>{currentName}</strong>
+          {translations("currentLabel")}: <strong>{currentName}</strong>
         </span>
         <Button
           size="sm"
@@ -66,7 +66,7 @@ export function DisplayNamePrompt({ currentName, onSaved }: Props) {
           onClick={() => setEditing(true)}
         >
           <Pencil className="h-3 w-3" />
-          {t("edit")}
+          {translations("edit")}
         </Button>
       </div>
     );
@@ -81,23 +81,23 @@ export function DisplayNamePrompt({ currentName, onSaved }: Props) {
         <div className="flex-1 space-y-3">
           <div>
             <p className="font-medium text-blue-900 dark:text-blue-100">
-              {isDefault ? t("title") : t("editTitle")}
+              {isDefault ? translations("title") : translations("editTitle")}
             </p>
             <p className="text-sm text-blue-700 dark:text-blue-300">
-              {t("description")}
+              {translations("description")}
             </p>
           </div>
           <div className="flex gap-2">
             <Input
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder={t("placeholder")}
+              placeholder={translations("placeholder")}
               maxLength={50}
               className="max-w-xs bg-white dark:bg-background"
               disabled={saving}
               onKeyDown={(e) => {
                 if (e.key === "Enter") {
-                  e.preventDefault();
+                  e.preventDefaultranslations();
                   void handleSave();
                 }
               }}
@@ -110,7 +110,7 @@ export function DisplayNamePrompt({ currentName, onSaved }: Props) {
               {saving ? (
                 <Loader2 className="size-4 shrink-0 animate-spin" />
               ) : (
-                t("save")
+                translations("save")
               )}
             </Button>
             {isDefault ? (
@@ -120,7 +120,7 @@ export function DisplayNamePrompt({ currentName, onSaved }: Props) {
                 disabled={saving}
                 onClick={() => setDismissed(true)}
               >
-                {t("skip")}
+                {translations("skip")}
               </Button>
             ) : (
               <Button
@@ -133,7 +133,7 @@ export function DisplayNamePrompt({ currentName, onSaved }: Props) {
                   setError(null);
                 }}
               >
-                {t("cancel")}
+                {translations("cancel")}
               </Button>
             )}
           </div>

@@ -70,34 +70,38 @@ export default async function GroupDetailPage({ params }: PageProps) {
   }
 
   const { group, members, expenses, settlements } = result.data;
-  const currentMember = members.find((m) => m.user_id === user.id);
+  const currentMember = members.find(
+    (member) => member.user_id === user.id,
+  );
   const currentDisplayName = currentMember?.display_name ?? "ユーザー";
   const totalGroupExpense = expenses.reduce(
-    (s, e) => s + Number(e.amount),
+    (sum, expense) => sum + Number(expense.amount),
     0,
   );
   const payerChartData = (() => {
     const payerTotals = new Map<string, number>();
-    for (const exp of expenses) {
+    for (const expense of expenses) {
       const payerName =
-        members.find((m) => m.user_id === exp.payer_id)?.display_name ??
-        "不明";
+        members.find((member) => member.user_id === expense.payer_id)
+          ?.display_name ?? "不明";
       payerTotals.set(
         payerName,
-        (payerTotals.get(payerName) ?? 0) + Number(exp.amount),
+        (payerTotals.get(payerName) ?? 0) + Number(expense.amount),
       );
     }
     return [...payerTotals.entries()]
-      .sort(([, a], [, b]) => b - a)
-      .map(([name, amount], i) => ({
-        category: name,
-        amount,
-        color: getCategoryColor(name, i),
+      .sort(
+        ([, amountLeft], [, amountRight]) => amountRight - amountLeft,
+      )
+      .map(([payerName, payerAmount], colorIndex) => ({
+        category: payerName,
+        amount: payerAmount,
+        color: getCategoryColor(payerName, colorIndex),
       }));
   })();
 
   const invitePath = localizedJoinPath(locale, String(group.invite_token));
-  const tExport = await getTranslations("GroupExport");
+  const exportTranslations = await getTranslations("GroupExport");
   const snapshotPrintedAt = new Intl.DateTimeFormat(locale, {
     dateStyle: "long",
     timeStyle: "short",
@@ -183,7 +187,7 @@ export default async function GroupDetailPage({ params }: PageProps) {
                 {group.name}
               </p>
               <p className="text-xs text-muted-foreground">
-                {tExport("printedAt")}: {snapshotPrintedAt}
+                {exportTranslations("printedAt")}: {snapshotPrintedAt}
               </p>
             </div>
 
@@ -213,35 +217,40 @@ export default async function GroupDetailPage({ params }: PageProps) {
               </p>
             ) : (
               <ul className="space-y-3">
-                {expenses.map((ex) => {
-                  const payer = members.find((m) => m.user_id === ex.payer_id);
+                {expenses.map((expense) => {
+                  const payerMember = members.find(
+                    (member) => member.user_id === expense.payer_id,
+                  );
                   return (
                     <li
-                      key={ex.id}
+                      key={expense.id}
                       className="rounded-lg border border-border bg-card p-3 text-sm text-card-foreground"
                     >
                       <div className="flex flex-wrap items-baseline justify-between gap-2">
                         <span className="font-medium">
-                          {ex.description?.trim() || "（無題）"}
+                          {expense.description?.trim() || "（無題）"}
                         </span>
                         <span className="font-semibold">
-                          {formatYen(Number(ex.amount))}
+                          {formatYen(Number(expense.amount))}
                         </span>
                       </div>
                       <p className="text-xs text-muted-foreground">
-                        {ex.expense_date} · 支払:{" "}
-                        {payer?.display_name ?? ex.payer_id}
+                        {expense.expense_date} · 支払:{" "}
+                        {payerMember?.display_name ?? expense.payer_id}
                       </p>
                       <ul className="mt-2 space-y-0.5 text-xs text-muted-foreground">
-                        {(ex.expense_splits ?? []).map((s) => {
-                          const u = members.find((m) => m.user_id === s.user_id);
+                        {(expense.expense_splits ?? []).map((split) => {
+                          const splitMember = members.find(
+                            (member) => member.user_id === split.user_id,
+                          );
                           return (
-                            <li key={s.user_id}>
-                              {u?.display_name ?? s.user_id}:{" "}
-                              {formatYen(Number(s.amount))}
-                              {Number(s.ratio) > 0 && Number(s.ratio) !== 1 ? (
+                            <li key={split.user_id}>
+                              {splitMember?.display_name ?? split.user_id}:{" "}
+                              {formatYen(Number(split.amount))}
+                              {Number(split.ratio) > 0 &&
+                              Number(split.ratio) !== 1 ? (
                                 <span className="ml-1 opacity-70">
-                                  (ratio {Number(s.ratio).toFixed(4)})
+                                  (ratio {Number(split.ratio).toFixed(4)})
                                 </span>
                               ) : null}
                             </li>

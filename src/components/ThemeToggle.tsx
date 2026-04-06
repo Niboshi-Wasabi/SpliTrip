@@ -52,7 +52,7 @@ function ThemeTriggerIcon({ mounted, active }: ThemeTriggerIconProps) {
 }
 
 export function ThemeToggle() {
-  const t = useTranslations("Theme");
+  const translations = useTranslations("Theme");
   const { theme, setTheme } = useTheme();
   const [open, setOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -63,7 +63,7 @@ export function ThemeToggle() {
     () => false,
   );
 
-  useEffect(() => {
+  useEffectranslations(() => {
     function handlePointerDown(event: PointerEvent) {
       if (!containerRef.current?.contains(event.target as Node)) {
         setOpen(false);
@@ -92,7 +92,7 @@ export function ThemeToggle() {
         className="gap-1 text-muted-foreground"
         aria-expanded={open}
         aria-haspopup="listbox"
-        aria-label={t("ariaLabel")}
+        aria-label={translations("ariaLabel")}
         onClick={() => {
           if (!mounted) return;
           setOpen((previous) => !previous);
@@ -105,14 +105,14 @@ export function ThemeToggle() {
       {open && mounted ? (
         <div
           role="listbox"
-          aria-label={t("ariaLabel")}
+          aria-label={translations("ariaLabel")}
           className="absolute right-0 z-50 mt-1 min-w-[11rem] rounded-md border border-border bg-popover p-1 text-popover-foreground shadow-md"
         >
           {(
             [
-              { choice: "light" as const, Icon: Sun, label: t("light") },
-              { choice: "dark" as const, Icon: Moon, label: t("dark") },
-              { choice: "system" as const, Icon: Monitor, label: t("system") },
+              { choice: "light" as const, Icon: Sun, label: translations("light") },
+              { choice: "dark" as const, Icon: Moon, label: translations("dark") },
+              { choice: "system" as const, Icon: Monitor, label: translations("system") },
             ] as const
           ).map(({ choice, Icon, label }) => (
             <button

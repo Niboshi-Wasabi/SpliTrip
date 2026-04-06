@@ -27,17 +27,17 @@ type ExpenseBody = {
 };
 
 function parseSplitMode(raw: unknown): SplitMode {
-  const sm = String(raw ?? "equal").toLowerCase();
-  if (sm === "manual" || sm === "exact") {
+  const normalizedMode = String(raw ?? "equal").toLowerCase();
+  if (normalizedMode === "manual" || normalizedMode === "exact") {
     return "exact";
   }
-  if (sm === "shares" || sm === "share") {
+  if (normalizedMode === "shares" || normalizedMode === "share") {
     return "shares";
   }
-  if (sm === "percent" || sm === "percentage" || sm === "percentages") {
+  if (normalizedMode === "percent" || normalizedMode === "percentage" || normalizedMode === "percentages") {
     return "percent";
   }
-  if (sm === "itemized") {
+  if (normalizedMode === "itemized") {
     return "itemized";
   }
   return "equal";
@@ -66,7 +66,7 @@ export async function POST(request: NextRequest, context: RouteContext) {
     return NextResponse.json({ error: detail.error }, { status: 500 });
   }
 
-  const memberUserIdsOrdered = detail.data.members.map((m) => m.user_id);
+  const memberUserIdsOrdered = detail.data.members.map((member) => member.user_id);
   const memberIds = new Set(memberUserIdsOrdered);
 
   const parsed: unknown = await request.json().catch(() => null);
@@ -118,10 +118,10 @@ export async function POST(request: NextRequest, context: RouteContext) {
 
   const splitRows = built.splitRows;
 
-  const splitsJson = splitRows.map((s) => ({
-    user_id: s.user_id,
-    amount: s.amount,
-    ratio: s.ratio,
+  const splitsJson = splitRows.map((split) => ({
+    user_id: split.user_id,
+    amount: split.amount,
+    ratio: split.ratio,
   }));
 
   const { data: expenseId, error: rpcError } = await supabase.rpc(

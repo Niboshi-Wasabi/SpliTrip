@@ -40,22 +40,22 @@ type Props = {
  * 理由: CSV 見出しを UI 言語に合わせ、`GroupExport` キーを一箇所に集約する。
  */
 function useGroupExportCsvLabels(): GroupExportCsvLabels {
-  const t = useTranslations("GroupExport");
+  const translations = useTranslations("GroupExport");
   return {
-    metaGroup: t("csvMetaGroup"),
-    metaCurrency: t("csvMetaCurrency"),
-    metaExported: t("csvMetaExported"),
-    sectionExpenses: t("csvSectionExpenses"),
-    colDate: t("csvColDate"),
-    colPayer: t("csvColPayer"),
-    colDescription: t("csvColDescription"),
-    colAmount: t("csvColAmount"),
-    colSplits: t("csvColSplits"),
-    sectionSettlements: t("csvSectionSettlements"),
-    colFrom: t("csvColFrom"),
-    colTo: t("csvColTo"),
-    colSettlementAmount: t("csvColSettlementAmount"),
-    noSettlementsRow: t("csvNoSettlementsRow"),
+    metaGroup: translations("csvMetaGroup"),
+    metaCurrency: translations("csvMetaCurrency"),
+    metaExported: translations("csvMetaExported"),
+    sectionExpenses: translations("csvSectionExpenses"),
+    colDate: translations("csvColDate"),
+    colPayer: translations("csvColPayer"),
+    colDescription: translations("csvColDescription"),
+    colAmount: translations("csvColAmount"),
+    colSplits: translations("csvColSplits"),
+    sectionSettlements: translations("csvSectionSettlements"),
+    colFrom: translations("csvColFrom"),
+    colTo: translations("csvColTo"),
+    colSettlementAmount: translations("csvColSettlementAmount"),
+    noSettlementsRow: translations("csvNoSettlementsRow"),
   };
 }
 
@@ -73,7 +73,7 @@ export function GroupExportToolbar({
   expenses,
   settlements,
 }: Props) {
-  const t = useTranslations("GroupExport");
+  const translations = useTranslations("GroupExport");
   const locale = useLocale();
   const csvLabels = useGroupExportCsvLabels();
   const captureRef = useGroupExportCaptureRef();
@@ -110,8 +110,8 @@ export function GroupExportToolbar({
    * Why `window.print`: avoids heavy PDF libs and keeps CJK rendering native.
    * 理由: 重い PDF ライブラリを避け、CJK はブラウザ描画に任せる。
    */
-  function handlePrint(): void {
-    window.print();
+  function handlePrintranslations(): void {
+    window.printranslations();
   }
 
   /**
@@ -124,7 +124,7 @@ export function GroupExportToolbar({
   async function handleExportPng(): Promise<void> {
     const rootEl = captureRef.current;
     if (!rootEl) {
-      setPngError(t("pngExportMissingTarget"));
+      setPngError(translations("pngExportMissingTarget"));
       return;
     }
 
@@ -136,23 +136,23 @@ export function GroupExportToolbar({
       await downloadDomAsPng(rootEl, filename);
     } catch (err) {
       console.error("handleExportPng:", err);
-      setPngError(t("pngExportError"));
+      setPngError(translations("pngExportError"));
     } finally {
       setPngBusy(false);
     }
   }
 
-  const printedAtLabel = new Intl.DateTimeFormat(locale, {
+  const printedAtLabel = new Intl.DateTimeFormatranslations(locale, {
     dateStyle: "long",
     timeStyle: "short",
-  }).format(new Date());
+  }).formatranslations(new Date());
 
   return (
     <>
       <div className="mb-6 hidden print:block">
         <h1 className="text-2xl font-bold text-foreground">{groupName}</h1>
         <p className="text-sm text-muted-foreground">
-          {t("printedAt")}: {printedAtLabel}
+          {translations("printedAt")}: {printedAtLabel}
         </p>
       </div>
 
@@ -166,7 +166,7 @@ export function GroupExportToolbar({
             onClick={handleExportCsv}
           >
             <Download className="size-4 shrink-0" aria-hidden />
-            {t("exportCsv")}
+            {translations("exportCsv")}
           </Button>
           <Button
             type="button"
@@ -176,7 +176,7 @@ export function GroupExportToolbar({
             onClick={handlePrint}
           >
             <Printer className="size-4 shrink-0" aria-hidden />
-            {t("exportPdfPrint")}
+            {translations("exportPdfPrint")}
           </Button>
           <Button
             type="button"
@@ -189,7 +189,7 @@ export function GroupExportToolbar({
             }}
           >
             <ImageIcon className="size-4 shrink-0" aria-hidden />
-            {pngBusy ? t("pngExporting") : t("exportPngImage")}
+            {pngBusy ? translations("pngExporting") : translations("exportPngImage")}
           </Button>
         </div>
         {pngError ? (

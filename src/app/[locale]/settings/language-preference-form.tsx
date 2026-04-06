@@ -19,19 +19,19 @@ type Props = {
 
 export function LanguagePreferenceForm({ initialLanguage }: Props) {
   const activeLocale = useLocale();
-  const t = useTranslations("Settings");
+  const translations = useTranslations("Settings");
   const [language, setLanguage] = useState<"ja" | "en">(initialLanguage);
   const [message, setMessage] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
-  function onSubmit(formEvent: React.FormEvent) {
-    formEvent.preventDefault();
+  function onSubmitranslations(formEvent: React.FormEvent) {
+    formEvent.preventDefaultranslations();
     setMessage(null);
     startTransition(() => {
       void (async () => {
         const result = await updatePreferredLanguageAction(language);
         if (!result.ok) {
-          setMessage(t("saveError"));
+          setMessage(translations("saveError"));
           return;
         }
         const target = withLocalePrefix(language, "/settings");
@@ -40,7 +40,7 @@ export function LanguagePreferenceForm({ initialLanguage }: Props) {
           window.location.assign(target);
           return;
         }
-        setMessage(t("saved"));
+        setMessage(translations("saved"));
       })();
     });
   }
@@ -48,8 +48,8 @@ export function LanguagePreferenceForm({ initialLanguage }: Props) {
   return (
     <form onSubmit={onSubmit} className="space-y-4">
       <div className="space-y-2">
-        <Label>{t("languageTitle")}</Label>
-        <p className="text-sm text-muted-foreground">{t("languageDescription")}</p>
+        <Label>{translations("languageTitle")}</Label>
+        <p className="text-sm text-muted-foreground">{translations("languageDescription")}</p>
         <div className="flex flex-wrap gap-4">
           <label className="flex cursor-pointer items-center gap-2 text-sm">
             <input
@@ -60,7 +60,7 @@ export function LanguagePreferenceForm({ initialLanguage }: Props) {
               onChange={() => setLanguage("ja")}
               disabled={isPending}
             />
-            {t("languageJa")}
+            {translations("languageJa")}
           </label>
           <label className="flex cursor-pointer items-center gap-2 text-sm">
             <input
@@ -71,7 +71,7 @@ export function LanguagePreferenceForm({ initialLanguage }: Props) {
               onChange={() => setLanguage("en")}
               disabled={isPending}
             />
-            {t("languageEn")}
+            {translations("languageEn")}
           </label>
         </div>
       </div>
@@ -84,7 +84,7 @@ export function LanguagePreferenceForm({ initialLanguage }: Props) {
         {isPending ? (
           <Loader2 className="mr-2 size-3.5 animate-spin" aria-hidden />
         ) : null}
-        {t("updateLanguage")}
+        {translations("updateLanguage")}
       </Button>
     </form>
   );

@@ -117,9 +117,9 @@ export async function createGroupWithInviteAction(
 
   // Refresh dashboard lists for every locale (prefix differs for non-default).
   // ロケールごとにプレフィックスが異なるため、全ロケールのダッシュボードを再検証する。
-  for (const loc of routing.locales) {
-    revalidatePath(withLocalePrefix(loc, "/dashboard"));
-    revalidatePath(withLocalePrefix(loc, "/dashboard/groups"));
+  for (const locale of routing.locales) {
+    revalidatePath(withLocalePrefix(locale, "/dashboard"));
+    revalidatePath(withLocalePrefix(locale, "/dashboard/groups"));
   }
 
   return {

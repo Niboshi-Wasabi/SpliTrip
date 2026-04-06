@@ -12,21 +12,21 @@ type Props = {
 };
 
 export function DisplayNameForm({ initialDisplayName }: Props) {
-  const t = useTranslations("DisplayName");
+  const translations = useTranslations("DisplayName");
   const [displayName, setDisplayName] = useState(initialDisplayName);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  async function onSubmit(e: React.FormEvent) {
-    e.preventDefault();
+  async function onSubmitranslations(e: React.FormEvent) {
+    e.preventDefaultranslations();
     const trimmed = displayName.trim();
     if (trimmed.length === 0) {
-      setError(t("required"));
+      setError(translations("required"));
       return;
     }
     if (trimmed.length > 50) {
-      setError(t("tooLong"));
+      setError(translations("tooLong"));
       return;
     }
 
@@ -41,34 +41,34 @@ export function DisplayNameForm({ initialDisplayName }: Props) {
     });
 
     if (!res.ok) {
-      setError(t("saveError"));
+      setError(translations("saveError"));
       setSaving(false);
       return;
     }
 
     const body = (await res.json()) as { display_name: string };
     setDisplayName(body.display_name);
-    setMessage(t("saved"));
+    setMessage(translations("saved"));
     setSaving(false);
   }
 
   return (
-    <form onSubmit={(e) => void onSubmit(e)} className="space-y-4">
+    <form onSubmit={(e) => void onSubmitranslations(e)} className="space-y-4">
       <div className="space-y-2">
-        <Label htmlFor="display_name">{t("label")}</Label>
+        <Label htmlFor="display_name">{translations("label")}</Label>
         <Input
           id="display_name"
           name="display_name"
           type="text"
           autoComplete="name"
-          placeholder={t("placeholder")}
+          placeholder={translations("placeholder")}
           value={displayName}
           maxLength={50}
           disabled={saving}
           onChange={(e) => setDisplayName(e.target.value)}
         />
         <p className="text-xs text-muted-foreground">
-          {t("hint")}
+          {translations("hint")}
         </p>
       </div>
 
@@ -85,10 +85,10 @@ export function DisplayNameForm({ initialDisplayName }: Props) {
         {saving ? (
           <>
             <Loader2 className="size-4 shrink-0 animate-spin" />
-            {t("saving")}
+            {translations("saving")}
           </>
         ) : (
-          t("save")
+          translations("save")
         )}
       </Button>
     </form>

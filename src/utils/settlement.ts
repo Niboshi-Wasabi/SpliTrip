@@ -139,11 +139,11 @@ export function applyLargestRemainderMinorUnits(
       memberOrder.indexOf(left.userId) - memberOrder.indexOf(right.userId),
   );
   for (let unitIndex = 0; unitIndex < extraUnits; unitIndex++) {
-    const row = sortedByRemainder[unitIndex];
-    if (!row) {
+    const remainderEntry = sortedByRemainder[unitIndex];
+    if (!remainderEntry) {
       break;
     }
-    minorByUser[row.userId] = (minorByUser[row.userId] ?? 0) + 1;
+    minorByUser[remainderEntry.userId] = (minorByUser[remainderEntry.userId] ?? 0) + 1;
   }
 }
 
@@ -227,14 +227,14 @@ export function computeShareSplitParts(
   for (const userId of memberUserIds) {
     weightByUserId.set(userId, 0);
   }
-  for (const row of inputs) {
-    if (!memberUserIds.includes(row.userId)) {
+  for (const shareInput of inputs) {
+    if (!memberUserIds.includes(shareInput.userId)) {
       return { ok: false, error: "unknown_member" };
     }
-    if (!Number.isFinite(row.weight) || row.weight < 0) {
+    if (!Number.isFinite(shareInput.weight) || shareInput.weight < 0) {
       return { ok: false, error: "invalid_weight" };
     }
-    weightByUserId.set(row.userId, row.weight);
+    weightByUserId.set(shareInput.userId, shareInput.weight);
   }
 
   const activeMemberIds = memberUserIds.filter(
@@ -253,7 +253,7 @@ export function computeShareSplitParts(
     return { userId, scaledWeightBigInt };
   });
   const sumWeightsBigInt = scaledWeights.reduce(
-    (accumulator, row) => accumulator + row.scaledWeightBigInt,
+    (accumulator, weightEntry) => accumulator + weightEntry.scaledWeightBigInt,
     BigInt(0),
   );
   if (sumWeightsBigInt === BigInt(0)) {
@@ -311,14 +311,14 @@ export function computePercentSplitParts(
   for (const userId of memberUserIds) {
     percentByUserId.set(userId, 0);
   }
-  for (const row of inputs) {
-    if (!memberUserIds.includes(row.userId)) {
+  for (const percentInput of inputs) {
+    if (!memberUserIds.includes(percentInput.userId)) {
       return { ok: false, error: "unknown_member" };
     }
-    if (!Number.isFinite(row.percent) || row.percent < 0) {
+    if (!Number.isFinite(percentInput.percent) || percentInput.percent < 0) {
       return { ok: false, error: "invalid_percent" };
     }
-    percentByUserId.set(row.userId, row.percent);
+    percentByUserId.set(percentInput.userId, percentInput.percent);
   }
 
   const basisPointsByUserId = new Map<string, number>();

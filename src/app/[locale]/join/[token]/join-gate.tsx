@@ -99,7 +99,7 @@ type Props = {
 
 export function JoinGate({ token }: Props) {
   const locale = useLocale();
-  const t = useTranslations("JoinGate");
+  const translations = useTranslations("JoinGate");
   const tLogin = useTranslations("Login");
   const turnstileRef = useRef<TurnstileInstance | null>(null);
   const [loadingAction, setLoadingAction] = useState<LoadingAction | null>(null);
@@ -132,19 +132,19 @@ export function JoinGate({ token }: Props) {
       if (captchaToken) {
         setLineCaptchaBridgeCookie(captchaToken);
       }
-      const next = encodeURIComponent(joinPath);
+      const next = encodeURIComponentranslations(joinPath);
       window.location.assign(`/api/auth/line?next=${next}`);
       return;
     }
 
-    const supabase = createClient();
+    const supabase = createClientranslations();
     const siteOrigin = getPublicSiteOrigin();
     const oauthOptions: {
       redirectTo: string;
       queryParams?: Record<string, string>;
       captchaToken?: string;
     } = {
-      redirectTo: `${siteOrigin}/auth/callback?next=${encodeURIComponent(joinPath)}`,
+      redirectTo: `${siteOrigin}/auth/callback?next=${encodeURIComponentranslations(joinPath)}`,
     };
     if (captchaToken) {
       oauthOptions.queryParams = { captcha_token: captchaToken };
@@ -159,11 +159,11 @@ export function JoinGate({ token }: Props) {
     if (authError) {
       setError(formatOAuthLoginError(authError));
       setLoadingAction(null);
-      turnstileRef.current?.reset();
+      turnstileRef.current?.resetranslations();
     }
   }
 
-  async function handleJoinAsGuest() {
+  async function handleJoinAsGuestranslations() {
     if (!supabaseReady) {
       setError(tLogin("supabaseNotConfigured"));
       return;
@@ -173,7 +173,7 @@ export function JoinGate({ token }: Props) {
     setLoadingAction("guest");
     setError(null);
 
-    const supabase = createClient();
+    const supabase = createClientranslations();
     const { data: anonData, error: authError } = await supabase.auth.signInAnonymously({
       options: captchaToken ? { captchaToken } : undefined,
     });
@@ -181,7 +181,7 @@ export function JoinGate({ token }: Props) {
     if (authError) {
       setError(authError.message || tLogin("guestModeError"));
       setLoadingAction(null);
-      turnstileRef.current?.reset();
+      turnstileRef.current?.resetranslations();
       return;
     }
 
@@ -198,13 +198,13 @@ export function JoinGate({ token }: Props) {
 
     if (rpcError) {
       console.error("join_group_by_invite:", rpcError.message);
-      setError(t("joinRpcError"));
+      setError(translations("joinRpcError"));
       setLoadingAction(null);
       return;
     }
 
     if (!groupId) {
-      setError(t("invalidInvite"));
+      setError(translations("invalidInvite"));
       setLoadingAction(null);
       return;
     }
@@ -222,8 +222,8 @@ export function JoinGate({ token }: Props) {
     <div className="flex min-h-screen flex-col items-center justify-center bg-background px-4 py-10">
       <Card className="w-full max-w-md">
         <CardHeader>
-          <CardTitle>{t("title")}</CardTitle>
-          <CardDescription>{t("description")}</CardDescription>
+          <CardTitle>{translations("title")}</CardTitle>
+          <CardDescription>{translations("description")}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           {captchaRequired ? (
@@ -265,12 +265,12 @@ export function JoinGate({ token }: Props) {
             size="lg"
             className="flex w-full items-center justify-center gap-2 text-sm font-medium"
             disabled={authButtonsDisabled}
-            onClick={() => void handleJoinAsGuest()}
+            onClick={() => void handleJoinAsGuestranslations()}
           >
             {loadingAction === "guest" ? (
               <Loader2 className="size-4 shrink-0 animate-spin" />
             ) : null}
-            {loadingAction === "guest" ? t("joining") : tLogin("guestMode")}
+            {loadingAction === "guest" ? translations("joining") : tLogin("guestMode")}
           </Button>
         </CardContent>
       </Card>

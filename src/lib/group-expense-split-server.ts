@@ -118,8 +118,8 @@ export function buildExpenseSplitRows(options: {
     if (!splitUsersAreSubsetOfMembers(splitUserIds, memberIds)) {
       return { ok: false, error: "split_user_not_member" };
     }
-    for (const row of manualRows) {
-      if (!Number.isFinite(row.amount) || row.amount < 0) {
+    for (const manualRow of manualRows) {
+      if (!Number.isFinite(manualRow.amount) || manualRow.amount < 0) {
         return { ok: false, error: "invalid_split_amount" };
       }
     }
@@ -127,8 +127,8 @@ export function buildExpenseSplitRows(options: {
     for (const userId of memberUserIds) {
       rawAmountByUserId[userId] = 0;
     }
-    for (const row of manualRows) {
-      rawAmountByUserId[row.user_id] = row.amount;
+    for (const manualRow of manualRows) {
+      rawAmountByUserId[manualRow.user_id] = manualRow.amount;
     }
     const exactResult = finalizeExactAmountSplits(
       memberUserIds,

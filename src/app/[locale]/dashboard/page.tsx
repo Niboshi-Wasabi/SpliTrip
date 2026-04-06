@@ -43,11 +43,11 @@ export default async function DashboardPage() {
 
   const groupsResult = await listGroupsForUser(supabase, user.id);
   const groups = groupsResult.ok ? groupsResult.items : [];
-  const groupIds = groups.map((g) => g.group.id);
+  const groupIds = groups.map((groupItem) => groupItem.group.id);
 
-  const expenseByGroup = new Map<string, number>();
+  const expenseTotalByGroup = new Map<string, number>();
   if (groupIds.length > 0) {
-    const { data: expenses, error: expensesError } = await supabase
+    const { data: expenseRows, error: expensesError } = await supabase
       .from("group_expenses")
       .select("group_id, amount")
       .in("group_id", groupIds);
@@ -59,16 +59,17 @@ export default async function DashboardPage() {
       );
     }
 
-    for (const exp of expenses ?? []) {
-      expenseByGroup.set(
-        exp.group_id,
-        (expenseByGroup.get(exp.group_id) ?? 0) + Number(exp.amount),
+    for (const expense of expenseRows ?? []) {
+      expenseTotalByGroup.set(
+        expense.group_id,
+        (expenseTotalByGroup.get(expense.group_id) ?? 0) +
+          Number(expense.amount),
       );
     }
   }
 
-  const totalExpense = [...expenseByGroup.values()].reduce(
-    (s, v) => s + v,
+  const totalExpense = [...expenseTotalByGroup.values()].reduce(
+    (sum, value) => sum + value,
     0,
   );
   const groupCount = groups.length;
@@ -76,13 +77,13 @@ export default async function DashboardPage() {
     groupCount > 0 ? Math.round(totalExpense / groupCount) : 0;
 
   const chartData = groups
-    .map((g, i) => ({
-      category: g.group.name,
-      amount: expenseByGroup.get(g.group.id) ?? 0,
-      color: getCategoryColor(g.group.name, i),
+    .map((groupItem, groupIndex) => ({
+      category: groupItem.group.name,
+      amount: expenseTotalByGroup.get(groupItem.group.id) ?? 0,
+      color: getCategoryColor(groupItem.group.name, groupIndex),
     }))
-    .filter((d) => d.amount > 0)
-    .sort((a, b) => b.amount - a.amount);
+    .filter((entry) => entry.amount > 0)
+    .sort((left, right) => right.amount - left.amount);
 
   return (
     <div className="min-h-screen bg-background">
@@ -190,22 +191,24 @@ export default async function DashboardPage() {
             <CardContent>
               {groups.length > 0 ? (
                 <ul className="space-y-2">
-                  {groups.map((g) => (
-                    <li key={g.group.id}>
+                  {groups.map((groupItem) => (
+                    <li key={groupItem.group.id}>
                       <Link
-                        href={`/dashboard/groups/${g.group.id}`}
+                        href={`/dashboard/groups/${groupItem.group.id}`}
                         className="flex items-center justify-between rounded-lg border border-border p-3 transition-colors hover:bg-muted/50"
                       >
                         <div>
                           <span className="font-medium text-primary">
-                            {g.group.name}
+                            {groupItem.group.name}
                           </span>
                           <span className="ml-2 text-xs text-muted-foreground">
-                            {g.group.currency_code}
+                            {groupItem.group.currency_code}
                           </span>
                         </div>
                         <span className="text-sm font-semibold">
-                          {formatYen(expenseByGroup.get(g.group.id) ?? 0)}
+                          {formatYen(
+                            expenseTotalByGroup.get(groupItem.group.id) ?? 0,
+                          )}
                         </span>
                       </Link>
                     </li>

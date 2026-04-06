@@ -95,7 +95,7 @@ const PROVIDER_CONFIG: {
 export function LoginForm() {
   const router = useRouter();
   const locale = useLocale();
-  const t = useTranslations("Login");
+  const translations = useTranslations("Login");
   const searchParams = useSearchParams();
   const turnstileRef = useRef<TurnstileInstance | null>(null);
   const [loadingAction, setLoadingAction] = useState<LoadingAction | null>(
@@ -108,11 +108,11 @@ export function LoginForm() {
   const captchaOk = !captchaRequired || !!captchaToken;
 
   const urlErrorMessage = useMemo(
-    () => loginErrorMessageFromQueryParam(searchParams.get("error")),
+    () => loginErrorMessageFromQueryParam(searchParams.getranslations("error")),
     [searchParams],
   );
 
-  useEffect(() => {
+  useEffectranslations(() => {
     setError(urlErrorMessage);
   }, [urlErrorMessage]);
 
@@ -121,13 +121,13 @@ export function LoginForm() {
   function requireCaptchaForAction(): boolean {
     if (!captchaRequired) return true;
     if (captchaToken) return true;
-    setError(t("captchaIncomplete"));
+    setError(translations("captchaIncomplete"));
     return false;
   }
 
   async function handleLogin(provider: LoginProvider) {
     if (!isSupabaseConfigured()) {
-      setError(t("supabaseNotConfigured"));
+      setError(translations("supabaseNotConfigured"));
       return;
     }
     if (!requireCaptchaForAction()) return;
@@ -143,14 +143,14 @@ export function LoginForm() {
       return;
     }
 
-    const supabase = createClient();
+    const supabase = createClientranslations();
     const siteOrigin = getPublicSiteOrigin();
     const oauthOptions: {
       redirectTo: string;
       queryParams?: Record<string, string>;
       captchaToken?: string;
     } = {
-      redirectTo: `${siteOrigin}/auth/callback?next=${encodeURIComponent(dashboardPath)}`,
+      redirectTo: `${siteOrigin}/auth/callback?next=${encodeURIComponentranslations(dashboardPath)}`,
     };
     if (captchaToken) {
       oauthOptions.queryParams = { captcha_token: captchaToken };
@@ -165,13 +165,13 @@ export function LoginForm() {
     if (authError) {
       setError(formatOAuthLoginError(authError));
       setLoadingAction(null);
-      turnstileRef.current?.reset();
+      turnstileRef.current?.resetranslations();
     }
   }
 
   async function handleGuestSignIn() {
     if (!isSupabaseConfigured()) {
-      setError(t("supabaseNotConfigured"));
+      setError(translations("supabaseNotConfigured"));
       return;
     }
     if (!requireCaptchaForAction()) return;
@@ -179,15 +179,15 @@ export function LoginForm() {
     setLoadingAction("guest");
     setError(urlErrorMessage);
 
-    const supabase = createClient();
+    const supabase = createClientranslations();
     const { error: authError } = await supabase.auth.signInAnonymously({
       options: captchaToken ? { captchaToken } : undefined,
     });
 
     if (authError) {
-      setError(authError.message || t("guestModeError"));
+      setError(authError.message || translations("guestModeError"));
       setLoadingAction(null);
-      turnstileRef.current?.reset();
+      turnstileRef.current?.resetranslations();
       return;
     }
 
@@ -213,26 +213,26 @@ export function LoginForm() {
           </h1>
         </div>
         <p className="text-sm font-medium text-muted-foreground">
-          {t("brandSubtitle")}
+          {translations("brandSubtitle")}
         </p>
-        <p className="text-lg text-muted-foreground">{t("tagline")}</p>
+        <p className="text-lg text-muted-foreground">{translations("tagline")}</p>
       </div>
 
       <Card className="w-full max-w-md shadow-xl">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl">{t("title")}</CardTitle>
-          <CardDescription>{t("description")}</CardDescription>
+          <CardTitle className="text-2xl">{translations("title")}</CardTitle>
+          <CardDescription>{translations("description")}</CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col gap-3">
           {!supabaseReady && (
             <div className="rounded-md border border-amber-200 bg-amber-50 p-3 text-left text-sm text-amber-950 dark:border-amber-900/60 dark:bg-amber-950/40 dark:text-amber-100">
-              {t("supabaseNotConfigured")}
+              {translations("supabaseNotConfigured")}
             </div>
           )}
 
           {captchaRequired && supabaseReady && (
             <p className="text-center text-xs text-muted-foreground">
-              {t("captchaHint")}
+              {translations("captchaHint")}
             </p>
           )}
 
@@ -261,7 +261,7 @@ export function LoginForm() {
                   ) : (
                     <Icon />
                   )}
-                  {t(labelKey)}
+                  {translations(labelKey)}
                 </Button>
               );
             },
@@ -278,27 +278,27 @@ export function LoginForm() {
             {loadingAction === "guest" ? (
               <Loader2 className="h-5 w-5 shrink-0 animate-spin" />
             ) : null}
-            {t("guestMode")}
+            {translations("guestMode")}
           </Button>
         </CardContent>
       </Card>
 
       <p className="mt-6 text-center text-sm text-muted-foreground">
-        {t("termsPrivacyLead")}
+        {translations("termsPrivacyLead")}
         <a
           href="#"
           className="underline underline-offset-4 hover:text-primary"
         >
-          {t("terms")}
+          {translations("terms")}
         </a>
-        {t("termsPrivacyJoin")}
+        {translations("termsPrivacyJoin")}
         <a
           href="#"
           className="underline underline-offset-4 hover:text-primary"
         >
-          {t("privacy")}
+          {translations("privacy")}
         </a>
-        {t("termsPrivacyTrail")}
+        {translations("termsPrivacyTrail")}
       </p>
     </div>
   );
