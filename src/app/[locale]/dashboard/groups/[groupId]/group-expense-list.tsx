@@ -8,16 +8,54 @@
  * Desktop: high-density table with splits visible at a glance.
  */
 
-import { formatYen } from "@/lib/format";
 import { UserAvatar } from "@/components/user-avatar";
+import { formatMoneyByCurrency } from "@/lib/currency-payment-amount";
+import { convertAmount } from "@/utils/exchangeRates";
 import type { ExpenseRowDb, GroupMemberRow } from "@/lib/group-queries";
 
 type Props = {
   expenses: ExpenseRowDb[];
   members: GroupMemberRow[];
+  currencyCode: string;
+  /** null when no conversion needed (base currency is JPY) */
+  exchangeRates: Record<string, number> | null;
 };
 
-export function GroupExpenseList({ expenses, members }: Props) {
+/**
+ * 金額と、必要に応じて JPY 換算額を表示するヘルパー。
+ * Renders the original amount and an optional JPY-converted value.
+ */
+function AmountWithConversion({
+  amount,
+  currencyCode,
+  exchangeRates,
+}: {
+  amount: number;
+  currencyCode: string;
+  exchangeRates: Record<string, number> | null;
+}) {
+  const formatted = formatMoneyByCurrency(currencyCode, amount);
+
+  if (!exchangeRates) {
+    return <>{formatted}</>;
+  }
+
+  const jpyAmount = convertAmount(amount, currencyCode, "JPY", exchangeRates);
+  if (jpyAmount === null) {
+    return <>{formatted}</>;
+  }
+
+  return (
+    <>
+      {formatted}
+      <span className="ml-1 text-[11px] text-muted-foreground">
+        (≈ {formatMoneyByCurrency("JPY", Math.round(jpyAmount))})
+      </span>
+    </>
+  );
+}
+
+export function GroupExpenseList({ expenses, members, currencyCode, exchangeRates }: Props) {
   if (expenses.length === 0) {
     return (
       <p className="py-6 text-center text-sm text-muted-foreground">
@@ -44,7 +82,11 @@ export function GroupExpenseList({ expenses, members }: Props) {
                   {expense.description?.trim() || "（無題）"}
                 </span>
                 <span className="font-semibold">
-                  {formatYen(Number(expense.amount))}
+                  <AmountWithConversion
+                    amount={Number(expense.amount)}
+                    currencyCode={currencyCode}
+                    exchangeRates={exchangeRates}
+                  />
                 </span>
               </div>
               <div className="mt-1 flex items-center gap-1.5 text-xs text-muted-foreground">
@@ -75,7 +117,7 @@ export function GroupExpenseList({ expenses, members }: Props) {
                       />
                       <span>
                         {splitMember?.display_name ?? split.user_id}:{" "}
-                        {formatYen(Number(split.amount))}
+                        {formatMoneyByCurrency(currencyCode, Number(split.amount))}
                       </span>
                     </li>
                   );
@@ -128,7 +170,11 @@ export function GroupExpenseList({ expenses, members }: Props) {
                       </div>
                     </td>
                     <td className="whitespace-nowrap px-3 py-2.5 text-right font-semibold">
-                      {formatYen(Number(expense.amount))}
+                      <AmountWithConversion
+                        amount={Number(expense.amount)}
+                        currencyCode={currencyCode}
+                        exchangeRates={exchangeRates}
+                      />
                     </td>
                     <td className="px-3 py-2.5">
                       <div className="flex flex-wrap gap-x-3 gap-y-0.5 text-xs text-muted-foreground">
@@ -147,7 +193,7 @@ export function GroupExpenseList({ expenses, members }: Props) {
                                 size="sm"
                               />
                               {splitMember?.display_name ?? split.user_id}:{" "}
-                              {formatYen(Number(split.amount))}
+                              {formatMoneyByCurrency(currencyCode, Number(split.amount))}
                             </span>
                           );
                         })}

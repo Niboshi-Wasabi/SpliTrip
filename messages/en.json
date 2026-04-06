@@ -127,6 +127,14 @@
     "tooLong": "Must be 50 characters or fewer.",
     "saveError": "Could not save. Please try again."
   },
+  "Invite": {
+    "qrToggle": "Show QR Code",
+    "qrHint": "Scan with your phone to join"
+  },
+  "Exchange": {
+    "approx": "≈ {converted}",
+    "rateUnavailable": "Rate unavailable"
+  },
   "BottomNav": {
     "ariaLabel": "Main navigation",
     "home": "Home",

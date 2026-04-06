@@ -127,6 +127,14 @@
     "tooLong": "50文字以内で入力してください。",
     "saveError": "保存に失敗しました。もう一度お試しください。"
   },
+  "Invite": {
+    "qrToggle": "QRコードを表示",
+    "qrHint": "スマホでスキャンして参加できます"
+  },
+  "Exchange": {
+    "approx": "約 {converted}",
+    "rateUnavailable": "レート取得不可"
+  },
   "BottomNav": {
     "ariaLabel": "メインナビゲーション",
     "home": "ホーム",

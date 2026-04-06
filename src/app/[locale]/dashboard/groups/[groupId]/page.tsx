@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/card";
 import { localizedJoinPath } from "@/lib/i18n/localized-paths";
 import { fetchGroupDetailForUser } from "@/lib/group-queries";
-import { formatYen } from "@/lib/format";
+import { formatMoneyByCurrency } from "@/lib/currency-payment-amount";
 import { getCategoryColor } from "@/lib/categories";
 import { CategoryChart } from "../../category-chart";
 import { GroupSettlementList } from "./group-settlement-list";
@@ -36,6 +36,7 @@ import { RealtimeGroupRefresh } from "@/components/realtime-group-refresh";
 import { UserAvatar } from "@/components/user-avatar";
 import { checkNeedsOnboarding } from "@/lib/user-profile";
 import { GroupExpenseList } from "./group-expense-list";
+import { fetchExchangeRates } from "@/utils/exchangeRates";
 
 export const dynamic = "force-dynamic";
 
@@ -122,6 +123,19 @@ export default async function GroupDetailPage({ params }: PageProps) {
         color: getCategoryColor(payerName, colorIndex),
         details: payerDetails.get(payerName) ?? [],
       }));
+  })();
+
+  /**
+   * グループの基準通貨が JPY 以外なら、JPY への換算レートを取得する。
+   * 基準通貨が JPY なら換算不要のため null。
+   * Fetch JPY conversion rates only when the group's base currency is not JPY.
+   */
+  const baseCurrency = group.currency_code.trim().toUpperCase();
+  const needsConversion = baseCurrency !== "JPY";
+  const exchangeRates: Record<string, number> | null = await (async () => {
+    if (!needsConversion) return null;
+    const result = await fetchExchangeRates(baseCurrency);
+    return result.ok ? result.rates : null;
   })();
 
   const invitePath = localizedJoinPath(locale, String(group.invite_token));
@@ -234,7 +248,7 @@ export default async function GroupDetailPage({ params }: PageProps) {
                 <CardHeader>
                   <CardTitle>支払者別内訳</CardTitle>
                   <CardDescription>
-                    合計 {formatYen(totalGroupExpense)} の支払い内訳
+                    合計 {formatMoneyByCurrency(baseCurrency, totalGroupExpense)} の支払い内訳
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -249,7 +263,12 @@ export default async function GroupDetailPage({ params }: PageProps) {
             <CardDescription>按分込みの一覧</CardDescription>
           </CardHeader>
           <CardContent>
-            <GroupExpenseList expenses={expenses} members={members} />
+            <GroupExpenseList
+              expenses={expenses}
+              members={members}
+              currencyCode={baseCurrency}
+              exchangeRates={exchangeRates}
+            />
           </CardContent>
         </Card>
 
@@ -282,6 +301,7 @@ export default async function GroupDetailPage({ params }: PageProps) {
                 currencyCode={group.currency_code}
                 currentUserId={user.id}
                 members={members}
+                exchangeRates={exchangeRates}
               />
             )}
           </CardContent>

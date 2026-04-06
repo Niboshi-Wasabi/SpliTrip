@@ -1,11 +1,18 @@
 "use client";
 
 /**
- * Copy or Web Share the absolute invite URL built from `invitePath` + `window.location.origin`.
+ * Copy / Web Share / QR code for invite URL.
+ * 招待 URL のコピー・共有・QR コード表示。
+ *
+ * QR コードは対面やグループチャットで即座にスキャンできるため、
+ * URL を手入力する手間を省き、外出先での招待をスムーズにする。
+ * QR code enables instant scanning in person or chat, removing the need to type URLs manually.
  */
 
 import { useEffect, useState } from "react";
-import { Check, Loader2, Share2, UserPlus } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { Check, ChevronDown, ChevronUp, Loader2, Share2, UserPlus } from "lucide-react";
+import { QRCodeSVG } from "qrcode.react";
 import { Button } from "@/components/ui/button";
 
 type Props = {
@@ -15,11 +22,13 @@ type Props = {
 };
 
 export function GroupInviteButton({ invitePath, groupName }: Props) {
+  const inviteTranslations = useTranslations("Invite");
   const [copied, setCopied] = useState(false);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [canShare, setCanShare] = useState(false);
   const [inviteUrl, setInviteUrl] = useState("");
+  const [showQr, setShowQr] = useState(false);
 
   useEffect(() => {
     setCanShare(typeof navigator !== "undefined" && !!navigator.share);
@@ -103,10 +112,40 @@ export function GroupInviteButton({ invitePath, groupName }: Props) {
           共有で送る
         </Button>
       ) : null}
+      <Button
+        type="button"
+        variant="ghost"
+        size="sm"
+        disabled={!urlReady}
+        onClick={() => setShowQr((previous) => !previous)}
+        className="min-h-[44px] gap-1.5 md:min-h-0"
+      >
+        {showQr ? (
+          <ChevronUp className="size-3.5" aria-hidden />
+        ) : (
+          <ChevronDown className="size-3.5" aria-hidden />
+        )}
+        {inviteTranslations("qrToggle")}
+      </Button>
       {message ? (
         <p className="text-xs text-destructive" role="alert">
           {message}
         </p>
+      ) : null}
+
+      {/* QR コード: 対面での招待に便利 / QR code for in-person invitations */}
+      {showQr && urlReady ? (
+        <div className="mt-2 flex flex-col items-center gap-2 rounded-lg border border-border bg-white p-4 dark:bg-white">
+          <QRCodeSVG
+            value={inviteUrl}
+            size={200}
+            marginSize={2}
+            level="M"
+          />
+          <p className="text-center text-xs text-gray-600">
+            {inviteTranslations("qrHint")}
+          </p>
+        </div>
       ) : null}
     </div>
   );

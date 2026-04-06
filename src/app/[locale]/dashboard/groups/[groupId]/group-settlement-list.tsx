@@ -9,6 +9,7 @@ import type { GroupMemberRow } from "@/lib/group-queries";
 import type { GroupSettlement } from "@/lib/group-ledger";
 import { UserAvatar } from "@/components/user-avatar";
 import { formatMoneyByCurrency } from "@/lib/currency-payment-amount";
+import { convertAmount } from "@/utils/exchangeRates";
 import {
   buildCashAppPaymentUrl,
   buildPaypalMePaymentUrl,
@@ -21,6 +22,8 @@ type Props = {
   currencyCode: string;
   currentUserId: string;
   members: GroupMemberRow[];
+  /** null when no conversion needed (base currency is JPY) */
+  exchangeRates: Record<string, number> | null;
 };
 
 function findMemberByUserId(
@@ -35,6 +38,7 @@ export function GroupSettlementList({
   currencyCode,
   currentUserId,
   members,
+  exchangeRates,
 }: Props) {
   return (
     <ul className="space-y-2">
@@ -93,6 +97,20 @@ export function GroupSettlementList({
             <div className="flex flex-wrap items-center gap-2">
               <span className="font-semibold tabular-nums">
                 {formatMoneyByCurrency(currencyCode, settlementRow.amount)}
+                {/* JPY 換算を表示（基準通貨が JPY 以外の場合） / Show JPY equivalent when base is not JPY */}
+                {exchangeRates ? (() => {
+                  const jpyAmount = convertAmount(
+                    settlementRow.amount,
+                    currencyCode,
+                    "JPY",
+                    exchangeRates,
+                  );
+                  return jpyAmount !== null ? (
+                    <span className="ml-1.5 text-xs font-normal text-muted-foreground">
+                      (≈ {formatMoneyByCurrency("JPY", Math.round(jpyAmount))})
+                    </span>
+                  ) : null;
+                })() : null}
               </span>
               {viewerIsDebtor && hasPaymentLink ? (
                 <div
