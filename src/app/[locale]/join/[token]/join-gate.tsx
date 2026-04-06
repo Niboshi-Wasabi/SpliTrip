@@ -186,10 +186,9 @@ export function JoinGate({ token }: Props) {
     }
 
     if (anonData.user) {
-      await supabase.from("user_profiles").upsert(
-        { id: anonData.user.id, display_name: "ユーザー" },
-        { onConflict: "id" },
-      );
+      await supabase.rpc("update_display_name", {
+        p_display_name: "ユーザー",
+      });
     }
 
     const { data: groupId, error: rpcError } = await supabase.rpc(

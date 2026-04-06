@@ -42,27 +42,19 @@ export async function upsertUserProfileFromAuth(
       ? overrides.avatarUrl
       : extractAvatarUrl(user);
 
-  const { data: existing } = await supabase
-    .from("user_profiles")
-    .select("display_name")
-    .eq("id", user.id)
-    .maybeSingle();
+  const { data: existing } = await supabase.rpc("get_own_display_name");
 
   const hasCustomName =
-    existing?.display_name != null &&
-    existing.display_name.trim().length > 0 &&
-    !DEFAULT_DISPLAY_NAMES.has(existing.display_name.trim());
+    typeof existing === "string" &&
+    existing.trim().length > 0 &&
+    !DEFAULT_DISPLAY_NAMES.has(existing.trim());
 
-  const display_name = hasCustomName ? existing.display_name : oauthName;
+  const display_name = hasCustomName ? existing : oauthName;
 
-  const { error } = await supabase.from("user_profiles").upsert(
-    {
-      id: user.id,
-      display_name,
-      avatar_url,
-    },
-    { onConflict: "id" },
-  );
+  const { error } = await supabase.rpc("upsert_user_profile", {
+    p_display_name: display_name,
+    p_avatar_url: avatar_url,
+  });
 
   if (error) {
     console.error("user_profiles upsert failed:", error.message);

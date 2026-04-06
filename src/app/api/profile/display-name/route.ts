@@ -23,9 +23,9 @@ export async function PATCH(request: NextRequest) {
     return NextResponse.json({ error: "invalid_display_name" }, { status: 400 });
   }
 
-  const { error } = await supabase
-    .from("user_profiles")
-    .upsert({ id: user.id, display_name: raw }, { onConflict: "id" });
+  const { error } = await supabase.rpc("update_display_name", {
+    p_display_name: raw,
+  });
 
   if (error) {
     console.error("display-name PATCH:", error.message);
