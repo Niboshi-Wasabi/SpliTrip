@@ -275,6 +275,16 @@ export default async function DashboardPage({ params }: PageProps) {
           </Card>
         </div>
       </main>
+
+      <footer className="border-t border-border py-6 text-center text-xs text-muted-foreground">
+        <Link href="/terms" className="underline underline-offset-4 hover:text-foreground">
+          利用規約
+        </Link>
+        <span className="mx-2">·</span>
+        <Link href="/privacy" className="underline underline-offset-4 hover:text-foreground">
+          プライバシーポリシー
+        </Link>
+      </footer>
     </div>
   );
 }

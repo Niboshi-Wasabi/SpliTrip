@@ -9,7 +9,7 @@ import { useState, useEffect, useMemo, useRef } from "react";
 import { useSearchParams } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { Plane, Loader2 } from "lucide-react";
-import { useRouter } from "@/i18n/navigation";
+import { Link, useRouter } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -285,19 +285,19 @@ export function LoginForm() {
 
       <p className="mt-6 text-center text-sm text-muted-foreground">
         {translations("termsPrivacyLead")}
-        <a
-          href="#"
+        <Link
+          href="/terms"
           className="underline underline-offset-4 hover:text-primary"
         >
           {translations("terms")}
-        </a>
+        </Link>
         {translations("termsPrivacyJoin")}
-        <a
-          href="#"
+        <Link
+          href="/privacy"
           className="underline underline-offset-4 hover:text-primary"
         >
           {translations("privacy")}
-        </a>
+        </Link>
         {translations("termsPrivacyTrail")}
       </p>
     </div>

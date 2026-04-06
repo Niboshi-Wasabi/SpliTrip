@@ -133,5 +133,81 @@
     "success": "Scan complete. Please review the details.",
     "error": "Failed to read the image",
     "hint": "Auto-fill amount, description & date from a receipt or screenshot"
+  },
+  "Terms": {
+    "pageTitle": "Terms of Service",
+    "lastUpdated": "Last updated: April 6, 2026",
+    "backTop": "Back to top",
+    "intro": "These Terms of Service (the \"Terms\") govern the use of SpliTrip (the \"Service\"). By using the Service, you agree to these Terms.",
+    "s1Title": "1. Overview",
+    "s1Body": "The Service is a web application that helps users record group trip expenses, calculate splits, and share settlement plans.",
+    "s2Title": "2. Accounts & Authentication",
+    "s2Body": "Users may sign in with a Google account, a LINE account, or as a guest. When signing in through social login, the Service retrieves your public profile information (display name and profile picture) solely to set your display name and avatar within the Service.",
+    "s3Title": "3. Prohibited Activities",
+    "s3Items": [
+      "Interfering with the normal operation of the Service",
+      "Registering false or misleading information",
+      "Infringing the rights of other users",
+      "Violating any applicable law or regulation",
+      "Reverse-engineering, decompiling, or otherwise attempting to extract the source code of the Service"
+    ],
+    "s4Title": "4. Disclaimer (Financial Disputes)",
+    "s4Body": "The Service is a tool for recording and splitting expenses; it does not mediate, facilitate, or guarantee any actual monetary transfers between users. The operator assumes no liability whatsoever for financial disputes between users, or for any issues arising from the use of third-party payment services such as PayPal or Cash App.",
+    "s5Title": "5. AI Features & Data",
+    "s5Body": "The receipt scanning feature uses the Google Gemini API. Images uploaded by users are sent to Google's servers solely for data extraction purposes and are NOT used to train AI models. The Service does not store uploaded images on its own servers; images are discarded after analysis.",
+    "s6Title": "6. Guest Mode Limitations",
+    "s6Body": "When using the Service in guest mode, data is tied to the browser session. Data may be lost if the browser is closed or cookies/cache are cleared. The operator assumes no responsibility for data recovery in guest mode.",
+    "s7Title": "7. Changes & Discontinuation",
+    "s7Body": "The operator may modify, suspend, or terminate the Service at any time without prior notice. The operator is not liable for any disadvantage or damage caused to users as a result.",
+    "s8Title": "8. Intellectual Property",
+    "s8Body": "All intellectual property rights related to the Service belong to the operator. Copyright of user-submitted data remains with the user, but the operator may use such data to the extent necessary for providing the Service.",
+    "s9Title": "9. Changes to These Terms",
+    "s9Body": "The operator may update these Terms as needed. Material changes will be communicated through the Service. Continued use after changes constitutes acceptance of the updated Terms.",
+    "s10Title": "10. Governing Law & Jurisdiction",
+    "s10Body": "These Terms are governed by the laws of Japan. Any disputes arising from these Terms shall be subject to the exclusive jurisdiction of the Tokyo District Court."
+  },
+  "Privacy": {
+    "pageTitle": "Privacy Policy",
+    "lastUpdated": "Last updated: April 6, 2026",
+    "backTop": "Back to top",
+    "intro": "This Privacy Policy explains how SpliTrip (the \"Service\") collects, uses, and protects user information.",
+    "s1Title": "1. Information We Collect",
+    "s1Items": [
+      "Public profile information obtained through social login (Google / LINE): display name, profile picture URL, email address",
+      "User-provided display name and payment handles (PayPal.me ID, Cash App Cashtag)",
+      "Group data, expense records, split and settlement data",
+      "Images temporarily uploaded for the receipt scanning feature"
+    ],
+    "s2Title": "2. How We Use Your Information",
+    "s2Items": [
+      "To provide, operate, and improve the Service",
+      "To identify users and display their profiles",
+      "To share display names and avatars within groups",
+      "To display payment links in settlement plans",
+      "To extract expense data from receipt images"
+    ],
+    "s3Title": "3. Social Login Data",
+    "s3Body": "When you sign in with Google, we retrieve your Google public profile (display name, profile picture, email address). When you sign in with LINE, we retrieve your LINE public profile (display name, profile picture). This information is used solely for user identification and initializing your display name and avatar within the Service. We do not share this information with third parties.",
+    "s4Title": "4. AI Feature Data Handling",
+    "s4Body": "When using the receipt scanning feature, uploaded images are sent to the Google Gemini API. Images are processed solely for data extraction (recognizing amounts, store names, and dates) and are NOT used to train Google's AI models. The Service does not store image data on its own servers.",
+    "s5Title": "5. Guest Mode Data",
+    "s5Body": "In guest mode, account information is tied to the browser session. Data may be lost if the browser is closed or the cache is cleared. The operator does not guarantee data persistence for guest mode and is not responsible for recovering lost data.",
+    "s6Title": "6. Data Storage & Security",
+    "s6Body": "User data is stored on Supabase, a cloud database service. All communications are encrypted via HTTPS, and database access is controlled through Row Level Security (RLS).",
+    "s7Title": "7. Third-Party Sharing",
+    "s7Body": "The operator does not share users' personal information with third parties except as required by law. However, data is transmitted to the following services as necessary for operating the Service:",
+    "s7Items": [
+      "Supabase (data storage & authentication)",
+      "Google Gemini API (receipt image analysis)",
+      "Google OAuth / LINE Login (social login authentication)"
+    ],
+    "s8Title": "8. Cookies",
+    "s8Body": "The Service uses cookies to maintain authentication sessions and to store language preferences.",
+    "s9Title": "9. Your Rights",
+    "s9Body": "Users may view, update, or delete their data from the Settings page. If you wish to delete your account entirely, please contact the operator.",
+    "s10Title": "10. Changes to This Policy",
+    "s10Body": "This policy may be updated as necessary. Material changes will be communicated through the Service.",
+    "s11Title": "11. Contact",
+    "s11Body": "For questions about this policy, please contact the operator of the Service."
   }
 }
