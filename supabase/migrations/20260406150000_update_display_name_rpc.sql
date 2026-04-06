@@ -52,3 +52,30 @@ begin
     avatar_url = excluded.avatar_url;
 end;
 $$;
+
+-- RPC to fetch profiles of all members in a group (bypasses RLS).
+-- グループメンバー全員のプロフィールを取得する RPC（RLS バイパス）。
+
+create or replace function public.get_group_member_profiles(p_group_id uuid)
+returns table (
+  id uuid,
+  display_name text,
+  paypal_me_id text,
+  cash_app_cashtag text
+)
+language sql
+stable
+security definer
+set search_path = public
+set row_security = off
+as $$
+  select
+    up.id,
+    coalesce(up.display_name, 'ユーザー'),
+    up.paypal_me_id,
+    up.cash_app_cashtag
+  from public.group_members gm
+  join public.user_profiles up on up.id = gm.user_id
+  where gm.group_id = p_group_id
+    and public.is_group_member(p_group_id, auth.uid());
+$$;

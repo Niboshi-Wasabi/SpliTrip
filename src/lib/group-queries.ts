@@ -160,21 +160,29 @@ export async function fetchGroupDetailForUser(
     return { ok: false, error: "forbidden" };
   }
 
-  const { data: profiles, error: profilesError } = await supabase
-    .from("user_profiles")
-    .select("id, display_name, paypal_me_id, cash_app_cashtag")
-    .in("id", memberUserIds);
+  const { data: profilesRaw, error: profilesError } = await supabase.rpc(
+    "get_group_member_profiles",
+    { p_group_id: groupId },
+  );
 
   if (profilesError) {
     console.error("fetchGroup profiles (non-fatal):", profilesError.message);
   }
+
+  type ProfileRow = {
+    id: string;
+    display_name: string | null;
+    paypal_me_id: string | null;
+    cash_app_cashtag: string | null;
+  };
+  const profiles = (profilesRaw ?? []) as ProfileRow[];
 
   const displayNameByUserId: Record<string, string> = {};
   const paymentFieldsByUserId: Record<
     string,
     { paypal_me_id: string | null; cash_app_cashtag: string | null }
   > = {};
-  for (const profileRow of profiles ?? []) {
+  for (const profileRow of profiles) {
     displayNameByUserId[profileRow.id] =
       profileRow.display_name?.trim() || "ユーザー";
     paymentFieldsByUserId[profileRow.id] = {
