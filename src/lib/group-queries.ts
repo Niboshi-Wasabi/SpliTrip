@@ -207,8 +207,10 @@ export async function fetchGroupDetailForUser(
     .order("expense_date", { ascending: false });
 
   if (expensesError) {
-    console.error("fetchGroup expenses:", expensesError.message);
-    return { ok: false, error: expensesError.message };
+    console.error("fetchGroup expenses (non-fatal):", expensesError.message, {
+      groupId,
+      userId,
+    });
   }
 
   const expensesTyped = (expenseRows ?? []) as unknown as ExpenseRowDb[];

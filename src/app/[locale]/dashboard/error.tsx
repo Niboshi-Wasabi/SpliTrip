@@ -27,6 +27,15 @@ export default function DashboardError({
           <p className="text-sm text-muted-foreground">
             ネットワーク接続を確認して、もう一度お試しください。
           </p>
+          {process.env.NODE_ENV !== "production" || error?.message ? (
+            <details className="mt-2 w-full text-left text-xs text-muted-foreground">
+              <summary className="cursor-pointer">エラー詳細</summary>
+              <pre className="mt-1 overflow-auto rounded bg-muted p-2">
+                {error?.message ?? "不明なエラー"}
+                {error?.digest ? `\ndigest: ${error.digest}` : ""}
+              </pre>
+            </details>
+          ) : null}
           <Button onClick={reset} className="gap-2">
             <RefreshCw className="h-4 w-4" />
             再読み込み
