@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { redirect } from "@/i18n/navigation";
 import { JoinGate } from "./join-gate";
 import { isInviteTokenFormat } from "@/lib/invite-token";
+import { upsertUserProfileFromAuth } from "@/lib/user-profile";
 import { createClient } from "@/utils/supabase/server";
 
 export const dynamic = "force-dynamic";
@@ -65,6 +66,8 @@ export default async function JoinByInvitePage({ params }: PageProps) {
     console.error("[JoinPage] groupId is null after RPC — invalid token?", { token: trimmedToken });
     redirect({ href: "/dashboard", locale });
   }
+
+  await upsertUserProfileFromAuth(supabase, user);
 
   console.log("[JoinPage] redirecting to /dashboard/groups/" + groupId);
   redirect({ href: `/dashboard/groups/${groupId}`, locale });

@@ -174,7 +174,7 @@ export function JoinGate({ token }: Props) {
     setError(null);
 
     const supabase = createClient();
-    const { error: authError } = await supabase.auth.signInAnonymously({
+    const { data: anonData, error: authError } = await supabase.auth.signInAnonymously({
       options: captchaToken ? { captchaToken } : undefined,
     });
 
@@ -183,6 +183,13 @@ export function JoinGate({ token }: Props) {
       setLoadingAction(null);
       turnstileRef.current?.reset();
       return;
+    }
+
+    if (anonData.user) {
+      await supabase.from("user_profiles").upsert(
+        { id: anonData.user.id, display_name: "ユーザー" },
+        { onConflict: "id" },
+      );
     }
 
     const { data: groupId, error: rpcError } = await supabase.rpc(
