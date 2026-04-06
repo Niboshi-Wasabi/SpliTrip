@@ -33,6 +33,7 @@ import {
 } from "./group-export-capture";
 import { DisplayNamePrompt } from "@/components/display-name-prompt";
 import { RealtimeGroupRefresh } from "@/components/realtime-group-refresh";
+import { checkNeedsOnboarding } from "@/lib/user-profile";
 
 export const dynamic = "force-dynamic";
 
@@ -52,6 +53,14 @@ export default async function GroupDetailPage({ params }: PageProps) {
   }
 
   console.log("[GroupDetail] user.id =", user.id, "groupId =", groupId);
+
+  if (await checkNeedsOnboarding(supabase)) {
+    redirect({
+      href: `/onboarding?next=/dashboard/groups/${groupId}`,
+      locale,
+    });
+    return;
+  }
 
   const result = await fetchGroupDetailForUser(supabase, groupId, user.id);
 

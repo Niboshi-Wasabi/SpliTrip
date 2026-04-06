@@ -115,5 +115,16 @@
     "csvColTo": "Payee",
     "csvColSettlementAmount": "Amount",
     "csvNoSettlementsRow": "No settlement needed (zero transfers)"
+  },
+  "Onboarding": {
+    "title": "Set your username",
+    "description": "Enter the name shown to other group members. You can change it later.",
+    "label": "Username",
+    "placeholder": "e.g. John Doe",
+    "hint": "Max 50 characters. Shown in member lists and settlements.",
+    "submit": "Save and continue",
+    "required": "Please enter a username.",
+    "tooLong": "Must be 50 characters or fewer.",
+    "saveError": "Could not save. Please try again."
   }
 }

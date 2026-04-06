@@ -24,12 +24,17 @@ import {
 import { formatYen } from "@/lib/format";
 import { listGroupsForUser } from "@/lib/group-queries";
 import { createClient } from "@/utils/supabase/server";
+import { checkNeedsOnboarding } from "@/lib/user-profile";
+import { redirect } from "@/i18n/navigation";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { CategoryChart } from "./category-chart";
 import { LogoutButton } from "./logout-button";
 import { getCategoryColor } from "@/lib/categories";
 
-export default async function DashboardPage() {
+type PageProps = { params: Promise<{ locale: string }> };
+
+export default async function DashboardPage({ params }: PageProps) {
+  const { locale } = await params;
   const supabase = await createClient();
   const {
     data: { user },
@@ -37,6 +42,11 @@ export default async function DashboardPage() {
 
   if (!user) {
     throw new Error("unauthorized");
+  }
+
+  if (await checkNeedsOnboarding(supabase)) {
+    redirect({ href: "/onboarding?next=/dashboard", locale });
+    return;
   }
 
   const isGuestMode = user.is_anonymous === true;

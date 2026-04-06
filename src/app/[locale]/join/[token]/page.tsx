@@ -2,7 +2,10 @@ import { notFound } from "next/navigation";
 import { redirect } from "@/i18n/navigation";
 import { JoinGate } from "./join-gate";
 import { isInviteTokenFormat } from "@/lib/invite-token";
-import { upsertUserProfileFromAuth } from "@/lib/user-profile";
+import {
+  upsertUserProfileFromAuth,
+  checkNeedsOnboarding,
+} from "@/lib/user-profile";
 import { createClient } from "@/utils/supabase/server";
 
 export const dynamic = "force-dynamic";
@@ -39,6 +42,14 @@ export default async function JoinByInvitePage({ params }: PageProps) {
 
   if (!isInviteTokenFormat(trimmedToken)) {
     redirect({ href: "/dashboard", locale });
+  }
+
+  if (await checkNeedsOnboarding(supabase)) {
+    redirect({
+      href: `/onboarding?next=/join/${trimmedToken}`,
+      locale,
+    });
+    return;
   }
 
   const { data: groupId, error: joinError } = await supabase.rpc(

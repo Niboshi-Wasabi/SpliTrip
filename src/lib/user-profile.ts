@@ -22,7 +22,27 @@ export function extractAvatarUrl(user: User): string | null {
   return url ?? null;
 }
 
-const DEFAULT_DISPLAY_NAMES = new Set(["ユーザー", "User", ""]);
+export const DEFAULT_DISPLAY_NAMES = new Set(["ユーザー", "User", ""]);
+
+/**
+ * ユーザーがまだカスタム表示名を設定していない（オンボーディング未完了）かどうかを判定する。
+ * RPC が失敗した場合は false を返し、ユーザーをブロックしない。
+ */
+export async function checkNeedsOnboarding(
+  supabase: SupabaseClient,
+): Promise<boolean> {
+  const { data: existingName, error } =
+    await supabase.rpc("get_own_display_name");
+  if (error) {
+    console.error(
+      "checkNeedsOnboarding RPC error (non-fatal):",
+      error.message,
+    );
+    return false;
+  }
+  if (typeof existingName !== "string") return true;
+  return DEFAULT_DISPLAY_NAMES.has(existingName.trim());
+}
 
 /**
  * Upsert `user_profiles` after OAuth (or similar) creates/updates `auth.users`.
