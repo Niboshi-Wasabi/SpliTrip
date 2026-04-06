@@ -18,6 +18,11 @@ import { currencyMinorExponent } from "@/utils/settlement";
 import type { GroupMemberRow } from "@/lib/group-queries";
 import { UserAvatar } from "@/components/user-avatar";
 import { summarizeAllocatedMinor, toMinorUnits } from "@/utils/settlement";
+import { ExpenseCategoryIcon } from "@/components/expense-category-icon";
+import {
+  EXPENSE_CATEGORY_IDS,
+  type ExpenseCategoryId,
+} from "@/lib/expense-categories";
 
 type SplitMode = "equal" | "exact" | "shares" | "percent" | "itemized";
 
@@ -119,6 +124,8 @@ export function GroupExpensePanel({
 }: Props) {
   const router = useRouter();
   const receiptTranslations = useTranslations("ReceiptScan");
+  const formTranslations = useTranslations("GroupExpenseForm");
+  const categoryLabelTranslations = useTranslations("ExpenseCategory");
   const minorExp = currencyMinorExponent(currencyCode);
   const amountStep = minorExp === 0 ? "1" : "0.01";
 
@@ -161,6 +168,13 @@ export function GroupExpensePanel({
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const [expenseCategoryId, setExpenseCategoryId] =
+    useState<ExpenseCategoryId>("other");
+  const [pendingReceipt, setPendingReceipt] = useState<{
+    base64: string;
+    mimeType: string;
+  } | null>(null);
+
   // --- AI レシートスキャン / AI receipt scan ---
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [scanning, setScanning] = useState(false);
@@ -192,6 +206,8 @@ export function GroupExpensePanel({
         selectedFile,
         MAX_IMAGE_DIMENSION,
       );
+
+      setPendingReceipt({ base64, mimeType });
 
       const result = await analyzeReceipt(base64, mimeType);
 
@@ -419,9 +435,15 @@ export function GroupExpensePanel({
       amount: parsedExpenseTotal,
       description: description.trim() || null,
       expense_date: expenseDate,
+      category: expenseCategoryId,
       split_mode: splitMode,
       remainder_policy,
     };
+
+    if (pendingReceipt !== null) {
+      base.receipt_base64 = pendingReceipt.base64;
+      base.receipt_mime_type = pendingReceipt.mimeType;
+    }
 
     if (splitMode === "exact") {
       base.manual_splits = members.map((memberRow) => ({
@@ -452,6 +474,11 @@ export function GroupExpensePanel({
     });
 
     const payload: unknown = await res.json().catch(() => null);
+
+    type CreateExpensePayload = {
+      error?: string;
+      receipt_error?: string | null;
+    };
 
     if (!res.ok) {
       const code =
@@ -495,6 +522,14 @@ export function GroupExpensePanel({
       return;
     }
 
+    const successPayload = payload as CreateExpensePayload | null;
+    if (
+      successPayload?.receipt_error &&
+      String(successPayload.receipt_error).length > 0
+    ) {
+      setError(formTranslations("receiptUploadFailed"));
+    }
+
     setAmount("");
     setDescription("");
     setExactByUser(Object.fromEntries(members.map((memberRow) => [memberRow.user_id, ""])));
@@ -510,6 +545,8 @@ export function GroupExpensePanel({
         selected: Object.fromEntries(members.map((memberRow) => [memberRow.user_id, true])),
       },
     ]);
+    setExpenseCategoryId("other");
+    setPendingReceipt(null);
     setSubmitting(false);
     broadcastGroupRefresh(groupId);
     router.refresh();
@@ -576,6 +613,21 @@ export function GroupExpensePanel({
             {scanMessage.text}
           </p>
         ) : null}
+        {pendingReceipt ? (
+          <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+            <span>{formTranslations("receiptPending")}</span>
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              className="min-h-[44px] px-2 md:min-h-0"
+              disabled={submitting || scanning}
+              onClick={() => setPendingReceipt(null)}
+            >
+              {formTranslations("clearReceiptAttach")}
+            </Button>
+          </div>
+        ) : null}
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">
@@ -638,6 +690,36 @@ export function GroupExpensePanel({
       </div>
 
       <fieldset className="space-y-2">
+        <legend className="text-sm font-medium">
+          {formTranslations("categoryLegend")}
+        </legend>
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+          {EXPENSE_CATEGORY_IDS.map((categoryId) => (
+            <label
+              key={categoryId}
+              className={RADIO_LABEL_ROW_CLASS}
+            >
+              <input
+                type="radio"
+                name="expenseCategoryId"
+                className={RADIO_INPUT_CLASS}
+                checked={expenseCategoryId === categoryId}
+                onChange={() => setExpenseCategoryId(categoryId)}
+                disabled={submitting}
+              />
+              <ExpenseCategoryIcon
+                categoryId={categoryId}
+                className="mt-[0.3125rem] h-4 w-4 shrink-0"
+              />
+              <span className="min-w-0 flex-1 leading-snug">
+                {categoryLabelTranslations(categoryId)}
+              </span>
+            </label>
+          ))}
+        </div>
+      </fieldset>
+
+      <fieldset className="space-y-2">
         <legend className="text-sm font-medium">按分モード</legend>
         <div className="flex flex-col gap-2 text-sm">
           {(
@@ -664,10 +746,22 @@ export function GroupExpensePanel({
         </div>
       </fieldset>
 
-      <fieldset className="space-y-2 rounded-md border border-dashed p-3">
-        <legend className="px-1 text-xs font-medium text-muted-foreground">
+      {/*
+        fieldset + legend はブラウザが凡例の横に最初の数行だけインデントを付けることがあり、
+        上段のラジオだけ右にずれて見える。div + role="group" でレイアウトを統一する。
+        fieldset/legend can indent only the first rows beside the legend; div+role="group" avoids it.
+      */}
+      <div
+        role="group"
+        aria-labelledby="expense-remainder-policy-heading"
+        className="space-y-2 rounded-md border border-dashed p-3"
+      >
+        <p
+          id="expense-remainder-policy-heading"
+          className="px-1 text-xs font-medium text-muted-foreground"
+        >
           端数の扱い（比率・パーセント・均等などで発生する最小単位の差）
-        </legend>
+        </p>
         <div className="flex flex-col gap-2 text-sm">
           <label className={RADIO_LABEL_ROW_CLASS}>
             <input
@@ -736,7 +830,7 @@ export function GroupExpensePanel({
             </span>
           </label>
         </div>
-      </fieldset>
+      </div>
 
       {splitMode === "exact" ? (
         <div className="space-y-2 rounded-md border border-dashed p-3">

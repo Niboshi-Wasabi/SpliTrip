@@ -4,6 +4,7 @@ export const dynamic = "force-dynamic";
  * Main dashboard: group-based expense overview with per-group breakdown.
  */
 
+import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import {
   Plane,
@@ -32,9 +33,13 @@ import {
 import { redirect } from "@/i18n/navigation";
 import { UserAvatar } from "@/components/user-avatar";
 import { ThemeToggle } from "@/components/ThemeToggle";
-import { CategoryChart } from "./category-chart";
+import { DashboardSpendingChart } from "./dashboard-spending-chart";
 import { LogoutButton } from "./logout-button";
-import { getCategoryColor } from "@/lib/categories";
+import { getCategoryColor, getExpenseCategoryChartColor } from "@/lib/categories";
+import {
+  EXPENSE_CATEGORY_IDS,
+  parseExpenseCategoryId,
+} from "@/lib/expense-categories";
 
 type PageProps = { params: Promise<{ locale: string }> };
 
@@ -78,10 +83,20 @@ export default async function DashboardPage({ params }: PageProps) {
     string,
     { description: string; amount: number }[]
   >();
+
+  type DashboardExpenseRow = {
+    group_id: string;
+    amount: unknown;
+    description: unknown;
+    category?: unknown;
+  };
+
+  let dashboardExpenseRows: DashboardExpenseRow[] = [];
+
   if (groupIds.length > 0) {
-    const { data: expenseRows, error: expensesError } = await supabase
+    const { data: expenseRowsRaw, error: expensesError } = await supabase
       .from("group_expenses")
-      .select("group_id, amount, description")
+      .select("group_id, amount, description, category")
       .in("group_id", groupIds);
 
     if (expensesError) {
@@ -91,7 +106,9 @@ export default async function DashboardPage({ params }: PageProps) {
       );
     }
 
-    for (const expense of expenseRows ?? []) {
+    dashboardExpenseRows = (expenseRowsRaw ?? []) as DashboardExpenseRow[];
+
+    for (const expense of dashboardExpenseRows) {
       const expenseAmount = Number(expense.amount);
       expenseTotalByGroup.set(
         expense.group_id,
@@ -114,7 +131,7 @@ export default async function DashboardPage({ params }: PageProps) {
   const avgPerGroup =
     groupCount > 0 ? Math.round(totalExpense / groupCount) : 0;
 
-  const chartData = groups
+  const chartDataByGroup = groups
     .map((groupItem, groupIndex) => ({
       category: groupItem.group.name,
       amount: expenseTotalByGroup.get(groupItem.group.id) ?? 0,
@@ -123,6 +140,64 @@ export default async function DashboardPage({ params }: PageProps) {
     }))
     .filter((entry) => entry.amount > 0)
     .sort((left, right) => right.amount - left.amount);
+
+  const groupNameById = new Map(
+    groups.map((groupItem) => [groupItem.group.id, groupItem.group.name]),
+  );
+
+  const chartDataByCategory = (() => {
+    const categoryTotals = new Map<string, number>();
+    const categoryDetails = new Map<
+      string,
+      { description: string; amount: number }[]
+    >();
+
+    if (groupIds.length === 0) {
+      return [];
+    }
+
+    for (const expense of dashboardExpenseRows) {
+      const groupId = expense.group_id;
+      const categoryId = parseExpenseCategoryId(expense.category);
+      const expenseAmount = Number(expense.amount);
+      categoryTotals.set(
+        categoryId,
+        (categoryTotals.get(categoryId) ?? 0) + expenseAmount,
+      );
+      const groupLabel = groupNameById.get(groupId) ?? "";
+      const descriptionText =
+        (expense.description as string | null)?.trim() ?? "";
+      const detailLine =
+        groupLabel.length > 0 && descriptionText.length > 0
+          ? `${groupLabel} · ${descriptionText}`
+          : groupLabel.length > 0
+            ? groupLabel
+            : descriptionText;
+      const detailList = categoryDetails.get(categoryId) ?? [];
+      detailList.push({
+        description: detailLine,
+        amount: expenseAmount,
+      });
+      categoryDetails.set(categoryId, detailList);
+    }
+
+    return EXPENSE_CATEGORY_IDS.map((categoryId) => {
+      const categoryAmount = categoryTotals.get(categoryId) ?? 0;
+      if (categoryAmount <= 0) {
+        return null;
+      }
+      return {
+        category: categoryId,
+        amount: categoryAmount,
+        color: getExpenseCategoryChartColor(categoryId),
+        details: categoryDetails.get(categoryId) ?? [],
+      };
+    })
+      .filter((entry): entry is NonNullable<typeof entry> => entry !== null)
+      .sort((left, right) => right.amount - left.amount);
+  })();
+
+  const dashboardChartsTranslations = await getTranslations("GroupCharts");
 
   return (
     <div className="min-h-screen bg-background">
@@ -213,17 +288,15 @@ export default async function DashboardPage({ params }: PageProps) {
         </div>
 
         <div className="grid gap-6 lg:grid-cols-2">
-          <Card>
-            <CardHeader>
-              <CardTitle>グループ別支出</CardTitle>
-              <CardDescription>
-                全グループ合計 {formatYen(totalExpense)} の内訳
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <CategoryChart data={chartData} />
-            </CardContent>
-          </Card>
+          <DashboardSpendingChart
+            chartByGroup={chartDataByGroup}
+            chartByCategory={chartDataByCategory}
+            totalFormatted={formatYen(totalExpense)}
+            titleByGroup={dashboardChartsTranslations("dashboardTitleByGroup")}
+            titleByCategory={dashboardChartsTranslations(
+              "dashboardTitleByCategory",
+            )}
+          />
 
           <Card>
             <CardHeader className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">

@@ -3,6 +3,7 @@
  */
 
 import type { SupabaseClient } from "@supabase/supabase-js";
+import type { ExpenseCategoryId } from "@/lib/expense-categories";
 import {
   computeGroupSettlements,
   type ExpenseWithSplits,
@@ -39,7 +40,18 @@ export type ExpenseRowDb = {
   amount: string | number;
   description: string | null;
   expense_date: string;
+  category: ExpenseCategoryId;
+  receipt_url: string | null;
   expense_splits: SplitRow[] | null;
+};
+
+export type ExpenseAuditLogRow = {
+  id: string;
+  expense_id: string | null;
+  actor_id: string | null;
+  action: "insert" | "update" | "delete";
+  payload: unknown;
+  created_at: string;
 };
 
 /** Map a DB expense row (+ nested splits) into the ledger shape. */
@@ -216,6 +228,8 @@ export async function fetchGroupDetailForUser(
       amount,
       description,
       expense_date,
+      category,
+      receipt_url,
       expense_splits ( user_id, amount, ratio )
     `,
     )
@@ -229,7 +243,20 @@ export async function fetchGroupDetailForUser(
     });
   }
 
-  const expensesTyped = (expenseRows ?? []) as unknown as ExpenseRowDb[];
+  const expensesTyped = (expenseRows ?? []).map((rawRow) => {
+    const row = rawRow as Record<string, unknown>;
+    return {
+      ...row,
+      category:
+        typeof row.category === "string" && row.category.trim() !== ""
+          ? row.category
+          : "other",
+      receipt_url:
+        typeof row.receipt_url === "string" && row.receipt_url.trim() !== ""
+          ? row.receipt_url.trim()
+          : null,
+    } as ExpenseRowDb;
+  });
   const ledgerEntries: ExpenseWithSplits[] =
     expensesTyped.map(expenseRowToLedgerEntry);
   const settlements = computeGroupSettlements(

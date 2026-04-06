@@ -18,8 +18,12 @@ import {
 import { localizedJoinPath } from "@/lib/i18n/localized-paths";
 import { fetchGroupDetailForUser } from "@/lib/group-queries";
 import { formatMoneyByCurrency } from "@/lib/currency-payment-amount";
-import { getCategoryColor } from "@/lib/categories";
-import { CategoryChart } from "../../category-chart";
+import { getCategoryColor, getExpenseCategoryChartColor } from "@/lib/categories";
+import {
+  EXPENSE_CATEGORY_IDS,
+  parseExpenseCategoryId,
+} from "@/lib/expense-categories";
+import { GroupSpendingChartCard } from "./group-spending-chart-card";
 import { GroupSettlementList } from "./group-settlement-list";
 import { createClient } from "@/utils/supabase/server";
 import { GroupExpensePanel } from "./group-expense-panel";
@@ -125,6 +129,42 @@ export default async function GroupDetailPage({ params }: PageProps) {
       }));
   })();
 
+  const categoryChartData = (() => {
+    const categoryTotals = new Map<string, number>();
+    const categoryDetails = new Map<
+      string,
+      { description: string; amount: number }[]
+    >();
+    for (const expense of expenses) {
+      const categoryId = parseExpenseCategoryId(expense.category);
+      const expenseAmount = Number(expense.amount);
+      categoryTotals.set(
+        categoryId,
+        (categoryTotals.get(categoryId) ?? 0) + expenseAmount,
+      );
+      const detailList = categoryDetails.get(categoryId) ?? [];
+      detailList.push({
+        description: expense.description?.trim() || "",
+        amount: expenseAmount,
+      });
+      categoryDetails.set(categoryId, detailList);
+    }
+    return EXPENSE_CATEGORY_IDS.map((categoryId) => {
+      const categoryAmount = categoryTotals.get(categoryId) ?? 0;
+      if (categoryAmount <= 0) {
+        return null;
+      }
+      return {
+        category: categoryId,
+        amount: categoryAmount,
+        color: getExpenseCategoryChartColor(categoryId),
+        details: categoryDetails.get(categoryId) ?? [],
+      };
+    })
+      .filter((entry): entry is NonNullable<typeof entry> => entry !== null)
+      .sort((left, right) => right.amount - left.amount);
+  })();
+
   /**
    * グループの基準通貨が JPY 以外なら、JPY への換算レートを取得する。
    * 基準通貨が JPY なら換算不要のため null。
@@ -140,6 +180,7 @@ export default async function GroupDetailPage({ params }: PageProps) {
 
   const invitePath = localizedJoinPath(locale, String(group.invite_token));
   const exportTranslations = await getTranslations("GroupExport");
+  const groupChartTranslations = await getTranslations("GroupCharts");
   const snapshotPrintedAt = new Intl.DateTimeFormat(locale, {
     dateStyle: "long",
     timeStyle: "short",
@@ -203,6 +244,7 @@ export default async function GroupDetailPage({ params }: PageProps) {
               payer_id: expenseRow.payer_id,
               description: expenseRow.description,
               amount: Number(expenseRow.amount),
+              category: parseExpenseCategoryId(expenseRow.category),
               expense_splits: (expenseRow.expense_splits ?? []).map(
                 (splitRow) => ({
                   user_id: splitRow.user_id,
@@ -210,6 +252,7 @@ export default async function GroupDetailPage({ params }: PageProps) {
                 }),
               ),
             }))}
+            totalExpenseAmount={totalGroupExpense}
             settlements={settlements.map((settlementRow) => ({
               fromDisplayName: settlementRow.fromDisplayName,
               toDisplayName: settlementRow.toDisplayName,
@@ -243,19 +286,18 @@ export default async function GroupDetailPage({ params }: PageProps) {
               </p>
             </div>
 
-            {payerChartData.length > 0 && (
-              <Card>
-                <CardHeader>
-                  <CardTitle>支払者別内訳</CardTitle>
-                  <CardDescription>
-                    合計 {formatMoneyByCurrency(baseCurrency, totalGroupExpense)} の支払い内訳
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <CategoryChart data={payerChartData} />
-                </CardContent>
-              </Card>
-            )}
+            {payerChartData.length > 0 || categoryChartData.length > 0 ? (
+              <GroupSpendingChartCard
+                payerChartData={payerChartData}
+                categoryChartData={categoryChartData}
+                totalLabel={formatMoneyByCurrency(
+                  baseCurrency,
+                  totalGroupExpense,
+                )}
+                titlePayer={groupChartTranslations("groupTitlePayer")}
+                titleCategory={groupChartTranslations("groupTitleCategory")}
+              />
+            ) : null}
 
             <Card>
           <CardHeader>
@@ -264,6 +306,7 @@ export default async function GroupDetailPage({ params }: PageProps) {
           </CardHeader>
           <CardContent>
             <GroupExpenseList
+              groupId={groupId}
               expenses={expenses}
               members={members}
               currencyCode={baseCurrency}

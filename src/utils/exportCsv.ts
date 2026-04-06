@@ -30,6 +30,7 @@ export type GroupExportCsvLabels = {
   sectionExpenses: string;
   colDate: string;
   colPayer: string;
+  colCategory: string;
   colDescription: string;
   colAmount: string;
   colSplits: string;
@@ -51,6 +52,10 @@ export type CsvExpenseInput = {
   payer_id: string;
   description: string | null;
   amount: number;
+  /** Canonical category id (food, transport, …) for CSV; pass localized label in `categoryLabel` if set. */
+  category?: string;
+  /** Optional display label for the category column (UI language). / カテゴリ列の表示名（UI 言語） */
+  categoryLabel?: string;
   expense_splits: { user_id: string; amount: number }[] | null;
 };
 
@@ -248,6 +253,7 @@ export function buildGroupExportCsv(options: BuildGroupExportCsvOptions): string
     csvRow([
       escapeCsvField(labels.colDate),
       escapeCsvField(labels.colPayer),
+      escapeCsvField(labels.colCategory),
       escapeCsvField(labels.colDescription),
       escapeCsvField(labels.colAmount),
       escapeCsvField(labels.colSplits),
@@ -256,6 +262,11 @@ export function buildGroupExportCsv(options: BuildGroupExportCsvOptions): string
 
   for (const expenseRow of expenses) {
     const payerName = displayNameForUserId(members, expenseRow.payer_id);
+    const categoryCell =
+      typeof expenseRow.categoryLabel === "string" &&
+      expenseRow.categoryLabel.trim() !== ""
+        ? expenseRow.categoryLabel.trim()
+        : expenseRow.category ?? "";
     const description =
       expenseRow.description?.trim() !== ""
         ? (expenseRow.description ?? "").trim()
@@ -270,6 +281,7 @@ export function buildGroupExportCsv(options: BuildGroupExportCsvOptions): string
       csvRow([
         escapeCsvField(expenseRow.expense_date),
         escapeCsvField(payerName),
+        escapeCsvField(categoryCell),
         escapeCsvField(description),
         escapeCsvField(
           amountNumericForCsv(currencyCode, expenseRow.amount),

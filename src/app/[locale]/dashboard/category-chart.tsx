@@ -8,6 +8,7 @@ import {
   Tooltip,
   Legend,
 } from "recharts";
+import { useTranslations } from "next-intl";
 import { formatYen } from "@/lib/format";
 
 export interface ExpenseDetail {
@@ -32,9 +33,13 @@ const MAX_DETAIL_LINES = 10;
 function ChartTooltipContent({
   active,
   payload,
+  untitledLabel,
+  moreCountLabel,
 }: {
   active?: boolean;
   payload?: Array<{ payload: CategoryData }>;
+  untitledLabel: string;
+  moreCountLabel: string;
 }) {
   if (!active || !payload || payload.length === 0) return null;
 
@@ -57,7 +62,7 @@ function ChartTooltipContent({
               className="flex items-baseline justify-between gap-3 text-xs text-muted-foreground"
             >
               <span className="truncate">
-                {detail.description || "（無題）"}
+                {detail.description || untitledLabel}
               </span>
               <span className="shrink-0 tabular-nums">
                 {formatYen(detail.amount)}
@@ -66,7 +71,10 @@ function ChartTooltipContent({
           ))}
           {details.length > MAX_DETAIL_LINES ? (
             <li className="text-[10px] text-muted-foreground">
-              …他 {details.length - MAX_DETAIL_LINES} 件
+              {moreCountLabel.replace(
+                "{count}",
+                String(details.length - MAX_DETAIL_LINES),
+              )}
             </li>
           ) : null}
         </ul>
@@ -76,13 +84,15 @@ function ChartTooltipContent({
 }
 
 export function CategoryChart({ data }: { data: CategoryData[] }) {
+  const chartTranslations = useTranslations("CategoryChart");
+
   if (data.length === 0) {
     return (
       <div
         className="flex items-center justify-center text-muted-foreground"
         style={{ height: CHART_HEIGHT_PX }}
       >
-        支出データがありません
+        {chartTranslations("empty")}
       </div>
     );
   }
@@ -104,11 +114,21 @@ export function CategoryChart({ data }: { data: CategoryData[] }) {
               `${name} ${((percent ?? 0) * PERCENT_SCALE).toFixed(0)}%`
             }
           >
-            {data.map((entry) => (
-              <Cell key={entry.category} fill={entry.color} />
+            {data.map((entry, entryIndex) => (
+              <Cell
+                key={`${entry.category}-${entryIndex}`}
+                fill={entry.color}
+              />
             ))}
           </Pie>
-          <Tooltip content={<ChartTooltipContent />} />
+          <Tooltip
+            content={
+              <ChartTooltipContent
+                untitledLabel={chartTranslations("untitled")}
+                moreCountLabel={chartTranslations("moreCount")}
+              />
+            }
+          />
           <Legend />
         </PieChart>
       </ResponsiveContainer>

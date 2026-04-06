@@ -8,16 +8,29 @@ import {
   parseRemainderPolicy,
   type SplitMode,
 } from "@/lib/group-expense-split-server";
+import { parseExpenseCategoryId } from "@/lib/expense-categories";
 import { fetchGroupDetailForUser } from "@/lib/group-queries";
 import { createClient } from "@/utils/supabase/server";
 
 type RouteContext = { params: Promise<{ groupId: string }> };
+
+const RECEIPT_MAX_BYTES = 4_500_000;
+
+const ALLOWED_RECEIPT_MIMES = new Set([
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+  "image/gif",
+]);
 
 type ExpenseBody = {
   payer_id?: string;
   amount?: unknown;
   description?: unknown;
   expense_date?: unknown;
+  category?: unknown;
+  receipt_base64?: unknown;
+  receipt_mime_type?: unknown;
   split_mode?: unknown;
   remainder_policy?: unknown;
   manual_splits?: unknown;
@@ -25,6 +38,22 @@ type ExpenseBody = {
   percent_inputs?: unknown;
   itemized_lines?: unknown;
 };
+
+function fileExtensionForReceiptMime(mime: string): string {
+  if (mime === "image/jpeg") return "jpg";
+  if (mime === "image/png") return "png";
+  if (mime === "image/webp") return "webp";
+  if (mime === "image/gif") return "gif";
+  return "bin";
+}
+
+function stripBase64DataUrlPrefix(raw: string): string {
+  const commaIndex = raw.indexOf(",");
+  if (raw.startsWith("data:") && commaIndex !== -1) {
+    return raw.slice(commaIndex + 1);
+  }
+  return raw;
+}
 
 function parseSplitMode(raw: unknown): SplitMode {
   const normalizedMode = String(raw ?? "equal").toLowerCase();
@@ -82,6 +111,13 @@ export async function POST(request: NextRequest, context: RouteContext) {
       ? null
       : String(body.description);
   const expense_date = String(body.expense_date ?? "").trim();
+  const category = parseExpenseCategoryId(body.category);
+  const receiptBase64Raw =
+    typeof body.receipt_base64 === "string" ? body.receipt_base64.trim() : "";
+  const receiptMimeRaw =
+    typeof body.receipt_mime_type === "string"
+      ? body.receipt_mime_type.trim().toLowerCase()
+      : "";
   const splitMode = parseSplitMode(body.split_mode);
   const currencyCode = detail.data.group.currency_code;
   const policy = parseRemainderPolicy(
@@ -133,6 +169,8 @@ export async function POST(request: NextRequest, context: RouteContext) {
       p_description: description,
       p_expense_date: dateStr,
       p_splits: splitsJson,
+      p_category: category,
+      p_receipt_url: null,
     },
   );
 
@@ -144,5 +182,62 @@ export async function POST(request: NextRequest, context: RouteContext) {
     );
   }
 
-  return NextResponse.json({ expense_id: expenseId }, { status: 201 });
+  let receiptUploaded = false;
+  let receiptUploadError: string | null = null;
+
+  if (receiptBase64Raw.length > 0) {
+    if (!ALLOWED_RECEIPT_MIMES.has(receiptMimeRaw)) {
+      receiptUploadError = "invalid_receipt_mime";
+    } else {
+      let buffer: Buffer;
+      try {
+        buffer = Buffer.from(stripBase64DataUrlPrefix(receiptBase64Raw), "base64");
+      } catch {
+        receiptUploadError = "invalid_receipt_encoding";
+        buffer = Buffer.alloc(0);
+      }
+
+      if (receiptUploadError === null) {
+        if (buffer.length === 0 || buffer.length > RECEIPT_MAX_BYTES) {
+          receiptUploadError = "receipt_too_large";
+        } else {
+          const extension = fileExtensionForReceiptMime(receiptMimeRaw);
+          const objectPath = `${groupId}/${String(expenseId)}/${Date.now()}.${extension}`;
+          const { error: uploadError } = await supabase.storage
+            .from("receipts")
+            .upload(objectPath, buffer, {
+              contentType: receiptMimeRaw,
+              upsert: false,
+            });
+
+          if (uploadError) {
+            console.error("receipt upload:", uploadError.message);
+            receiptUploadError = "receipt_upload_failed";
+          } else {
+            const { error: linkError } = await supabase
+              .from("group_expenses")
+              .update({ receipt_url: objectPath })
+              .eq("id", expenseId)
+              .eq("group_id", groupId);
+
+            if (linkError) {
+              console.error("receipt_url update:", linkError.message);
+              receiptUploadError = "receipt_link_failed";
+            } else {
+              receiptUploaded = true;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  return NextResponse.json(
+    {
+      expense_id: expenseId,
+      receipt_uploaded: receiptUploaded,
+      receipt_error: receiptUploadError,
+    },
+    { status: 201 },
+  );
 }

@@ -107,6 +107,7 @@
     "csvSectionExpenses": "Expenses",
     "csvColDate": "Date",
     "csvColPayer": "Payer",
+    "csvColCategory": "Category",
     "csvColDescription": "Description",
     "csvColAmount": "Amount",
     "csvColSplits": "Split breakdown",
@@ -114,7 +115,79 @@
     "csvColFrom": "Payer",
     "csvColTo": "Payee",
     "csvColSettlementAmount": "Amount",
-    "csvNoSettlementsRow": "No settlement needed (zero transfers)"
+    "csvNoSettlementsRow": "No settlement needed (zero transfers)",
+    "exportPdfReport": "PDF report",
+    "pdfExporting": "Generating PDF…",
+    "pdfExportError": "Could not generate PDF. Please try again.",
+    "pdfReportHeading": "Trip report",
+    "pdfTotalSpendLabel": "Total spend",
+    "pdfSettlementHeading": "Settlements (minimal transfers)",
+    "pdfSettlementEmpty": "No settlement needed."
+  },
+  "ExpenseCategory": {
+    "food": "Food",
+    "transport": "Transport",
+    "lodging": "Lodging",
+    "sightseeing": "Sightseeing",
+    "other": "Other"
+  },
+  "GroupExpenseForm": {
+    "categoryLegend": "Category",
+    "receiptPending": "Receipt image will upload when you save",
+    "clearReceiptAttach": "Remove attachment",
+    "receiptUploadFailed": "Expense was saved, but the receipt image failed to upload."
+  },
+  "GroupExpenseList": {
+    "empty": "No expenses yet",
+    "untitled": "(Untitled)",
+    "colCategory": "Category",
+    "colDate": "Date",
+    "colDescription": "Description",
+    "colPayer": "Payer",
+    "colAmount": "Amount"
+  },
+  "ExpenseDetail": {
+    "untitled": "(Untitled)",
+    "payerLabel": "Payer",
+    "receiptHeading": "Receipt",
+    "receiptLoading": "Loading image…",
+    "receiptLoadError": "Could not load the receipt.",
+    "splitsHeading": "Split",
+    "deleteExpense": "Delete this expense",
+    "deleteConfirm": "Delete this expense? Splits will be removed too.",
+    "deleteFailed": "Could not delete.",
+    "auditHeading": "Change history",
+    "auditLoading": "Loading history…",
+    "auditLoadError": "Could not load history.",
+    "auditEmpty": "No history yet.",
+    "auditActor": "Actor",
+    "auditAction": {
+      "insert": "Created",
+      "update": "Updated",
+      "delete": "Deleted"
+    }
+  },
+  "GroupCharts": {
+    "tabPayer": "By payer",
+    "tabCategory": "By category",
+    "tabByGroup": "By group",
+    "toggleAria": "Switch chart",
+    "dashboardToggleAria": "Switch spending chart",
+    "groupTitlePayer": "Spending by payer",
+    "groupTitleCategory": "Spending by category",
+    "groupTotalDescription": "Breakdown of {total} total",
+    "dashboardTitleByGroup": "Spending by group",
+    "dashboardTitleByCategory": "Spending by category",
+    "dashboardTotalDescription": "Breakdown of {total} across all groups"
+  },
+  "CategoryChart": {
+    "empty": "No spending data",
+    "untitled": "(Untitled)",
+    "moreCount": "…{count} more"
+  },
+  "Settlement": {
+    "payWithPaypal": "Pay with PayPal",
+    "payWithCashApp": "Pay with Cash App"
   },
   "Onboarding": {
     "title": "Set your username",

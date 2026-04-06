@@ -1,4 +1,16 @@
+import type { ExpenseCategoryId } from "@/lib/expense-categories";
+
+/** Stable colors for `ExpenseCategoryId` keys (charts / badges). */
+const EXPENSE_CATEGORY_KEY_COLORS: Record<ExpenseCategoryId, string> = {
+  food: "#f59e0b",
+  transport: "#3b82f6",
+  lodging: "#10b981",
+  sightseeing: "#8b5cf6",
+  other: "#6b7280",
+};
+
 const CATEGORY_COLORS: Record<string, string> = {
+  ...EXPENSE_CATEGORY_KEY_COLORS,
   交通費: "#3b82f6",
   宿泊費: "#10b981",
   食費: "#f59e0b",
@@ -21,4 +33,11 @@ export function getCategoryColor(category: string, index: number): string {
     CATEGORY_COLORS[category] ??
     FALLBACK_COLORS[index % FALLBACK_COLORS.length]
   );
+}
+
+/**
+ * Color for a canonical expense category id (deterministic, no index drift).
+ */
+export function getExpenseCategoryChartColor(categoryId: ExpenseCategoryId): string {
+  return EXPENSE_CATEGORY_KEY_COLORS[categoryId];
 }

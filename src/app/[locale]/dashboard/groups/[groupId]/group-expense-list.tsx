@@ -1,30 +1,28 @@
+"use client";
+
 /**
- * Responsive expense list: cards on mobile, table on md+.
- * レスポンシブ出費一覧: モバイルはカード型、PC はテーブル型に切り替える。
- *
- * モバイルでは情報密度を抑えて縦スクロールしやすくし、
- * PC では一覧性の高いテーブルで全メンバーの按分を横に並べる。
- * Mobile: lower density, easy vertical scroll.
- * Desktop: high-density table with splits visible at a glance.
+ * Responsive expense list with detail dialog (receipt + audit).
+ * 出費一覧（詳細ダイアログで領収書・監査）。
  */
 
+import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { UserAvatar } from "@/components/user-avatar";
+import { ExpenseCategoryIcon } from "@/components/expense-category-icon";
 import { formatMoneyByCurrency } from "@/lib/currency-payment-amount";
+import { parseExpenseCategoryId } from "@/lib/expense-categories";
 import { convertAmount } from "@/utils/exchangeRates";
 import type { ExpenseRowDb, GroupMemberRow } from "@/lib/group-queries";
+import { GroupExpenseDetailDialog } from "./group-expense-detail-dialog";
 
 type Props = {
+  groupId: string;
   expenses: ExpenseRowDb[];
   members: GroupMemberRow[];
   currencyCode: string;
-  /** null when no conversion needed (base currency is JPY) */
   exchangeRates: Record<string, number> | null;
 };
 
-/**
- * 金額と、必要に応じて JPY 換算額を表示するヘルパー。
- * Renders the original amount and an optional JPY-converted value.
- */
 function AmountWithConversion({
   amount,
   currencyCode,
@@ -55,90 +53,95 @@ function AmountWithConversion({
   );
 }
 
-export function GroupExpenseList({ expenses, members, currencyCode, exchangeRates }: Props) {
+export function GroupExpenseList({
+  groupId,
+  expenses,
+  members,
+  currencyCode,
+  exchangeRates,
+}: Props) {
+  const listTranslations = useTranslations("GroupExpenseList");
+  const categoryTranslations = useTranslations("ExpenseCategory");
+
+  const [selectedExpense, setSelectedExpense] = useState<ExpenseRowDb | null>(
+    null,
+  );
+  const [dialogOpen, setDialogOpen] = useState(false);
+
+  function openDetail(expense: ExpenseRowDb): void {
+    setSelectedExpense(expense);
+    setDialogOpen(true);
+  }
+
   if (expenses.length === 0) {
     return (
       <p className="py-6 text-center text-sm text-muted-foreground">
-        まだ出費がありません
+        {listTranslations("empty")}
       </p>
     );
   }
 
   return (
     <>
-      {/* ── Mobile: カード型 ── */}
       <ul className="space-y-3 md:hidden">
         {expenses.map((expense) => {
           const payerMember = members.find(
             (member) => member.user_id === expense.payer_id,
           );
+          const categoryId = parseExpenseCategoryId(expense.category);
           return (
-            <li
-              key={expense.id}
-              className="rounded-lg border border-border bg-card p-3 text-sm text-card-foreground"
-            >
-              <div className="flex flex-wrap items-baseline justify-between gap-2">
-                <span className="font-medium">
-                  {expense.description?.trim() || "（無題）"}
-                </span>
-                <span className="font-semibold">
-                  <AmountWithConversion
-                    amount={Number(expense.amount)}
-                    currencyCode={currencyCode}
-                    exchangeRates={exchangeRates}
+            <li key={expense.id} className="list-none">
+              <button
+                type="button"
+                className="w-full rounded-lg border border-border bg-card p-3 text-left text-sm text-card-foreground transition-colors hover:bg-muted/40"
+                onClick={() => openDetail(expense)}
+              >
+                <div className="flex flex-wrap items-baseline justify-between gap-2">
+                  <span className="flex min-w-0 items-center gap-1.5 font-medium">
+                    <ExpenseCategoryIcon categoryId={categoryId} />
+                    <span className="truncate">
+                      {expense.description?.trim() ||
+                        listTranslations("untitled")}
+                    </span>
+                  </span>
+                  <span className="font-semibold">
+                    <AmountWithConversion
+                      amount={Number(expense.amount)}
+                      currencyCode={currencyCode}
+                      exchangeRates={exchangeRates}
+                    />
+                  </span>
+                </div>
+                <div className="mt-1 flex flex-wrap items-center gap-1.5 text-xs text-muted-foreground">
+                  <span>{categoryTranslations(categoryId)}</span>
+                  <span>·</span>
+                  <UserAvatar
+                    displayName={payerMember?.display_name ?? "?"}
+                    avatarUrl={payerMember?.avatar_url}
+                    size="sm"
                   />
-                </span>
-              </div>
-              <div className="mt-1 flex items-center gap-1.5 text-xs text-muted-foreground">
-                <UserAvatar
-                  displayName={payerMember?.display_name ?? "?"}
-                  avatarUrl={payerMember?.avatar_url}
-                  size="sm"
-                />
-                <span>
-                  {expense.expense_date} · 支払:{" "}
-                  {payerMember?.display_name ?? expense.payer_id}
-                </span>
-              </div>
-              <ul className="mt-2 space-y-0.5 text-xs text-muted-foreground">
-                {(expense.expense_splits ?? []).map((split) => {
-                  const splitMember = members.find(
-                    (member) => member.user_id === split.user_id,
-                  );
-                  return (
-                    <li
-                      key={split.user_id}
-                      className="flex items-center gap-1.5"
-                    >
-                      <UserAvatar
-                        displayName={splitMember?.display_name ?? "?"}
-                        avatarUrl={splitMember?.avatar_url}
-                        size="sm"
-                      />
-                      <span>
-                        {splitMember?.display_name ?? split.user_id}:{" "}
-                        {formatMoneyByCurrency(currencyCode, Number(split.amount))}
-                      </span>
-                    </li>
-                  );
-                })}
-              </ul>
+                  <span>
+                    {expense.expense_date} · {payerMember?.display_name}
+                  </span>
+                </div>
+              </button>
             </li>
           );
         })}
       </ul>
 
-      {/* ── Desktop: テーブル型 ── */}
       <div className="hidden md:block">
         <div className="overflow-x-auto rounded-lg border border-border">
           <table className="w-full text-sm">
             <thead className="border-b border-border bg-muted/50 text-left text-xs font-medium text-muted-foreground">
               <tr>
-                <th className="px-3 py-2">日付</th>
-                <th className="px-3 py-2">内容</th>
-                <th className="px-3 py-2">支払者</th>
-                <th className="px-3 py-2 text-right">金額</th>
-                <th className="px-3 py-2">按分</th>
+                <th className="px-3 py-2">{listTranslations("colCategory")}</th>
+                <th className="px-3 py-2">{listTranslations("colDate")}</th>
+                <th className="px-3 py-2">{listTranslations("colDescription")}</th>
+                <th className="px-3 py-2">{listTranslations("colPayer")}</th>
+                <th className="px-3 py-2 text-right">
+                  {listTranslations("colAmount")}
+                </th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
@@ -146,16 +149,26 @@ export function GroupExpenseList({ expenses, members, currencyCode, exchangeRate
                 const payerMember = members.find(
                   (member) => member.user_id === expense.payer_id,
                 );
+                const categoryId = parseExpenseCategoryId(expense.category);
                 return (
                   <tr
                     key={expense.id}
-                    className="transition-colors hover:bg-muted/30"
+                    className="cursor-pointer transition-colors hover:bg-muted/30"
+                    onClick={() => openDetail(expense)}
                   >
+                    <td className="px-3 py-2.5">
+                      <span
+                        className="inline-flex items-center gap-1.5"
+                        title={categoryTranslations(categoryId)}
+                      >
+                        <ExpenseCategoryIcon categoryId={categoryId} />
+                      </span>
+                    </td>
                     <td className="whitespace-nowrap px-3 py-2.5 text-muted-foreground">
                       {expense.expense_date}
                     </td>
                     <td className="px-3 py-2.5 font-medium">
-                      {expense.description?.trim() || "（無題）"}
+                      {expense.description?.trim() || listTranslations("untitled")}
                     </td>
                     <td className="px-3 py-2.5">
                       <div className="flex items-center gap-1.5">
@@ -176,29 +189,6 @@ export function GroupExpenseList({ expenses, members, currencyCode, exchangeRate
                         exchangeRates={exchangeRates}
                       />
                     </td>
-                    <td className="px-3 py-2.5">
-                      <div className="flex flex-wrap gap-x-3 gap-y-0.5 text-xs text-muted-foreground">
-                        {(expense.expense_splits ?? []).map((split) => {
-                          const splitMember = members.find(
-                            (member) => member.user_id === split.user_id,
-                          );
-                          return (
-                            <span
-                              key={split.user_id}
-                              className="flex items-center gap-1"
-                            >
-                              <UserAvatar
-                                displayName={splitMember?.display_name ?? "?"}
-                                avatarUrl={splitMember?.avatar_url}
-                                size="sm"
-                              />
-                              {splitMember?.display_name ?? split.user_id}:{" "}
-                              {formatMoneyByCurrency(currencyCode, Number(split.amount))}
-                            </span>
-                          );
-                        })}
-                      </div>
-                    </td>
                   </tr>
                 );
               })}
@@ -206,6 +196,16 @@ export function GroupExpenseList({ expenses, members, currencyCode, exchangeRate
           </table>
         </div>
       </div>
+
+      <GroupExpenseDetailDialog
+        groupId={groupId}
+        expense={selectedExpense}
+        open={dialogOpen}
+        onOpenChange={setDialogOpen}
+        members={members}
+        currencyCode={currencyCode}
+        exchangeRates={exchangeRates}
+      />
     </>
   );
 }

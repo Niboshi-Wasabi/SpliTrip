@@ -16,6 +16,7 @@ import {
   openPaymentInNewTab,
 } from "@/lib/payment-links";
 import { Button } from "@/components/ui/button";
+import { useTranslations } from "next-intl";
 
 type Props = {
   settlements: GroupSettlement[];
@@ -40,6 +41,8 @@ export function GroupSettlementList({
   members,
   exchangeRates,
 }: Props) {
+  const settlementTranslations = useTranslations("Settlement");
+
   return (
     <ul className="space-y-2">
       {settlements.map((settlementRow, rowIndex) => {
@@ -125,7 +128,7 @@ export function GroupSettlementList({
                       className="min-h-[44px] text-xs sm:min-h-0 sm:h-7"
                       onClick={() => openPaymentInNewTab(paypalUrl)}
                     >
-                      PayPal で払う
+                      {settlementTranslations("payWithPaypal")}
                     </Button>
                   ) : null}
                   {cashAppUrl ? (
@@ -136,7 +139,7 @@ export function GroupSettlementList({
                       className="min-h-[44px] text-xs sm:min-h-0 sm:h-7"
                       onClick={() => openPaymentInNewTab(cashAppUrl)}
                     >
-                      Cash App で払う
+                      {settlementTranslations("payWithCashApp")}
                     </Button>
                   ) : null}
                 </div>

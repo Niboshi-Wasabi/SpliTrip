@@ -107,6 +107,7 @@
     "csvSectionExpenses": "出費一覧",
     "csvColDate": "日付",
     "csvColPayer": "支払者",
+    "csvColCategory": "カテゴリ",
     "csvColDescription": "内容",
     "csvColAmount": "金額",
     "csvColSplits": "按分内訳",
@@ -114,7 +115,79 @@
     "csvColFrom": "支払う人",
     "csvColTo": "受け取る人",
     "csvColSettlementAmount": "金額",
-    "csvNoSettlementsRow": "精算の必要はありません（送金0件）"
+    "csvNoSettlementsRow": "精算の必要はありません（送金0件）",
+    "exportPdfReport": "PDFレポート",
+    "pdfExporting": "PDF を生成中…",
+    "pdfExportError": "PDF の生成に失敗しました。もう一度お試しください。",
+    "pdfReportHeading": "旅行レポート",
+    "pdfTotalSpendLabel": "総支出",
+    "pdfSettlementHeading": "精算（最小送金）",
+    "pdfSettlementEmpty": "精算の必要はありません。"
+  },
+  "ExpenseCategory": {
+    "food": "食費",
+    "transport": "交通費",
+    "lodging": "宿泊費",
+    "sightseeing": "観光",
+    "other": "その他"
+  },
+  "GroupExpenseForm": {
+    "categoryLegend": "カテゴリ",
+    "receiptPending": "領収書画像を登録時にアップロードします",
+    "clearReceiptAttach": "添付を解除",
+    "receiptUploadFailed": "出費は保存しましたが、領収書画像のアップロードに失敗しました。後から画像のみ再試行する機能は今後追加予定です。"
+  },
+  "GroupExpenseList": {
+    "empty": "まだ出費がありません",
+    "untitled": "（無題）",
+    "colCategory": "分類",
+    "colDate": "日付",
+    "colDescription": "内容",
+    "colPayer": "支払者",
+    "colAmount": "金額"
+  },
+  "ExpenseDetail": {
+    "untitled": "（無題）",
+    "payerLabel": "支払者",
+    "receiptHeading": "領収書",
+    "receiptLoading": "画像を読み込み中…",
+    "receiptLoadError": "領収書を表示できませんでした。",
+    "splitsHeading": "按分",
+    "deleteExpense": "この出費を削除",
+    "deleteConfirm": "この出費を削除しますか？按分もまとめて削除されます。",
+    "deleteFailed": "削除に失敗しました。",
+    "auditHeading": "変更履歴",
+    "auditLoading": "履歴を読み込み中…",
+    "auditLoadError": "履歴を取得できませんでした。",
+    "auditEmpty": "まだ履歴がありません。",
+    "auditActor": "操作者",
+    "auditAction": {
+      "insert": "追加",
+      "update": "更新",
+      "delete": "削除"
+    }
+  },
+  "GroupCharts": {
+    "tabPayer": "支払者別",
+    "tabCategory": "カテゴリ別",
+    "tabByGroup": "グループ別",
+    "toggleAria": "グラフの切り替え",
+    "dashboardToggleAria": "支出グラフの切り替え",
+    "groupTitlePayer": "支払者別内訳",
+    "groupTitleCategory": "カテゴリ別内訳",
+    "groupTotalDescription": "合計 {total} の内訳",
+    "dashboardTitleByGroup": "グループ別支出",
+    "dashboardTitleByCategory": "カテゴリ別支出",
+    "dashboardTotalDescription": "全グループ合計 {total} の内訳"
+  },
+  "CategoryChart": {
+    "empty": "支出データがありません",
+    "untitled": "（無題）",
+    "moreCount": "…他 {count} 件"
+  },
+  "Settlement": {
+    "payWithPaypal": "PayPal で払う",
+    "payWithCashApp": "Cash App で払う"
   },
   "Onboarding": {
     "title": "ユーザー名を設定してください",

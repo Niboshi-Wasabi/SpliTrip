@@ -7,8 +7,9 @@
 
 import { useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
-import { Download, ImageIcon, Printer } from "lucide-react";
+import { Download, FileText, ImageIcon, Printer } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { parseExpenseCategoryId } from "@/lib/expense-categories";
 import {
   buildExportCsvFilename,
   buildGroupExportCsv,
@@ -23,6 +24,11 @@ import {
   downloadDomAsPng,
 } from "@/utils/exportGroupPng";
 import { useGroupExportCaptureRef } from "./group-export-capture";
+import {
+  buildExportPdfFilename,
+  downloadSimpleGroupPdf,
+  type PdfSettlementLineInput,
+} from "@/utils/exportGroupPdf";
 
 type Props = {
   groupName: string;
@@ -30,6 +36,7 @@ type Props = {
   members: CsvMember[];
   expenses: CsvExpenseInput[];
   settlements: CsvSettlementInput[];
+  totalExpenseAmount: number;
 };
 
 /**
@@ -48,6 +55,7 @@ function useGroupExportCsvLabels(): GroupExportCsvLabels {
     sectionExpenses: translations("csvSectionExpenses"),
     colDate: translations("csvColDate"),
     colPayer: translations("csvColPayer"),
+    colCategory: translations("csvColCategory"),
     colDescription: translations("csvColDescription"),
     colAmount: translations("csvColAmount"),
     colSplits: translations("csvColSplits"),
@@ -72,13 +80,17 @@ export function GroupExportToolbar({
   members,
   expenses,
   settlements,
+  totalExpenseAmount,
 }: Props) {
   const translations = useTranslations("GroupExport");
+  const categoryTranslations = useTranslations("ExpenseCategory");
   const locale = useLocale();
   const csvLabels = useGroupExportCsvLabels();
   const captureRef = useGroupExportCaptureRef();
   const [pngBusy, setPngBusy] = useState(false);
   const [pngError, setPngError] = useState<string | null>(null);
+  const [pdfBusy, setPdfBusy] = useState(false);
+  const [pdfError, setPdfError] = useState<string | null>(null);
 
   /**
    * Serialize current props into a BOM CSV and trigger download.
@@ -89,12 +101,18 @@ export function GroupExportToolbar({
    */
   function handleExportCsv(): void {
     const exportedAt = new Date();
+    const expensesForCsv: CsvExpenseInput[] = expenses.map((expenseRow) => ({
+      ...expenseRow,
+      categoryLabel: categoryTranslations(
+        parseExpenseCategoryId(expenseRow.category),
+      ),
+    }));
     const csvBody = buildGroupExportCsv({
       groupName,
       currencyCode,
       exportedAt,
       locale,
-      expenses,
+      expenses: expensesForCsv,
       settlements,
       members,
       labels: csvLabels,
@@ -112,6 +130,48 @@ export function GroupExportToolbar({
    */
   function handlePrint(): void {
     window.print();
+  }
+
+  /**
+   * Build a lightweight PDF (html2canvas + jsPDF) with trip name, total, settlements.
+   * 旅行名・総額・精算を 1 本の PDF にする（html2canvas + jsPDF）。
+   */
+  async function handleExportPdfReport(): Promise<void> {
+    setPdfBusy(true);
+    setPdfError(null);
+    try {
+      const exportedAt = new Date();
+      const settlementLines: PdfSettlementLineInput[] = settlements.map(
+        (settlementRow) => ({
+          fromDisplayName: settlementRow.fromDisplayName,
+          toDisplayName: settlementRow.toDisplayName,
+          amount: settlementRow.amount,
+        }),
+      );
+      await downloadSimpleGroupPdf(
+        {
+          groupName,
+          currencyCode,
+          locale,
+          totalAmount: totalExpenseAmount,
+          settlements: settlementLines,
+          exportedAt,
+          labels: {
+            heading: translations("pdfReportHeading"),
+            totalLabel: translations("pdfTotalSpendLabel"),
+            settlementHeading: translations("pdfSettlementHeading"),
+            settlementEmpty: translations("pdfSettlementEmpty"),
+            printedAtLabel: translations("printedAt"),
+          },
+        },
+        buildExportPdfFilename(groupName, exportedAt),
+      );
+    } catch (caughtError) {
+      console.error("handleExportPdfReport:", caughtError);
+      setPdfError(translations("pdfExportError"));
+    } finally {
+      setPdfBusy(false);
+    }
   }
 
   /**
@@ -183,6 +243,21 @@ export function GroupExportToolbar({
             variant="outline"
             size="sm"
             className="gap-2"
+            disabled={pdfBusy}
+            onClick={() => {
+              void handleExportPdfReport();
+            }}
+          >
+            <FileText className="size-4 shrink-0" aria-hidden />
+            {pdfBusy
+              ? translations("pdfExporting")
+              : translations("exportPdfReport")}
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            className="gap-2"
             disabled={pngBusy}
             onClick={() => {
               void handleExportPng();
@@ -195,6 +270,11 @@ export function GroupExportToolbar({
         {pngError ? (
           <p className="text-sm text-destructive" role="alert">
             {pngError}
+          </p>
+        ) : null}
+        {pdfError ? (
+          <p className="text-sm text-destructive" role="alert">
+            {pdfError}
           </p>
         ) : null}
       </div>
