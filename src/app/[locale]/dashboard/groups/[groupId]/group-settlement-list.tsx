@@ -69,7 +69,7 @@ export function GroupSettlementList({
         return (
           <li
             key={`${settlementRow.fromUserId}-${settlementRow.toUserId}-${rowIndex}`}
-            className="flex flex-col gap-2 rounded-lg border p-3 text-sm sm:flex-row sm:flex-wrap sm:items-center sm:justify-between"
+            className="flex min-h-[44px] flex-col gap-2 rounded-lg border p-3 text-sm sm:flex-row sm:flex-wrap sm:items-center sm:justify-between"
           >
             <span className="flex items-center gap-1.5">
               <UserAvatar
@@ -104,7 +104,7 @@ export function GroupSettlementList({
                       type="button"
                       variant="secondary"
                       size="sm"
-                      className="h-7 text-xs"
+                      className="min-h-[44px] text-xs sm:min-h-0 sm:h-7"
                       onClick={() => openPaymentInNewTab(paypalUrl)}
                     >
                       PayPal で払う
@@ -115,7 +115,7 @@ export function GroupSettlementList({
                       type="button"
                       variant="secondary"
                       size="sm"
-                      className="h-7 text-xs"
+                      className="min-h-[44px] text-xs sm:min-h-0 sm:h-7"
                       onClick={() => openPaymentInNewTab(cashAppUrl)}
                     >
                       Cash App で払う

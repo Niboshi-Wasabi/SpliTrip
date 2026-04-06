@@ -19,7 +19,7 @@ export function LogoutButton() {
   }
 
   return (
-    <Button variant="ghost" size="sm" className="gap-2" onClick={handleLogout}>
+    <Button variant="ghost" size="sm" className="min-h-[44px] gap-2 md:min-h-0" onClick={handleLogout}>
       <LogOut className="h-4 w-4" />
       ログアウト
     </Button>

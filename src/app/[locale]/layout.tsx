@@ -5,6 +5,7 @@ import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { getMessages, setRequestLocale } from "next-intl/server";
 import { routing } from "@/i18n/routing";
 import { AppProviders } from "@/app/providers";
+import { BottomNav } from "@/components/bottom-nav";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -65,7 +66,10 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
         suppressHydrationWarning
       >
         <NextIntlClientProvider messages={messages}>
-          <AppProviders>{children}</AppProviders>
+          <AppProviders>
+            {children}
+            <BottomNav />
+          </AppProviders>
         </NextIntlClientProvider>
       </body>
     </html>

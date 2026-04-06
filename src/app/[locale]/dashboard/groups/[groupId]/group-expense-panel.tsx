@@ -515,7 +515,7 @@ export function GroupExpensePanel({
   return (
     <form
       onSubmit={(formEvent) => void onSubmit(formEvent)}
-      className="flex flex-col gap-4 rounded-lg border border-border bg-card p-4"
+      className="flex flex-col gap-4 rounded-lg border border-border bg-card p-3 sm:p-4"
     >
       <h3 className="text-sm font-semibold">出費を追加</h3>
 
@@ -536,7 +536,7 @@ export function GroupExpensePanel({
             size="sm"
             disabled={scanning || submitting}
             onClick={() => fileInputRef.current?.click()}
-            className="gap-1.5"
+            className="min-h-[44px] gap-1.5 md:min-h-0"
           >
             {scanning ? (
               <Loader2 className="h-4 w-4 animate-spin" />
@@ -570,7 +570,7 @@ export function GroupExpensePanel({
           <Label htmlFor="payer">支払者</Label>
           <select
             id="payer"
-            className="h-8 w-full rounded-lg border border-input bg-transparent px-2.5 text-sm outline-none focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/50"
+            className="h-10 w-full rounded-lg border border-input bg-transparent px-2.5 text-sm outline-none focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/50 md:h-8"
             value={payerId}
             onChange={(changeEvent) => setPayerId(changeEvent.target.value)}
             disabled={submitting}
@@ -636,7 +636,7 @@ export function GroupExpensePanel({
               ["itemized", "項目別（Itemized）"],
             ] as const
           ).map(([value, label]) => (
-            <label key={value} className="flex items-center gap-2">
+            <label key={value} className="flex min-h-[44px] cursor-pointer items-center gap-2 rounded-md px-2 py-1 transition-colors hover:bg-muted/50 md:min-h-0">
               <input
                 type="radio"
                 name="splitMode"
@@ -655,7 +655,7 @@ export function GroupExpensePanel({
           端数の扱い（比率・パーセント・均等などで発生する最小単位の差）
         </legend>
         <div className="flex flex-col gap-2 text-sm">
-          <label className="flex items-center gap-2">
+          <label className="flex min-h-[44px] cursor-pointer items-center gap-2 rounded-md px-2 py-1 transition-colors hover:bg-muted/50 md:min-h-0">
             <input
               type="radio"
               name="rem"
@@ -665,7 +665,7 @@ export function GroupExpensePanel({
             />
             最大剰余法（おすすめ・Splitwise に近い）
           </label>
-          <label className="flex items-center gap-2">
+          <label className="flex min-h-[44px] cursor-pointer items-center gap-2 rounded-md px-2 py-1 transition-colors hover:bg-muted/50 md:min-h-0">
             <input
               type="radio"
               name="rem"
@@ -880,11 +880,11 @@ export function GroupExpensePanel({
                     </Button>
                   ) : null}
                 </div>
-                <div className="flex flex-wrap gap-3 text-xs">
+                <div className="flex flex-wrap gap-2 text-xs">
                   {members.map((memberRow) => (
                     <label
                       key={memberRow.user_id}
-                      className="flex items-center gap-1.5"
+                      className="flex min-h-[36px] cursor-pointer items-center gap-1.5 rounded-md px-1 py-0.5 transition-colors hover:bg-muted/50 md:min-h-0"
                     >
                       <input
                         type="checkbox"
@@ -941,7 +941,8 @@ export function GroupExpensePanel({
         </p>
       ) : null}
 
-      <Button type="submit" disabled={submitting}>
+      {/* min-h-[44px]: タッチターゲット確保 / Ensure touch target size on mobile */}
+      <Button type="submit" disabled={submitting} className="min-h-[44px] md:min-h-0">
         {submitting ? (
           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
         ) : null}

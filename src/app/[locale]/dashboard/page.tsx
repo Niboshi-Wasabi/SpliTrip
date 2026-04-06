@@ -149,16 +149,20 @@ export default async function DashboardPage({ params }: PageProps) {
           </div>
           <div className="flex items-center gap-1 sm:gap-2">
             <ThemeToggle />
+            {/* PC: テキスト付きナビ、モバイル: ボトムナビに移譲 */}
+            {/* PC: text nav buttons, Mobile: delegated to bottom nav */}
             <Link
               href="/settings"
               className={cn(
                 buttonVariants({ variant: "ghost", size: "sm" }),
-                "text-muted-foreground",
+                "hidden text-muted-foreground md:inline-flex",
               )}
             >
               設定
             </Link>
-            <LogoutButton />
+            <div className="hidden md:block">
+              <LogoutButton />
+            </div>
             <UserAvatar
               displayName={currentDisplayName}
               avatarUrl={currentAvatarUrl}
@@ -168,7 +172,8 @@ export default async function DashboardPage({ params }: PageProps) {
         </div>
       </header>
 
-      <main className="mx-auto max-w-6xl px-4 py-6">
+      {/* pb-20: ボトムナビの高さ分のクリアランス / Bottom nav clearance on mobile */}
+      <main className="mx-auto max-w-6xl px-4 py-6 pb-24 md:pb-6">
         <div className="mb-6 grid gap-4 sm:grid-cols-3">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-2">
@@ -239,7 +244,7 @@ export default async function DashboardPage({ params }: PageProps) {
                     <li key={groupItem.group.id}>
                       <Link
                         href={`/dashboard/groups/${groupItem.group.id}`}
-                        className="flex items-center justify-between rounded-lg border border-border p-3 transition-colors hover:bg-muted/50"
+                        className="flex min-h-[44px] items-center justify-between rounded-lg border border-border p-3 transition-colors hover:bg-muted/50"
                       >
                         <div>
                           <span className="font-medium text-primary">
@@ -266,7 +271,7 @@ export default async function DashboardPage({ params }: PageProps) {
               <div className="mt-4">
                 <Link
                   href="/dashboard/groups/new"
-                  className={cn(buttonVariants(), "w-full")}
+                  className={cn(buttonVariants(), "w-full min-h-[44px] md:min-h-0")}
                 >
                   新しい旅行（グループ）を作成
                 </Link>
@@ -276,7 +281,7 @@ export default async function DashboardPage({ params }: PageProps) {
         </div>
       </main>
 
-      <footer className="border-t border-border py-6 text-center text-xs text-muted-foreground">
+      <footer className="border-t border-border pb-20 pt-6 text-center text-xs text-muted-foreground md:pb-6">
         <Link href="/terms" className="underline underline-offset-4 hover:text-foreground">
           利用規約
         </Link>

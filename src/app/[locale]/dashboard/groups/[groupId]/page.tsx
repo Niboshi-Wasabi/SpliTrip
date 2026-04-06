@@ -136,7 +136,7 @@ export default async function GroupDetailPage({ params }: PageProps) {
         <div className="mx-auto flex max-w-6xl items-start gap-3 px-4 py-3">
           <Link
             href="/dashboard"
-            className={cn(buttonVariants({ variant: "ghost", size: "sm" }))}
+            className={cn(buttonVariants({ variant: "ghost", size: "sm" }), "min-h-[44px] md:min-h-0")}
           >
             <ArrowLeft className="mr-1 h-4 w-4" />
             ダッシュボード
@@ -170,7 +170,8 @@ export default async function GroupDetailPage({ params }: PageProps) {
 
       <RealtimeGroupRefresh groupId={groupId} />
 
-      <main className="mx-auto max-w-6xl space-y-6 px-4 py-6">
+      {/* pb-24: モバイルのボトムナビ分のクリアランス / Bottom nav clearance on mobile */}
+      <main className="mx-auto max-w-6xl space-y-6 px-4 py-6 pb-24 md:pb-6">
         <div className="print:hidden">
           <DisplayNamePrompt currentName={currentDisplayName} groupId={groupId} />
         </div>
@@ -260,7 +261,7 @@ export default async function GroupDetailPage({ params }: PageProps) {
                   return (
                     <li
                       key={expense.id}
-                      className="rounded-lg border border-border bg-card p-3 text-sm text-card-foreground"
+                      className="rounded-lg border border-border bg-card p-3 text-sm text-card-foreground sm:p-4"
                     >
                       <div className="flex flex-wrap items-baseline justify-between gap-2">
                         <span className="font-medium">

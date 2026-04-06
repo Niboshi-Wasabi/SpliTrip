@@ -124,7 +124,7 @@ export function CreateGroupForm() {
           {error}
         </p>
       ) : null}
-      <Button type="submit" disabled={isPending}>
+      <Button type="submit" disabled={isPending} className="min-h-[44px] md:min-h-0">
         {isPending ? (
           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
         ) : null}

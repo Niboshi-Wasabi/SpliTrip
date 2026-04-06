@@ -141,7 +141,7 @@ export function PaymentSettingsForm({
       <Button
         type="submit"
         disabled={saving || paymentSaveDisabled}
-        className="gap-2"
+        className="min-h-[44px] gap-2 md:min-h-0"
       >
         {saving ? (
           <>

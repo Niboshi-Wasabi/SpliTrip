@@ -81,7 +81,7 @@ export function DisplayNameForm({ initialDisplayName }: Props) {
         </p>
       ) : null}
 
-      <Button type="submit" disabled={saving} className="gap-2">
+      <Button type="submit" disabled={saving} className="min-h-[44px] gap-2 md:min-h-0">
         {saving ? (
           <>
             <Loader2 className="size-4 shrink-0 animate-spin" />

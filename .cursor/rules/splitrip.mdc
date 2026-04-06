@@ -18,3 +18,9 @@ alwaysApply: true
   - 悪い例: `s`, `g`, `exp`, `res`, `d.amount`, `groups.map((g, i) => ...)`
   - 良い例: `sum`, `groupItem`, `expense`, `response`, `entry.amount`, `groups.map((groupItem, groupIndex) => ...)`
 - **コメント:** コードの動作をそのまま繰り返すコメント（`// ループ`, `// 取得` 等）は不要。「なぜそうするか」や非自明な制約のみコメントする。
+
+## レスポンシブとモバイルファースト (Responsive & Mobile-First)
+
+- **Mobile-First Approach:** Tailwind CSS を用いて、基本のクラスはモバイル（スマホ）向けに記述し、PCやタブレット向けのスタイルは `md:` や `lg:` プレフィックスを使用して上書きすること。
+- **Touch Targets (タップ領域):** スマホで押しやすくするため、ボタンやリンクの高さは最低 `min-h-[44px]` を確保すること。
+- **Layouts:** モバイルでは要素を縦積み（`flex-col`）にし、`md:` 以上で横並び（`flex-row`）にするなど、画面幅を有効活用すること。

@@ -79,7 +79,7 @@ export function GroupInviteButton({ invitePath, groupName }: Props) {
         size="sm"
         disabled={busy || !urlReady}
         onClick={() => void copyInviteUrl()}
-        className="gap-1.5"
+        className="min-h-[44px] gap-1.5 md:min-h-0"
       >
         {busy ? (
           <Loader2 className="size-3.5 animate-spin" aria-hidden />
@@ -97,7 +97,7 @@ export function GroupInviteButton({ invitePath, groupName }: Props) {
           size="sm"
           disabled={busy || !urlReady}
           onClick={() => void shareInviteUrl()}
-          className="gap-1.5"
+          className="min-h-[44px] gap-1.5 md:min-h-0"
         >
           <Share2 className="size-3.5" aria-hidden />
           共有で送る

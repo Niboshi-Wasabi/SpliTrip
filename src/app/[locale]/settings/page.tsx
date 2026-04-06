@@ -79,7 +79,7 @@ export default async function SettingsPage({ params }: PageProps) {
         <div className="mx-auto flex max-w-lg items-center justify-between gap-3 px-4 py-3">
           <Link
             href="/dashboard"
-            className={cn(buttonVariants({ variant: "ghost", size: "sm" }))}
+            className={cn(buttonVariants({ variant: "ghost", size: "sm" }), "min-h-[44px] md:min-h-0")}
           >
             <ArrowLeft className="mr-1 h-4 w-4" />
             {t("backDashboard")}
@@ -87,7 +87,7 @@ export default async function SettingsPage({ params }: PageProps) {
           <ThemeToggle />
         </div>
       </header>
-      <main className="mx-auto max-w-lg space-y-6 px-4 py-8">
+      <main className="mx-auto max-w-lg space-y-6 px-4 py-8 pb-24 md:pb-8">
         <Card>
           <CardHeader>
             <div className="flex items-center gap-3">

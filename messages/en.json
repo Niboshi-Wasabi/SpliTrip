@@ -127,6 +127,12 @@
     "tooLong": "Must be 50 characters or fewer.",
     "saveError": "Could not save. Please try again."
   },
+  "BottomNav": {
+    "ariaLabel": "Main navigation",
+    "home": "Home",
+    "settings": "Settings",
+    "logout": "Logout"
+  },
   "ReceiptScan": {
     "button": "Scan Receipt / Image",
     "scanning": "Analyzing image…",
