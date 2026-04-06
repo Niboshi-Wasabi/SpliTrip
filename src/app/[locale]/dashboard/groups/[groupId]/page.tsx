@@ -47,9 +47,16 @@ export default async function GroupDetailPage({ params }: PageProps) {
     return;
   }
 
+  console.log("[GroupDetail] user.id =", user.id, "groupId =", groupId);
+
   const result = await fetchGroupDetailForUser(supabase, groupId, user.id);
 
   if (!result.ok) {
+    console.error("[GroupDetail] fetchGroupDetailForUser failed:", result.error, {
+      groupId,
+      userId: user.id,
+      isAnonymous: user.is_anonymous,
+    });
     if (result.error === "group_not_found") {
       notFound();
     }

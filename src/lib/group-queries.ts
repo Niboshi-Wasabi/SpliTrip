@@ -128,11 +128,12 @@ export async function fetchGroupDetailForUser(
     .maybeSingle();
 
   if (groupError) {
-    console.error("fetchGroup group:", groupError.message);
+    console.error("fetchGroup group:", groupError.message, { groupId, userId });
     return { ok: false, error: groupError.message };
   }
 
   if (!group) {
+    console.error("fetchGroup group_not_found", { groupId, userId });
     return { ok: false, error: "group_not_found" };
   }
 
@@ -142,7 +143,7 @@ export async function fetchGroupDetailForUser(
     .eq("group_id", groupId);
 
   if (membersError) {
-    console.error("fetchGroup members:", membersError.message);
+    console.error("fetchGroup members:", membersError.message, { groupId, userId });
     return { ok: false, error: membersError.message };
   }
 
@@ -150,6 +151,12 @@ export async function fetchGroupDetailForUser(
   const memberUserIds = membersList.map((memberRow) => memberRow.user_id);
   const viewerIsMember = memberUserIds.includes(userId);
   if (!viewerIsMember) {
+    console.error("fetchGroup forbidden", {
+      groupId,
+      userId,
+      memberCount: membersList.length,
+      memberUserIds,
+    });
     return { ok: false, error: "forbidden" };
   }
 
@@ -159,8 +166,7 @@ export async function fetchGroupDetailForUser(
     .in("id", memberUserIds);
 
   if (profilesError) {
-    console.error("fetchGroup profiles:", profilesError.message);
-    return { ok: false, error: profilesError.message };
+    console.error("fetchGroup profiles (non-fatal):", profilesError.message);
   }
 
   const displayNameByUserId: Record<string, string> = {};
