@@ -33,6 +33,17 @@ type ItemLine = {
   selected: Record<string, boolean>;
 };
 
+/**
+ * Native `<input type="radio">` looks vertically offset next to text when using `items-center`
+ * on a tall row (`min-h-[44px]`). `items-start` plus a small top margin on the control aligns
+ * the circle with the first line’s cap height.
+ * タッチ用の高い行で `items-center` だとラジオがテキストより上に見えるため、上揃え＋微調整で合わせる。
+ */
+const RADIO_LABEL_ROW_CLASS =
+  "flex min-h-[44px] cursor-pointer items-start gap-3 rounded-md px-2 py-2 transition-colors hover:bg-muted/50 md:min-h-0 md:py-1";
+const RADIO_INPUT_CLASS =
+  "mt-[0.3125rem] h-4 w-4 shrink-0 cursor-pointer";
+
 type Props = {
   groupId: string;
   members: GroupMemberRow[];
@@ -638,15 +649,16 @@ export function GroupExpensePanel({
               ["itemized", "項目別（Itemized）"],
             ] as const
           ).map(([value, label]) => (
-            <label key={value} className="flex min-h-[44px] cursor-pointer items-center gap-2 rounded-md px-2 py-1 transition-colors hover:bg-muted/50 md:min-h-0">
+            <label key={value} className={RADIO_LABEL_ROW_CLASS}>
               <input
                 type="radio"
                 name="splitMode"
+                className={RADIO_INPUT_CLASS}
                 checked={splitMode === value}
                 onChange={() => setSplitMode(value)}
                 disabled={submitting}
               />
-              {label}
+              <span className="min-w-0 flex-1 leading-snug">{label}</span>
             </label>
           ))}
         </div>
@@ -657,35 +669,42 @@ export function GroupExpensePanel({
           端数の扱い（比率・パーセント・均等などで発生する最小単位の差）
         </legend>
         <div className="flex flex-col gap-2 text-sm">
-          <label className="flex min-h-[44px] cursor-pointer items-center gap-2 rounded-md px-2 py-1 transition-colors hover:bg-muted/50 md:min-h-0">
+          <label className={RADIO_LABEL_ROW_CLASS}>
             <input
               type="radio"
               name="rem"
+              className={RADIO_INPUT_CLASS}
               checked={remainderKind === "largest_remainder"}
               onChange={() => setRemainderKind("largest_remainder")}
               disabled={submitting}
             />
-            最大剰余法（おすすめ・Splitwise に近い）
+            <span className="min-w-0 flex-1 leading-snug">
+              最大剰余法（おすすめ・Splitwise に近い）
+            </span>
           </label>
-          <label className="flex min-h-[44px] cursor-pointer items-center gap-2 rounded-md px-2 py-1 transition-colors hover:bg-muted/50 md:min-h-0">
+          <label className={RADIO_LABEL_ROW_CLASS}>
             <input
               type="radio"
               name="rem"
+              className={RADIO_INPUT_CLASS}
               checked={remainderKind === "payer"}
               onChange={() => setRemainderKind("payer")}
               disabled={submitting}
             />
-            支払者が端数を負担
+            <span className="min-w-0 flex-1 leading-snug">支払者が端数を負担</span>
           </label>
-          <label className="flex items-center gap-2">
+          <label className={RADIO_LABEL_ROW_CLASS}>
             <input
               type="radio"
               name="rem"
+              className={RADIO_INPUT_CLASS}
               checked={remainderKind === "specific_user"}
               onChange={() => setRemainderKind("specific_user")}
               disabled={submitting}
             />
-            指定メンバーが端数を負担
+            <span className="min-w-0 flex-1 leading-snug">
+              指定メンバーが端数を負担
+            </span>
           </label>
           {remainderKind === "specific_user" ? (
             <select
@@ -703,15 +722,18 @@ export function GroupExpensePanel({
               ))}
             </select>
           ) : null}
-          <label className="flex items-center gap-2">
+          <label className={RADIO_LABEL_ROW_CLASS}>
             <input
               type="radio"
               name="rem"
+              className={RADIO_INPUT_CLASS}
               checked={remainderKind === "first_member"}
               onChange={() => setRemainderKind("first_member")}
               disabled={submitting}
             />
-            メンバー一覧の先頭から順に端数を分配
+            <span className="min-w-0 flex-1 leading-snug">
+              メンバー一覧の先頭から順に端数を分配
+            </span>
           </label>
         </div>
       </fieldset>
@@ -886,10 +908,11 @@ export function GroupExpensePanel({
                   {members.map((memberRow) => (
                     <label
                       key={memberRow.user_id}
-                      className="flex min-h-[36px] cursor-pointer items-center gap-1.5 rounded-md px-1 py-0.5 transition-colors hover:bg-muted/50 md:min-h-0"
+                      className="flex min-h-[36px] cursor-pointer items-start gap-2 rounded-md px-1 py-0.5 transition-colors hover:bg-muted/50 md:min-h-0"
                     >
                       <input
                         type="checkbox"
+                        className="mt-[0.2rem] h-4 w-4 shrink-0 cursor-pointer"
                         checked={Boolean(line.selected[memberRow.user_id])}
                         onChange={(changeEvent) =>
                           setItemLines((previousLines) =>
