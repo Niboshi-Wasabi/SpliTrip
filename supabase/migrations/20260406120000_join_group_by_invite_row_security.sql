@@ -5,3 +5,10 @@
 
 alter function public.join_group_by_invite(uuid)
   set row_security = off;
+
+-- is_group_member は groups / group_members / group_expenses / expense_splits の
+-- RLS ポリシーから呼ばれる。SECURITY DEFINER だけでは Supabase Cloud 上で
+-- group_members の RLS を確実にバイパスできないため、明示的に row_security = off を付ける。
+
+alter function public.is_group_member(uuid, uuid)
+  set row_security = off;
