@@ -322,6 +322,13 @@ export function GroupExpensePanel({
         typeof (payload as { error: unknown }).error === "string"
           ? (payload as { error: string }).error
           : "request_failed";
+      const serverMessage =
+        typeof payload === "object" &&
+        payload !== null &&
+        "message" in payload &&
+        typeof (payload as { message: unknown }).message === "string"
+          ? (payload as { message: string }).message
+          : null;
       const messages: Record<string, string> = {
         split_sum_mismatch: "按分の合計が支払額と一致しません",
         manual_splits_required: "金額指定の入力が必要です",
@@ -341,7 +348,10 @@ export function GroupExpensePanel({
         unknown_member: "無効なメンバーが含まれています",
         invalid_total: "金額が不正です",
       };
-      setError(messages[code] ?? `登録に失敗しました（${code}）`);
+      const fallback = serverMessage
+        ? `登録に失敗しました（${code}）: ${serverMessage}`
+        : `登録に失敗しました（${code}）`;
+      setError(messages[code] ?? fallback);
       setSubmitting(false);
       return;
     }
