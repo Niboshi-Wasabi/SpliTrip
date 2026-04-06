@@ -14,6 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { currencyMinorExponent } from "@/utils/settlement";
 import type { GroupMemberRow } from "@/lib/group-queries";
+import { UserAvatar } from "@/components/user-avatar";
 import { summarizeAllocatedMinor, toMinorUnits } from "@/utils/settlement";
 
 type SplitMode = "equal" | "exact" | "shares" | "percent" | "itemized";
@@ -549,6 +550,11 @@ export function GroupExpensePanel({
           <div className="grid gap-2 sm:grid-cols-2">
             {members.map((memberRow) => (
               <div key={memberRow.user_id} className="flex items-center gap-2">
+                <UserAvatar
+                  displayName={memberRow.display_name}
+                  avatarUrl={memberRow.avatar_url}
+                  size="sm"
+                />
                 <Label className="w-28 shrink-0 truncate text-xs">
                   {memberRow.display_name}
                 </Label>
@@ -580,6 +586,11 @@ export function GroupExpensePanel({
           <div className="grid gap-2 sm:grid-cols-2">
             {members.map((memberRow) => (
               <div key={memberRow.user_id} className="flex items-center gap-2">
+                <UserAvatar
+                  displayName={memberRow.display_name}
+                  avatarUrl={memberRow.avatar_url}
+                  size="sm"
+                />
                 <Label className="w-28 shrink-0 truncate text-xs">
                   {memberRow.display_name}
                 </Label>
@@ -609,6 +620,11 @@ export function GroupExpensePanel({
           <div className="grid gap-2 sm:grid-cols-2">
             {members.map((memberRow) => (
               <div key={memberRow.user_id} className="flex items-center gap-2">
+                <UserAvatar
+                  displayName={memberRow.display_name}
+                  avatarUrl={memberRow.avatar_url}
+                  size="sm"
+                />
                 <Label className="w-28 shrink-0 truncate text-xs">
                   {memberRow.display_name}
                 </Label>
@@ -718,6 +734,11 @@ export function GroupExpensePanel({
                           )
                         }
                         disabled={submitting}
+                      />
+                      <UserAvatar
+                        displayName={memberRow.display_name}
+                        avatarUrl={memberRow.avatar_url}
+                        size="sm"
                       />
                       {memberRow.display_name}
                     </label>

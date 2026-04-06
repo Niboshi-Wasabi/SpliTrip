@@ -22,6 +22,7 @@ export type GroupMemberRow = {
   user_id: string;
   role: string;
   display_name: string;
+  avatar_url: string | null;
   paypal_me_id: string | null;
   cash_app_cashtag: string | null;
 };
@@ -172,12 +173,14 @@ export async function fetchGroupDetailForUser(
   type ProfileRow = {
     id: string;
     display_name: string | null;
+    avatar_url: string | null;
     paypal_me_id: string | null;
     cash_app_cashtag: string | null;
   };
   const profiles = (profilesRaw ?? []) as ProfileRow[];
 
   const displayNameByUserId: Record<string, string> = {};
+  const avatarUrlByUserId: Record<string, string | null> = {};
   const paymentFieldsByUserId: Record<
     string,
     { paypal_me_id: string | null; cash_app_cashtag: string | null }
@@ -185,6 +188,11 @@ export async function fetchGroupDetailForUser(
   for (const profileRow of profiles) {
     displayNameByUserId[profileRow.id] =
       profileRow.display_name?.trim() || "ユーザー";
+    avatarUrlByUserId[profileRow.id] =
+      typeof profileRow.avatar_url === "string" &&
+      profileRow.avatar_url.trim()
+        ? profileRow.avatar_url.trim()
+        : null;
     paymentFieldsByUserId[profileRow.id] = {
       paypal_me_id:
         typeof profileRow.paypal_me_id === "string" &&
@@ -236,6 +244,7 @@ export async function fetchGroupDetailForUser(
       role: memberRow.role,
       display_name:
         displayNameByUserId[memberRow.user_id] ?? "ユーザー",
+      avatar_url: avatarUrlByUserId[memberRow.user_id] ?? null,
       paypal_me_id: payment?.paypal_me_id ?? null,
       cash_app_cashtag: payment?.cash_app_cashtag ?? null,
     };

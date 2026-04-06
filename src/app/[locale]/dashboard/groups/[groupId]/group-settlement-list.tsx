@@ -7,6 +7,7 @@
 
 import type { GroupMemberRow } from "@/lib/group-queries";
 import type { GroupSettlement } from "@/lib/group-ledger";
+import { UserAvatar } from "@/components/user-avatar";
 import { formatMoneyByCurrency } from "@/lib/currency-payment-amount";
 import {
   buildCashAppPaymentUrl,
@@ -39,6 +40,10 @@ export function GroupSettlementList({
     <ul className="space-y-2">
       {settlements.map((settlementRow, rowIndex) => {
         const viewerIsDebtor = settlementRow.fromUserId === currentUserId;
+        const debtorMember = findMemberByUserId(
+          members,
+          settlementRow.fromUserId,
+        );
         const recipientMember = findMemberByUserId(
           members,
           settlementRow.toUserId,
@@ -66,11 +71,21 @@ export function GroupSettlementList({
             key={`${settlementRow.fromUserId}-${settlementRow.toUserId}-${rowIndex}`}
             className="flex flex-col gap-2 rounded-lg border p-3 text-sm sm:flex-row sm:flex-wrap sm:items-center sm:justify-between"
           >
-            <span>
+            <span className="flex items-center gap-1.5">
+              <UserAvatar
+                displayName={settlementRow.fromDisplayName}
+                avatarUrl={debtorMember?.avatar_url}
+                size="sm"
+              />
               <span className="font-medium">
                 {settlementRow.fromDisplayName}
               </span>
-              <span className="mx-2 text-muted-foreground">→</span>
+              <span className="text-muted-foreground">→</span>
+              <UserAvatar
+                displayName={settlementRow.toDisplayName}
+                avatarUrl={recipientMember?.avatar_url}
+                size="sm"
+              />
               <span className="font-medium">
                 {settlementRow.toDisplayName}
               </span>

@@ -33,6 +33,7 @@ import {
 } from "./group-export-capture";
 import { DisplayNamePrompt } from "@/components/display-name-prompt";
 import { RealtimeGroupRefresh } from "@/components/realtime-group-refresh";
+import { UserAvatar } from "@/components/user-avatar";
 import { checkNeedsOnboarding } from "@/lib/user-profile";
 
 export const dynamic = "force-dynamic";
@@ -133,6 +134,17 @@ export default async function GroupDetailPage({ params }: PageProps) {
             <p className="text-xs text-muted-foreground">
               {group.currency_code} · メンバー {members.length} 人
             </p>
+            <div className="mt-1.5 flex -space-x-1.5">
+              {members.map((memberRow) => (
+                <UserAvatar
+                  key={memberRow.user_id}
+                  displayName={memberRow.display_name}
+                  avatarUrl={memberRow.avatar_url}
+                  size="sm"
+                  className="ring-2 ring-card"
+                />
+              ))}
+            </div>
             <div className="mt-3">
               <GroupInviteButton
                 invitePath={invitePath}
@@ -246,25 +258,39 @@ export default async function GroupDetailPage({ params }: PageProps) {
                           {formatYen(Number(expense.amount))}
                         </span>
                       </div>
-                      <p className="text-xs text-muted-foreground">
-                        {expense.expense_date} · 支払:{" "}
-                        {payerMember?.display_name ?? expense.payer_id}
-                      </p>
+                      <div className="mt-1 flex items-center gap-1.5 text-xs text-muted-foreground">
+                        <UserAvatar
+                          displayName={payerMember?.display_name ?? "?"}
+                          avatarUrl={payerMember?.avatar_url}
+                          size="sm"
+                        />
+                        <span>
+                          {expense.expense_date} · 支払:{" "}
+                          {payerMember?.display_name ?? expense.payer_id}
+                        </span>
+                      </div>
                       <ul className="mt-2 space-y-0.5 text-xs text-muted-foreground">
                         {(expense.expense_splits ?? []).map((split) => {
                           const splitMember = members.find(
                             (member) => member.user_id === split.user_id,
                           );
                           return (
-                            <li key={split.user_id}>
-                              {splitMember?.display_name ?? split.user_id}:{" "}
-                              {formatYen(Number(split.amount))}
-                              {Number(split.ratio) > 0 &&
-                              Number(split.ratio) !== 1 ? (
-                                <span className="ml-1 opacity-70">
-                                  (ratio {Number(split.ratio).toFixed(4)})
-                                </span>
-                              ) : null}
+                            <li key={split.user_id} className="flex items-center gap-1.5">
+                              <UserAvatar
+                                displayName={splitMember?.display_name ?? "?"}
+                                avatarUrl={splitMember?.avatar_url}
+                                size="sm"
+                              />
+                              <span>
+                                {splitMember?.display_name ?? split.user_id}:{" "}
+                                {formatYen(Number(split.amount))}
+                                {Number(split.ratio) > 0 &&
+                                Number(split.ratio) !== 1 ? (
+                                  <span className="ml-1 opacity-70">
+                                    (ratio {Number(split.ratio).toFixed(4)})
+                                  </span>
+                                ) : null}
+                              </span>
                             </li>
                           );
                         })}

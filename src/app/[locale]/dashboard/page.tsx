@@ -24,8 +24,13 @@ import {
 import { formatYen } from "@/lib/format";
 import { listGroupsForUser } from "@/lib/group-queries";
 import { createClient } from "@/utils/supabase/server";
-import { checkNeedsOnboarding } from "@/lib/user-profile";
+import {
+  checkNeedsOnboarding,
+  extractDisplayName,
+  extractAvatarUrl,
+} from "@/lib/user-profile";
 import { redirect } from "@/i18n/navigation";
+import { UserAvatar } from "@/components/user-avatar";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { CategoryChart } from "./category-chart";
 import { LogoutButton } from "./logout-button";
@@ -50,6 +55,19 @@ export default async function DashboardPage({ params }: PageProps) {
   }
 
   const isGuestMode = user.is_anonymous === true;
+
+  const { data: ownProfileRaw } = await supabase.rpc("get_own_profile");
+  const ownProfile =
+    typeof ownProfileRaw === "object" && ownProfileRaw !== null
+      ? (ownProfileRaw as {
+          display_name?: string;
+          avatar_url?: string | null;
+        })
+      : null;
+  const currentDisplayName =
+    ownProfile?.display_name ?? extractDisplayName(user);
+  const currentAvatarUrl =
+    ownProfile?.avatar_url ?? extractAvatarUrl(user);
 
   const groupsResult = await listGroupsForUser(supabase, user.id);
   const groups = groupsResult.ok ? groupsResult.items : [];
@@ -130,6 +148,11 @@ export default async function DashboardPage({ params }: PageProps) {
               設定
             </Link>
             <LogoutButton />
+            <UserAvatar
+              displayName={currentDisplayName}
+              avatarUrl={currentAvatarUrl}
+              size="md"
+            />
           </div>
         </div>
       </header>

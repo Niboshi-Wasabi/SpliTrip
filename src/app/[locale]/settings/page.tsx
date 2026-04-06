@@ -16,6 +16,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { UserAvatar } from "@/components/user-avatar";
 import { createClient } from "@/utils/supabase/server";
 import { DisplayNameForm } from "./display-name-form";
 import { LanguagePreferenceForm } from "./language-preference-form";
@@ -65,6 +66,10 @@ export default async function SettingsPage({ params }: PageProps) {
     typeof row?.display_name === "string" && row.display_name.trim().length > 0
       ? row.display_name
       : "";
+  const initialAvatarUrl =
+    typeof row?.avatar_url === "string" && row.avatar_url.trim().length > 0
+      ? row.avatar_url
+      : null;
   const initialLanguage = row?.preferred_language === "en" ? "en" : "ja";
   const paymentColumnsMissing = row !== null && !("paypal_me_id" in row);
 
@@ -85,8 +90,17 @@ export default async function SettingsPage({ params }: PageProps) {
       <main className="mx-auto max-w-lg space-y-6 px-4 py-8">
         <Card>
           <CardHeader>
-            <CardTitle>{t("displayNameTitle")}</CardTitle>
-            <CardDescription>{t("displayNameDescription")}</CardDescription>
+            <div className="flex items-center gap-3">
+              <UserAvatar
+                displayName={initialDisplayName || "ユーザー"}
+                avatarUrl={initialAvatarUrl}
+                size="lg"
+              />
+              <div>
+                <CardTitle>{t("displayNameTitle")}</CardTitle>
+                <CardDescription>{t("displayNameDescription")}</CardDescription>
+              </div>
+            </div>
           </CardHeader>
           <CardContent>
             <DisplayNameForm initialDisplayName={initialDisplayName} />
