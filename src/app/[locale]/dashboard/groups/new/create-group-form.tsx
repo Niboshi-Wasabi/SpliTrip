@@ -31,8 +31,8 @@ export function CreateGroupForm() {
   } | null>(null);
   const [isPending, startTransition] = useTransition();
 
-  function onSubmitranslations(formEvent: React.FormEvent) {
-    formEvent.preventDefaultranslations();
+  function onSubmit(formEvent: React.FormEvent) {
+    formEvent.preventDefault();
     const trimmedName = name.trim();
     if (!trimmedName) {
       setError(translations("nameRequiredClient"));

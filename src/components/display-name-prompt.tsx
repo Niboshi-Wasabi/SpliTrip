@@ -1,18 +1,26 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { Loader2, Pencil, UserRound } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { broadcastGroupRefresh } from "@/lib/realtime-broadcast";
 
 type Props = {
   currentName: string;
+  groupId?: string;
   onSaved?: (newName: string) => void;
 };
 
-export function DisplayNamePromptranslations({ currentName, onSaved }: Props) {
+export function DisplayNamePrompt({
+  currentName,
+  groupId,
+  onSaved,
+}: Props) {
   const translations = useTranslations("DisplayName");
+  const router = useRouter();
   const isDefault = currentName === "ユーザー" || currentName === "User";
   const [name, setName] = useState(isDefault ? "" : currentName);
   const [saving, setSaving] = useState(false);
@@ -36,20 +44,23 @@ export function DisplayNamePromptranslations({ currentName, onSaved }: Props) {
     setSaving(true);
     setError(null);
 
-    const res = await fetch("/api/profile/display-name", {
+    const response = await fetch("/api/profile/display-name", {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ display_name: trimmed }),
     });
 
-    if (!res.ok) {
+    if (!response.ok) {
       setError(translations("saveError"));
       setSaving(false);
       return;
     }
 
     onSaved?.(trimmed);
-    window.location.reload();
+    if (groupId) {
+      broadcastGroupRefresh(groupId);
+    }
+    router.refresh();
   }
 
   if (!editing) {
@@ -90,14 +101,14 @@ export function DisplayNamePromptranslations({ currentName, onSaved }: Props) {
           <div className="flex gap-2">
             <Input
               value={name}
-              onChange={(e) => setName(e.target.value)}
+              onChange={(changeEvent) => setName(changeEvent.target.value)}
               placeholder={translations("placeholder")}
               maxLength={50}
               className="max-w-xs bg-white dark:bg-background"
               disabled={saving}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  e.preventDefaultranslations();
+              onKeyDown={(keyEvent) => {
+                if (keyEvent.key === "Enter") {
+                  keyEvent.preventDefault();
                   void handleSave();
                 }
               }}

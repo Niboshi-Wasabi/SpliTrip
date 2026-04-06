@@ -24,8 +24,8 @@ export function LanguagePreferenceForm({ initialLanguage }: Props) {
   const [message, setMessage] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
-  function onSubmitranslations(formEvent: React.FormEvent) {
-    formEvent.preventDefaultranslations();
+  function onSubmit(formEvent: React.FormEvent) {
+    formEvent.preventDefault();
     setMessage(null);
     startTransition(() => {
       void (async () => {

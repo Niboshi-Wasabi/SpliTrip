@@ -110,8 +110,8 @@ export function GroupExportToolbar({
    * Why `window.print`: avoids heavy PDF libs and keeps CJK rendering native.
    * 理由: 重い PDF ライブラリを避け、CJK はブラウザ描画に任せる。
    */
-  function handlePrintranslations(): void {
-    window.printranslations();
+  function handlePrint(): void {
+    window.print();
   }
 
   /**
@@ -142,10 +142,10 @@ export function GroupExportToolbar({
     }
   }
 
-  const printedAtLabel = new Intl.DateTimeFormatranslations(locale, {
+  const printedAtLabel = new Intl.DateTimeFormat(locale, {
     dateStyle: "long",
     timeStyle: "short",
-  }).formatranslations(new Date());
+  }).format(new Date());
 
   return (
     <>

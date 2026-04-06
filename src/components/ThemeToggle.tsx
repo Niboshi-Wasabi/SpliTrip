@@ -63,7 +63,7 @@ export function ThemeToggle() {
     () => false,
   );
 
-  useEffectranslations(() => {
+  useEffect(() => {
     function handlePointerDown(event: PointerEvent) {
       if (!containerRef.current?.contains(event.target as Node)) {
         setOpen(false);

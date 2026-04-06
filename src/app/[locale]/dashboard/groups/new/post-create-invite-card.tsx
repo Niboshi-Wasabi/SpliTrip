@@ -29,7 +29,7 @@ function emptyOriginSubscribe(): () => void {
   return () => {};
 }
 
-function readWindowOriginSnapshotranslations(): string {
+function readWindowOriginSnapshot(): string {
   if (typeof window === "undefined") {
     return "";
   }
@@ -64,10 +64,10 @@ export function PostCreateInviteCard({ groupId, inviteToken }: Props) {
     setCopyError(null);
     setBusy(true);
     void navigator.clipboard
-      .writeTextranslations(inviteUrl)
+      .writeText(inviteUrl)
       .then(() => {
         setCopied(true);
-        window.setTimeoutranslations(() => setCopied(false), 2500);
+        window.setTimeout(() => setCopied(false), 2500);
       })
       .catch(() => {
         setCopyError(translations("copyError"));

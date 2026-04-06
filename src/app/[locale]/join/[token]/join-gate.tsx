@@ -132,19 +132,19 @@ export function JoinGate({ token }: Props) {
       if (captchaToken) {
         setLineCaptchaBridgeCookie(captchaToken);
       }
-      const next = encodeURIComponentranslations(joinPath);
+      const next = encodeURIComponent(joinPath);
       window.location.assign(`/api/auth/line?next=${next}`);
       return;
     }
 
-    const supabase = createClientranslations();
+    const supabase = createClient();
     const siteOrigin = getPublicSiteOrigin();
     const oauthOptions: {
       redirectTo: string;
       queryParams?: Record<string, string>;
       captchaToken?: string;
     } = {
-      redirectTo: `${siteOrigin}/auth/callback?next=${encodeURIComponentranslations(joinPath)}`,
+      redirectTo: `${siteOrigin}/auth/callback?next=${encodeURIComponent(joinPath)}`,
     };
     if (captchaToken) {
       oauthOptions.queryParams = { captcha_token: captchaToken };
@@ -159,11 +159,11 @@ export function JoinGate({ token }: Props) {
     if (authError) {
       setError(formatOAuthLoginError(authError));
       setLoadingAction(null);
-      turnstileRef.current?.resetranslations();
+      turnstileRef.current?.reset();
     }
   }
 
-  async function handleJoinAsGuestranslations() {
+  async function handleJoinAsGuest() {
     if (!supabaseReady) {
       setError(tLogin("supabaseNotConfigured"));
       return;
@@ -173,7 +173,7 @@ export function JoinGate({ token }: Props) {
     setLoadingAction("guest");
     setError(null);
 
-    const supabase = createClientranslations();
+    const supabase = createClient();
     const { data: anonData, error: authError } = await supabase.auth.signInAnonymously({
       options: captchaToken ? { captchaToken } : undefined,
     });
@@ -181,7 +181,7 @@ export function JoinGate({ token }: Props) {
     if (authError) {
       setError(authError.message || tLogin("guestModeError"));
       setLoadingAction(null);
-      turnstileRef.current?.resetranslations();
+      turnstileRef.current?.reset();
       return;
     }
 
@@ -265,7 +265,7 @@ export function JoinGate({ token }: Props) {
             size="lg"
             className="flex w-full items-center justify-center gap-2 text-sm font-medium"
             disabled={authButtonsDisabled}
-            onClick={() => void handleJoinAsGuestranslations()}
+            onClick={() => void handleJoinAsGuest()}
           >
             {loadingAction === "guest" ? (
               <Loader2 className="size-4 shrink-0 animate-spin" />

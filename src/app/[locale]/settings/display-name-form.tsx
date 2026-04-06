@@ -18,8 +18,8 @@ export function DisplayNameForm({ initialDisplayName }: Props) {
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  async function onSubmitranslations(e: React.FormEvent) {
-    e.preventDefaultranslations();
+  async function onSubmit(formEvent: React.FormEvent) {
+    formEvent.preventDefault();
     const trimmed = displayName.trim();
     if (trimmed.length === 0) {
       setError(translations("required"));
@@ -53,7 +53,7 @@ export function DisplayNameForm({ initialDisplayName }: Props) {
   }
 
   return (
-    <form onSubmit={(e) => void onSubmitranslations(e)} className="space-y-4">
+    <form onSubmit={(formEvent) => void onSubmit(formEvent)} className="space-y-4">
       <div className="space-y-2">
         <Label htmlFor="display_name">{translations("label")}</Label>
         <Input
@@ -65,7 +65,7 @@ export function DisplayNameForm({ initialDisplayName }: Props) {
           value={displayName}
           maxLength={50}
           disabled={saving}
-          onChange={(e) => setDisplayName(e.target.value)}
+          onChange={(changeEvent) => setDisplayName(changeEvent.target.value)}
         />
         <p className="text-xs text-muted-foreground">
           {translations("hint")}

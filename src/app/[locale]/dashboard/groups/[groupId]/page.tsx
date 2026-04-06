@@ -32,6 +32,7 @@ import {
   GroupExportCaptureProvider,
 } from "./group-export-capture";
 import { DisplayNamePrompt } from "@/components/display-name-prompt";
+import { RealtimeGroupRefresh } from "@/components/realtime-group-refresh";
 
 export const dynamic = "force-dynamic";
 
@@ -134,9 +135,11 @@ export default async function GroupDetailPage({ params }: PageProps) {
         </div>
       </header>
 
+      <RealtimeGroupRefresh groupId={groupId} />
+
       <main className="mx-auto max-w-6xl space-y-6 px-4 py-6">
         <div className="print:hidden">
-          <DisplayNamePrompt currentName={currentDisplayName} />
+          <DisplayNamePrompt currentName={currentDisplayName} groupId={groupId} />
         </div>
         <GroupExportCaptureProvider>
           <GroupExportToolbar

@@ -31,8 +31,8 @@ export function PaymentSettingsForm({
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  async function onSubmitranslations(formEvent: React.FormEvent) {
-    formEvent.preventDefaultranslations();
+  async function onSubmit(formEvent: React.FormEvent) {
+    formEvent.preventDefault();
     setSaving(true);
     setMessage(null);
     setError(null);
@@ -80,7 +80,7 @@ export function PaymentSettingsForm({
 
   return (
     <form
-      onSubmit={(formEvent) => void onSubmitranslations(formEvent)}
+      onSubmit={(formEvent) => void onSubmit(formEvent)}
       className="space-y-6"
     >
       <div className="space-y-2">

@@ -108,11 +108,11 @@ export function LoginForm() {
   const captchaOk = !captchaRequired || !!captchaToken;
 
   const urlErrorMessage = useMemo(
-    () => loginErrorMessageFromQueryParam(searchParams.getranslations("error")),
+    () => loginErrorMessageFromQueryParam(searchParams.get("error")),
     [searchParams],
   );
 
-  useEffectranslations(() => {
+  useEffect(() => {
     setError(urlErrorMessage);
   }, [urlErrorMessage]);
 
@@ -143,14 +143,14 @@ export function LoginForm() {
       return;
     }
 
-    const supabase = createClientranslations();
+    const supabase = createClient();
     const siteOrigin = getPublicSiteOrigin();
     const oauthOptions: {
       redirectTo: string;
       queryParams?: Record<string, string>;
       captchaToken?: string;
     } = {
-      redirectTo: `${siteOrigin}/auth/callback?next=${encodeURIComponentranslations(dashboardPath)}`,
+      redirectTo: `${siteOrigin}/auth/callback?next=${encodeURIComponent(dashboardPath)}`,
     };
     if (captchaToken) {
       oauthOptions.queryParams = { captcha_token: captchaToken };
@@ -165,7 +165,7 @@ export function LoginForm() {
     if (authError) {
       setError(formatOAuthLoginError(authError));
       setLoadingAction(null);
-      turnstileRef.current?.resetranslations();
+      turnstileRef.current?.reset();
     }
   }
 
@@ -179,7 +179,7 @@ export function LoginForm() {
     setLoadingAction("guest");
     setError(urlErrorMessage);
 
-    const supabase = createClientranslations();
+    const supabase = createClient();
     const { error: authError } = await supabase.auth.signInAnonymously({
       options: captchaToken ? { captchaToken } : undefined,
     });
@@ -187,7 +187,7 @@ export function LoginForm() {
     if (authError) {
       setError(authError.message || translations("guestModeError"));
       setLoadingAction(null);
-      turnstileRef.current?.resetranslations();
+      turnstileRef.current?.reset();
       return;
     }
 
