@@ -118,42 +118,28 @@ export async function POST(request: NextRequest, context: RouteContext) {
 
   const splitRows = built.splitRows;
 
-  const { data: expense, error: insExpError } = await supabase
-    .from("group_expenses")
-    .insert({
-      group_id: groupId,
-      payer_id,
-      amount,
-      description,
-      expense_date: dateStr,
-    })
-    .select("id")
-    .single();
-
-  if (insExpError || !expense) {
-    console.error("insert group_expenses:", insExpError?.message);
-    return NextResponse.json(
-      { error: "expense_insert_failed", message: insExpError?.message },
-      { status: 500 },
-    );
-  }
-
-  const expenseId = expense.id as string;
-
-  const splitInsert = splitRows.map((s) => ({
-    expense_id: expenseId,
+  const splitsJson = splitRows.map((s) => ({
     user_id: s.user_id,
     amount: s.amount,
     ratio: s.ratio,
   }));
 
-  const { error: splitError } = await supabase.from("expense_splits").insert(splitInsert);
+  const { data: expenseId, error: rpcError } = await supabase.rpc(
+    "insert_expense_with_splits",
+    {
+      p_group_id: groupId,
+      p_payer_id: payer_id,
+      p_amount: amount,
+      p_description: description,
+      p_expense_date: dateStr,
+      p_splits: splitsJson,
+    },
+  );
 
-  if (splitError) {
-    console.error("insert expense_splits:", splitError.message);
-    await supabase.from("group_expenses").delete().eq("id", expenseId);
+  if (rpcError || !expenseId) {
+    console.error("insert_expense_with_splits:", rpcError?.message);
     return NextResponse.json(
-      { error: "splits_insert_failed", message: splitError.message },
+      { error: "expense_insert_failed", message: rpcError?.message },
       { status: 500 },
     );
   }
