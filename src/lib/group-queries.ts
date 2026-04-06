@@ -27,13 +27,13 @@ export type GroupMemberRow = {
   cash_app_cashtag: string | null;
 };
 
-type SplitRow = {
+export type SplitRow = {
   user_id: string;
   amount: string | number;
   ratio: string | number;
 };
 
-type ExpenseRowDb = {
+export type ExpenseRowDb = {
   id: string;
   payer_id: string;
   amount: string | number;

@@ -522,10 +522,12 @@ export function GroupExpensePanel({
       {/* AI レシートスキャン / AI receipt scan section */}
       <div className="flex flex-col gap-2 rounded-md border border-dashed border-blue-300 bg-blue-50/50 p-3 dark:border-blue-800 dark:bg-blue-950/20">
         <div className="flex flex-wrap items-center gap-2">
+          {/* capture="environment": スマホの背面カメラを直接起動する / Launch rear camera on mobile */}
           <input
             ref={fileInputRef}
             type="file"
             accept="image/*"
+            capture="environment"
             className="hidden"
             onChange={(fileEvent) => void handleReceiptScan(fileEvent)}
             disabled={scanning || submitting}

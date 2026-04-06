@@ -35,6 +35,7 @@ import { DisplayNamePrompt } from "@/components/display-name-prompt";
 import { RealtimeGroupRefresh } from "@/components/realtime-group-refresh";
 import { UserAvatar } from "@/components/user-avatar";
 import { checkNeedsOnboarding } from "@/lib/user-profile";
+import { GroupExpenseList } from "./group-expense-list";
 
 export const dynamic = "force-dynamic";
 
@@ -248,71 +249,7 @@ export default async function GroupDetailPage({ params }: PageProps) {
             <CardDescription>按分込みの一覧</CardDescription>
           </CardHeader>
           <CardContent>
-            {expenses.length === 0 ? (
-              <p className="py-6 text-center text-sm text-muted-foreground">
-                まだ出費がありません
-              </p>
-            ) : (
-              <ul className="space-y-3">
-                {expenses.map((expense) => {
-                  const payerMember = members.find(
-                    (member) => member.user_id === expense.payer_id,
-                  );
-                  return (
-                    <li
-                      key={expense.id}
-                      className="rounded-lg border border-border bg-card p-3 text-sm text-card-foreground sm:p-4"
-                    >
-                      <div className="flex flex-wrap items-baseline justify-between gap-2">
-                        <span className="font-medium">
-                          {expense.description?.trim() || "（無題）"}
-                        </span>
-                        <span className="font-semibold">
-                          {formatYen(Number(expense.amount))}
-                        </span>
-                      </div>
-                      <div className="mt-1 flex items-center gap-1.5 text-xs text-muted-foreground">
-                        <UserAvatar
-                          displayName={payerMember?.display_name ?? "?"}
-                          avatarUrl={payerMember?.avatar_url}
-                          size="sm"
-                        />
-                        <span>
-                          {expense.expense_date} · 支払:{" "}
-                          {payerMember?.display_name ?? expense.payer_id}
-                        </span>
-                      </div>
-                      <ul className="mt-2 space-y-0.5 text-xs text-muted-foreground">
-                        {(expense.expense_splits ?? []).map((split) => {
-                          const splitMember = members.find(
-                            (member) => member.user_id === split.user_id,
-                          );
-                          return (
-                            <li key={split.user_id} className="flex items-center gap-1.5">
-                              <UserAvatar
-                                displayName={splitMember?.display_name ?? "?"}
-                                avatarUrl={splitMember?.avatar_url}
-                                size="sm"
-                              />
-                              <span>
-                                {splitMember?.display_name ?? split.user_id}:{" "}
-                                {formatYen(Number(split.amount))}
-                                {Number(split.ratio) > 0 &&
-                                Number(split.ratio) !== 1 ? (
-                                  <span className="ml-1 opacity-70">
-                                    (ratio {Number(split.ratio).toFixed(4)})
-                                  </span>
-                                ) : null}
-                              </span>
-                            </li>
-                          );
-                        })}
-                      </ul>
-                    </li>
-                  );
-                })}
-              </ul>
-            )}
+            <GroupExpenseList expenses={expenses} members={members} />
           </CardContent>
         </Card>
 

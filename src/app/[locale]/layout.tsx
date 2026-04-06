@@ -21,10 +21,22 @@ export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
 }
 
+/**
+ * PWA として認識させるために appleWebApp / themeColor を設定する。
+ * Set appleWebApp & themeColor so iOS / Android treat the app as installable PWA.
+ */
 export const metadata: Metadata = {
   title: "SpliTrip（スプリトリップ）- グループ旅行の精算アプリ",
   description:
     "グループ旅行中の立替をリアルタイムに記録し、精算を自動計算するWebアプリ",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "SpliTrip",
+  },
+  other: {
+    "mobile-web-app-capable": "yes",
+  },
 };
 
 type LayoutProps = {
@@ -59,6 +71,9 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
       suppressHydrationWarning
     >
       <head>
+        {/* PWA: テーマカラーをブラウザ UI に反映 / Reflect brand color in browser chrome */}
+        <meta name="theme-color" content="#2563eb" />
+        <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
         <script defer src="/theme-bootstrap.js" />
       </head>
       <body

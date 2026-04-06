@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="96" fill="#2563eb"/>
+  <g transform="translate(256, 240)" fill="none" stroke="white" stroke-width="28" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Plane icon -->
+    <path d="M-80,-60 L80,-60 L120,0 L80,60 L-80,60 Z" fill="white" stroke="none" opacity="0"/>
+    <path d="M-20,-80 L100,0 L-20,80 L-20,40 L-80,40 L-80,-40 L-20,-40 Z" fill="white" stroke="none"/>
+  </g>
+  <text x="256" y="420" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="72" font-weight="700" fill="white">SpliTrip</text>
+</svg>
