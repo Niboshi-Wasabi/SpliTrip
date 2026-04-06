@@ -24,10 +24,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { formatOAuthLoginError } from "@/lib/oauth-errors";
-import {
-  localizedDashboardGroupPath,
-  localizedJoinPath,
-} from "@/lib/i18n/localized-paths";
+import { localizedJoinPath } from "@/lib/i18n/localized-paths";
 import { setLineCaptchaBridgeCookie } from "@/lib/set-line-captcha-bridge";
 import { createClient } from "@/utils/supabase/client";
 import { isSupabaseConfigured } from "@/utils/supabase/env";
@@ -206,11 +203,10 @@ export function JoinGate({ token }: Props) {
       return;
     }
 
-    // Ensure auth storage (cookies) is flushed before full navigation; avoids SSR
-    // seeing no session / no membership right after anonymous join.
-    await supabase.auth.getSession();
-
-    window.location.assign(localizedDashboardGroupPath(locale, groupId));
+    // Reload this join page; the server-side branch for logged-in users
+    // will call the RPC, get the groupId, and redirect to the group detail
+    // page in a single request chain — avoiding client→server cookie sync issues.
+    window.location.replace(joinPath);
   }
 
   const authButtonsDisabled =

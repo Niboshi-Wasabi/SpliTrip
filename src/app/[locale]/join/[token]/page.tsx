@@ -61,5 +61,5 @@ export default async function JoinByInvitePage({ params }: PageProps) {
     redirect({ href: "/dashboard", locale });
   }
 
-  redirect({ href: `/groups/${groupId}`, locale });
+  redirect({ href: `/dashboard/groups/${groupId}`, locale });
 }
