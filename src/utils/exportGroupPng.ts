@@ -49,6 +49,55 @@ async function flushLayoutAfterThemeToggle(): Promise<void> {
  * Why: html2canvas reads computed styles; dark surfaces stay low-contrast on white letter paper.
  * 理由: html2canvas は計算済みスタイルを読むため、ダーク UI は白地画像でコントラストが落ちる。
  */
+
+/**
+ * OAuth 等のクロスオリジン画像は CORS なしだと canvas が taint し、toBlob が SecurityError になる。
+ * クローン上では img を頭文字アバターに置き換え、確実に書き出し可能にする。
+ * Cross-origin avatars taint the canvas; replace with initials in the clone so PNG export always succeeds.
+ */
+function firstGraphemeForExport(text: string): string {
+  if (typeof Intl?.Segmenter === "function") {
+    const segmenter = new Intl.Segmenter("ja", { granularity: "grapheme" });
+    const firstSegment = segmenter.segment(text)[Symbol.iterator]().next();
+    return firstSegment.done ? "?" : firstSegment.value.segment;
+  }
+  return text.charAt(0) || "?";
+}
+
+function replaceAvatarImagesForPngCapture(
+  clonedDocument: Document,
+  clonedRoot: HTMLElement,
+): void {
+  const images = clonedRoot.querySelectorAll("img");
+  images.forEach((node) => {
+    const img = node;
+    const altText = img.alt?.trim() || "?";
+    const initial = firstGraphemeForExport(altText);
+
+    const span = clonedDocument.createElement("span");
+    span.textContent = initial;
+    span.setAttribute("aria-hidden", "true");
+    span.style.display = "inline-flex";
+    span.style.alignItems = "center";
+    span.style.justifyContent = "center";
+    span.style.borderRadius = "9999px";
+    span.style.backgroundColor = "#3b82f6";
+    span.style.color = "#ffffff";
+    span.style.fontWeight = "600";
+    span.style.flexShrink = "0";
+
+    const className = img.className || "";
+    let sizePx = 24;
+    if (className.includes("h-10") || className.includes("w-10")) sizePx = 40;
+    else if (className.includes("h-8") || className.includes("w-8")) sizePx = 32;
+    span.style.width = `${sizePx}px`;
+    span.style.height = `${sizePx}px`;
+    span.style.fontSize = sizePx <= 24 ? "10px" : "12px";
+
+    img.replaceWith(span);
+  });
+}
+
 async function withLightRootForCapture<T>(run: () => Promise<T>): Promise<T> {
   const root = document.documentElement;
   const hadDark = root.classList.contains("dark");
@@ -103,8 +152,13 @@ export async function captureElementToPngBlob(
       backgroundColor: "#ffffff",
       scale: 2,
       useCORS: true,
-      allowTaint: true,
+      // クローン側で外部 img を差し替えたあとは汚染不要のため false（toBlob の SecurityError 回避）
+      // After replacing foreign images in onclone, keep canvas untainted for toBlob().
+      allowTaint: false,
       logging: false,
+      onclone: (clonedDocument, clonedElement) => {
+        replaceAvatarImagesForPngCapture(clonedDocument, clonedElement);
+      },
       ignoreElements: (node) => {
         if (!(node instanceof HTMLElement)) {
           return false;

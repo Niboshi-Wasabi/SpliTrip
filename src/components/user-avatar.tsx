@@ -64,6 +64,7 @@ export function UserAvatar({
         src={avatarUrl}
         alt={displayName}
         className={`${sizeClass} shrink-0 rounded-full object-cover ${className}`}
+        crossOrigin="anonymous"
         referrerPolicy="no-referrer"
       />
     );
