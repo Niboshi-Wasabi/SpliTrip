@@ -91,14 +91,25 @@ export default async function GroupDetailPage({ params }: PageProps) {
   );
   const payerChartData = (() => {
     const payerTotals = new Map<string, number>();
+    const payerDetails = new Map<
+      string,
+      { description: string; amount: number }[]
+    >();
     for (const expense of expenses) {
       const payerName =
         members.find((member) => member.user_id === expense.payer_id)
           ?.display_name ?? "不明";
+      const expenseAmount = Number(expense.amount);
       payerTotals.set(
         payerName,
-        (payerTotals.get(payerName) ?? 0) + Number(expense.amount),
+        (payerTotals.get(payerName) ?? 0) + expenseAmount,
       );
+      const detailList = payerDetails.get(payerName) ?? [];
+      detailList.push({
+        description: expense.description?.trim() || "",
+        amount: expenseAmount,
+      });
+      payerDetails.set(payerName, detailList);
     }
     return [...payerTotals.entries()]
       .sort(
@@ -108,6 +119,7 @@ export default async function GroupDetailPage({ params }: PageProps) {
         category: payerName,
         amount: payerAmount,
         color: getCategoryColor(payerName, colorIndex),
+        details: payerDetails.get(payerName) ?? [],
       }));
   })();
 

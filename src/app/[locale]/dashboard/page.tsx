@@ -74,10 +74,14 @@ export default async function DashboardPage({ params }: PageProps) {
   const groupIds = groups.map((groupItem) => groupItem.group.id);
 
   const expenseTotalByGroup = new Map<string, number>();
+  const expenseDetailsByGroup = new Map<
+    string,
+    { description: string; amount: number }[]
+  >();
   if (groupIds.length > 0) {
     const { data: expenseRows, error: expensesError } = await supabase
       .from("group_expenses")
-      .select("group_id, amount")
+      .select("group_id, amount, description")
       .in("group_id", groupIds);
 
     if (expensesError) {
@@ -88,11 +92,17 @@ export default async function DashboardPage({ params }: PageProps) {
     }
 
     for (const expense of expenseRows ?? []) {
+      const expenseAmount = Number(expense.amount);
       expenseTotalByGroup.set(
         expense.group_id,
-        (expenseTotalByGroup.get(expense.group_id) ?? 0) +
-          Number(expense.amount),
+        (expenseTotalByGroup.get(expense.group_id) ?? 0) + expenseAmount,
       );
+      const detailList = expenseDetailsByGroup.get(expense.group_id) ?? [];
+      detailList.push({
+        description: (expense.description as string)?.trim() || "",
+        amount: expenseAmount,
+      });
+      expenseDetailsByGroup.set(expense.group_id, detailList);
     }
   }
 
@@ -109,6 +119,7 @@ export default async function DashboardPage({ params }: PageProps) {
       category: groupItem.group.name,
       amount: expenseTotalByGroup.get(groupItem.group.id) ?? 0,
       color: getCategoryColor(groupItem.group.name, groupIndex),
+      details: expenseDetailsByGroup.get(groupItem.group.id) ?? [],
     }))
     .filter((entry) => entry.amount > 0)
     .sort((left, right) => right.amount - left.amount);
