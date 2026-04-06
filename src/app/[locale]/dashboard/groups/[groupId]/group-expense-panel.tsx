@@ -5,10 +5,12 @@
  * Live validation mirrors `src/utils/settlement.ts` minor-unit math.
  */
 
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Loader2 } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { Camera, Loader2 } from "lucide-react";
 import { broadcastGroupRefresh } from "@/lib/realtime-broadcast";
+import { analyzeReceipt } from "@/actions/analyzeReceipt";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -53,12 +55,59 @@ function policyToApi(
   return { type: "largest_remainder" };
 }
 
+/**
+ * クライアントで画像を最大幅にリサイズし base64 に変換する。
+ * Resize the image on the client to a max dimension and return as base64.
+ *
+ * サーバーアクションのペイロード上限を超えないよう事前に圧縮する。
+ * Pre-compress to stay within server action payload limits.
+ */
+function resizeImageToBase64(
+  file: File,
+  maxDimension: number,
+): Promise<{ base64: string; mimeType: string }> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const img = new Image();
+      img.onload = () => {
+        let targetWidth = img.width;
+        let targetHeight = img.height;
+        if (targetWidth > maxDimension || targetHeight > maxDimension) {
+          const scaleFactor =
+            maxDimension / Math.max(targetWidth, targetHeight);
+          targetWidth = Math.round(targetWidth * scaleFactor);
+          targetHeight = Math.round(targetHeight * scaleFactor);
+        }
+        const canvas = document.createElement("canvas");
+        canvas.width = targetWidth;
+        canvas.height = targetHeight;
+        const context = canvas.getContext("2d");
+        if (!context) {
+          reject(new Error("Canvas not supported"));
+          return;
+        }
+        context.drawImage(img, 0, 0, targetWidth, targetHeight);
+        const outputMime = "image/jpeg";
+        const dataUrl = canvas.toDataURL(outputMime, 0.85);
+        const pureBase64 = dataUrl.split(",")[1];
+        resolve({ base64: pureBase64, mimeType: outputMime });
+      };
+      img.onerror = () => reject(new Error("Failed to load image"));
+      img.src = reader.result as string;
+    };
+    reader.onerror = () => reject(new Error("Failed to read file"));
+    reader.readAsDataURL(file);
+  });
+}
+
 export function GroupExpensePanel({
   groupId,
   members,
   currencyCode,
 }: Props) {
   const router = useRouter();
+  const receiptTranslations = useTranslations("ReceiptScan");
   const minorExp = currencyMinorExponent(currencyCode);
   const amountStep = minorExp === 0 ? "1" : "0.01";
 
@@ -100,6 +149,83 @@ export function GroupExpensePanel({
 
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // --- AI レシートスキャン / AI receipt scan ---
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [scanning, setScanning] = useState(false);
+  const [scanMessage, setScanMessage] = useState<{
+    tone: "ok" | "error";
+    text: string;
+  } | null>(null);
+
+  const MAX_IMAGE_DIMENSION = 1536;
+
+  async function handleReceiptScan(
+    fileChangeEvent: React.ChangeEvent<HTMLInputElement>,
+  ) {
+    const selectedFile = fileChangeEvent.target.files?.[0];
+    if (!selectedFile) return;
+
+    // ファイル選択をリセット（同じ画像を再選択可能にする）
+    // Reset file input so the same image can be re-selected
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+
+    setScanning(true);
+    setScanMessage(null);
+    setError(null);
+
+    try {
+      const { base64, mimeType } = await resizeImageToBase64(
+        selectedFile,
+        MAX_IMAGE_DIMENSION,
+      );
+
+      const result = await analyzeReceipt(base64, mimeType);
+
+      if (result.error) {
+        setScanMessage({
+          tone: "error",
+          text: `${receiptTranslations("error")} (${result.error})`,
+        });
+        setScanning(false);
+        return;
+      }
+
+      // 抽出結果をフォームにセットする / Populate form with extracted data
+      const extractedData = result.data;
+      if (!extractedData) {
+        setScanMessage({ tone: "error", text: receiptTranslations("error") });
+        setScanning(false);
+        return;
+      }
+
+      if (extractedData.amount > 0) {
+        setAmount(String(extractedData.amount));
+      }
+      if (extractedData.description) {
+        setDescription(extractedData.description);
+      }
+      if (extractedData.date) {
+        setExpenseDate(extractedData.date);
+      }
+
+      setScanMessage({
+        tone: "ok",
+        text: receiptTranslations("success"),
+      });
+    } catch (caughtError) {
+      const errorText =
+        caughtError instanceof Error ? caughtError.message : "Unknown error";
+      setScanMessage({
+        tone: "error",
+        text: `${receiptTranslations("error")} (${errorText})`,
+      });
+    } finally {
+      setScanning(false);
+    }
+  }
 
   const parsedExpenseTotal = Number(amount);
   const expenseTotalIsValid =
@@ -392,6 +518,52 @@ export function GroupExpensePanel({
       className="flex flex-col gap-4 rounded-lg border border-border bg-card p-4"
     >
       <h3 className="text-sm font-semibold">出費を追加</h3>
+
+      {/* AI レシートスキャン / AI receipt scan section */}
+      <div className="flex flex-col gap-2 rounded-md border border-dashed border-blue-300 bg-blue-50/50 p-3 dark:border-blue-800 dark:bg-blue-950/20">
+        <div className="flex flex-wrap items-center gap-2">
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={(fileEvent) => void handleReceiptScan(fileEvent)}
+            disabled={scanning || submitting}
+          />
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            disabled={scanning || submitting}
+            onClick={() => fileInputRef.current?.click()}
+            className="gap-1.5"
+          >
+            {scanning ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <Camera className="h-4 w-4" />
+            )}
+            {scanning
+              ? receiptTranslations("scanning")
+              : receiptTranslations("button")}
+          </Button>
+          <span className="text-[11px] text-muted-foreground">
+            {receiptTranslations("hint")}
+          </span>
+        </div>
+        {scanMessage ? (
+          <p
+            className={
+              scanMessage.tone === "ok"
+                ? "text-xs text-emerald-700 dark:text-emerald-400"
+                : "text-xs text-red-600 dark:text-red-400"
+            }
+            role="status"
+          >
+            {scanMessage.text}
+          </p>
+        ) : null}
+      </div>
 
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="space-y-2">

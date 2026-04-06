@@ -126,5 +126,12 @@
     "required": "Please enter a username.",
     "tooLong": "Must be 50 characters or fewer.",
     "saveError": "Could not save. Please try again."
+  },
+  "ReceiptScan": {
+    "button": "Scan Receipt / Image",
+    "scanning": "Analyzing image…",
+    "success": "Scan complete. Please review the details.",
+    "error": "Failed to read the image",
+    "hint": "Auto-fill amount, description & date from a receipt or screenshot"
   }
 }
