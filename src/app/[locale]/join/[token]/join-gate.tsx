@@ -25,7 +25,7 @@ import {
 } from "@/components/ui/card";
 import { formatOAuthLoginError } from "@/lib/oauth-errors";
 import {
-  localizedGroupPublicPath,
+  localizedDashboardGroupPath,
   localizedJoinPath,
 } from "@/lib/i18n/localized-paths";
 import { setLineCaptchaBridgeCookie } from "@/lib/set-line-captcha-bridge";
@@ -206,7 +206,11 @@ export function JoinGate({ token }: Props) {
       return;
     }
 
-    window.location.assign(localizedGroupPublicPath(locale, groupId));
+    // Ensure auth storage (cookies) is flushed before full navigation; avoids SSR
+    // seeing no session / no membership right after anonymous join.
+    await supabase.auth.getSession();
+
+    window.location.assign(localizedDashboardGroupPath(locale, groupId));
   }
 
   const authButtonsDisabled =

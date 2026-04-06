@@ -26,6 +26,17 @@ export function localizedDashboardPath(locale: string): string {
 }
 
 /**
+ * Group detail under dashboard (authenticated shell).
+ * ダッシュボード配下のグループ詳細（認証済みシェル）。
+ */
+export function localizedDashboardGroupPath(
+  locale: string,
+  groupId: string,
+): string {
+  return withLocalePrefix(locale, `/dashboard/groups/${groupId}`);
+}
+
+/**
  * @param locale - Active locale / 現在のロケール
  * @param token - Invite UUID / 招待 UUID
  * @returns Join page path / 参加ページのパス
