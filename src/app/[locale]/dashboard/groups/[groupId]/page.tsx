@@ -38,7 +38,10 @@ import {
 import { DisplayNamePrompt } from "@/components/display-name-prompt";
 import { RealtimeGroupSync } from "@/components/realtime-group-sync";
 import { UserAvatar } from "@/components/user-avatar";
-import { checkNeedsOnboarding } from "@/lib/user-profile";
+import {
+  checkNeedsOnboarding,
+  getMandatoryPitchHref,
+} from "@/lib/user-profile";
 import { GroupExpenseList } from "./group-expense-list";
 import { fetchExchangeRates } from "@/utils/exchangeRates";
 import { PromoBanner } from "@/components/ads/PromoBanner";
@@ -61,6 +64,15 @@ export default async function GroupDetailPage({ params }: PageProps) {
   }
 
   console.log("[GroupDetail] user.id =", user.id, "groupId =", groupId);
+
+  const pitchHref = await getMandatoryPitchHref(
+    supabase,
+    `/dashboard/groups/${groupId}`,
+  );
+  if (pitchHref) {
+    redirect({ href: pitchHref, locale });
+    return;
+  }
 
   if (await checkNeedsOnboarding(supabase)) {
     redirect({

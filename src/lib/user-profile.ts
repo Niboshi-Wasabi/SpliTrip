@@ -45,6 +45,43 @@ export async function checkNeedsOnboarding(
 }
 
 /**
+ * Whether the user must see the first-login pitch deck (DB `needs_pitch_deck` RPC).
+ * RPC 失敗時はブロックしないため false（スキップ扱い）。
+ */
+export async function checkNeedsPitchDeck(
+  supabase: SupabaseClient,
+): Promise<boolean> {
+  const { data, error } = await supabase.rpc("needs_pitch_deck");
+  if (error) {
+    console.error(
+      "checkNeedsPitchDeck RPC error (non-fatal):",
+      error.message,
+    );
+    return false;
+  }
+  return data === true;
+}
+
+/**
+ * If set, redirect the authenticated user to this path first (open-redirect safe `next` only).
+ * 初回のみ `/pitch?next=…` を返し、オンボーディングが必要ならその前に誘導する。
+ */
+export async function getMandatoryPitchHref(
+  supabase: SupabaseClient,
+  destinationAfterPitchFlow: string,
+): Promise<string | null> {
+  const needsPitch = await checkNeedsPitchDeck(supabase);
+  if (!needsPitch) {
+    return null;
+  }
+  const needsOnboarding = await checkNeedsOnboarding(supabase);
+  const afterPitch = needsOnboarding
+    ? `/onboarding?next=${encodeURIComponent(destinationAfterPitchFlow)}`
+    : destinationAfterPitchFlow;
+  return `/pitch?next=${encodeURIComponent(afterPitch)}`;
+}
+
+/**
  * Upsert `user_profiles` after OAuth (or similar) creates/updates `auth.users`.
  * If the user already has a custom display name, preserve it (don't overwrite).
  */

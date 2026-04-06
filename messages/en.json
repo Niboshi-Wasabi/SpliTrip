@@ -324,6 +324,7 @@
     "featureAccessBody": "Google, LINE, or guest mode lower the barrier to join; tokenized invite URLs bring people straight into the group flow.",
     "backToApp": "Back to app",
     "ctaDashboard": "Open dashboard",
-    "ctaHint": "Create a group and try the flow"
+    "ctaHint": "Create a group and try the flow",
+    "markSeenError": "Could not save progress. Check your connection and try again."
   }
 }

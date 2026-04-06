@@ -30,13 +30,21 @@ import {
   ArrowLeftRight,
   FileStack,
   Link as LinkIcon,
+  Loader2,
   PieChart,
   ScanLine,
   Sparkles,
   UserPlus,
 } from "lucide-react";
-import { Link } from "@/i18n/navigation";
+import { useRouter } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
+
+type PitchDeckProps = {
+  /** Open-redirect-safe path after finishing (e.g. /dashboard or /onboarding?next=…). */
+  afterPitchPath: string;
+  /** When true, POST /api/profile/pitch-deck-seen before navigating (logged-in users). */
+  shouldPersistCompletion: boolean;
+};
 
 type PitchSlideSectionProps = {
   children: React.ReactNode;
@@ -96,17 +104,63 @@ function PitchSlideSection({
   );
 }
 
-export function PitchDeck() {
+export function PitchDeck({
+  afterPitchPath,
+  shouldPersistCompletion,
+}: PitchDeckProps) {
   const pitchTranslations = useTranslations("Pitch");
+  const router = useRouter();
+  const [isFinishing, setIsFinishing] = useState(false);
+  const [finishError, setFinishError] = useState<string | null>(null);
+
+  async function finishPitch() {
+    if (isFinishing) {
+      return;
+    }
+    setFinishError(null);
+    setIsFinishing(true);
+    try {
+      if (shouldPersistCompletion) {
+        const response = await fetch("/api/profile/pitch-deck-seen", {
+          method: "POST",
+        });
+        if (!response.ok) {
+          setFinishError(pitchTranslations("markSeenError"));
+          setIsFinishing(false);
+          return;
+        }
+      }
+      router.push(afterPitchPath);
+      router.refresh();
+    } catch {
+      setFinishError(pitchTranslations("markSeenError"));
+      setIsFinishing(false);
+    }
+  }
 
   return (
     <div className="relative min-h-[100dvh] w-full bg-gradient-to-br from-zinc-950 via-zinc-900 to-slate-950 text-zinc-100">
-      <Link
-        href="/dashboard"
-        className="fixed right-4 top-[max(1rem,env(safe-area-inset-top))] z-50 rounded-full border border-white/10 bg-zinc-950/60 px-4 py-2 text-sm text-zinc-300 backdrop-blur-md transition hover:border-white/20 hover:bg-zinc-900/80 hover:text-white"
+      <button
+        type="button"
+        onClick={() => void finishPitch()}
+        disabled={isFinishing}
+        className="fixed right-4 top-[max(1rem,env(safe-area-inset-top))] z-50 min-h-[44px] rounded-full border border-white/10 bg-zinc-950/60 px-4 py-2 text-sm text-zinc-300 backdrop-blur-md transition hover:border-white/20 hover:bg-zinc-900/80 hover:text-white disabled:opacity-60"
       >
-        {pitchTranslations("backToApp")}
-      </Link>
+        {isFinishing ? (
+          <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+        ) : (
+          pitchTranslations("backToApp")
+        )}
+      </button>
+
+      {finishError ? (
+        <p
+          className="fixed left-4 right-4 top-[max(4rem,env(safe-area-inset-top))] z-50 mx-auto max-w-lg rounded-md border border-red-500/40 bg-red-950/60 px-3 py-2 text-center text-sm text-red-100 md:left-auto md:right-auto md:top-20"
+          role="alert"
+        >
+          {finishError}
+        </p>
+      ) : null}
 
       <div className="h-[100dvh] w-full snap-y snap-mandatory overflow-y-auto overflow-x-hidden scroll-smooth">
         <PitchSlideSection contentClassName="items-center text-center">
@@ -207,12 +261,18 @@ export function PitchDeck() {
             {pitchTranslations("featureAccessBody")}
           </p>
           <div className="mt-12 flex w-full flex-col items-center gap-4 sm:flex-row sm:justify-center md:justify-start">
-            <Link
-              href="/dashboard"
-              className="inline-flex min-h-[44px] items-center justify-center rounded-full bg-white px-8 py-3 text-sm font-medium text-zinc-950 transition hover:bg-zinc-200"
+            <button
+              type="button"
+              onClick={() => void finishPitch()}
+              disabled={isFinishing}
+              className="inline-flex min-h-[44px] items-center justify-center rounded-full bg-white px-8 py-3 text-sm font-medium text-zinc-950 transition hover:bg-zinc-200 disabled:opacity-60"
             >
-              {pitchTranslations("ctaDashboard")}
-            </Link>
+              {isFinishing ? (
+                <Loader2 className="h-5 w-5 animate-spin" aria-hidden />
+              ) : (
+                pitchTranslations("ctaDashboard")
+              )}
+            </button>
             <span className="inline-flex items-center gap-2 text-sm text-zinc-500">
               <LinkIcon className="h-4 w-4" aria-hidden />
               {pitchTranslations("ctaHint")}

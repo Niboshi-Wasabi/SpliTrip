@@ -18,6 +18,7 @@ import {
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { UserAvatar } from "@/components/user-avatar";
 import { createClient } from "@/utils/supabase/server";
+import { getMandatoryPitchHref } from "@/lib/user-profile";
 import { DisplayNameForm } from "./display-name-form";
 import { LanguagePreferenceForm } from "./language-preference-form";
 import { PaymentSettingsForm } from "./payment-settings-form";
@@ -37,6 +38,12 @@ export default async function SettingsPage({ params }: PageProps) {
 
   if (!user) {
     redirect({ href: "/", locale });
+    return;
+  }
+
+  const pitchHref = await getMandatoryPitchHref(supabase, "/settings");
+  if (pitchHref) {
+    redirect({ href: pitchHref, locale });
     return;
   }
 

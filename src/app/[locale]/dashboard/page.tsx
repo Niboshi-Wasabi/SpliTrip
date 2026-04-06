@@ -29,6 +29,7 @@ import {
   checkNeedsOnboarding,
   extractDisplayName,
   extractAvatarUrl,
+  getMandatoryPitchHref,
 } from "@/lib/user-profile";
 import { redirect } from "@/i18n/navigation";
 import { UserAvatar } from "@/components/user-avatar";
@@ -53,6 +54,12 @@ export default async function DashboardPage({ params }: PageProps) {
 
   if (!user) {
     throw new Error("unauthorized");
+  }
+
+  const pitchHref = await getMandatoryPitchHref(supabase, "/dashboard");
+  if (pitchHref) {
+    redirect({ href: pitchHref, locale });
+    return;
   }
 
   if (await checkNeedsOnboarding(supabase)) {

@@ -5,6 +5,7 @@ import { isInviteTokenFormat } from "@/lib/invite-token";
 import {
   upsertUserProfileFromAuth,
   checkNeedsOnboarding,
+  getMandatoryPitchHref,
 } from "@/lib/user-profile";
 import { createClient } from "@/utils/supabase/server";
 
@@ -42,6 +43,15 @@ export default async function JoinByInvitePage({ params }: PageProps) {
 
   if (!isInviteTokenFormat(trimmedToken)) {
     redirect({ href: "/dashboard", locale });
+  }
+
+  const pitchHref = await getMandatoryPitchHref(
+    supabase,
+    `/join/${trimmedToken}`,
+  );
+  if (pitchHref) {
+    redirect({ href: pitchHref, locale });
+    return;
   }
 
   if (await checkNeedsOnboarding(supabase)) {

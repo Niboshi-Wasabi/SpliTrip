@@ -1,18 +1,19 @@
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { PitchDeck } from "@/components/pitch/pitch-deck";
+import { sanitizeRedirectPath } from "@/lib/auth/sanitize-redirect-path";
+import { createClient } from "@/utils/supabase/server";
+
+export const dynamic = "force-dynamic";
 
 /**
  * Product pitch deck route.
- * プロダクト紹介スライド。文言は messages の Pitch 名前空間、UI は PitchDeck。
- *
- * Path note: Spec examples may use app/pitch/page.tsx, but localized UI lives under app/[locale]/…
- * so next-intl, fonts, and html lang stay consistent.
- * URL は /pitch（既定ロケール）と /en/pitch（localePrefix: as-needed）。
+ * プロダクト紹介スライド。`next` はログイン後リダイレクト用（サニタイズ済み）。
  */
 
 type PageProps = {
   params: Promise<{ locale: string }>;
+  searchParams: Promise<{ next?: string }>;
 };
 
 export async function generateMetadata({
@@ -27,8 +28,24 @@ export async function generateMetadata({
   };
 }
 
-export default async function PitchPage({ params }: PageProps) {
+export default async function PitchPage({ params, searchParams }: PageProps) {
   const { locale } = await params;
+  const query = await searchParams;
   setRequestLocale(locale);
-  return <PitchDeck />;
+
+  const safeNextPath =
+    sanitizeRedirectPath(typeof query.next === "string" ? query.next : null) ??
+    "/dashboard";
+
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  return (
+    <PitchDeck
+      afterPitchPath={safeNextPath}
+      shouldPersistCompletion={user !== null}
+    />
+  );
 }

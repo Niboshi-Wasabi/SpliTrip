@@ -5,6 +5,7 @@ import { createClient } from "@/utils/supabase/server";
 import {
   extractDisplayName,
   checkNeedsOnboarding,
+  getMandatoryPitchHref,
 } from "@/lib/user-profile";
 import { OnboardingForm } from "./onboarding-form";
 
@@ -35,6 +36,12 @@ export default async function OnboardingPage({
     typeof rawNext === "string" && rawNext.startsWith("/")
       ? rawNext
       : "/dashboard";
+
+  const pitchHref = await getMandatoryPitchHref(supabase, nextPath);
+  if (pitchHref) {
+    redirect({ href: pitchHref, locale });
+    return;
+  }
 
   if (!needsSetup) {
     redirect({ href: nextPath, locale });
