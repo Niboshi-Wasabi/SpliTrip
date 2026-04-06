@@ -79,3 +79,68 @@ as $$
   where gm.group_id = p_group_id
     and public.is_group_member(p_group_id, auth.uid());
 $$;
+
+-- RPC to read own full profile (for settings page).
+create or replace function public.get_own_profile()
+returns json
+language sql
+stable
+security definer
+set search_path = public
+set row_security = off
+as $$
+  select row_to_json(r) from (
+    select id, display_name, avatar_url, paypal_me_id, cash_app_cashtag, preferred_language
+    from public.user_profiles
+    where id = auth.uid()
+  ) r;
+$$;
+
+-- RPC to update payment methods.
+create or replace function public.update_own_payment_methods(
+  p_paypal_me_id text,
+  p_cash_app_cashtag text
+)
+returns void
+language plpgsql
+security definer
+set search_path = public
+set row_security = off
+as $$
+begin
+  insert into public.user_profiles (id, display_name, paypal_me_id, cash_app_cashtag)
+  values (auth.uid(), 'ユーザー', p_paypal_me_id, p_cash_app_cashtag)
+  on conflict (id)
+  do update set
+    paypal_me_id = excluded.paypal_me_id,
+    cash_app_cashtag = excluded.cash_app_cashtag;
+end;
+$$;
+
+-- RPC to update preferred language (upsert).
+create or replace function public.update_own_preferred_language(p_language text)
+returns void
+language plpgsql
+security definer
+set search_path = public
+set row_security = off
+as $$
+begin
+  insert into public.user_profiles (id, display_name, preferred_language)
+  values (auth.uid(), 'ユーザー', p_language)
+  on conflict (id)
+  do update set preferred_language = excluded.preferred_language;
+end;
+$$;
+
+-- RPC to get own preferred language (for middleware).
+create or replace function public.get_own_preferred_language()
+returns text
+language sql
+stable
+security definer
+set search_path = public
+set row_security = off
+as $$
+  select preferred_language from public.user_profiles where id = auth.uid();
+$$;

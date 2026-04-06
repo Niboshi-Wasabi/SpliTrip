@@ -69,8 +69,11 @@ export async function fetchDashboardData(): Promise<DashboardData> {
     .maybeSingle();
 
   if (membershipError) {
-    console.error("trip_members fetch failed:", membershipError.message);
-    throw new Error(`Failed to fetch trip membership: ${membershipError.message}`);
+    console.error("trip_members fetch (non-fatal):", membershipError.message);
+    return {
+      ...EMPTY_DASHBOARD,
+      isGuestMode: user.is_anonymous === true,
+    };
   }
 
   if (!membership) {
@@ -98,8 +101,12 @@ export async function fetchDashboardData(): Promise<DashboardData> {
     .eq("trip_id", tripId);
 
   if (membersError) {
-    console.error("trip members list failed:", membersError.message);
-    throw new Error(`Failed to fetch trip members: ${membersError.message}`);
+    console.error("trip members list (non-fatal):", membersError.message);
+    return {
+      ...EMPTY_DASHBOARD,
+      tripName: trip?.name ?? DEFAULT_TRIP_NAME,
+      isGuestMode: user.is_anonymous === true,
+    };
   }
 
   const userIdsOrdered: string[] = [];
@@ -127,8 +134,7 @@ export async function fetchDashboardData(): Promise<DashboardData> {
       .in("id", userIds);
 
     if (profilesError) {
-      console.error("user_profiles fetch failed:", profilesError.message);
-      throw new Error(`Failed to fetch user profiles: ${profilesError.message}`);
+      console.error("user_profiles fetch (non-fatal):", profilesError.message);
     }
 
     profileByUserId = new Map(
@@ -157,8 +163,7 @@ export async function fetchDashboardData(): Promise<DashboardData> {
     .order("created_at", { ascending: false });
 
   if (expensesError) {
-    console.error("expenses fetch failed:", expensesError.message);
-    throw new Error(`Failed to fetch expenses: ${expensesError.message}`);
+    console.error("expenses fetch (non-fatal):", expensesError.message);
   }
 
   const expenseRows = expenses ?? [];

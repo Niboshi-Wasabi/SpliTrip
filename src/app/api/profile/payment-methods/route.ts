@@ -3,7 +3,6 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
-import { extractDisplayName } from "@/lib/user-profile";
 import { sanitizeCashAppCashtag, sanitizePaypalMeId } from "@/lib/payment-ids";
 import { createClient } from "@/utils/supabase/server";
 
@@ -47,36 +46,13 @@ export async function PATCH(request: NextRequest) {
     return NextResponse.json({ error: "invalid_cash_app_cashtag" }, { status: 400 });
   }
 
-  const { data: existing } = await supabase
-    .from("user_profiles")
-    .select("display_name, avatar_url")
-    .eq("id", user.id)
-    .maybeSingle();
-
-  const display_name =
-    existing?.display_name?.trim() || extractDisplayName(user);
-  const avatar_url = existing?.avatar_url ?? null;
-
-  const { error } = await supabase.from("user_profiles").upsert(
-    {
-      id: user.id,
-      display_name,
-      avatar_url,
-      paypal_me_id,
-      cash_app_cashtag,
-    },
-    { onConflict: "id" },
-  );
+  const { error } = await supabase.rpc("update_own_payment_methods", {
+    p_paypal_me_id: paypal_me_id,
+    p_cash_app_cashtag: cash_app_cashtag,
+  });
 
   if (error) {
     console.error("payment-methods PATCH:", error.message);
-    const missingColumn = /column .* does not exist/i.test(error.message);
-    if (missingColumn) {
-      return NextResponse.json(
-        { error: "schema_missing", message: error.message },
-        { status: 503 },
-      );
-    }
     return NextResponse.json(
       { error: "save_failed", message: error.message },
       { status: 500 },

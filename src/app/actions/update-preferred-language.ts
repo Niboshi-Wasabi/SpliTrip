@@ -7,10 +7,6 @@
 import { revalidatePath } from "next/cache";
 import { withLocalePrefix } from "@/lib/i18n/localized-paths";
 import { routing } from "@/i18n/routing";
-import {
-  extractAvatarUrl,
-  extractDisplayName,
-} from "@/lib/user-profile";
 import { createClient } from "@/utils/supabase/server";
 
 export type UpdatePreferredLanguageResult =
@@ -36,30 +32,13 @@ export async function updatePreferredLanguageAction(
     return { ok: false, errorCode: "unauthorized" };
   }
 
-  const { data: updatedRow, error: updateError } = await supabase
-    .from("user_profiles")
-    .update({ preferred_language: language })
-    .eq("id", user.id)
-    .select("id")
-    .maybeSingle();
+  const { error: rpcError } = await supabase.rpc("update_own_preferred_language", {
+    p_language: language,
+  });
 
-  if (updateError) {
-    console.error("updatePreferredLanguageAction:", updateError.message);
+  if (rpcError) {
+    console.error("updatePreferredLanguageAction:", rpcError.message);
     return { ok: false, errorCode: "update_failed" };
-  }
-
-  if (!updatedRow) {
-    const { error: insertError } = await supabase.from("user_profiles").insert({
-      id: user.id,
-      preferred_language: language,
-      display_name: extractDisplayName(user),
-      avatar_url: extractAvatarUrl(user),
-    });
-
-    if (insertError) {
-      console.error("updatePreferredLanguageAction insert:", insertError.message);
-      return { ok: false, errorCode: "insert_failed" };
-    }
   }
 
   for (const loc of routing.locales) {

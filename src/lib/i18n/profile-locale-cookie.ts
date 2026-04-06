@@ -70,17 +70,11 @@ export async function applyProfilePreferredLocaleCookie(
     return request;
   }
 
-  const { data: profileRow } = await supabase
-    .from("user_profiles")
-    .select("preferred_language")
-    .eq("id", user.id)
-    .maybeSingle();
+  const { data: langResult } = await supabase.rpc("get_own_preferred_language");
 
   const raw =
-    profileRow &&
-    typeof profileRow.preferred_language === "string" &&
-    profileRow.preferred_language.length > 0
-      ? profileRow.preferred_language
+    typeof langResult === "string" && langResult.length > 0
+      ? langResult
       : routing.defaultLocale;
 
   if (!isAppLocale(raw)) {

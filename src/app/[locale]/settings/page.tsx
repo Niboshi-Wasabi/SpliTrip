@@ -38,13 +38,7 @@ export default async function SettingsPage({ params }: PageProps) {
     return;
   }
 
-  // Use `*` so missing optional columns (e.g. before payment migration) do not break the query.
-  // 送金先カラム未適用の DB でも、存在しない列名を select に列挙しないよう `*` で読む。
-  const { data: profile, error } = await supabase
-    .from("user_profiles")
-    .select("*")
-    .eq("id", user.id)
-    .maybeSingle();
+  const { data: profileJson, error } = await supabase.rpc("get_own_profile");
 
   if (error) {
     console.error("settings profile:", error.message);
@@ -60,8 +54,8 @@ export default async function SettingsPage({ params }: PageProps) {
   }
 
   const row =
-    profile && typeof profile === "object"
-      ? (profile as Record<string, unknown>)
+    profileJson && typeof profileJson === "object"
+      ? (profileJson as Record<string, unknown>)
       : null;
   const initialPaypal =
     typeof row?.paypal_me_id === "string" ? row.paypal_me_id : "";
