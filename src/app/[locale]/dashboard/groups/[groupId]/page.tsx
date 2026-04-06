@@ -18,6 +18,8 @@ import {
 import { localizedJoinPath } from "@/lib/i18n/localized-paths";
 import { fetchGroupDetailForUser } from "@/lib/group-queries";
 import { formatYen } from "@/lib/format";
+import { getCategoryColor } from "@/lib/categories";
+import { CategoryChart } from "../../category-chart";
 import { GroupSettlementList } from "./group-settlement-list";
 import { createClient } from "@/utils/supabase/server";
 import { GroupExpensePanel } from "./group-expense-panel";
@@ -70,6 +72,30 @@ export default async function GroupDetailPage({ params }: PageProps) {
   const { group, members, expenses, settlements } = result.data;
   const currentMember = members.find((m) => m.user_id === user.id);
   const currentDisplayName = currentMember?.display_name ?? "ユーザー";
+  const totalGroupExpense = expenses.reduce(
+    (s, e) => s + Number(e.amount),
+    0,
+  );
+  const payerChartData = (() => {
+    const payerTotals = new Map<string, number>();
+    for (const exp of expenses) {
+      const payerName =
+        members.find((m) => m.user_id === exp.payer_id)?.display_name ??
+        "不明";
+      payerTotals.set(
+        payerName,
+        (payerTotals.get(payerName) ?? 0) + Number(exp.amount),
+      );
+    }
+    return [...payerTotals.entries()]
+      .sort(([, a], [, b]) => b - a)
+      .map(([name, amount], i) => ({
+        category: name,
+        amount,
+        color: getCategoryColor(name, i),
+      }));
+  })();
+
   const invitePath = localizedJoinPath(locale, String(group.invite_token));
   const tExport = await getTranslations("GroupExport");
   const snapshotPrintedAt = new Intl.DateTimeFormat(locale, {
@@ -160,6 +186,20 @@ export default async function GroupDetailPage({ params }: PageProps) {
                 {tExport("printedAt")}: {snapshotPrintedAt}
               </p>
             </div>
+
+            {payerChartData.length > 0 && (
+              <Card>
+                <CardHeader>
+                  <CardTitle>支払者別内訳</CardTitle>
+                  <CardDescription>
+                    合計 {formatYen(totalGroupExpense)} の支払い内訳
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <CategoryChart data={payerChartData} />
+                </CardContent>
+              </Card>
+            )}
 
             <Card>
           <CardHeader>
