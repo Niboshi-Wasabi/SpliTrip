@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/card";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { createClient } from "@/utils/supabase/server";
+import { DisplayNameForm } from "./display-name-form";
 import { LanguagePreferenceForm } from "./language-preference-form";
 import { PaymentSettingsForm } from "./payment-settings-form";
 
@@ -66,6 +67,10 @@ export default async function SettingsPage({ params }: PageProps) {
     typeof row?.paypal_me_id === "string" ? row.paypal_me_id : "";
   const initialCash =
     typeof row?.cash_app_cashtag === "string" ? row.cash_app_cashtag : "";
+  const initialDisplayName =
+    typeof row?.display_name === "string" && row.display_name.trim().length > 0
+      ? row.display_name
+      : "";
   const initialLanguage = row?.preferred_language === "en" ? "en" : "ja";
   const paymentColumnsMissing = row !== null && !("paypal_me_id" in row);
 
@@ -84,6 +89,15 @@ export default async function SettingsPage({ params }: PageProps) {
         </div>
       </header>
       <main className="mx-auto max-w-lg space-y-6 px-4 py-8">
+        <Card>
+          <CardHeader>
+            <CardTitle>{t("displayNameTitle")}</CardTitle>
+            <CardDescription>{t("displayNameDescription")}</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <DisplayNameForm initialDisplayName={initialDisplayName} />
+          </CardContent>
+        </Card>
         <Card>
           <CardHeader>
             <CardTitle>{t("languageTitle")}</CardTitle>

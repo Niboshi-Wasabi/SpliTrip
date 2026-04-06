@@ -22,15 +22,18 @@ export function extractAvatarUrl(user: User): string | null {
   return url ?? null;
 }
 
+const DEFAULT_DISPLAY_NAMES = new Set(["ユーザー", "User", ""]);
+
 /**
  * Upsert `user_profiles` after OAuth (or similar) creates/updates `auth.users`.
+ * If the user already has a custom display name, preserve it (don't overwrite).
  */
 export async function upsertUserProfileFromAuth(
   supabase: SupabaseClient,
   user: User,
   overrides?: { displayName?: string; avatarUrl?: string | null },
 ): Promise<void> {
-  const display_name =
+  const oauthName =
     overrides?.displayName != null && overrides.displayName.length > 0
       ? overrides.displayName
       : extractDisplayName(user);
@@ -38,6 +41,19 @@ export async function upsertUserProfileFromAuth(
     overrides?.avatarUrl !== undefined
       ? overrides.avatarUrl
       : extractAvatarUrl(user);
+
+  const { data: existing } = await supabase
+    .from("user_profiles")
+    .select("display_name")
+    .eq("id", user.id)
+    .maybeSingle();
+
+  const hasCustomName =
+    existing?.display_name != null &&
+    existing.display_name.trim().length > 0 &&
+    !DEFAULT_DISPLAY_NAMES.has(existing.display_name.trim());
+
+  const display_name = hasCustomName ? existing.display_name : oauthName;
 
   const { error } = await supabase.from("user_profiles").upsert(
     {

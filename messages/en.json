@@ -62,6 +62,8 @@
   },
   "Settings": {
     "backDashboard": "Dashboard",
+    "displayNameTitle": "Display name",
+    "displayNameDescription": "The name shown to other group members in member lists and settlements.",
     "languageTitle": "Display language",
     "languageDescription": "While signed in, this choice is used first for the UI.",
     "languageJa": "Japanese",
@@ -72,6 +74,20 @@
     "updateLanguage": "Update language",
     "paymentMigrationHint": "To save payout handles, run the migration `supabase/migrations/20260405190000_user_profiles_payment_ids.sql` in the Supabase SQL Editor so `user_profiles` has `paypal_me_id` and `cash_app_cashtag`.",
     "paymentSchemaSaveError": "Payout columns are missing in the database. Saving is disabled until an admin applies that migration."
+  },
+  "DisplayName": {
+    "title": "Set your display name",
+    "description": "Enter the name shown to other group members.",
+    "label": "Display name",
+    "placeholder": "e.g. John Doe",
+    "hint": "Shown in member lists and settlement summaries. Max 50 characters.",
+    "save": "Save",
+    "saving": "Saving…",
+    "saved": "Display name saved.",
+    "skip": "Later",
+    "required": "Please enter a display name.",
+    "tooLong": "Must be 50 characters or fewer.",
+    "saveError": "Could not save."
   },
   "GroupExport": {
     "exportCsv": "Export CSV",

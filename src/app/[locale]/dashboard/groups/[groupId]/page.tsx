@@ -29,6 +29,7 @@ import {
   GroupExportCaptureArea,
   GroupExportCaptureProvider,
 } from "./group-export-capture";
+import { DisplayNamePrompt } from "@/components/display-name-prompt";
 
 export const dynamic = "force-dynamic";
 
@@ -67,6 +68,8 @@ export default async function GroupDetailPage({ params }: PageProps) {
   }
 
   const { group, members, expenses, settlements } = result.data;
+  const currentMember = members.find((m) => m.user_id === user.id);
+  const currentDisplayName = currentMember?.display_name ?? "ユーザー";
   const invitePath = localizedJoinPath(locale, String(group.invite_token));
   const tExport = await getTranslations("GroupExport");
   const snapshotPrintedAt = new Intl.DateTimeFormat(locale, {
@@ -102,6 +105,9 @@ export default async function GroupDetailPage({ params }: PageProps) {
       </header>
 
       <main className="mx-auto max-w-6xl space-y-6 px-4 py-6">
+        <div className="print:hidden">
+          <DisplayNamePrompt currentName={currentDisplayName} />
+        </div>
         <GroupExportCaptureProvider>
           <GroupExportToolbar
             groupName={group.name}

@@ -62,6 +62,8 @@
   },
   "Settings": {
     "backDashboard": "ダッシュボード",
+    "displayNameTitle": "表示名",
+    "displayNameDescription": "グループのメンバーリストや精算で表示される名前です。",
     "languageTitle": "表示言語",
     "languageDescription": "ログイン中はこの設定を最優先して表示します。",
     "languageJa": "日本語",
@@ -72,6 +74,20 @@
     "updateLanguage": "言語を更新",
     "paymentMigrationHint": "送金先を保存するには、Supabase の SQL Editor でマイグレーション「supabase/migrations/20260405190000_user_profiles_payment_ids.sql」を実行し、user_profiles に paypal_me_id / cash_app_cashtag カラムを追加してください。",
     "paymentSchemaSaveError": "データベースに送金先用のカラムがありません。管理者が上記マイグレーションを適用するまで保存できません。"
+  },
+  "DisplayName": {
+    "title": "表示名を設定しましょう",
+    "description": "グループのメンバーに表示される名前を入力してください。",
+    "label": "表示名",
+    "placeholder": "例: 田中太郎",
+    "hint": "グループ内のメンバーリストや精算で表示されます。50文字以内。",
+    "save": "保存",
+    "saving": "保存中…",
+    "saved": "表示名を保存しました。",
+    "skip": "あとで",
+    "required": "表示名を入力してください。",
+    "tooLong": "50文字以内で入力してください。",
+    "saveError": "保存に失敗しました。"
   },
   "GroupExport": {
     "exportCsv": "CSVを書き出し",
