@@ -27,6 +27,8 @@ export default async function JoinByInvitePage({ params }: PageProps) {
     data: { user },
   } = await supabase.auth.getUser();
 
+  console.log("[JoinPage] user =", user?.id ?? "null", "isAnon =", user?.is_anonymous, "token =", trimmedToken);
+
   if (!user) {
     if (!isInviteTokenFormat(trimmedToken)) {
       notFound();
@@ -45,6 +47,8 @@ export default async function JoinByInvitePage({ params }: PageProps) {
     },
   );
 
+  console.log("[JoinPage] RPC result: groupId =", groupId, "error =", joinError?.message ?? "none");
+
   if (joinError) {
     if (joinError.message.includes("Could not find the function")) {
       console.error(
@@ -58,8 +62,10 @@ export default async function JoinByInvitePage({ params }: PageProps) {
   }
 
   if (!groupId) {
+    console.error("[JoinPage] groupId is null after RPC — invalid token?", { token: trimmedToken });
     redirect({ href: "/dashboard", locale });
   }
 
+  console.log("[JoinPage] redirecting to /dashboard/groups/" + groupId);
   redirect({ href: `/dashboard/groups/${groupId}`, locale });
 }
