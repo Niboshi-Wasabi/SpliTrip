@@ -32,7 +32,7 @@ import {
   GroupExportCaptureProvider,
 } from "./group-export-capture";
 import { DisplayNamePrompt } from "@/components/display-name-prompt";
-import { RealtimeGroupRefresh } from "@/components/realtime-group-refresh";
+import { RealtimeGroupSync } from "@/components/realtime-group-sync";
 import { UserAvatar } from "@/components/user-avatar";
 import { checkNeedsOnboarding } from "@/lib/user-profile";
 import { GroupExpenseList } from "./group-expense-list";
@@ -183,7 +183,7 @@ export default async function GroupDetailPage({ params }: PageProps) {
         </div>
       </header>
 
-      <RealtimeGroupRefresh groupId={groupId} />
+      <RealtimeGroupSync groupId={groupId} currentUserId={user.id} />
 
       {/* pb-24: モバイルのボトムナビ分のクリアランス / Bottom nav clearance on mobile */}
       <main className="mx-auto max-w-6xl space-y-6 px-4 py-6 pb-24 md:pb-6">

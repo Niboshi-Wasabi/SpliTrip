@@ -131,6 +131,9 @@
     "qrToggle": "QRコードを表示",
     "qrHint": "スマホでスキャンして参加できます"
   },
+  "Realtime": {
+    "updated": "データが更新されました"
+  },
   "Exchange": {
     "approx": "約 {converted}",
     "rateUnavailable": "レート取得不可"

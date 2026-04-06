@@ -131,6 +131,9 @@
     "qrToggle": "Show QR Code",
     "qrHint": "Scan with your phone to join"
   },
+  "Realtime": {
+    "updated": "Data updated"
+  },
   "Exchange": {
     "approx": "≈ {converted}",
     "rateUnavailable": "Rate unavailable"
