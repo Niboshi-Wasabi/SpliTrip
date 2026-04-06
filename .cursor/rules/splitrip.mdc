@@ -9,8 +9,15 @@ alwaysApply: true
 - **スタック:** Next.js App Router、TypeScript、Tailwind、Supabase（`@supabase/ssr`）、認証は Google（PKCE → `/auth/callback`）と LINE（`/api/auth/line` → `/api/auth/callback/line` + `signInWithIdToken`）。
 - **環境変数:** `.env.local`（リポジトリに含めない）。Supabase URL/anon キーに加え、LINE 用は `LINE_CHANNEL_ID`, `LINE_CHANNEL_SECRET`, `NEXT_PUBLIC_LINE_REDIRECT_URI`。
 - **主要コード:** `src/app/`（ページ・API Route）、`src/utils/supabase/`、`src/lib/`（`user-profile.ts`, `dashboard-data.ts` など）、仕様メモは `requirements.md`。
+- **機能一覧:** `docs/FEATURES.md` にユーザー向け機能・API・基盤の一覧をまとめている。
 
 コード変更は既存の命名・パターンに合わせ、依頼範囲外のリファクタや無関係ファイルの編集は避けること。
+
+## 機能一覧ドキュメント（`docs/FEATURES.md`）
+
+- **新機能を追加したときは必ず `docs/FEATURES.md` を更新する。** 画面・API・DB/RPC・環境変数・i18n キーなど、利用者または開発者が把握すべき範囲を追記・修正する。
+- 大きな変更（認証・精算・出費・共有リンクなど）では、該当セクションの表または箇条書きを読みやすく保つこと。
+- プレースホルダー・未実装（例: Web Push の本番送信）がある場合は **「枠のみ」「未完了」** と明記する。
 
 ## コーディング規約
 

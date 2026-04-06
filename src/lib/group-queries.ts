@@ -4,6 +4,7 @@
 
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { ExpenseCategoryId } from "@/lib/expense-categories";
+import type { PaymentLinkStored } from "@/lib/database.types";
 import {
   computeGroupSettlements,
   type ExpenseWithSplits,
@@ -17,6 +18,8 @@ export type GroupRow = {
   created_by: string;
   created_at: string;
   invite_token: string;
+  /** Read-only share token for `/groups/[id]/shared` (optional until migration applied). */
+  public_share_token?: string;
 };
 
 export type GroupMemberRow = {
@@ -26,6 +29,10 @@ export type GroupMemberRow = {
   avatar_url: string | null;
   paypal_me_id: string | null;
   cash_app_cashtag: string | null;
+  /** Extra settlement URLs from `user_profiles.payment_links` (JSON array). */
+  payment_links: PaymentLinkStored[] | null;
+  /** True for anonymous / lightweight guest accounts when flagged in DB. */
+  is_guest: boolean;
 };
 
 export type SplitRow = {
@@ -43,6 +50,7 @@ export type ExpenseRowDb = {
   category: ExpenseCategoryId;
   receipt_url: string | null;
   expense_splits: SplitRow[] | null;
+  split_type?: string | null;
 };
 
 export type ExpenseAuditLogRow = {
@@ -136,7 +144,9 @@ export async function fetchGroupDetailForUser(
 ): Promise<{ ok: true; data: GroupDetail } | { ok: false; error: string }> {
   const { data: group, error: groupError } = await supabase
     .from("groups")
-    .select("id, name, currency_code, created_by, created_at, invite_token")
+    .select(
+      "id, name, currency_code, created_by, created_at, invite_token, public_share_token",
+    )
     .eq("id", groupId)
     .maybeSingle();
 
@@ -188,6 +198,8 @@ export async function fetchGroupDetailForUser(
     avatar_url: string | null;
     paypal_me_id: string | null;
     cash_app_cashtag: string | null;
+    payment_links: unknown;
+    is_guest: boolean;
   };
   const profiles = (profilesRaw ?? []) as ProfileRow[];
 
@@ -195,7 +207,11 @@ export async function fetchGroupDetailForUser(
   const avatarUrlByUserId: Record<string, string | null> = {};
   const paymentFieldsByUserId: Record<
     string,
-    { paypal_me_id: string | null; cash_app_cashtag: string | null }
+    {
+      paypal_me_id: string | null;
+      cash_app_cashtag: string | null;
+      payment_links: PaymentLinkStored[] | null;
+    }
   > = {};
   for (const profileRow of profiles) {
     displayNameByUserId[profileRow.id] =
@@ -205,6 +221,9 @@ export async function fetchGroupDetailForUser(
       profileRow.avatar_url.trim()
         ? profileRow.avatar_url.trim()
         : null;
+    const linksFromProfile = Array.isArray(profileRow.payment_links)
+      ? (profileRow.payment_links as PaymentLinkStored[])
+      : null;
     paymentFieldsByUserId[profileRow.id] = {
       paypal_me_id:
         typeof profileRow.paypal_me_id === "string" &&
@@ -216,6 +235,7 @@ export async function fetchGroupDetailForUser(
         profileRow.cash_app_cashtag.trim()
           ? profileRow.cash_app_cashtag.trim()
           : null,
+      payment_links: linksFromProfile,
     };
   }
 
@@ -230,6 +250,7 @@ export async function fetchGroupDetailForUser(
       expense_date,
       category,
       receipt_url,
+      split_type,
       expense_splits ( user_id, amount, ratio )
     `,
     )
@@ -266,6 +287,7 @@ export async function fetchGroupDetailForUser(
 
   const members: GroupMemberRow[] = membersList.map((memberRow) => {
     const payment = paymentFieldsByUserId[memberRow.user_id];
+    const profileRow = profiles.find((profile) => profile.id === memberRow.user_id);
     return {
       user_id: memberRow.user_id,
       role: memberRow.role,
@@ -274,6 +296,8 @@ export async function fetchGroupDetailForUser(
       avatar_url: avatarUrlByUserId[memberRow.user_id] ?? null,
       paypal_me_id: payment?.paypal_me_id ?? null,
       cash_app_cashtag: payment?.cash_app_cashtag ?? null,
+      payment_links: payment?.payment_links ?? null,
+      is_guest: profileRow?.is_guest ?? false,
     };
   });
 

@@ -32,6 +32,13 @@ type AuditItem = {
   created_at: string;
 };
 
+type ExpenseCommentRow = {
+  id: string;
+  author_id: string;
+  body: string;
+  created_at: string;
+};
+
 type Props = {
   groupId: string;
   expense: ExpenseRowDb | null;
@@ -89,6 +96,7 @@ export function GroupExpenseDetailDialog({
   const router = useRouter();
   const detailTranslations = useTranslations("ExpenseDetail");
   const categoryTranslations = useTranslations("ExpenseCategory");
+  const commentTranslations = useTranslations("ExpenseComments");
 
   const [auditItems, setAuditItems] = useState<AuditItem[]>([]);
   const [auditLoading, setAuditLoading] = useState(false);
@@ -100,7 +108,40 @@ export function GroupExpenseDetailDialog({
 
   const [deleting, setDeleting] = useState(false);
 
+  const [commentItems, setCommentItems] = useState<ExpenseCommentRow[]>([]);
+  const [commentsLoading, setCommentsLoading] = useState(false);
+  const [commentDraft, setCommentDraft] = useState("");
+  const [commentSaving, setCommentSaving] = useState(false);
+
   const expenseCategory = parseExpenseCategoryId(expense?.category);
+
+  const loadComments = useCallback(async () => {
+    if (!expense) {
+      return;
+    }
+    setCommentsLoading(true);
+    try {
+      const response = await fetch(
+        `/api/groups/${groupId}/expenses/${expense.id}/comments`,
+      );
+      const body: unknown = await response.json().catch(() => null);
+      if (
+        !response.ok ||
+        typeof body !== "object" ||
+        body === null ||
+        !("comments" in body) ||
+        !Array.isArray((body as { comments: unknown }).comments)
+      ) {
+        setCommentItems([]);
+        return;
+      }
+      setCommentItems((body as { comments: ExpenseCommentRow[] }).comments);
+    } catch {
+      setCommentItems([]);
+    } finally {
+      setCommentsLoading(false);
+    }
+  }, [expense, groupId]);
 
   const loadAudit = useCallback(async () => {
     if (!expense) {
@@ -179,7 +220,8 @@ export function GroupExpenseDetailDialog({
     }
     void loadAudit();
     void loadReceipt();
-  }, [open, expense, loadAudit, loadReceipt]);
+    void loadComments();
+  }, [open, expense, loadAudit, loadReceipt, loadComments]);
 
   useEffect(() => {
     if (!open) {
@@ -187,6 +229,8 @@ export function GroupExpenseDetailDialog({
       setReceiptError(null);
       setAuditItems([]);
       setAuditError(null);
+      setCommentItems([]);
+      setCommentDraft("");
     }
   }, [open]);
 
@@ -213,6 +257,33 @@ export function GroupExpenseDetailDialog({
       router.refresh();
     } finally {
       setDeleting(false);
+    }
+  }
+
+  async function handleSubmitComment(): Promise<void> {
+    if (!expense || commentDraft.trim().length === 0) {
+      return;
+    }
+    setCommentSaving(true);
+    try {
+      const response = await fetch(
+        `/api/groups/${groupId}/expenses/${expense.id}/comments`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ body: commentDraft.trim() }),
+        },
+      );
+      if (!response.ok) {
+        window.alert(commentTranslations("postError"));
+        return;
+      }
+      setCommentDraft("");
+      await loadComments();
+      broadcastGroupRefresh(groupId);
+      router.refresh();
+    } finally {
+      setCommentSaving(false);
     }
   }
 
@@ -343,6 +414,52 @@ export function GroupExpenseDetailDialog({
                 <Trash2 className="h-4 w-4" aria-hidden />
               )}
               {detailTranslations("deleteExpense")}
+            </Button>
+          </div>
+
+          <div className="space-y-2 border-t pt-3">
+            <p className="text-xs font-medium text-muted-foreground">
+              {commentTranslations("heading")}
+            </p>
+            {commentsLoading ? (
+              <div className="flex items-center gap-2 text-muted-foreground">
+                <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+                <span>{commentTranslations("loading")}</span>
+              </div>
+            ) : null}
+            <ul className="max-h-40 space-y-2 overflow-y-auto rounded-md border border-border bg-muted/20 p-2 text-sm">
+              {commentItems.map((commentRow) => (
+                <li key={commentRow.id} className="rounded bg-background/80 p-2">
+                  <p className="text-xs text-muted-foreground">
+                    {actorLabel(commentRow.author_id, members)} ·{" "}
+                    {new Date(commentRow.created_at).toLocaleString()}
+                  </p>
+                  <p className="mt-1 whitespace-pre-wrap">{commentRow.body}</p>
+                </li>
+              ))}
+            </ul>
+            <textarea
+              value={commentDraft}
+              onChange={(event) => setCommentDraft(event.target.value)}
+              placeholder={commentTranslations("placeholder")}
+              className="border-input bg-background ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring flex min-h-[88px] w-full rounded-md border px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+              maxLength={2000}
+            />
+            <Button
+              type="button"
+              size="sm"
+              className="min-h-[44px] w-full sm:w-auto"
+              disabled={commentSaving || commentDraft.trim().length === 0}
+              onClick={() => void handleSubmitComment()}
+            >
+              {commentSaving ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden />
+                  {commentTranslations("saving")}
+                </>
+              ) : (
+                commentTranslations("submit")
+              )}
             </Button>
           </div>
 

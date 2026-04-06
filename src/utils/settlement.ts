@@ -598,7 +598,7 @@ export function suggestNextPayer(
 // Why here: this module is already imported for split math; callers can import
 // `computeGroupSettlements` from one place. Core greedy matching lives in
 // `simplify-debts.ts`; ledger wrapping in `group-ledger.ts`.
-// 理由: 按分計算で既に読み込むファイルにまとめ、 import を一箇所にする。
+// 理由: 割り勘の計算で既に読み込むファイルにまとめ、 import を一箇所にする。
 // グリーディな突合本体は `simplify-debts.ts`、表示用ラップは `group-ledger.ts`。
 // -----------------------------------------------------------------------------
 

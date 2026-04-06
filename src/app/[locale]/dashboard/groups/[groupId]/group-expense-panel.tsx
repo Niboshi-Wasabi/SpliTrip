@@ -1,14 +1,14 @@
 "use client";
 
 /**
- * Client form to add a group expense with Splitwise-style split modes.
+ * Client form to add a group expense with flexible split modes (equal, exact, shares, …).
  * Live validation mirrors `src/utils/settlement.ts` minor-unit math.
  */
 
 import { useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { Camera, Loader2 } from "lucide-react";
+import { Camera, Loader2, Lock } from "lucide-react";
 import { broadcastGroupRefresh } from "@/lib/realtime-broadcast";
 import { analyzeReceipt } from "@/actions/analyzeReceipt";
 import { Button } from "@/components/ui/button";
@@ -19,10 +19,12 @@ import type { GroupMemberRow } from "@/lib/group-queries";
 import { UserAvatar } from "@/components/user-avatar";
 import { summarizeAllocatedMinor, toMinorUnits } from "@/utils/settlement";
 import { ExpenseCategoryIcon } from "@/components/expense-category-icon";
+import { HelpHint } from "@/components/help/help-hint";
 import {
   EXPENSE_CATEGORY_IDS,
   type ExpenseCategoryId,
 } from "@/lib/expense-categories";
+import { useUpgradeModal } from "@/components/premium/upgrade-modal-context";
 
 type SplitMode = "equal" | "exact" | "shares" | "percent" | "itemized";
 
@@ -124,7 +126,11 @@ export function GroupExpensePanel({
 }: Props) {
   const router = useRouter();
   const receiptTranslations = useTranslations("ReceiptScan");
+  const premiumTranslations = useTranslations("Premium");
   const formTranslations = useTranslations("GroupExpenseForm");
+  const { hasPremiumAccess, freeOcrRemaining, openUpgradeModal } =
+    useUpgradeModal();
+  const helpTranslations = useTranslations("HelpTooltips");
   const categoryLabelTranslations = useTranslations("ExpenseCategory");
   const minorExp = currencyMinorExponent(currencyCode);
   const amountStep = minorExp === 0 ? "1" : "0.01";
@@ -185,6 +191,17 @@ export function GroupExpensePanel({
 
   const MAX_IMAGE_DIMENSION = 1536;
 
+  const ocrBlockedForFree =
+    !hasPremiumAccess && freeOcrRemaining !== null && freeOcrRemaining <= 0;
+
+  function openReceiptFilePicker() {
+    if (ocrBlockedForFree) {
+      openUpgradeModal();
+      return;
+    }
+    fileInputRef.current?.click();
+  }
+
   async function handleReceiptScan(
     fileChangeEvent: React.ChangeEvent<HTMLInputElement>,
   ) {
@@ -202,6 +219,12 @@ export function GroupExpensePanel({
     setError(null);
 
     try {
+      if (!hasPremiumAccess && freeOcrRemaining === 0) {
+        openUpgradeModal();
+        setScanning(false);
+        return;
+      }
+
       const { base64, mimeType } = await resizeImageToBase64(
         selectedFile,
         MAX_IMAGE_DIMENSION,
@@ -211,11 +234,20 @@ export function GroupExpensePanel({
 
       const result = await analyzeReceipt(base64, mimeType);
 
-      if (result.error) {
-        setScanMessage({
-          tone: "error",
-          text: `${receiptTranslations("error")} (${result.error})`,
-        });
+      if (result.data === null) {
+        const errorCode =
+          "code" in result ? result.code : undefined;
+        if (errorCode === "OCR_LIMIT") {
+          setScanMessage({
+            tone: "error",
+            text: receiptTranslations("ocrLimitReached"),
+          });
+        } else {
+          setScanMessage({
+            tone: "error",
+            text: `${receiptTranslations("error")} (${result.error})`,
+          });
+        }
         setScanning(false);
         return;
       }
@@ -242,6 +274,7 @@ export function GroupExpensePanel({
         tone: "ok",
         text: receiptTranslations("success"),
       });
+      router.refresh();
     } catch (caughtError) {
       const errorText =
         caughtError instanceof Error ? caughtError.message : "Unknown error";
@@ -331,35 +364,49 @@ export function GroupExpensePanel({
     }
     if (splitMode === "exact" && exactSummary) {
       if (exactSummary.deltaMinor === 0) {
-        return { tone: "ok" as const, text: "按分の合計が支払額と一致しています。" };
+        return {
+          tone: "ok" as const,
+          text: formTranslations("hintExactOk"),
+        };
       }
       return {
         tone: "warn" as const,
         text:
           exactSummary.deltaMinor > 0
-            ? `不足: 最小通貨単位で ${exactSummary.deltaMinor} 不足（保存時に端数設定で加算されます）`
-            : `超過: 最小通貨単位で ${-exactSummary.deltaMinor} 超過（保存時に端数設定で減算されます）`,
+            ? formTranslations("validationHintExactShort", {
+                units: exactSummary.deltaMinor,
+              })
+            : formTranslations("validationHintExactOver", {
+                units: -exactSummary.deltaMinor,
+              }),
       };
     }
     if (splitMode === "percent") {
       if (Math.abs(percentSum - 100) <= 0.05) {
-        return { tone: "ok" as const, text: "パーセントの合計は 100% です。" };
+        return {
+          tone: "ok" as const,
+          text: formTranslations("validationHintPercentOk"),
+        };
       }
       return {
         tone: "warn" as const,
-        text: `パーセント合計: ${percentSum.toFixed(2)}%（100% 付近にしてください）`,
+        text: formTranslations("validationHintPercentWarn", {
+          sum: percentSum.toFixed(2),
+        }),
       };
     }
     if (splitMode === "itemized") {
       if (itemizedMatches) {
         return {
           tone: "ok" as const,
-          text: "項目金額の合計が支払額と一致しています。",
+          text: formTranslations("validationHintItemizedOk"),
         };
       }
       return {
         tone: "warn" as const,
-        text: `項目の合計と支払額が一致していません（差: 最小単位 ${targetMinor - itemizedSumMinor}）。`,
+        text: formTranslations("validationHintItemizedWarn", {
+          delta: targetMinor - itemizedSumMinor,
+        }),
       };
     }
     return null;
@@ -371,6 +418,7 @@ export function GroupExpensePanel({
     itemizedMatches,
     targetMinor,
     itemizedSumMinor,
+    formTranslations,
   ]);
 
   function updateExact(userId: string, value: string) {
@@ -407,21 +455,21 @@ export function GroupExpensePanel({
   async function onSubmit(formEvent: React.FormEvent) {
     formEvent.preventDefault();
     if (!expenseTotalIsValid) {
-      setError("金額を正しく入力してください");
+      setError(formTranslations("clientInvalidAmount"));
       return;
     }
     if (!payerId) {
-      setError("支払者を選んでください");
+      setError(formTranslations("clientSelectPayer"));
       return;
     }
 
     if (splitMode === "percent" && Math.abs(percentSum - 100) > 0.05) {
-      setError("パーセントの合計を 100% にしてください");
+      setError(formTranslations("clientPercentMust100"));
       return;
     }
 
     if (splitMode === "itemized" && !itemizedMatches) {
-      setError("項目別の金額の合計を、支払額と一致させてください");
+      setError(formTranslations("clientItemizedMustMatch"));
       return;
     }
 
@@ -496,27 +544,52 @@ export function GroupExpensePanel({
           ? (payload as { message: string }).message
           : null;
       const messages: Record<string, string> = {
-        split_sum_mismatch: "按分の合計が支払額と一致しません",
-        manual_splits_required: "金額指定の入力が必要です",
-        share_inputs_required: "比率（シェア）を入力してください",
-        percent_inputs_required: "パーセントを入力してください",
-        percent_sum_not_100: "パーセントの合計が 100% ではありません",
-        itemized_lines_required: "項目を1行以上追加してください",
-        itemized_sum_mismatch: "項目の合計が支払額と一致しません",
-        invalid_line_amount: "項目の金額が不正です",
-        line_no_participants: "各項目で負担するメンバーを1人以上選んでください",
-        exact_adjust_failed: "端数調整後に按分が負になってしまいます。金額を見直してください",
-        invalid_split_amount: "按分金額が不正です",
-        invalid_payer: "支払者が無効です",
-        no_positive_weights: "比率は1人以上で正の値にしてください",
-        invalid_percent: "パーセントが不正です",
-        invalid_weight: "比率が不正です",
-        unknown_member: "無効なメンバーが含まれています",
-        invalid_total: "金額が不正です",
+        split_sum_mismatch: formTranslations("validationErrors.split_sum_mismatch"),
+        manual_splits_required: formTranslations(
+          "validationErrors.manual_splits_required",
+        ),
+        share_inputs_required: formTranslations(
+          "validationErrors.share_inputs_required",
+        ),
+        percent_inputs_required: formTranslations(
+          "validationErrors.percent_inputs_required",
+        ),
+        percent_sum_not_100: formTranslations(
+          "validationErrors.percent_sum_not_100",
+        ),
+        itemized_lines_required: formTranslations(
+          "validationErrors.itemized_lines_required",
+        ),
+        itemized_sum_mismatch: formTranslations(
+          "validationErrors.itemized_sum_mismatch",
+        ),
+        invalid_line_amount: formTranslations(
+          "validationErrors.invalid_line_amount",
+        ),
+        line_no_participants: formTranslations(
+          "validationErrors.line_no_participants",
+        ),
+        exact_adjust_failed: formTranslations(
+          "validationErrors.exact_adjust_failed",
+        ),
+        invalid_split_amount: formTranslations(
+          "validationErrors.invalid_split_amount",
+        ),
+        invalid_payer: formTranslations("validationErrors.invalid_payer"),
+        no_positive_weights: formTranslations(
+          "validationErrors.no_positive_weights",
+        ),
+        invalid_percent: formTranslations("validationErrors.invalid_percent"),
+        invalid_weight: formTranslations("validationErrors.invalid_weight"),
+        unknown_member: formTranslations("validationErrors.unknown_member"),
+        invalid_total: formTranslations("validationErrors.invalid_total"),
       };
       const fallback = serverMessage
-        ? `登録に失敗しました（${code}）: ${serverMessage}`
-        : `登録に失敗しました（${code}）`;
+        ? formTranslations("submitFailedWithDetails", {
+            code,
+            details: serverMessage,
+          })
+        : formTranslations("submitFailedCode", { code });
       setError(messages[code] ?? fallback);
       setSubmitting(false);
       return;
@@ -555,7 +628,7 @@ export function GroupExpensePanel({
   if (members.length === 0) {
     return (
       <p className="text-sm text-muted-foreground">
-        メンバーがいないため出費を登録できません。
+        {formTranslations("emptyMembers")}
       </p>
     );
   }
@@ -565,7 +638,7 @@ export function GroupExpensePanel({
       onSubmit={(formEvent) => void onSubmit(formEvent)}
       className="flex flex-col gap-4 rounded-lg border border-border bg-card p-3 sm:p-4"
     >
-      <h3 className="text-sm font-semibold">出費を追加</h3>
+      <h3 className="text-sm font-semibold">{formTranslations("title")}</h3>
 
       {/* AI レシートスキャン / AI receipt scan section */}
       <div className="flex flex-col gap-2 rounded-md border border-dashed border-blue-300 bg-blue-50/50 p-3 dark:border-blue-800 dark:bg-blue-950/20">
@@ -585,17 +658,28 @@ export function GroupExpensePanel({
             variant="outline"
             size="sm"
             disabled={scanning || submitting}
-            onClick={() => fileInputRef.current?.click()}
+            onClick={openReceiptFilePicker}
             className="min-h-[44px] gap-1.5 md:min-h-0"
+            aria-label={
+              ocrBlockedForFree
+                ? premiumTranslations("ocrScanLockedAria")
+                : receiptTranslations("button")
+            }
           >
             {scanning ? (
               <Loader2 className="h-4 w-4 animate-spin" />
+            ) : ocrBlockedForFree ? (
+              <Lock className="h-4 w-4" aria-hidden />
             ) : (
               <Camera className="h-4 w-4" />
             )}
             {scanning
               ? receiptTranslations("scanning")
-              : receiptTranslations("button")}
+              : hasPremiumAccess
+                ? premiumTranslations("aiScanLabelPro")
+                : receiptTranslations("aiScanRemaining", {
+                    count: freeOcrRemaining ?? 0,
+                  })}
           </Button>
           <span className="text-[11px] text-muted-foreground">
             {receiptTranslations("hint")}
@@ -632,7 +716,7 @@ export function GroupExpensePanel({
 
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="space-y-2">
-          <Label htmlFor="payer">支払者</Label>
+          <Label htmlFor="payer">{formTranslations("payerLabel")}</Label>
           <select
             id="payer"
             className="h-10 w-full rounded-lg border border-input bg-transparent px-2.5 text-sm outline-none focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/50 md:h-8"
@@ -643,15 +727,22 @@ export function GroupExpensePanel({
             {members.map((memberRow) => (
               <option key={memberRow.user_id} value={memberRow.user_id}>
                 {memberRow.display_name}
-                {memberRow.role === "owner" ? "（オーナー）" : ""}
+                {memberRow.role === "owner"
+                  ? formTranslations("ownerSuffix")
+                  : ""}
               </option>
             ))}
           </select>
         </div>
         <div className="space-y-2">
           <Label htmlFor="amount">
-            金額（{currencyCode}
-            {minorExp === 0 ? "・整数" : "・小数可"}）
+            {minorExp === 0
+              ? formTranslations("amountLabelInteger", {
+                  currency: currencyCode,
+                })
+              : formTranslations("amountLabelDecimal", {
+                  currency: currencyCode,
+                })}
           </Label>
           <Input
             id="amount"
@@ -668,18 +759,18 @@ export function GroupExpensePanel({
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="desc">内容</Label>
+        <Label htmlFor="desc">{formTranslations("descriptionLabel")}</Label>
         <Input
           id="desc"
           value={description}
           onChange={(changeEvent) => setDescription(changeEvent.target.value)}
-          placeholder="例: 夕食"
+          placeholder={formTranslations("descriptionPlaceholder")}
           disabled={submitting}
         />
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="edate">日付</Label>
+        <Label htmlFor="edate">{formTranslations("dateLabel")}</Label>
         <Input
           id="edate"
           type="date"
@@ -720,15 +811,22 @@ export function GroupExpensePanel({
       </fieldset>
 
       <fieldset className="space-y-2">
-        <legend className="text-sm font-medium">按分モード</legend>
+        <legend className="flex w-full items-center gap-1 text-sm font-medium">
+          <span>{formTranslations("splitModeLegend")}</span>
+          <HelpHint
+            ariaLabel={helpTranslations("splitModeAria")}
+            title={helpTranslations("splitModeTitle")}
+            body={helpTranslations("splitModeBody")}
+          />
+        </legend>
         <div className="flex flex-col gap-2 text-sm">
           {(
             [
-              ["equal", "均等割り（Equally）"],
-              ["exact", "金額指定（Exact amounts）"],
-              ["shares", "比率・シェア（Shares）"],
-              ["percent", "パーセント（Percentages）"],
-              ["itemized", "項目別（Itemized）"],
+              ["equal", formTranslations("splitModeEqual")],
+              ["exact", formTranslations("splitModeExact")],
+              ["shares", formTranslations("splitModeShares")],
+              ["percent", formTranslations("splitModePercent")],
+              ["itemized", formTranslations("splitModeItemized")],
             ] as const
           ).map(([value, label]) => (
             <label key={value} className={RADIO_LABEL_ROW_CLASS}>
@@ -760,7 +858,7 @@ export function GroupExpensePanel({
           id="expense-remainder-policy-heading"
           className="px-1 text-xs font-medium text-muted-foreground"
         >
-          端数の扱い（比率・パーセント・均等などで発生する最小単位の差）
+          {formTranslations("remainderHeading")}
         </p>
         <div className="flex flex-col gap-2 text-sm">
           <label className={RADIO_LABEL_ROW_CLASS}>
@@ -773,7 +871,7 @@ export function GroupExpensePanel({
               disabled={submitting}
             />
             <span className="min-w-0 flex-1 leading-snug">
-              最大剰余法（おすすめ・Splitwise に近い）
+              {formTranslations("remainderLargestRemainder")}
             </span>
           </label>
           <label className={RADIO_LABEL_ROW_CLASS}>
@@ -785,7 +883,9 @@ export function GroupExpensePanel({
               onChange={() => setRemainderKind("payer")}
               disabled={submitting}
             />
-            <span className="min-w-0 flex-1 leading-snug">支払者が端数を負担</span>
+            <span className="min-w-0 flex-1 leading-snug">
+              {formTranslations("remainderPayer")}
+            </span>
           </label>
           <label className={RADIO_LABEL_ROW_CLASS}>
             <input
@@ -797,7 +897,7 @@ export function GroupExpensePanel({
               disabled={submitting}
             />
             <span className="min-w-0 flex-1 leading-snug">
-              指定メンバーが端数を負担
+              {formTranslations("remainderSpecificUser")}
             </span>
           </label>
           {remainderKind === "specific_user" ? (
@@ -826,7 +926,7 @@ export function GroupExpensePanel({
               disabled={submitting}
             />
             <span className="min-w-0 flex-1 leading-snug">
-              メンバー一覧の先頭から順に端数を分配
+              {formTranslations("remainderFirstMember")}
             </span>
           </label>
         </div>
@@ -835,7 +935,7 @@ export function GroupExpensePanel({
       {splitMode === "exact" ? (
         <div className="space-y-2 rounded-md border border-dashed p-3">
           <p className="text-xs text-muted-foreground">
-            各メンバーの負担額。合計が支払額とずれる場合は、上記の「端数の扱い」で調整されます。
+            {formTranslations("exactIntro")}
           </p>
           <div className="grid gap-2 sm:grid-cols-2">
             {members.map((memberRow) => (
@@ -870,8 +970,7 @@ export function GroupExpensePanel({
       {splitMode === "shares" ? (
         <div className="space-y-2 rounded-md border border-dashed p-3">
           <p className="text-xs text-muted-foreground">
-            相対的な比率（例: 2 と 1 なら 2:1）。0
-            の人は按分から除外されます。
+            {formTranslations("sharesZeroHint")}
           </p>
           <div className="grid gap-2 sm:grid-cols-2">
             {members.map((memberRow) => (
@@ -905,7 +1004,7 @@ export function GroupExpensePanel({
       {splitMode === "percent" ? (
         <div className="space-y-2 rounded-md border border-dashed p-3">
           <p className="text-xs text-muted-foreground">
-            全員ぶんのパーセントの合計がちょうど 100% になるようにしてください。
+            {formTranslations("percentIntro")}
           </p>
           <div className="grid gap-2 sm:grid-cols-2">
             {members.map((memberRow) => (
@@ -942,7 +1041,7 @@ export function GroupExpensePanel({
         <div className="space-y-3 rounded-md border border-dashed p-3">
           <div className="flex items-center justify-between gap-2">
             <p className="text-xs text-muted-foreground">
-              品目ごとに金額と負担者を指定。行の合計が上の支払額と一致する必要があります。
+              {formTranslations("itemizedIntro")}
             </p>
             <Button
               type="button"
@@ -952,7 +1051,7 @@ export function GroupExpensePanel({
               onClick={addItemLine}
               disabled={submitting}
             >
-              行を追加
+              {formTranslations("itemizedAddRow")}
             </Button>
           </div>
           <div className="space-y-3">
@@ -963,7 +1062,9 @@ export function GroupExpensePanel({
               >
                 <div className="flex flex-wrap items-end gap-2">
                   <div className="space-y-1">
-                    <Label className="text-xs">項目金額</Label>
+                    <Label className="text-xs">
+                      {formTranslations("itemizedLineAmount")}
+                    </Label>
                     <Input
                       type="number"
                       inputMode="decimal"
@@ -994,7 +1095,7 @@ export function GroupExpensePanel({
                       onClick={() => removeItemLine(line.key)}
                       disabled={submitting}
                     >
-                      削除
+                      {formTranslations("itemizedRemoveRow")}
                     </Button>
                   ) : null}
                 </div>
@@ -1065,7 +1166,7 @@ export function GroupExpensePanel({
         {submitting ? (
           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
         ) : null}
-        出費を登録
+        {formTranslations("submitButton")}
       </Button>
     </form>
   );

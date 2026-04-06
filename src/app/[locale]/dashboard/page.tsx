@@ -75,8 +75,10 @@ export default async function DashboardPage({ params }: PageProps) {
       ? (ownProfileRaw as {
           display_name?: string;
           avatar_url?: string | null;
+          premium_access?: boolean;
         })
       : null;
+  const dashboardHasPremium = ownProfile?.premium_access === true;
   const currentDisplayName =
     ownProfile?.display_name ?? extractDisplayName(user);
   const currentAvatarUrl =
@@ -206,6 +208,8 @@ export default async function DashboardPage({ params }: PageProps) {
   })();
 
   const dashboardChartsTranslations = await getTranslations("GroupCharts");
+  const dashboardPageTranslations = await getTranslations("Dashboard");
+  const loginTranslations = await getTranslations("Login");
 
   return (
     <div className="min-h-screen bg-background">
@@ -214,8 +218,7 @@ export default async function DashboardPage({ params }: PageProps) {
           role="status"
           className="border-b border-amber-200 bg-amber-50 px-4 py-2.5 text-center text-sm leading-snug text-amber-950 dark:border-amber-900/60 dark:bg-amber-950/35 dark:text-amber-100"
         >
-          ⚠️
-          現在ゲストモードです。ブラウザの閉鎖やキャッシュクリアでデータが消える可能性があるため、正式なアカウント連携を推奨します
+          ⚠️ {dashboardPageTranslations("guestModeBanner")}
         </div>
       ) : null}
 
@@ -227,7 +230,9 @@ export default async function DashboardPage({ params }: PageProps) {
             </div>
             <div>
               <h1 className="text-lg font-bold text-foreground">SpliTrip</h1>
-              <p className="text-xs text-muted-foreground">ダッシュボード</p>
+              <p className="text-xs text-muted-foreground">
+                {dashboardPageTranslations("subtitle")}
+              </p>
             </div>
           </div>
           <div className="flex items-center gap-1 sm:gap-2">
@@ -261,7 +266,7 @@ export default async function DashboardPage({ params }: PageProps) {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground">
-                総支出
+                {dashboardPageTranslations("statTotalSpend")}
               </CardTitle>
               <Receipt className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
@@ -273,7 +278,7 @@ export default async function DashboardPage({ params }: PageProps) {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground">
-                グループ数
+                {dashboardPageTranslations("statGroupCount")}
               </CardTitle>
               <FolderOpen className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
@@ -285,7 +290,7 @@ export default async function DashboardPage({ params }: PageProps) {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground">
-                1グループあたり
+                {dashboardPageTranslations("statAvgPerGroup")}
               </CardTitle>
               <TrendingUp className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
@@ -311,10 +316,10 @@ export default async function DashboardPage({ params }: PageProps) {
               <div>
                 <CardTitle className="flex items-center gap-2 text-base">
                   <UsersRound className="h-4 w-4" />
-                  割り勘グループ
+                  {dashboardPageTranslations("groupsCardTitle")}
                 </CardTitle>
                 <CardDescription>
-                  旅行ごとのグループで出費・按分・精算を管理
+                  {dashboardPageTranslations("groupsCardDescription")}
                 </CardDescription>
               </div>
             </CardHeader>
@@ -346,7 +351,7 @@ export default async function DashboardPage({ params }: PageProps) {
                 </ul>
               ) : (
                 <p className="py-4 text-sm text-muted-foreground">
-                  まだグループがありません。下のボタンから作成できます。
+                  {dashboardPageTranslations("emptyGroups")}
                 </p>
               )}
               <div className="mt-4">
@@ -354,11 +359,11 @@ export default async function DashboardPage({ params }: PageProps) {
                   href="/dashboard/groups/new"
                   className={cn(buttonVariants(), "w-full min-h-[44px] md:min-h-0")}
                 >
-                  新しい旅行（グループ）を作成
+                  {dashboardPageTranslations("createGroupButton")}
                 </Link>
               </div>
               <div className="mt-4">
-                <PromoBanner />
+                <PromoBanner hidden={dashboardHasPremium} />
               </div>
             </CardContent>
           </Card>
@@ -367,11 +372,11 @@ export default async function DashboardPage({ params }: PageProps) {
 
       <footer className="border-t border-border pb-20 pt-6 text-center text-xs text-muted-foreground md:pb-6">
         <Link href="/terms" className="underline underline-offset-4 hover:text-foreground">
-          利用規約
+          {loginTranslations("terms")}
         </Link>
         <span className="mx-2">·</span>
         <Link href="/privacy" className="underline underline-offset-4 hover:text-foreground">
-          プライバシーポリシー
+          {loginTranslations("privacy")}
         </Link>
       </footer>
     </div>

@@ -31,10 +31,8 @@ import { GroupNextPayerHint } from "./group-next-payer-hint";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { GroupInviteButton } from "./group-invite-button";
 import { GroupExportToolbar } from "./group-export-toolbar";
-import {
-  GroupExportCaptureArea,
-  GroupExportCaptureProvider,
-} from "./group-export-capture";
+import { GroupPremiumShell } from "@/components/premium/group-premium-shell";
+import { remainingFreeOcrUses } from "@/lib/premium-access";
 import { DisplayNamePrompt } from "@/components/display-name-prompt";
 import { RealtimeGroupSync } from "@/components/realtime-group-sync";
 import { UserAvatar } from "@/components/user-avatar";
@@ -108,6 +106,7 @@ export default async function GroupDetailPage({ params }: PageProps) {
     (sum, expense) => sum + Number(expense.amount),
     0,
   );
+  const groupDetailTranslations = await getTranslations("GroupDetail");
   const payerChartData = (() => {
     const payerTotals = new Map<string, number>();
     const payerDetails = new Map<
@@ -117,7 +116,7 @@ export default async function GroupDetailPage({ params }: PageProps) {
     for (const expense of expenses) {
       const payerName =
         members.find((member) => member.user_id === expense.payer_id)
-          ?.display_name ?? "不明";
+          ?.display_name ?? groupDetailTranslations("chartUnknownPayer");
       const expenseAmount = Number(expense.amount);
       payerTotals.set(
         payerName,
@@ -199,6 +198,21 @@ export default async function GroupDetailPage({ params }: PageProps) {
     timeStyle: "short",
   }).format(new Date());
 
+  const { data: ownProfileJson } = await supabase.rpc("get_own_profile");
+  const profileRecord =
+    ownProfileJson && typeof ownProfileJson === "object"
+      ? (ownProfileJson as Record<string, unknown>)
+      : null;
+  const hasPremiumAccess = profileRecord?.premium_access === true;
+  const ocrUsageCount =
+    typeof profileRecord?.ocr_usage_count === "number"
+      ? profileRecord.ocr_usage_count
+      : 0;
+  const freeOcrRemaining = remainingFreeOcrUses({
+    premium_access: hasPremiumAccess,
+    ocr_usage_count: ocrUsageCount,
+  });
+
   return (
     <div className="min-h-screen bg-background">
       <header className="border-b border-border bg-card shadow-sm print:hidden">
@@ -208,12 +222,15 @@ export default async function GroupDetailPage({ params }: PageProps) {
             className={cn(buttonVariants({ variant: "ghost", size: "sm" }), "min-h-[44px] md:min-h-0")}
           >
             <ArrowLeft className="mr-1 h-4 w-4" />
-            ダッシュボード
+            {groupDetailTranslations("backDashboard")}
           </Link>
           <div className="min-w-0 flex-1">
             <h1 className="text-lg font-bold text-foreground">{group.name}</h1>
             <p className="text-xs text-muted-foreground">
-              {group.currency_code} · メンバー {members.length} 人
+              {groupDetailTranslations("memberLine", {
+                currency: group.currency_code,
+                count: members.length,
+              })}
             </p>
             <div className="mt-1.5 flex -space-x-1.5">
               {members.map((memberRow) => (
@@ -244,7 +261,10 @@ export default async function GroupDetailPage({ params }: PageProps) {
         <div className="print:hidden">
           <DisplayNamePrompt currentName={currentDisplayName} groupId={groupId} />
         </div>
-        <GroupExportCaptureProvider>
+        <GroupPremiumShell
+          hasPremiumAccess={hasPremiumAccess}
+          freeOcrRemaining={freeOcrRemaining}
+        >
           <GroupExportToolbar
             groupName={group.name}
             currencyCode={group.currency_code}
@@ -289,7 +309,7 @@ export default async function GroupDetailPage({ params }: PageProps) {
             />
           </div>
 
-          <GroupExportCaptureArea>
+          <div className="space-y-6">
             <div className="rounded-lg border border-border bg-card p-4 shadow-sm print:hidden">
               <p className="text-lg font-semibold text-foreground">
                 {group.name}
@@ -314,8 +334,10 @@ export default async function GroupDetailPage({ params }: PageProps) {
 
             <Card>
           <CardHeader>
-            <CardTitle>登録済みの出費</CardTitle>
-            <CardDescription>按分込みの一覧</CardDescription>
+            <CardTitle>{groupDetailTranslations("expensesCardTitle")}</CardTitle>
+            <CardDescription>
+              {groupDetailTranslations("expensesCardDescription")}
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <GroupExpenseList
@@ -330,26 +352,28 @@ export default async function GroupDetailPage({ params }: PageProps) {
 
         <Card>
           <CardHeader>
-            <CardTitle>精算プラン（Simplify Debts）</CardTitle>
+            <CardTitle>
+              {groupDetailTranslations("settlementCardTitle")}
+            </CardTitle>
             <CardDescription className="space-y-1">
               <span>
-                最小送金回数になるよう債権・債務を相殺した結果です。
+                {groupDetailTranslations("settlementCardDescription")}
               </span>
               <span className="block print:hidden">
                 <Link
                   href="/settings"
                   className="font-medium text-primary underline-offset-4 hover:underline"
                 >
-                  設定
+                  {groupDetailTranslations("settlementSettingsLink")}
                 </Link>
-                から PayPal.me / Cash App を登録すると、あなたが支払う行に送金用リンクが表示されます。
+                {groupDetailTranslations("settlementSettingsTrail")}
               </span>
             </CardDescription>
           </CardHeader>
           <CardContent>
             {settlements.length === 0 ? (
               <p className="py-6 text-center text-sm text-muted-foreground">
-                精算の必要はありません
+                {groupDetailTranslations("settlementEmpty")}
               </p>
             ) : (
               <GroupSettlementList
@@ -361,12 +385,12 @@ export default async function GroupDetailPage({ params }: PageProps) {
               />
             )}
             <div className="mt-4 print:hidden">
-              <PromoBanner />
+              <PromoBanner hidden={hasPremiumAccess} />
             </div>
           </CardContent>
         </Card>
-          </GroupExportCaptureArea>
-        </GroupExportCaptureProvider>
+          </div>
+        </GroupPremiumShell>
       </main>
     </div>
   );

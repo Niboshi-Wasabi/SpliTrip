@@ -6,11 +6,11 @@
  * Step 1 — Features grounded in this repo (JP / EN):
  * - 精算最小化: `src/lib/simplify-debts.ts` + `src/lib/group-ledger.ts`（グリーディ突合で送金回数削減）
  *   Settlement minimization: greedy debtor/creditor matching to reduce transfer count.
- * - 多様な按分: `src/utils/settlement.ts` + `group-expense-panel.tsx`（equal / percent / shares / itemized 等・端数ポリシー）
+ * - 多様な割り方: `src/utils/settlement.ts` + `group-expense-panel.tsx`（equal / percent / shares / itemized 等・端数ポリシー）
  *   Rich split math: multiple modes with minor-unit remainder handling.
  * - AI レシート + Storage: `src/actions/analyzeReceipt.ts`（Gemini）+ 領収書 API / `group-expense-panel`
  *   Receipt scan via server action + stored attachments for review.
- * - 書き出し・監査: `group-export-toolbar.tsx`（CSV / PDF / PNG / print）+ 出費詳細の audit API
+ * - 書き出し・監査: `group-export-toolbar.tsx`（CSV / PDF / print・PRO）+ 出費詳細の audit API
  *   Exports and per-expense audit timeline for accountability.
  * - 認証・招待: Google / LINE / ゲスト + `create-group-with-invite` / join フロー（トークン招待）
  *   Flexible auth and shareable invite links for groups.

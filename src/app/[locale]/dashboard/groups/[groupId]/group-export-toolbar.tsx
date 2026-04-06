@@ -1,13 +1,13 @@
 "use client";
 
 /**
- * CSV / print-PDF / PNG export entry points for the group detail view.
- * グループ詳細の CSV・印刷（PDF 相当）・PNG のエクスポート入口。
+ * CSV / print / PDF report for the group detail view. CSV & PDF report are PRO-gated.
+ * グループ詳細の CSV・印刷・PDF。CSV と PDF レポートは PRO のみ。
  */
 
 import { useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
-import { Download, FileText, ImageIcon, Printer } from "lucide-react";
+import { Download, FileText, Lock, Printer } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { parseExpenseCategoryId } from "@/lib/expense-categories";
 import {
@@ -19,11 +19,7 @@ import {
   type CsvSettlementInput,
   type GroupExportCsvLabels,
 } from "@/utils/exportCsv";
-import {
-  buildExportPngFilename,
-  downloadDomAsPng,
-} from "@/utils/exportGroupPng";
-import { useGroupExportCaptureRef } from "./group-export-capture";
+import { useUpgradeModal } from "@/components/premium/upgrade-modal-context";
 import {
   buildExportPdfFilename,
   downloadSimpleGroupPdf,
@@ -39,13 +35,6 @@ type Props = {
   totalExpenseAmount: number;
 };
 
-/**
- * Build label bag for CSV headers from next-intl strings.
- * next-intl の文字列から CSV 見出し用ラベル集合を組み立てる。
- *
- * Why: CSV column titles must follow UI language; isolates all `GroupExport` keys in one place.
- * 理由: CSV 見出しを UI 言語に合わせ、`GroupExport` キーを一箇所に集約する。
- */
 function useGroupExportCsvLabels(): GroupExportCsvLabels {
   const translations = useTranslations("GroupExport");
   return {
@@ -67,13 +56,6 @@ function useGroupExportCsvLabels(): GroupExportCsvLabels {
   };
 }
 
-/**
- * Renders export actions and a print-only title block for the group page.
- * グループページのエクスポート操作と、印刷時のみのタイトルブロックを描画する。
- *
- * Why client component: CSV / PNG / `window.print` require the browser runtime.
- * 理由: CSV・PNG・`window.print` はブラウザ実行時が必要。
- */
 export function GroupExportToolbar({
   groupName,
   currencyCode,
@@ -86,20 +68,15 @@ export function GroupExportToolbar({
   const categoryTranslations = useTranslations("ExpenseCategory");
   const locale = useLocale();
   const csvLabels = useGroupExportCsvLabels();
-  const captureRef = useGroupExportCaptureRef();
-  const [pngBusy, setPngBusy] = useState(false);
-  const [pngError, setPngError] = useState<string | null>(null);
+  const { hasPremiumAccess, openUpgradeModal } = useUpgradeModal();
   const [pdfBusy, setPdfBusy] = useState(false);
   const [pdfError, setPdfError] = useState<string | null>(null);
 
-  /**
-   * Serialize current props into a BOM CSV and trigger download.
-   * 現在の画面データを BOM 付き CSV にし、ダウンロードを開始する。
-   *
-   * Why client-only: needs `document` / Blob URL; keeps RSC payload small.
-   * 理由: `document` と Blob URL が必要。RSC のペイロードを小さく保つ。
-   */
   function handleExportCsv(): void {
+    if (!hasPremiumAccess) {
+      openUpgradeModal();
+      return;
+    }
     const exportedAt = new Date();
     const expensesForCsv: CsvExpenseInput[] = expenses.map((expenseRow) => ({
       ...expenseRow,
@@ -121,22 +98,15 @@ export function GroupExportToolbar({
     downloadCsvFile(filename, csvBody);
   }
 
-  /**
-   * Open the browser print dialog so the user can save as PDF.
-   * ブラウザの印刷ダイアログを開き、PDF 保存に任せる。
-   *
-   * Why `window.print`: avoids heavy PDF libs and keeps CJK rendering native.
-   * 理由: 重い PDF ライブラリを避け、CJK はブラウザ描画に任せる。
-   */
   function handlePrint(): void {
     window.print();
   }
 
-  /**
-   * Build a lightweight PDF (html2canvas + jsPDF) with trip name, total, settlements.
-   * 旅行名・総額・精算を 1 本の PDF にする（html2canvas + jsPDF）。
-   */
   async function handleExportPdfReport(): Promise<void> {
+    if (!hasPremiumAccess) {
+      openUpgradeModal();
+      return;
+    }
     setPdfBusy(true);
     setPdfError(null);
     try {
@@ -174,32 +144,12 @@ export function GroupExportToolbar({
     }
   }
 
-  /**
-   * Rasterize the shared capture region and save PNG (light styling while dark is active).
-   * 共有キャプチャ領域をラスタ化して PNG 保存する（ダーク時は一時的にライト見た目）。
-   *
-   * Why async: html2canvas returns a Promise; we gate the button to prevent double clicks.
-   * 理由: html2canvas は Promise のため、連打防止にボタンを制御する。
-   */
-  async function handleExportPng(): Promise<void> {
-    const rootEl = captureRef.current;
-    if (!rootEl) {
-      setPngError(translations("pngExportMissingTarget"));
-      return;
-    }
+  function onCsvClick(): void {
+    handleExportCsv();
+  }
 
-    setPngBusy(true);
-    setPngError(null);
-    try {
-      const exportedAt = new Date();
-      const filename = buildExportPngFilename(groupName, exportedAt);
-      await downloadDomAsPng(rootEl, filename);
-    } catch (err) {
-      console.error("handleExportPng:", err);
-      setPngError(translations("pngExportError"));
-    } finally {
-      setPngBusy(false);
-    }
+  function onPdfClick(): void {
+    void handleExportPdfReport();
   }
 
   const printedAtLabel = new Intl.DateTimeFormat(locale, {
@@ -223,10 +173,13 @@ export function GroupExportToolbar({
             variant="outline"
             size="sm"
             className="gap-2"
-            onClick={handleExportCsv}
+            onClick={onCsvClick}
           >
             <Download className="size-4 shrink-0" aria-hidden />
             {translations("exportCsv")}
+            {!hasPremiumAccess ? (
+              <Lock className="size-3.5 shrink-0 opacity-70" aria-hidden />
+            ) : null}
           </Button>
           <Button
             type="button"
@@ -244,34 +197,17 @@ export function GroupExportToolbar({
             size="sm"
             className="gap-2"
             disabled={pdfBusy}
-            onClick={() => {
-              void handleExportPdfReport();
-            }}
+            onClick={onPdfClick}
           >
             <FileText className="size-4 shrink-0" aria-hidden />
             {pdfBusy
               ? translations("pdfExporting")
               : translations("exportPdfReport")}
-          </Button>
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            className="gap-2"
-            disabled={pngBusy}
-            onClick={() => {
-              void handleExportPng();
-            }}
-          >
-            <ImageIcon className="size-4 shrink-0" aria-hidden />
-            {pngBusy ? translations("pngExporting") : translations("exportPngImage")}
+            {!hasPremiumAccess ? (
+              <Lock className="size-3.5 shrink-0 opacity-70" aria-hidden />
+            ) : null}
           </Button>
         </div>
-        {pngError ? (
-          <p className="text-sm text-destructive" role="alert">
-            {pngError}
-          </p>
-        ) : null}
         {pdfError ? (
           <p className="text-sm text-destructive" role="alert">
             {pdfError}

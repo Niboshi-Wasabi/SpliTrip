@@ -90,6 +90,19 @@ export default async function JoinByInvitePage({ params }: PageProps) {
 
   await upsertUserProfileFromAuth(supabase, user);
 
+  if (user.is_anonymous === true) {
+    const { error: guestFlagError } = await supabase.rpc(
+      "set_own_member_guest_flag",
+      {
+        p_group_id: groupId as string,
+        p_is_guest: true,
+      },
+    );
+    if (guestFlagError) {
+      console.error("set_own_member_guest_flag:", guestFlagError.message);
+    }
+  }
+
   console.log("[JoinPage] redirecting to /dashboard/groups/" + groupId);
   redirect({ href: `/dashboard/groups/${groupId}`, locale });
 }

@@ -3,6 +3,7 @@
  * as the next person to pay at the register.
  */
 
+import { getTranslations } from "next-intl/server";
 import {
   Card,
   CardContent,
@@ -27,7 +28,7 @@ type ExpenseRow = {
 
 const NET_EPS = 0.005;
 
-export function GroupNextPayerHint({
+export async function GroupNextPayerHint({
   expenses,
   members,
   currencyCode,
@@ -36,6 +37,7 @@ export function GroupNextPayerHint({
   members: Member[];
   currencyCode: string;
 }) {
+  const nextPayerTranslations = await getTranslations("GroupNextPayer");
   const ledgerEntries: ExpenseWithSplits[] = expenses.map((expenseRow) => ({
     payer_id: expenseRow.payer_id,
     amount: Number(expenseRow.amount),
@@ -67,30 +69,32 @@ export function GroupNextPayerHint({
     nextPayerSuggestion !== null
       ? (members.find(
           (memberRow) => memberRow.user_id === nextPayerSuggestion.userId,
-        )?.display_name ?? "メンバー")
+        )?.display_name ?? nextPayerTranslations("fallbackMemberName"))
       : "";
 
   return (
     <Card className="border-dashed border-blue-200 bg-blue-50/40 dark:border-blue-900 dark:bg-blue-950/20">
       <CardHeader className="py-3">
-        <CardTitle className="text-sm">次は誰が払う？</CardTitle>
+        <CardTitle className="text-sm">
+          {nextPayerTranslations("cardTitle")}
+        </CardTitle>
         <CardDescription className="text-xs">
-          登録済みの出費から見た正味残高（支払い − 負担）に基づく目安です。
+          {nextPayerTranslations("cardDescription")}
         </CardDescription>
       </CardHeader>
       <CardContent className="text-xs text-muted-foreground">
         {memberUserIds.length === 0 ? (
-          <p>メンバーがいません。</p>
+          <p>{nextPayerTranslations("emptyMembers")}</p>
         ) : showDebtHint && nextPayerSuggestion ? (
           <>
             <p className="text-sm font-semibold text-foreground">
               {suggestedDisplayName}
             </p>
             <p className="mt-1 leading-relaxed">
-              グループへの債務が最も大きいメンバーです。次の支払いを担当すると、後の精算で送金が減りやすくなることがあります。
+              {nextPayerTranslations("debtHint")}
             </p>
             <p className="mt-2 font-mono text-[0.7rem] tabular-nums text-foreground">
-              正味残高:{" "}
+              {nextPayerTranslations("netBalanceLabel")}{" "}
               {formatMoneyByCurrency(
                 currencyCode,
                 nextPayerSuggestion.netBalance,
@@ -99,7 +103,7 @@ export function GroupNextPayerHint({
           </>
         ) : (
           <p className="leading-relaxed">
-            大きな債務の偏りは見当たりません。次の支払いは誰でも大きくは変わりません。
+            {nextPayerTranslations("balancedHint")}
           </p>
         )}
       </CardContent>

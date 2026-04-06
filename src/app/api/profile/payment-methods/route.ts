@@ -6,6 +6,25 @@ import { NextRequest, NextResponse } from "next/server";
 import { sanitizeCashAppCashtag, sanitizePaypalMeId } from "@/lib/payment-ids";
 import { createClient } from "@/utils/supabase/server";
 
+function buildPaymentLinksJson(
+  paypalMeId: string | null,
+  cashAppCashtag: string | null,
+): unknown[] {
+  const links: { url: string }[] = [];
+  if (paypalMeId) {
+    links.push({
+      url: `https://www.paypal.com/paypalme/${encodeURIComponent(paypalMeId)}`,
+    });
+  }
+  if (cashAppCashtag) {
+    const tag = cashAppCashtag.replace(/^\$/, "");
+    links.push({
+      url: `https://cash.app/$${encodeURIComponent(tag)}`,
+    });
+  }
+  return links;
+}
+
 export async function PATCH(request: NextRequest) {
   const supabase = await createClient();
   const {
@@ -46,9 +65,12 @@ export async function PATCH(request: NextRequest) {
     return NextResponse.json({ error: "invalid_cash_app_cashtag" }, { status: 400 });
   }
 
+  const paymentLinksPayload = buildPaymentLinksJson(paypal_me_id, cash_app_cashtag);
+
   const { error } = await supabase.rpc("update_own_payment_methods", {
     p_paypal_me_id: paypal_me_id,
     p_cash_app_cashtag: cash_app_cashtag,
+    p_payment_links: paymentLinksPayload,
   });
 
   if (error) {

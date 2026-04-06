@@ -8,6 +8,7 @@ import {
   parseRemainderPolicy,
   type SplitMode,
 } from "@/lib/group-expense-split-server";
+import { mapSplitModeToDatabaseEnum } from "@/lib/map-split-mode";
 import { parseExpenseCategoryId } from "@/lib/expense-categories";
 import { fetchGroupDetailForUser } from "@/lib/group-queries";
 import { createClient } from "@/utils/supabase/server";
@@ -160,6 +161,8 @@ export async function POST(request: NextRequest, context: RouteContext) {
     ratio: split.ratio,
   }));
 
+  const splitTypeEnum = mapSplitModeToDatabaseEnum(splitMode);
+
   const { data: expenseId, error: rpcError } = await supabase.rpc(
     "insert_expense_with_splits",
     {
@@ -171,6 +174,7 @@ export async function POST(request: NextRequest, context: RouteContext) {
       p_splits: splitsJson,
       p_category: category,
       p_receipt_url: null,
+      p_split_type: splitTypeEnum,
     },
   );
 

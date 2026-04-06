@@ -9,8 +9,17 @@
 import { useTranslations } from "next-intl";
 import { ChevronRight, Hotel } from "lucide-react";
 
-export function PromoBanner() {
+type Props = {
+  /** When true (PRO), hide the promo slot entirely. */
+  hidden?: boolean;
+};
+
+export function PromoBanner({ hidden = false }: Props) {
   const adsTranslations = useTranslations("Ads");
+
+  if (hidden) {
+    return null;
+  }
 
   return (
     <div

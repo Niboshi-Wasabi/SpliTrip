@@ -1,12 +1,11 @@
 /**
- * Simple “travel report” PDF: rasterize a lightweight DOM via html2canvas, embed in jsPDF.
- * 旅行サマリ PDF: 小さな DOM を html2canvas で画像化し jsPDF に埋め込む。
+ * Travel report PDF: draw text on Canvas (CJK-friendly system fonts), embed in jsPDF.
+ * html2canvas は廃止。ブラウザの Canvas で描画し、jpeg → jsPDF。
  *
- * Why canvas+jsPDF: native jsPDF fonts poorly support CJK; rendering HTML preserves glyphs.
- * 理由: jsPDF の標準フォントは CJK が弱い。HTML 経由ならブラウザの字形を活かせる。
+ * Why canvas instead of jsPDF .text alone: default PDF fonts are weak for Japanese glyphs.
+ * 理由: jsPDF 標準フォントは日本語が弱いため、ブラウザ字形を Canvas に載せる。
  */
 
-import html2canvas from "html2canvas";
 import { jsPDF } from "jspdf";
 import { formatMoneyByCurrency } from "@/lib/currency-payment-amount";
 import { sanitizeGroupNameForFilename } from "@/utils/exportCsv";
@@ -35,33 +34,57 @@ export type BuildSimpleGroupPdfOptions = {
   labels: GroupPdfSimpleLabels;
 };
 
-async function waitTwoAnimationFrames(): Promise<void> {
-  await new Promise<void>((resolve) => {
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => resolve());
-    });
-  });
+const CSS_WIDTH = 720;
+const PAD = 28;
+const BODY_LINE = 22;
+const SCALE = 2;
+
+const BODY_FONT =
+  'system-ui, "Segoe UI", "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Noto Sans JP", sans-serif';
+
+function wrapLines(
+  context: CanvasRenderingContext2D,
+  text: string,
+  maxWidth: number,
+): string[] {
+  const lines: string[] = [];
+  let currentLine = "";
+  for (const char of text) {
+    const candidate = currentLine + char;
+    if (context.measureText(candidate).width > maxWidth && currentLine.length > 0) {
+      lines.push(currentLine);
+      currentLine = char;
+    } else {
+      currentLine = candidate;
+    }
+  }
+  if (currentLine.length > 0) {
+    lines.push(currentLine);
+  }
+  return lines.length > 0 ? lines : [""];
 }
 
-async function withLightDocumentRoot<T>(run: () => Promise<T>): Promise<T> {
-  const htmlRoot = document.documentElement;
-  const hadDarkClass = htmlRoot.classList.contains("dark");
-  if (!hadDarkClass) {
-    return run();
+function drawParagraph(
+  context: CanvasRenderingContext2D,
+  text: string,
+  x: number,
+  y: number,
+  maxWidth: number,
+  lineHeight: number,
+): number {
+  let yCursor = y;
+  for (const line of wrapLines(context, text, maxWidth)) {
+    context.fillText(line, x, yCursor);
+    yCursor += lineHeight;
   }
-  htmlRoot.classList.remove("dark");
-  try {
-    await waitTwoAnimationFrames();
-    return await run();
-  } finally {
-    htmlRoot.classList.add("dark");
-    await waitTwoAnimationFrames();
-  }
+  return yCursor;
 }
 
-function buildReportHostElement(
-  options: BuildSimpleGroupPdfOptions,
-): HTMLDivElement {
+/**
+ * Renders the report to a canvas tall enough for content (max ~12000px).
+ * 内容に応じた高さの Canvas を生成する。
+ */
+function buildReportCanvas(options: BuildSimpleGroupPdfOptions): HTMLCanvasElement {
   const {
     groupName,
     currencyCode,
@@ -72,83 +95,131 @@ function buildReportHostElement(
     labels,
   } = options;
 
-  const host = document.createElement("div");
-  host.style.position = "fixed";
-  host.style.left = "-12000px";
-  host.style.top = "0";
-  host.style.width = "720px";
-  host.style.padding = "28px";
-  host.style.background = "#ffffff";
-  host.style.color = "#111827";
-  host.style.fontFamily =
-    'system-ui, "Segoe UI", "Hiragino Sans", "Hiragino Kaku Gothic ProN", sans-serif';
-  host.style.fontSize = "14px";
-  host.style.lineHeight = "1.5";
+  const canvas = document.createElement("canvas");
+  canvas.width = CSS_WIDTH * SCALE;
+  canvas.height = 12000 * SCALE;
+  const context = canvas.getContext("2d");
+  if (!context) {
+    throw new Error("Canvas 2D context unavailable");
+  }
 
-  const titleElement = document.createElement("h1");
-  titleElement.style.margin = "0 0 8px";
-  titleElement.style.fontSize = "22px";
-  titleElement.textContent = labels.heading;
-  host.appendChild(titleElement);
+  context.scale(SCALE, SCALE);
+  context.fillStyle = "#ffffff";
+  context.fillRect(0, 0, CSS_WIDTH, 12000);
+  context.fillStyle = "#111827";
 
-  const nameElement = document.createElement("p");
-  nameElement.style.margin = "0 0 4px";
-  nameElement.style.fontWeight = "600";
-  nameElement.textContent = groupName;
-  host.appendChild(nameElement);
+  const maxTextWidth = CSS_WIDTH - PAD * 2;
+  let yPosition = PAD;
 
-  const printedElement = document.createElement("p");
-  printedElement.style.margin = "0 0 20px";
-  printedElement.style.fontSize = "12px";
-  printedElement.style.color = "#6b7280";
+  context.font = `600 22px ${BODY_FONT}`;
+  context.textBaseline = "top";
+  yPosition = drawParagraph(
+    context,
+    labels.heading,
+    PAD,
+    yPosition,
+    maxTextWidth,
+    28,
+  );
+  yPosition += 8;
+
+  context.font = `600 14px ${BODY_FONT}`;
+  yPosition = drawParagraph(
+    context,
+    groupName,
+    PAD,
+    yPosition,
+    maxTextWidth,
+    BODY_LINE,
+  );
+  yPosition += 4;
+
+  context.font = `12px ${BODY_FONT}`;
+  context.fillStyle = "#6b7280";
   const printedReadable = exportedAt.toLocaleString(locale, {
     dateStyle: "medium",
     timeStyle: "short",
   });
-  printedElement.textContent = `${labels.printedAtLabel}: ${printedReadable}`;
-  host.appendChild(printedElement);
+  yPosition = drawParagraph(
+    context,
+    `${labels.printedAtLabel}: ${printedReadable}`,
+    PAD,
+    yPosition,
+    maxTextWidth,
+    18,
+  );
+  yPosition += 16;
 
-  const totalElement = document.createElement("p");
-  totalElement.style.margin = "0 0 16px";
-  totalElement.style.fontSize = "16px";
-  totalElement.innerHTML = `<strong>${labels.totalLabel}</strong> ${formatMoneyByCurrency(
+  context.fillStyle = "#111827";
+  context.font = `16px ${BODY_FONT}`;
+  const totalLine = `${labels.totalLabel} ${formatMoneyByCurrency(
     currencyCode,
     totalAmount,
     locale,
   )}`;
-  host.appendChild(totalElement);
+  yPosition = drawParagraph(
+    context,
+    totalLine,
+    PAD,
+    yPosition,
+    maxTextWidth,
+    24,
+  );
+  yPosition += 16;
 
-  const settlementTitleElement = document.createElement("h2");
-  settlementTitleElement.style.margin = "0 0 8px";
-  settlementTitleElement.style.fontSize = "16px";
-  settlementTitleElement.textContent = labels.settlementHeading;
-  host.appendChild(settlementTitleElement);
+  context.font = `600 16px ${BODY_FONT}`;
+  yPosition = drawParagraph(
+    context,
+    labels.settlementHeading,
+    PAD,
+    yPosition,
+    maxTextWidth,
+    22,
+  );
+  yPosition += 8;
 
+  context.font = `14px ${BODY_FONT}`;
   if (settlements.length === 0) {
-    const emptyElement = document.createElement("p");
-    emptyElement.style.margin = "0";
-    emptyElement.style.color = "#6b7280";
-    emptyElement.textContent = labels.settlementEmpty;
-    host.appendChild(emptyElement);
+    context.fillStyle = "#6b7280";
+    yPosition = drawParagraph(
+      context,
+      labels.settlementEmpty,
+      PAD,
+      yPosition,
+      maxTextWidth,
+      BODY_LINE,
+    );
   } else {
-    const listElement = document.createElement("ul");
-    listElement.style.margin = "0";
-    listElement.style.paddingLeft = "20px";
+    context.fillStyle = "#111827";
     for (const settlementRow of settlements) {
-      const listItem = document.createElement("li");
-      listItem.style.marginBottom = "6px";
       const moneyText = formatMoneyByCurrency(
         currencyCode,
         settlementRow.amount,
         locale,
       );
-      listItem.textContent = `${settlementRow.fromDisplayName} → ${settlementRow.toDisplayName}: ${moneyText}`;
-      listElement.appendChild(listItem);
+      const line = `${settlementRow.fromDisplayName} → ${settlementRow.toDisplayName}: ${moneyText}`;
+      yPosition = drawParagraph(
+        context,
+        line,
+        PAD,
+        yPosition,
+        maxTextWidth,
+        BODY_LINE,
+      );
+      yPosition += 4;
     }
-    host.appendChild(listElement);
   }
 
-  return host;
+  const usedHeight = Math.min(12000, Math.ceil(yPosition + PAD));
+  const trimmed = document.createElement("canvas");
+  trimmed.width = CSS_WIDTH * SCALE;
+  trimmed.height = usedHeight * SCALE;
+  const trimmedContext = trimmed.getContext("2d");
+  if (!trimmedContext) {
+    throw new Error("Canvas 2D context unavailable");
+  }
+  trimmedContext.drawImage(canvas, 0, 0, CSS_WIDTH * SCALE, usedHeight * SCALE, 0, 0, CSS_WIDTH * SCALE, usedHeight * SCALE);
+  return trimmed;
 }
 
 export function buildExportPdfFilename(
@@ -170,57 +241,45 @@ export async function downloadSimpleGroupPdf(
   options: BuildSimpleGroupPdfOptions,
   filename: string,
 ): Promise<void> {
-  await withLightDocumentRoot(async () => {
-    const host = buildReportHostElement(options);
-    document.body.appendChild(host);
-    try {
-      const canvas = await html2canvas(host, {
-        scale: 2,
-        backgroundColor: "#ffffff",
-        logging: false,
-      });
-      const imageDataUrl = canvas.toDataURL("image/jpeg", 0.92);
-      const pdfDocument = new jsPDF({
-        orientation: "portrait",
-        unit: "mm",
-        format: "a4",
-      });
-      const pageWidthMillimeters = pdfDocument.internal.pageSize.getWidth();
-      const pageHeightMillimeters = pdfDocument.internal.pageSize.getHeight();
-
-      const imageWidthMillimeters = pageWidthMillimeters;
-      const imageHeightMillimeters =
-        (canvas.height * imageWidthMillimeters) / canvas.width;
-      let verticalOffsetMillimeters = 0;
-      let remainingHeight = imageHeightMillimeters;
-
-      pdfDocument.addImage(
-        imageDataUrl,
-        "JPEG",
-        0,
-        verticalOffsetMillimeters,
-        imageWidthMillimeters,
-        imageHeightMillimeters,
-      );
-      remainingHeight -= pageHeightMillimeters;
-
-      while (remainingHeight > 0) {
-        verticalOffsetMillimeters = -(imageHeightMillimeters - remainingHeight);
-        pdfDocument.addPage();
-        pdfDocument.addImage(
-          imageDataUrl,
-          "JPEG",
-          0,
-          verticalOffsetMillimeters,
-          imageWidthMillimeters,
-          imageHeightMillimeters,
-        );
-        remainingHeight -= pageHeightMillimeters;
-      }
-
-      pdfDocument.save(filename);
-    } finally {
-      document.body.removeChild(host);
-    }
+  const canvas = buildReportCanvas(options);
+  const imageDataUrl = canvas.toDataURL("image/jpeg", 0.92);
+  const pdfDocument = new jsPDF({
+    orientation: "portrait",
+    unit: "mm",
+    format: "a4",
   });
+  const pageWidthMillimeters = pdfDocument.internal.pageSize.getWidth();
+  const pageHeightMillimeters = pdfDocument.internal.pageSize.getHeight();
+
+  const imageWidthMillimeters = pageWidthMillimeters;
+  const imageHeightMillimeters =
+    (canvas.height * imageWidthMillimeters) / canvas.width;
+  let verticalOffsetMillimeters = 0;
+  let remainingHeight = imageHeightMillimeters;
+
+  pdfDocument.addImage(
+    imageDataUrl,
+    "JPEG",
+    0,
+    verticalOffsetMillimeters,
+    imageWidthMillimeters,
+    imageHeightMillimeters,
+  );
+  remainingHeight -= pageHeightMillimeters;
+
+  while (remainingHeight > 0) {
+    verticalOffsetMillimeters = -(imageHeightMillimeters - remainingHeight);
+    pdfDocument.addPage();
+    pdfDocument.addImage(
+      imageDataUrl,
+      "JPEG",
+      0,
+      verticalOffsetMillimeters,
+      imageWidthMillimeters,
+      imageHeightMillimeters,
+    );
+    remainingHeight -= pageHeightMillimeters;
+  }
+
+  pdfDocument.save(filename);
 }

@@ -38,7 +38,7 @@ describe("computeEqualSplitParts", () => {
 });
 
 describe("computeShareSplitParts", () => {
-  it("2:1 で按分", () => {
+  it("2:1 の比率で分割", () => {
     const r = computeShareSplitParts(
       100,
       ["a", "b", "c"],

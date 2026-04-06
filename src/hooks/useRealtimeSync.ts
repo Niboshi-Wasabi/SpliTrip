@@ -15,7 +15,7 @@
  *   client code forgets to broadcast.
  *
  * Why debounce:
- *   一括 INSERT（按分の複数行など）で大量のイベントが来る場合に
+ *   一括 INSERT（負担行の複数行など）で大量のイベントが来る場合に
  *   router.refresh() が連発されるのを防ぐ。
  *   Prevents rapid-fire router.refresh() when bulk inserts (e.g. expense splits)
  *   generate many events in quick succession.

@@ -139,7 +139,7 @@ function amountNumericForCsv(currencyCode: string, amount: number): string {
 
 /**
  * Human-readable split breakdown for one expense row.
- * 1 件の出費について按分内訳の可読文字列を作る。
+ * 1 件の出費について負担内訳の可読文字列を作る。
  *
  * Why: one CSV column keeps the file rectangular; multi-column splits explode width.
  * 理由: 列を増やさず 1 列にまとめ、列数爆発と空セルを避ける。

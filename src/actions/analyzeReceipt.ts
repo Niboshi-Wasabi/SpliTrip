@@ -1,14 +1,17 @@
 "use server";
 
 /**
- * Server Action: Gemini 1.5 Flash でレシート/スクショから出費情報を抽出する。
- * Server Action: Extract expense info from receipt/screenshot via Gemini 1.5 Flash.
- *
- * 自動保存せず、抽出結果をクライアントに返してフォームにセットさせる。
- * Does NOT auto-save; returns extracted data for the client to populate the form.
+ * Server Action: Gemini でレシート/スクショから出費情報を抽出する。
+ * 無料枠は成功ごとに `ocr_usage_count` を加算（PRO は無制限）。
  */
 
 import { GoogleGenAI } from "@google/genai";
+import {
+  hasPremiumAccess,
+  isOcrBlockedForFreeTier,
+  type PremiumProfileFields,
+} from "@/lib/premium-access";
+import { createClient } from "@/utils/supabase/server";
 
 export type ReceiptData = {
   amount: number;
@@ -16,32 +19,90 @@ export type ReceiptData = {
   date: string;
 };
 
+export type AnalyzeReceiptErrorCode =
+  | "GEMINI_CONFIG"
+  | "AUTH"
+  | "OCR_LIMIT"
+  | "GEMINI";
+
 type AnalyzeReceiptResult =
   | { data: ReceiptData; error: null }
-  | { data: null; error: string };
+  | {
+      data: null;
+      error: string;
+      code: AnalyzeReceiptErrorCode;
+    };
+
+function parseProfileJson(
+  raw: unknown,
+): PremiumProfileFields & Record<string, unknown> {
+  if (raw === null || typeof raw !== "object") {
+    return { premium_access: false, ocr_usage_count: 0 };
+  }
+  const record = raw as Record<string, unknown>;
+  return {
+    premium_access: record.premium_access === true,
+    ocr_usage_count:
+      typeof record.ocr_usage_count === "number" ? record.ocr_usage_count : 0,
+    ...record,
+  };
+}
 
 /**
  * レシート画像から金額・説明・日付を Gemini で抽出する。
- * Extract amount, description, and date from a receipt image using Gemini.
  *
  * @param base64Image - data URI のプレフィックスを除いた純粋な base64 文字列
- *                      Pure base64 string without the data URI prefix.
  * @param mimeType    - "image/jpeg" | "image/png" | "image/webp" 等
  */
 export async function analyzeReceipt(
   base64Image: string,
   mimeType: string,
 ): Promise<AnalyzeReceiptResult> {
-  const apiKey = process.env.GEMINI_API_KEY;
-  if (!apiKey) {
-    return { data: null, error: "GEMINI_API_KEY is not configured" };
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return {
+      data: null,
+      error: "Authentication required",
+      code: "AUTH",
+    };
   }
 
-  // 画像サイズの上限チェック（base64 で約 4MB = 約 3MB の実画像）
-  // Guard against oversized payloads (~4MB base64 ≈ ~3MB raw image)
+  const { data: profileJson, error: profileError } =
+    await supabase.rpc("get_own_profile");
+  if (profileError) {
+    console.error("analyzeReceipt get_own_profile:", profileError.message);
+  }
+
+  const profile = parseProfileJson(profileJson);
+
+  if (!hasPremiumAccess(profile) && isOcrBlockedForFreeTier(profile)) {
+    return {
+      data: null,
+      error: "OCR limit reached",
+      code: "OCR_LIMIT",
+    };
+  }
+
+  const apiKey = process.env.GEMINI_API_KEY;
+  if (!apiKey) {
+    return {
+      data: null,
+      error: "GEMINI_API_KEY is not configured",
+      code: "GEMINI_CONFIG",
+    };
+  }
+
   const MAX_BASE64_LENGTH = 4 * 1024 * 1024;
   if (base64Image.length > MAX_BASE64_LENGTH) {
-    return { data: null, error: "Image too large (max ~3MB)" };
+    return {
+      data: null,
+      error: "Image too large (max ~3MB)",
+      code: "GEMINI",
+    };
   }
 
   const ai = new GoogleGenAI({ apiKey });
@@ -80,38 +141,63 @@ export async function analyzeReceipt(
         },
       ],
       config: {
-        // JSON 形式で返却させることでパース失敗を防ぐ
-        // Force JSON output to avoid parsing issues
         responseMimeType: "application/json",
       },
     });
 
     const rawText = response.text ?? "";
     if (!rawText.trim()) {
-      return { data: null, error: "Empty response from Gemini" };
+      return {
+        data: null,
+        error: "Empty response from Gemini",
+        code: "GEMINI",
+      };
     }
 
     const parsed: unknown = JSON.parse(rawText);
     if (typeof parsed !== "object" || parsed === null) {
-      return { data: null, error: "Unexpected response format" };
+      return {
+        data: null,
+        error: "Unexpected response format",
+        code: "GEMINI",
+      };
     }
 
     const record = parsed as Record<string, unknown>;
 
-    return {
-      data: {
-        amount: Number(record.amount) || 0,
-        description: String(record.description ?? ""),
-        date: typeof record.date === "string" && /^\d{4}-\d{2}-\d{2}$/.test(record.date)
+    const receiptData: ReceiptData = {
+      amount: Number(record.amount) || 0,
+      description: String(record.description ?? ""),
+      date:
+        typeof record.date === "string" && /^\d{4}-\d{2}-\d{2}$/.test(record.date)
           ? record.date
           : todayIso,
-      },
+    };
+
+    if (!hasPremiumAccess(profile)) {
+      const { error: incrementError } = await supabase.rpc(
+        "increment_ocr_usage_if_not_premium",
+      );
+      if (incrementError) {
+        console.error(
+          "increment_ocr_usage_if_not_premium:",
+          incrementError.message,
+        );
+      }
+    }
+
+    return {
+      data: receiptData,
       error: null,
     };
   } catch (caughtError) {
     const errorMessage =
       caughtError instanceof Error ? caughtError.message : "Unknown error";
     console.error("analyzeReceipt Gemini API error:", errorMessage);
-    return { data: null, error: errorMessage };
+    return {
+      data: null,
+      error: errorMessage,
+      code: "GEMINI",
+    };
   }
 }
