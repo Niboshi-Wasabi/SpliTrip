@@ -33,6 +33,7 @@ import {
 import { redirect } from "@/i18n/navigation";
 import { UserAvatar } from "@/components/user-avatar";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { PromoBanner } from "@/components/ads/PromoBanner";
 import { DashboardSpendingChart } from "./dashboard-spending-chart";
 import { LogoutButton } from "./logout-button";
 import { getCategoryColor, getExpenseCategoryChartColor } from "@/lib/categories";
@@ -348,6 +349,9 @@ export default async function DashboardPage({ params }: PageProps) {
                 >
                   新しい旅行（グループ）を作成
                 </Link>
+              </div>
+              <div className="mt-4">
+                <PromoBanner />
               </div>
             </CardContent>
           </Card>

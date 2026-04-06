@@ -21,6 +21,7 @@ import { createClient } from "@/utils/supabase/server";
 import { DisplayNameForm } from "./display-name-form";
 import { LanguagePreferenceForm } from "./language-preference-form";
 import { PaymentSettingsForm } from "./payment-settings-form";
+import { SupportDeveloper } from "@/components/ads/SupportDeveloper";
 
 export const dynamic = "force-dynamic";
 
@@ -139,6 +140,9 @@ export default async function SettingsPage({ params }: PageProps) {
             />
           </CardContent>
         </Card>
+        <div className="rounded-lg border border-dashed border-border/60 bg-muted/10 p-4">
+          <SupportDeveloper />
+        </div>
       </main>
     </div>
   );

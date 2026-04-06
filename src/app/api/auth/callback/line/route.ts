@@ -18,7 +18,6 @@ import { upsertUserProfileFromAuth } from "@/lib/user-profile";
 import { getLineOAuthEnv } from "@/utils/line-oauth-env";
 import { getSupabaseEnv } from "@/utils/supabase/env";
 import { createRouteHandlerSupabaseClient } from "@/utils/supabase/route-handler";
-import { isTurnstileConfigured } from "@/utils/turnstile-env";
 
 export async function GET(request: NextRequest) {
   const url = new URL(request.url);
@@ -49,10 +48,6 @@ export async function GET(request: NextRequest) {
       "LINE callback: OAuth state invalid or missing cookie (reload / other tab / cookie blocked?)",
     );
     return redirectLineOAuthFailed(origin, AUTH_ERROR.LINE_AUTH);
-  }
-
-  if (isTurnstileConfigured() && !cookies.captchaTokenFromCookie) {
-    return redirectLineOAuthFailed(origin, AUTH_ERROR.CAPTCHA_REQUIRED);
   }
 
   const tokenResult = await exchangeLineAuthorizationCode(code, lineEnv);

@@ -1,20 +1,17 @@
 "use client";
 
 /**
- * Unauthenticated invite flow: Turnstile (optional), then OAuth (Google / LINE),
- * anonymous sign-in, or existing guest path with `join_group_by_invite`.
- * 未ログイン向け招待: Turnstile（任意）→ Google / LINE OAuth または匿名参加。
+ * Unauthenticated invite: OAuth (Google / LINE), anonymous sign-in, or guest path via `join_group_by_invite`.
+ * 未ログイン向け招待: Google / LINE OAuth または匿名参加。
  *
- * OAuth returns to this invite URL via `next` (Google: `/auth/callback`, LINE: Cookie).
- * OAuth 後は `next` でこの招待 URL に戻し、サーバーが RPC でグループへ誘導する。
+ * No CAPTCHA gate: same UX rationale as the main login screen (smooth mobile + desktop).
+ * CAPTCHA は置かない。ログイン画面と同様、操作の摩擦を減らすため。
  */
 
-import { useRef, useState, type FC } from "react";
+import { useState, type FC } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { Loader2 } from "lucide-react";
-import type { TurnstileInstance } from "@marsidev/react-turnstile";
 import type { Provider } from "@supabase/supabase-js";
-import { LoginTurnstile } from "@/components/auth/login-turnstile";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -25,11 +22,9 @@ import {
 } from "@/components/ui/card";
 import { formatOAuthLoginError } from "@/lib/oauth-errors";
 import { localizedJoinPath } from "@/lib/i18n/localized-paths";
-import { setLineCaptchaBridgeCookie } from "@/lib/set-line-captcha-bridge";
 import { createClient } from "@/utils/supabase/client";
 import { isSupabaseConfigured } from "@/utils/supabase/env";
 import { getPublicSiteOrigin } from "@/utils/public-site-url";
-import { isTurnstileConfigured } from "@/utils/turnstile-env";
 
 type LoginProvider = "google" | "line";
 type LoadingAction = LoginProvider | "guest";
@@ -101,37 +96,22 @@ export function JoinGate({ token }: Props) {
   const locale = useLocale();
   const translations = useTranslations("JoinGate");
   const tLogin = useTranslations("Login");
-  const turnstileRef = useRef<TurnstileInstance | null>(null);
   const [loadingAction, setLoadingAction] = useState<LoadingAction | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const captchaRequired = isTurnstileConfigured();
-  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
-  const captchaOk = !captchaRequired || !!captchaToken;
 
   const supabaseReady = isSupabaseConfigured();
   const joinPath = localizedJoinPath(locale, token);
-
-  function requireCaptchaForAction(): boolean {
-    if (!captchaRequired) return true;
-    if (captchaToken) return true;
-    setError(tLogin("captchaIncomplete"));
-    return false;
-  }
 
   async function handleOAuthLogin(provider: LoginProvider) {
     if (!supabaseReady) {
       setError(tLogin("supabaseNotConfigured"));
       return;
     }
-    if (!requireCaptchaForAction()) return;
 
     setLoadingAction(provider);
     setError(null);
 
     if (provider === "line") {
-      if (captchaToken) {
-        setLineCaptchaBridgeCookie(captchaToken);
-      }
       const next = encodeURIComponent(joinPath);
       window.location.assign(`/api/auth/line?next=${next}`);
       return;
@@ -139,27 +119,16 @@ export function JoinGate({ token }: Props) {
 
     const supabase = createClient();
     const siteOrigin = getPublicSiteOrigin();
-    const oauthOptions: {
-      redirectTo: string;
-      queryParams?: Record<string, string>;
-      captchaToken?: string;
-    } = {
-      redirectTo: `${siteOrigin}/auth/callback?next=${encodeURIComponent(joinPath)}`,
-    };
-    if (captchaToken) {
-      oauthOptions.queryParams = { captcha_token: captchaToken };
-      oauthOptions.captchaToken = captchaToken;
-    }
-
     const { error: authError } = await supabase.auth.signInWithOAuth({
       provider: provider as Provider,
-      options: oauthOptions as never,
+      options: {
+        redirectTo: `${siteOrigin}/auth/callback?next=${encodeURIComponent(joinPath)}`,
+      },
     });
 
     if (authError) {
       setError(formatOAuthLoginError(authError));
       setLoadingAction(null);
-      turnstileRef.current?.reset();
     }
   }
 
@@ -168,20 +137,17 @@ export function JoinGate({ token }: Props) {
       setError(tLogin("supabaseNotConfigured"));
       return;
     }
-    if (!requireCaptchaForAction()) return;
 
     setLoadingAction("guest");
     setError(null);
 
     const supabase = createClient();
-    const { data: anonData, error: authError } = await supabase.auth.signInAnonymously({
-      options: captchaToken ? { captchaToken } : undefined,
-    });
+    const { data: anonData, error: authError } =
+      await supabase.auth.signInAnonymously();
 
     if (authError) {
       setError(authError.message || tLogin("guestModeError"));
       setLoadingAction(null);
-      turnstileRef.current?.reset();
       return;
     }
 
@@ -209,14 +175,10 @@ export function JoinGate({ token }: Props) {
       return;
     }
 
-    // Reload this join page; the server-side branch for logged-in users
-    // will call the RPC, get the groupId, and redirect to the group detail
-    // page in a single request chain — avoiding client→server cookie sync issues.
     window.location.replace(joinPath);
   }
 
-  const authButtonsDisabled =
-    !supabaseReady || loadingAction !== null || !captchaOk;
+  const authButtonsDisabled = !supabaseReady || loadingAction !== null;
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-background px-4 py-10">
@@ -226,9 +188,6 @@ export function JoinGate({ token }: Props) {
           <CardDescription>{translations("description")}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          {captchaRequired ? (
-            <LoginTurnstile ref={turnstileRef} onTokenChange={setCaptchaToken} />
-          ) : null}
           {error ? (
             <p className="text-sm text-destructive" role="alert">
               {error}

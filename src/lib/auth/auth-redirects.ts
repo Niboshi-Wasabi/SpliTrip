@@ -13,7 +13,7 @@ export function redirectToLoginError(
   return NextResponse.redirect(`${origin}${loginErrorPath(code)}`);
 }
 
-/** LINE OAuth コールバック失敗時（state / nonce / captcha 用 Cookie を確実に削除） */
+/** LINE OAuth コールバック失敗時（state / nonce 用 Cookie を確実に削除） */
 export function redirectLineOAuthFailed(
   origin: string,
   code: AuthErrorCode,

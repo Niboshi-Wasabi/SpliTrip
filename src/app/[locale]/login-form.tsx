@@ -3,9 +3,13 @@
 /**
  * OAuth + guest entry; copy is driven by next-intl `Login` messages.
  * OAuth・ゲスト入口。文言は next-intl の `Login` 名前空間で管理する。
+ *
+ * Intentionally no third-party CAPTCHA (e.g. Cloudflare Turnstile): we removed it
+ * so sign-in stays frictionless on mobile and desktop (better UX).
+ * サードパーティ CAPTCHA（Turnstile 等）は置かない。モバイル含め認証の摩擦を減らすため撤去済み。
  */
 
-import { useState, useEffect, useMemo, useRef } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useSearchParams } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { Plane, Loader2 } from "lucide-react";
@@ -18,15 +22,11 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { LoginTurnstile } from "@/components/auth/login-turnstile";
 import { ThemeToggle } from "@/components/ThemeToggle";
-import type { TurnstileInstance } from "@marsidev/react-turnstile";
 import { localizedDashboardPath } from "@/lib/i18n/localized-paths";
 import { createClient } from "@/utils/supabase/client";
 import { isSupabaseConfigured } from "@/utils/supabase/env";
-import { isTurnstileConfigured } from "@/utils/turnstile-env";
 import { loginErrorMessageFromQueryParam } from "@/lib/auth/login-error-messages";
-import { setLineCaptchaBridgeCookie } from "@/lib/set-line-captcha-bridge";
 import { formatOAuthLoginError } from "@/lib/oauth-errors";
 import { getPublicSiteOrigin } from "@/utils/public-site-url";
 import type { Provider } from "@supabase/supabase-js";
@@ -97,15 +97,11 @@ export function LoginForm() {
   const locale = useLocale();
   const translations = useTranslations("Login");
   const searchParams = useSearchParams();
-  const turnstileRef = useRef<TurnstileInstance | null>(null);
   const [loadingAction, setLoadingAction] = useState<LoadingAction | null>(
     null,
   );
   const [error, setError] = useState<string | null>(null);
-  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
   const supabaseReady = isSupabaseConfigured();
-  const captchaRequired = isTurnstileConfigured();
-  const captchaOk = !captchaRequired || !!captchaToken;
 
   const urlErrorMessage = useMemo(
     () => loginErrorMessageFromQueryParam(searchParams.get("error")),
@@ -118,54 +114,32 @@ export function LoginForm() {
 
   const dashboardPath = localizedDashboardPath(locale);
 
-  function requireCaptchaForAction(): boolean {
-    if (!captchaRequired) return true;
-    if (captchaToken) return true;
-    setError(translations("captchaIncomplete"));
-    return false;
-  }
-
   async function handleLogin(provider: LoginProvider) {
     if (!isSupabaseConfigured()) {
       setError(translations("supabaseNotConfigured"));
       return;
     }
-    if (!requireCaptchaForAction()) return;
 
     setLoadingAction(provider);
     setError(urlErrorMessage);
 
     if (provider === "line") {
-      if (captchaToken) {
-        setLineCaptchaBridgeCookie(captchaToken);
-      }
       window.location.assign("/api/auth/line");
       return;
     }
 
     const supabase = createClient();
     const siteOrigin = getPublicSiteOrigin();
-    const oauthOptions: {
-      redirectTo: string;
-      queryParams?: Record<string, string>;
-      captchaToken?: string;
-    } = {
-      redirectTo: `${siteOrigin}/auth/callback?next=${encodeURIComponent(dashboardPath)}`,
-    };
-    if (captchaToken) {
-      oauthOptions.queryParams = { captcha_token: captchaToken };
-      oauthOptions.captchaToken = captchaToken;
-    }
-
     const { error: authError } = await supabase.auth.signInWithOAuth({
       provider: provider as Provider,
-      options: oauthOptions as never,
+      options: {
+        redirectTo: `${siteOrigin}/auth/callback?next=${encodeURIComponent(dashboardPath)}`,
+      },
     });
 
     if (authError) {
       setError(formatOAuthLoginError(authError));
       setLoadingAction(null);
-      turnstileRef.current?.reset();
     }
   }
 
@@ -174,20 +148,16 @@ export function LoginForm() {
       setError(translations("supabaseNotConfigured"));
       return;
     }
-    if (!requireCaptchaForAction()) return;
 
     setLoadingAction("guest");
     setError(urlErrorMessage);
 
     const supabase = createClient();
-    const { error: authError } = await supabase.auth.signInAnonymously({
-      options: captchaToken ? { captchaToken } : undefined,
-    });
+    const { error: authError } = await supabase.auth.signInAnonymously();
 
     if (authError) {
       setError(authError.message || translations("guestModeError"));
       setLoadingAction(null);
-      turnstileRef.current?.reset();
       return;
     }
 
@@ -195,8 +165,7 @@ export function LoginForm() {
     router.refresh();
   }
 
-  const authButtonsDisabled =
-    !supabaseReady || loadingAction !== null || !captchaOk;
+  const authButtonsDisabled = !supabaseReady || loadingAction !== null;
 
   return (
     <div className="relative flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-blue-50 via-white to-emerald-50 px-4 pb-10 pt-14 dark:from-blue-950/50 dark:via-background dark:to-emerald-950/40">
@@ -229,14 +198,6 @@ export function LoginForm() {
               {translations("supabaseNotConfigured")}
             </div>
           )}
-
-          {captchaRequired && supabaseReady && (
-            <p className="text-center text-xs text-muted-foreground">
-              {translations("captchaHint")}
-            </p>
-          )}
-
-          <LoginTurnstile ref={turnstileRef} onTokenChange={setCaptchaToken} />
 
           {error && (
             <div className="rounded-md bg-red-50 p-3 text-center text-sm text-red-600 dark:bg-red-950/40 dark:text-red-300">

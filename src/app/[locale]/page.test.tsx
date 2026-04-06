@@ -20,6 +20,19 @@ jest.mock("next/navigation", () => ({
 }));
 
 jest.mock("@/i18n/navigation", () => ({
+  Link: ({
+    children,
+    href,
+    ...rest
+  }: {
+    children: React.ReactNode;
+    href: string;
+    className?: string;
+  }) => (
+    <a href={href} {...rest}>
+      {children}
+    </a>
+  ),
   useRouter: () => ({
     push: mockPush,
     refresh: mockRefresh,
@@ -50,12 +63,6 @@ jest.mock("@/components/theme/splitrip-theme-provider", () => ({
     systemTheme: "light",
   }),
 }));
-
-jest.mock("@marsidev/react-turnstile", () => {
-  const Turnstile = React.forwardRef(() => null);
-  Turnstile.displayName = "Turnstile";
-  return { Turnstile };
-});
 
 beforeAll(() => {
   process.env.NEXT_PUBLIC_SUPABASE_URL = "https://test-project.supabase.co";

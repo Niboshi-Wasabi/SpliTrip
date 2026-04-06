@@ -5,13 +5,10 @@
     "title": "ログイン",
     "description": "SNSアカウントでログインして、旅の精算を始めましょう",
     "supabaseNotConfigured": "Supabase の接続情報が未設定です。プロジェクト直下の .env.local に NEXT_PUBLIC_SUPABASE_URL と NEXT_PUBLIC_SUPABASE_ANON_KEY を設定し、開発サーバーを再起動してください。",
-    "captchaHint": "続行する前に、下の認証を完了してください。",
-    "turnstileLoadFailed": "認証ウィジェットを表示できませんでした。VPN やブラウザ拡張をオフにして再読み込みする、別ブラウザ・スマホのモバイル回線で試す、をおすすめします。Cloudflare Turnstile のホスト名・サイトキーもご確認ください。",
     "googleLogin": "Googleでログイン",
     "lineLogin": "LINEでログイン",
     "guestMode": "アカウント作成せずに利用する（ゲストモード）",
     "guestModeError": "ゲストモードで開始できませんでした。Supabase で匿名サインインが有効か確認してください。",
-    "captchaIncomplete": "確認を完了してください",
     "terms": "利用規約",
     "privacy": "プライバシーポリシー",
     "termsPrivacyLead": "ログインすることで、",
@@ -217,6 +214,15 @@
     "settings": "設定",
     "logout": "ログアウト"
   },
+  "Ads": {
+    "promoTitle": "次の旅行のホテルを探す",
+    "promoSubtitle": "Book your next stay",
+    "promoAria": "提携プロモーション枠（準備中）",
+    "supportLabel": "開発者を支援する",
+    "supportDescription": "サーバー代をサポート（Buy me a coffee）",
+    "supportCompact": "開発を支援",
+    "supportUrlHint": "寄付リンクは環境変数 NEXT_PUBLIC_SUPPORT_DEVELOPER_URL で有効化できます"
+  },
   "ReceiptScan": {
     "button": "レシート/画像を読み取る",
     "scanning": "画像を解析中…",
@@ -299,5 +305,25 @@
     "s10Body": "本ポリシーは必要に応じて変更される場合があります。重要な変更がある場合はサービス上で通知します。",
     "s11Title": "11. お問い合わせ",
     "s11Body": "本ポリシーに関するご質問は、本サービスの運営までお問い合わせください。"
+  },
+  "Pitch": {
+    "metaTitle": "SpliTrip — プロダクト紹介",
+    "metaDescription": "グループ旅行の精算アプリ SpliTrip の開発ハイライトをスライド形式で紹介します。",
+    "heroTitle": "SpliTrip",
+    "heroTagline": "旅の立替を、最小の送金で。",
+    "heroScrollHint": "スクロールで次へ",
+    "featureSettlementTitle": "精算は「少ない送金」へ圧縮",
+    "featureSettlementBody": "メンバー全員の立替を集計し、債権と債務を突き合わせて送金の回数を抑えます。グリーディな突合アルゴリズムで実装しています。",
+    "featureSplitsTitle": "Splitwise級の按分モード",
+    "featureSplitsBody": "割り勘・金額指定・シェア比率・パーセント・明細行ごとの負担まで対応。端数は最大剰余法など、通貨の最小単位に合わせて配分します。",
+    "featureReceiptTitle": "レシート AI と領収書の保管",
+    "featureReceiptBody": "撮影や画像から Gemini で金額・日付・店名を読み取り、フォームへ反映。領収書は Supabase Storage に保存し、あとから詳細画面で確認できます。",
+    "featureExportAuditTitle": "CSV・PDF と変更履歴",
+    "featureExportAuditBody": "旅行の記録を CSV・PDF・PNG・印刷で書き出し。各出費には監査ログがあり、追加・更新・削除を誰がいつ行ったか追跡できます。",
+    "featureAccessTitle": "Google / LINE / ゲストと招待リンク",
+    "featureAccessBody": "ソーシャルログインとゲストモードで参加のハードルを下げ、トークン付きの招待 URL でメンバーをグループに招けます。",
+    "backToApp": "アプリへ",
+    "ctaDashboard": "ダッシュボードへ",
+    "ctaHint": "グループを作成して試す"
   }
 }

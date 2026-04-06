@@ -11,16 +11,20 @@
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
+import { SupportDeveloper } from "@/components/ads/SupportDeveloper";
 import { Home, Settings, LogOut } from "lucide-react";
 import { createClient } from "@/utils/supabase/client";
 import { isSupabaseConfigured } from "@/utils/supabase/env";
 import { useRouter } from "@/i18n/navigation";
 
-const HIDDEN_PATHS = ["/", "/terms", "/privacy", "/onboarding"];
+const HIDDEN_PATHS = ["/", "/terms", "/privacy", "/onboarding", "/pitch"];
 
 function isHiddenPath(pathname: string): boolean {
   const withoutLocale = pathname.replace(/^\/(ja|en)/, "") || "/";
-  return HIDDEN_PATHS.includes(withoutLocale);
+  if (HIDDEN_PATHS.includes(withoutLocale)) {
+    return true;
+  }
+  return withoutLocale.startsWith("/pitch/");
 }
 
 export function BottomNav() {
@@ -83,6 +87,10 @@ export function BottomNav() {
           <LogOut className="h-5 w-5" />
           {translations("logout")}
         </button>
+      </div>
+
+      <div className="border-t border-border/40 bg-muted/10 px-2 py-1.5">
+        <SupportDeveloper variant="compact" />
       </div>
 
       {/* iPhone のセーフエリア分のパディング / Safe area padding for notched iPhones */}

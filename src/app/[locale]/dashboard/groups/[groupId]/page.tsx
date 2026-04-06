@@ -41,6 +41,7 @@ import { UserAvatar } from "@/components/user-avatar";
 import { checkNeedsOnboarding } from "@/lib/user-profile";
 import { GroupExpenseList } from "./group-expense-list";
 import { fetchExchangeRates } from "@/utils/exchangeRates";
+import { PromoBanner } from "@/components/ads/PromoBanner";
 
 export const dynamic = "force-dynamic";
 
@@ -347,6 +348,9 @@ export default async function GroupDetailPage({ params }: PageProps) {
                 exchangeRates={exchangeRates}
               />
             )}
+            <div className="mt-4 print:hidden">
+              <PromoBanner />
+            </div>
           </CardContent>
         </Card>
           </GroupExportCaptureArea>

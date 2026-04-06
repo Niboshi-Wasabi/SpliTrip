@@ -5,13 +5,10 @@
     "title": "Sign in",
     "description": "Sign in with a social account to start splitting expenses",
     "supabaseNotConfigured": "Supabase is not configured. Set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY in .env.local at the project root, then restart the dev server.",
-    "captchaHint": "Complete the verification below before continuing.",
-    "turnstileLoadFailed": "Could not load the verification widget. Try turning off your VPN and extensions, then reload—or use another browser or mobile data. Also verify Cloudflare Turnstile hostnames and the site key.",
     "googleLogin": "Continue with Google",
     "lineLogin": "Continue with LINE",
     "guestMode": "Continue as guest (no account)",
     "guestModeError": "Could not start guest mode. Check that anonymous sign-in is enabled in Supabase.",
-    "captchaIncomplete": "Please complete the verification.",
     "terms": "Terms of Service",
     "privacy": "Privacy Policy",
     "termsPrivacyLead": "By signing in, you agree to the ",
@@ -217,6 +214,15 @@
     "settings": "Settings",
     "logout": "Logout"
   },
+  "Ads": {
+    "promoTitle": "Book your next stay",
+    "promoSubtitle": "Find hotels for your next trip",
+    "promoAria": "Partner promotion placeholder (coming soon)",
+    "supportLabel": "Support the developer",
+    "supportDescription": "Help cover server costs (Buy me a coffee)",
+    "supportCompact": "Support",
+    "supportUrlHint": "Set NEXT_PUBLIC_SUPPORT_DEVELOPER_URL to enable the donation link"
+  },
   "ReceiptScan": {
     "button": "Scan Receipt / Image",
     "scanning": "Analyzing image…",
@@ -299,5 +305,25 @@
     "s10Body": "This policy may be updated as necessary. Material changes will be communicated through the Service.",
     "s11Title": "11. Contact",
     "s11Body": "For questions about this policy, please contact the operator of the Service."
+  },
+  "Pitch": {
+    "metaTitle": "SpliTrip — Product deck",
+    "metaDescription": "A scroll-snap deck highlighting what SpliTrip already ships for group trip splitting.",
+    "heroTitle": "SpliTrip",
+    "heroTagline": "Split bills. Settle with fewer transfers.",
+    "heroScrollHint": "Scroll for the story",
+    "featureSettlementTitle": "Fewer transfers, same fairness",
+    "featureSettlementBody": "We net everyone’s spending, match debtors to creditors, and greedily cut the number of settlement payments—implemented in simplify-debts and the group ledger.",
+    "featureSplitsTitle": "Split modes that match real trips",
+    "featureSplitsBody": "Equal, exact amounts, share weights, percentages, and itemized lines—with remainder policies so currency rounding stays explainable.",
+    "featureReceiptTitle": "AI receipt scan & secure receipts",
+    "featureReceiptBody": "Gemini reads amount, merchant, and date from a photo or file to pre-fill the form; receipts can live in Storage for later review in the detail dialog.",
+    "featureExportAuditTitle": "Exports you can file—and an audit trail",
+    "featureExportAuditBody": "Ship CSV, print/PDF, and PNG snapshots of the trip. Per-expense audit entries show who changed what and when.",
+    "featureAccessTitle": "Sign-in choices & invite links",
+    "featureAccessBody": "Google, LINE, or guest mode lower the barrier to join; tokenized invite URLs bring people straight into the group flow.",
+    "backToApp": "Back to app",
+    "ctaDashboard": "Open dashboard",
+    "ctaHint": "Create a group and try the flow"
   }
 }

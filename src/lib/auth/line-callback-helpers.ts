@@ -1,7 +1,6 @@
 import { timingSafeEqual } from "crypto";
 import type { NextRequest } from "next/server";
 import {
-  LINE_OAUTH_CAPTCHA_COOKIE,
   LINE_OAUTH_NONCE_COOKIE,
   LINE_OAUTH_RETURN_PATH_COOKIE,
   LINE_OAUTH_STATE_COOKIE,
@@ -10,7 +9,6 @@ import {
 export type LineOAuthCookieBundle = {
   stateFromCookie: string | undefined;
   nonceFromCookie: string | undefined;
-  captchaTokenFromCookie: string | undefined;
   returnPathFromCookie: string | undefined;
 };
 
@@ -20,21 +18,18 @@ export function readLineOAuthCookies(
   return {
     stateFromCookie: request.cookies.get(LINE_OAUTH_STATE_COOKIE)?.value,
     nonceFromCookie: request.cookies.get(LINE_OAUTH_NONCE_COOKIE)?.value,
-    captchaTokenFromCookie: request.cookies
-      .get(LINE_OAUTH_CAPTCHA_COOKIE)
-      ?.value?.trim(),
     returnPathFromCookie: request.cookies.get(
       LINE_OAUTH_RETURN_PATH_COOKIE,
     )?.value,
   };
 }
 
-/** state の改ざん検知用（長さ不一致時は timingSafeEqual を呼ばない） */
+/** Tamper check for OAuth `state` (avoid timingSafeEqual on length mismatch). */
 export function constantTimeEqualString(a: string, b: string): boolean {
-  const ba = Buffer.from(a, "utf8");
-  const bb = Buffer.from(b, "utf8");
-  if (ba.length !== bb.length) return false;
-  return timingSafeEqual(ba, bb);
+  const bufferA = Buffer.from(a, "utf8");
+  const bufferB = Buffer.from(b, "utf8");
+  if (bufferA.length !== bufferB.length) return false;
+  return timingSafeEqual(bufferA, bufferB);
 }
 
 export function isOAuthStateValid(
@@ -46,7 +41,7 @@ export function isOAuthStateValid(
 }
 
 /**
- * /api/auth/line で常に nonce を付与しているため、id_token の nonce と Cookie を突き合わせる
+ * `/api/auth/line` always sends `nonce`; match `id_token.nonce` to the cookie.
  */
 export function isOpenIdNonceValid(
   idTokenPayload: Record<string, unknown>,
