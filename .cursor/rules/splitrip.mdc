@@ -11,6 +11,7 @@ alwaysApply: true
 - **主要コード:** `src/app/`（ページ・API Route）、`src/utils/supabase/`、`src/lib/`（`user-profile.ts`, `dashboard-data.ts` など）、仕様メモは `requirements.md`。
 - **機能一覧:** `docs/FEATURES.md` にユーザー向け機能・API・基盤の一覧をまとめている。
 - **DB 表定義:** `docs/DATABASE_TABLES.md` に `public` スキーマのテーブル・列・参照の一覧（マイグレーション準拠）。
+- **Supabase CLI:** `docs/SUPABASE_LOCAL.md`（`npm run supabase:link` 等でリモート連携・ローカルスタック）。
 
 コード変更は既存の命名・パターンに合わせ、依頼範囲外のリファクタや無関係ファイルの編集は避けること。
 
