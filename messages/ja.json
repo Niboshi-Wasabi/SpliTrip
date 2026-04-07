@@ -70,7 +70,11 @@
     "saveError": "保存に失敗しました。",
     "updateLanguage": "言語を更新",
     "paymentMigrationHint": "送金先を保存するには、Supabase の SQL Editor でマイグレーション「supabase/migrations/20260405190000_user_profiles_payment_ids.sql」を実行し、user_profiles に paypal_me_id / cash_app_cashtag カラムを追加してください。",
-    "paymentSchemaSaveError": "データベースに送金先用のカラムがありません。管理者が上記マイグレーションを適用するまで保存できません。"
+    "paymentSchemaSaveError": "データベースに送金先用のカラムがありません。管理者が上記マイグレーションを適用するまで保存できません。",
+    "subscriptionTitle": "支払い管理",
+    "subscriptionDescription": "SpliTrip PRO の契約内容や支払い情報を Stripe で管理できます。",
+    "subscriptionManageCta": "サブスクリプションを管理",
+    "subscriptionPortalMissing": "管理ポータルのURLが未設定です。運営者にお問い合わせください。"
   },
   "DisplayName": {
     "title": "表示名を設定しましょう",
@@ -336,12 +340,13 @@
   },
   "Premium": {
     "modalTitle": "SpliTrip PROにアップグレードして、旅行の精算をもっとスマートに。",
-    "modalSubtitle": "有料プランでは、次の機能がまとめて使えるようになります（決済は今後の連携予定）。",
+    "modalSubtitle": "有料プランでは、次の機能がまとめて使えるようになります。",
     "benefitOcr": "レシートのAI読み取りが無制限",
     "benefitExport": "PDF・CSVレポートの出力",
     "benefitNoAds": "広告なしで画面がすっきり",
-    "ctaUpgradeNow": "今すぐアップグレード",
-    "ctaPlaceholderHint": "※ 購入処理は準備中です。リリースまでお待ちください。",
+    "ctaUpgradeNow": "PROプランにアップグレード（月額◯円）",
+    "ctaLiveHint": "決済ページに移動します。完了後はPRO機能が有効になります。",
+    "upgradeSuccess": "アップグレードに成功しました！PRO機能をご利用いただけます。",
     "aiScanLabelPro": "AI読み取り（PRO・無制限）",
     "ocrScanLockedAria": "無料枠の上限に達しました。アップグレードの案内を開く"
   },

@@ -8,7 +8,7 @@
 
 - **用途:** グループ旅行などの **割り勘・出費記録・送金回数を減らした精算プラン** を扱う **Web アプリ（PWA 想定）**。
 - **主な技術:** Next.js App Router、React、TypeScript、Tailwind CSS、Supabase（DB・認証・ストレージ）、`next-intl`（**日本語 / 英語**）。
-- **ビジネスモデル（フリーミアム）:** `user_profiles.premium_access` が **PRO**。無料ユーザーは Gemini レシート OCR を **月あたりの成功回数で上限（アプリ側で 3 回）**、CSV / PDF レポート出力はロック。プロモ枠は PRO で非表示（準備中の「アップグレード」モーダル）。
+- **ビジネスモデル（フリーミアム）:** `user_profiles.premium_access` が **PRO**。無料ユーザーは Gemini レシート OCR を **成功回数で上限（アプリ側で 3 回）**、CSV / PDF レポート出力はロック。プロモ枠は PRO で非表示。Stripe Checkout / Webhook で PRO 付与を連携。
 
 ---
 
@@ -108,6 +108,7 @@
 | **表示言語** | `preferred_language` 保存。フルリロードで反映。 |
 | **送金先** | `payment_links` 等を API 経由で更新（マイグレーション未適用時はエラーメッセージ）。 |
 | **PRO / OCR** | `premium_access`（PRO）、`ocr_usage_count`（無料の OCR 累計）。`increment_ocr_usage_if_not_premium` で成功後に加算。 |
+| **支払い管理（PRO）** | 設定画面に Stripe Customer Portal 導線。`STRIPE_CUSTOMER_PORTAL_URL` を設定すると「サブスクリプション管理」ボタンが表示。 |
 
 ---
 
@@ -131,6 +132,7 @@
 | コメント | `…/expenses/[expenseId]/comments`（GET/POST） |
 | 監査 | `…/expenses/[expenseId]/audit` |
 | プロフィール | `display-name`、`payment-methods`、`pitch-deck-seen` |
+| 決済 Webhook | `POST /api/webhook/stripe` — `checkout.session.completed` を検証し `user_profiles.premium_access=true` を反映 |
 | 通知（枠） | `POST /api/notifications/web-push` — **未実装のプレースホルダー（例: 501）** |
 
 ---

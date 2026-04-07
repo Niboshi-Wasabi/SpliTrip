@@ -15,6 +15,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { useUpgradeModal } from "./upgrade-modal-context";
 
 type Props = {
   open: boolean;
@@ -23,6 +24,27 @@ type Props = {
 
 export function UpgradeModal({ open, onOpenChange }: Props) {
   const premiumTranslations = useTranslations("Premium");
+  const { currentUserId } = useUpgradeModal();
+
+  function handleUpgradeClick(): void {
+    const paymentLinkBase = (process.env.NEXT_PUBLIC_STRIPE_PAYMENT_LINK ?? "").trim();
+    if (!paymentLinkBase) {
+      console.error("NEXT_PUBLIC_STRIPE_PAYMENT_LINK is not configured");
+      return;
+    }
+    if (!currentUserId) {
+      console.error("UpgradeModal: currentUserId is missing");
+      return;
+    }
+    try {
+      const paymentUrl = new URL(paymentLinkBase);
+      paymentUrl.searchParams.set("client_reference_id", currentUserId);
+      paymentUrl.searchParams.set("prefilled_user_id", currentUserId);
+      window.location.href = paymentUrl.toString();
+    } catch (error) {
+      console.error("UpgradeModal payment URL error:", error);
+    }
+  }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -62,14 +84,12 @@ export function UpgradeModal({ open, onOpenChange }: Props) {
         <Button
           type="button"
           className="min-h-[44px] w-full md:min-h-10"
-          onClick={() => {
-            /* Placeholder until Stripe / App Store checkout is wired. */
-          }}
+          onClick={handleUpgradeClick}
         >
           {premiumTranslations("ctaUpgradeNow")}
         </Button>
         <p className="text-center text-[11px] text-muted-foreground">
-          {premiumTranslations("ctaPlaceholderHint")}
+          {premiumTranslations("ctaLiveHint")}
         </p>
       </DialogContent>
     </Dialog>

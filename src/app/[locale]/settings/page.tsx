@@ -79,7 +79,9 @@ export default async function SettingsPage({ params }: PageProps) {
       ? row.avatar_url
       : null;
   const initialLanguage = row?.preferred_language === "en" ? "en" : "ja";
+  const hasPremiumAccess = row?.premium_access === true;
   const paymentColumnsMissing = row !== null && !("paypal_me_id" in row);
+  const stripePortalUrl = (process.env.STRIPE_CUSTOMER_PORTAL_URL ?? "").trim();
 
   return (
     <div className="min-h-screen bg-background">
@@ -147,6 +149,33 @@ export default async function SettingsPage({ params }: PageProps) {
             />
           </CardContent>
         </Card>
+        {hasPremiumAccess ? (
+          <Card>
+            <CardHeader>
+              <CardTitle>{t("subscriptionTitle")}</CardTitle>
+              <CardDescription>{t("subscriptionDescription")}</CardDescription>
+            </CardHeader>
+            <CardContent>
+              {stripePortalUrl ? (
+                <a
+                  href={stripePortalUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className={cn(
+                    buttonVariants({ variant: "outline", size: "sm" }),
+                    "min-h-[44px] md:min-h-0",
+                  )}
+                >
+                  {t("subscriptionManageCta")}
+                </a>
+              ) : (
+                <p className="text-sm text-muted-foreground">
+                  {t("subscriptionPortalMissing")}
+                </p>
+              )}
+            </CardContent>
+          </Card>
+        ) : null}
         <div className="rounded-lg border border-dashed border-border/60 bg-muted/10 p-4">
           <SupportDeveloper />
         </div>

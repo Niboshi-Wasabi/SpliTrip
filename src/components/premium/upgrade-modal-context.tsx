@@ -13,6 +13,7 @@ import {
 } from "react";
 
 export type UpgradeModalContextValue = {
+  currentUserId: string | null;
   hasPremiumAccess: boolean;
   /** null = PRO (unlimited OCR). Number = free tier remaining OCR uses. */
   freeOcrRemaining: number | null;
@@ -25,11 +26,13 @@ const UpgradeModalContext = createContext<UpgradeModalContextValue | null>(
 
 export function UpgradeModalProvider({
   children,
+  currentUserId,
   hasPremiumAccess,
   freeOcrRemaining,
   openUpgradeModal,
 }: {
   children: ReactNode;
+  currentUserId: string | null;
   hasPremiumAccess: boolean;
   freeOcrRemaining: number | null;
   openUpgradeModal: () => void;
@@ -37,11 +40,12 @@ export function UpgradeModalProvider({
   const value = useMemo(
     () =>
       ({
+        currentUserId,
         hasPremiumAccess,
         freeOcrRemaining,
         openUpgradeModal,
       }) satisfies UpgradeModalContextValue,
-    [hasPremiumAccess, freeOcrRemaining, openUpgradeModal],
+    [currentUserId, hasPremiumAccess, freeOcrRemaining, openUpgradeModal],
   );
 
   return (

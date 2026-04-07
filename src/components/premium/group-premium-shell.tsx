@@ -11,10 +11,12 @@ import { UpgradeModal } from "./UpgradeModal";
 
 export function GroupPremiumShell({
   children,
+  currentUserId,
   hasPremiumAccess,
   freeOcrRemaining,
 }: {
   children: ReactNode;
+  currentUserId: string | null;
   hasPremiumAccess: boolean;
   freeOcrRemaining: number | null;
 }) {
@@ -25,6 +27,7 @@ export function GroupPremiumShell({
 
   return (
     <UpgradeModalProvider
+      currentUserId={currentUserId}
       hasPremiumAccess={hasPremiumAccess}
       freeOcrRemaining={freeOcrRemaining}
       openUpgradeModal={openUpgradeModal}

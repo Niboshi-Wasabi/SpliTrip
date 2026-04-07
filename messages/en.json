@@ -70,7 +70,11 @@
     "saveError": "Could not save.",
     "updateLanguage": "Update language",
     "paymentMigrationHint": "To save payout handles, run the migration `supabase/migrations/20260405190000_user_profiles_payment_ids.sql` in the Supabase SQL Editor so `user_profiles` has `paypal_me_id` and `cash_app_cashtag`.",
-    "paymentSchemaSaveError": "Payout columns are missing in the database. Saving is disabled until an admin applies that migration."
+    "paymentSchemaSaveError": "Payout columns are missing in the database. Saving is disabled until an admin applies that migration.",
+    "subscriptionTitle": "Billing",
+    "subscriptionDescription": "Manage your SpliTrip PRO subscription and payment details in Stripe.",
+    "subscriptionManageCta": "Manage subscription",
+    "subscriptionPortalMissing": "Customer portal URL is not configured. Please contact support."
   },
   "DisplayName": {
     "title": "Set your display name",
@@ -336,12 +340,13 @@
   },
   "Premium": {
     "modalTitle": "Upgrade to SpliTrip PRO for smarter trip splitting.",
-    "modalSubtitle": "The paid plan unlocks the features below (checkout coming soon).",
+    "modalSubtitle": "The paid plan unlocks all features below.",
     "benefitOcr": "Unlimited AI receipt scanning",
     "benefitExport": "PDF & CSV report export",
     "benefitNoAds": "Ad-free, cleaner screens",
-    "ctaUpgradeNow": "Upgrade now",
-    "ctaPlaceholderHint": "Checkout is not wired yet — stay tuned.",
+    "ctaUpgradeNow": "Upgrade to PRO (monthly plan)",
+    "ctaLiveHint": "You will be redirected to Stripe Checkout. PRO is enabled after payment.",
+    "upgradeSuccess": "Upgrade successful! Your PRO features are now unlocked.",
     "aiScanLabelPro": "AI scan (PRO · unlimited)",
     "ocrScanLockedAria": "Free AI scans used up. Open upgrade info."
   },
