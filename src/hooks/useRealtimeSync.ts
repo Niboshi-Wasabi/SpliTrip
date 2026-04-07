@@ -104,7 +104,14 @@ export function useRealtimeSync({
         { event: "data-changed" },
         () => handleChange({ new: undefined, old: undefined }),
       )
-      .subscribe();
+      .subscribe((status, error) => {
+        if (status === "CHANNEL_ERROR") {
+          console.warn("[useRealtimeSync] Realtime channel error:", error?.message ?? error);
+        }
+        if (status === "TIMED_OUT") {
+          console.warn("[useRealtimeSync] Realtime subscription timed out");
+        }
+      });
 
     return () => {
       if (debounceTimer.current) {

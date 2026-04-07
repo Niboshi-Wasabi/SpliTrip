@@ -32,7 +32,7 @@ export function RealtimeGroupRefresh({ groupId }: Props) {
     }
 
     const channel = supabase
-      .channel(`group-updates:${groupId}`)
+      .channel(`realtime-group:${groupId}`)
       .on("broadcast", { event: "data-changed" }, handleBroadcast)
       .subscribe();
 

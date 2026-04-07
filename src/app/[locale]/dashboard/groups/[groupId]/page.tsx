@@ -43,12 +43,14 @@ import {
 import { GroupExpenseList } from "./group-expense-list";
 import { fetchExchangeRates } from "@/utils/exchangeRates";
 import { PromoBanner } from "@/components/ads/PromoBanner";
+import { unstable_noStore as noStore } from "next/cache";
 
 export const dynamic = "force-dynamic";
 
 type PageProps = { params: Promise<{ locale: string; groupId: string }> };
 
 export default async function GroupDetailPage({ params }: PageProps) {
+  noStore();
   const { locale, groupId } = await params;
   const supabase = await createClient();
 
