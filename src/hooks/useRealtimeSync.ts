@@ -20,6 +20,9 @@
  * Why debounce (postgres only):
  *   一括 INSERT で大量のイベントが来る場合に router.refresh() が連発されるのを防ぐ。
  *   ブロードキャストは 1 回なのでデバウンスしない（他タブの即時更新のため）。
+ *
+ * 同期の速さ:
+ *   ポーリングで頻度を上げるより、DEBOUNCE_MS を下げる方が効く（サーバーへの RSC 再取得が増えるので極端に短くしない）。
  */
 
 import { useEffect, useRef, useCallback } from "react";
@@ -34,8 +37,10 @@ type RealtimeSyncOptions = {
   onRemoteChange?: () => void;
 };
 
-const DEBOUNCE_MS = 400;
-const VISIBILITY_REFRESH_MS = 350;
+/** postgres_changes 連打時のまとめ。小さくすると体感は速いが router.refresh が増える。 */
+const DEBOUNCE_MS = 150;
+/** タブ復帰時の再取得。短すぎると focus 連打で負荷が上がる。 */
+const VISIBILITY_REFRESH_MS = 200;
 
 /** `group_id=eq.<uuid>` の uuid にハイフンがあるとフィルタが壊れる場合があるため値を引用する。 */
 function realtimeEqUuidFilter(columnName: string, uuidValue: string): string {
@@ -53,11 +58,8 @@ export function useRealtimeSync({
   const onRemoteChangeRef = useRef(onRemoteChange);
   onRemoteChangeRef.current = onRemoteChange;
 
-  const refreshTwice = useCallback(() => {
+  const refreshUi = useCallback(() => {
     router.refresh();
-    requestAnimationFrame(() => {
-      router.refresh();
-    });
   }, [router]);
 
   const notifyRemoteToast = useCallback(
@@ -84,18 +86,18 @@ export function useRealtimeSync({
         clearTimeout(debounceTimer.current);
       }
       debounceTimer.current = setTimeout(() => {
-        refreshTwice();
+        refreshUi();
         notifyRemoteToast(payload);
       }, DEBOUNCE_MS);
     },
-    [refreshTwice, notifyRemoteToast],
+    [refreshUi, notifyRemoteToast],
   );
 
   /** 他タブからの broadcast。送信側は broadcast.self=false のため受信タブのみ。即時更新。 */
   const handleBroadcastRefresh = useCallback(() => {
-    refreshTwice();
+    refreshUi();
     onRemoteChangeRef.current?.();
-  }, [refreshTwice]);
+  }, [refreshUi]);
 
   useEffect(() => {
     const onVisibilityOrFocus = () => {
@@ -106,7 +108,7 @@ export function useRealtimeSync({
         clearTimeout(visibilityTimer.current);
       }
       visibilityTimer.current = setTimeout(() => {
-        refreshTwice();
+        refreshUi();
       }, VISIBILITY_REFRESH_MS);
     };
 
@@ -120,7 +122,7 @@ export function useRealtimeSync({
         clearTimeout(visibilityTimer.current);
       }
     };
-  }, [refreshTwice]);
+  }, [refreshUi]);
 
   useEffect(() => {
     const supabase = createClient();
