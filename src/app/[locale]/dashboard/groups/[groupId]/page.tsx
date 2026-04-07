@@ -43,14 +43,12 @@ import {
 import { GroupExpenseList } from "./group-expense-list";
 import { fetchExchangeRates } from "@/utils/exchangeRates";
 import { PromoBanner } from "@/components/ads/PromoBanner";
-import { unstable_noStore as noStore } from "next/cache";
 
 export const dynamic = "force-dynamic";
 
 type PageProps = { params: Promise<{ locale: string; groupId: string }> };
 
 export default async function GroupDetailPage({ params }: PageProps) {
-  noStore();
   const { locale, groupId } = await params;
   const supabase = await createClient();
 
@@ -102,7 +100,24 @@ export default async function GroupDetailPage({ params }: PageProps) {
     (sum, expense) => sum + Number(expense.amount),
     0,
   );
-  const groupDetailTranslations = await getTranslations("GroupDetail");
+  const baseCurrency = group.currency_code.trim().toUpperCase();
+  const needsConversion = baseCurrency !== "JPY";
+  const [
+    groupDetailTranslations,
+    exportTranslations,
+    groupChartTranslations,
+    ownProfileResponse,
+    exchangeRateResult,
+  ] = await Promise.all([
+    getTranslations("GroupDetail"),
+    getTranslations("GroupExport"),
+    getTranslations("GroupCharts"),
+    supabase.rpc("get_own_profile"),
+    needsConversion
+      ? fetchExchangeRates(baseCurrency)
+      : Promise.resolve({ ok: true, rates: null } as const),
+  ]);
+
   const payerChartData = (() => {
     const payerTotals = new Map<string, number>();
     const payerDetails = new Map<
@@ -173,28 +188,18 @@ export default async function GroupDetailPage({ params }: PageProps) {
       .sort((left, right) => right.amount - left.amount);
   })();
 
-  /**
-   * グループの基準通貨が JPY 以外なら、JPY への換算レートを取得する。
-   * 基準通貨が JPY なら換算不要のため null。
-   * Fetch JPY conversion rates only when the group's base currency is not JPY.
-   */
-  const baseCurrency = group.currency_code.trim().toUpperCase();
-  const needsConversion = baseCurrency !== "JPY";
-  const exchangeRates: Record<string, number> | null = await (async () => {
-    if (!needsConversion) return null;
-    const result = await fetchExchangeRates(baseCurrency);
-    return result.ok ? result.rates : null;
-  })();
+  const exchangeRates: Record<string, number> | null =
+    exchangeRateResult.ok && exchangeRateResult.rates
+      ? exchangeRateResult.rates
+      : null;
 
   const invitePath = localizedJoinPath(locale, String(group.invite_token));
-  const exportTranslations = await getTranslations("GroupExport");
-  const groupChartTranslations = await getTranslations("GroupCharts");
   const snapshotPrintedAt = new Intl.DateTimeFormat(locale, {
     dateStyle: "long",
     timeStyle: "short",
   }).format(new Date());
 
-  const { data: ownProfileJson } = await supabase.rpc("get_own_profile");
+  const ownProfileJson = ownProfileResponse.data;
   const profileRecord =
     ownProfileJson && typeof ownProfileJson === "object"
       ? (ownProfileJson as Record<string, unknown>)
