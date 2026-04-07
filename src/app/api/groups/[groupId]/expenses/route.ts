@@ -48,6 +48,15 @@ function fileExtensionForReceiptMime(mime: string): string {
   return "bin";
 }
 
+/** PostgREST が RPC のオーバーロードを解決できないとき（未適用マイグレーション等）。 */
+function isPostgrestRpcFunctionMissingError(message: string | undefined): boolean {
+  if (!message) return false;
+  return (
+    message.includes("Could not find the function") ||
+    (message.includes("schema cache") && message.includes("function"))
+  );
+}
+
 function stripBase64DataUrlPrefix(raw: string): string {
   const commaIndex = raw.indexOf(",");
   if (raw.startsWith("data:") && commaIndex !== -1) {
@@ -163,20 +172,47 @@ export async function POST(request: NextRequest, context: RouteContext) {
 
   const splitTypeEnum = mapSplitModeToDatabaseEnum(splitMode);
 
-  const { data: expenseId, error: rpcError } = await supabase.rpc(
-    "insert_expense_with_splits",
-    {
-      p_group_id: groupId,
-      p_payer_id: payer_id,
-      p_amount: amount,
-      p_description: description,
-      p_expense_date: dateStr,
-      p_splits: splitsJson,
-      p_category: category,
-      p_receipt_url: null,
-      p_split_type: splitTypeEnum,
-    },
-  );
+  const insertPayloadLegacy = {
+    p_group_id: groupId,
+    p_payer_id: payer_id,
+    p_amount: amount,
+    p_description: description,
+    p_expense_date: dateStr,
+    p_splits: splitsJson,
+    p_category: category,
+    p_receipt_url: null as string | null,
+  };
+
+  let expenseIdResult = await supabase.rpc("insert_expense_with_splits", {
+    ...insertPayloadLegacy,
+    p_split_type: splitTypeEnum,
+  });
+
+  if (
+    expenseIdResult.error &&
+    isPostgrestRpcFunctionMissingError(expenseIdResult.error.message)
+  ) {
+    if (splitTypeEnum !== "EQUAL") {
+      console.error(
+        "insert_expense_with_splits: DB missing p_split_type overload; split mode requires migration",
+        { splitTypeEnum, groupId },
+      );
+      return NextResponse.json(
+        {
+          error: "expense_insert_failed",
+          message:
+            "この割り方を保存するには DB マイグレーションが必要です（20260408120000_world_class_extensions.sql を本番に適用し、必要なら PostgREST のスキーマを再読み込みしてください）。",
+        },
+        { status: 503 },
+      );
+    }
+    expenseIdResult = await supabase.rpc(
+      "insert_expense_with_splits",
+      insertPayloadLegacy,
+    );
+  }
+
+  const { data: expenseId, error: rpcError } = expenseIdResult;
 
   if (rpcError || !expenseId) {
     console.error("insert_expense_with_splits:", rpcError?.message);

@@ -145,7 +145,7 @@ export async function fetchGroupDetailForUser(
   const { data: group, error: groupError } = await supabase
     .from("groups")
     .select(
-      "id, name, currency_code, created_by, created_at, invite_token",
+      "id, name, currency_code, created_by, created_at, invite_token, public_share_token",
     )
     .eq("id", groupId)
     .maybeSingle();
