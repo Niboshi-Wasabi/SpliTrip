@@ -172,6 +172,7 @@ export async function POST(request: NextRequest, context: RouteContext) {
 
   const splitTypeEnum = mapSplitModeToDatabaseEnum(splitMode);
 
+  /** 062300: category + receipt_url。061300 より後のマイグレーション適用済み想定。 */
   const insertPayloadLegacy = {
     p_group_id: groupId,
     p_payer_id: payer_id,
@@ -183,6 +184,16 @@ export async function POST(request: NextRequest, context: RouteContext) {
     p_receipt_url: null as string | null,
   };
 
+  /** 061300: 6 引数のみ。本番が古い場合の最終フォールバック。 */
+  const insertPayloadMinimal = {
+    p_group_id: groupId,
+    p_payer_id: payer_id,
+    p_amount: amount,
+    p_description: description,
+    p_expense_date: dateStr,
+    p_splits: splitsJson,
+  };
+
   let expenseIdResult = await supabase.rpc("insert_expense_with_splits", {
     ...insertPayloadLegacy,
     p_split_type: splitTypeEnum,
@@ -192,30 +203,43 @@ export async function POST(request: NextRequest, context: RouteContext) {
     expenseIdResult.error &&
     isPostgrestRpcFunctionMissingError(expenseIdResult.error.message)
   ) {
-    if (splitTypeEnum !== "EQUAL") {
-      console.error(
-        "insert_expense_with_splits: DB missing p_split_type overload; split mode requires migration",
-        { splitTypeEnum, groupId },
-      );
-      return NextResponse.json(
-        {
-          error: "expense_insert_failed",
-          message:
-            "この割り方を保存するには DB マイグレーションが必要です（20260408120000_world_class_extensions.sql を本番に適用し、必要なら PostgREST のスキーマを再読み込みしてください）。",
-        },
-        { status: 503 },
-      );
-    }
     expenseIdResult = await supabase.rpc(
       "insert_expense_with_splits",
       insertPayloadLegacy,
     );
   }
 
+  if (
+    expenseIdResult.error &&
+    isPostgrestRpcFunctionMissingError(expenseIdResult.error.message)
+  ) {
+    const beforeMinimal = expenseIdResult.error?.message;
+    expenseIdResult = await supabase.rpc(
+      "insert_expense_with_splits",
+      insertPayloadMinimal,
+    );
+    if (!expenseIdResult.error) {
+      console.warn(
+        "insert_expense_with_splits: used 6-arg RPC fallback; apply migrations 20260406230000+ for category/receipt/split_type",
+        { groupId, priorError: beforeMinimal },
+      );
+    }
+  }
+
   const { data: expenseId, error: rpcError } = expenseIdResult;
 
   if (rpcError || !expenseId) {
     console.error("insert_expense_with_splits:", rpcError?.message);
+    if (isPostgrestRpcFunctionMissingError(rpcError?.message)) {
+      return NextResponse.json(
+        {
+          error: "expense_insert_failed",
+          message:
+            "RPC insert_expense_with_splits が DB にありません。`supabase/migrations` の該当マイグレーションを本番に適用し、Supabase でスキーマを再読み込みしてください。",
+        },
+        { status: 503 },
+      );
+    }
     return NextResponse.json(
       { error: "expense_insert_failed", message: rpcError?.message },
       { status: 500 },
