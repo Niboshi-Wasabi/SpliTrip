@@ -14,15 +14,12 @@
  *   any DB mutation (including RPCs), so UI stays in sync even if
  *   client code forgets to broadcast.
  *
- * Why debounce:
- *   一括 INSERT（負担行の複数行など）で大量のイベントが来る場合に
- *   router.refresh() が連発されるのを防ぐ。
- *   Prevents rapid-fire router.refresh() when bulk inserts (e.g. expense splits)
- *   generate many events in quick succession.
+ * Filter の UUID はハイフンが演算子と誤解釈されることがあるため、値を二重引用符で包む。
+ * Realtime filter grammar: https://supabase.com/docs/guides/realtime/postgres-changes
  *
- * Why useEffect cleanup:
- *   WebSocket チャンネルを解除し、メモリリークとゴーストリスナーを防止する。
- *   Unsubscribes the WebSocket channel to prevent memory leaks and ghost listeners.
+ * Why debounce (postgres only):
+ *   一括 INSERT で大量のイベントが来る場合に router.refresh() が連発されるのを防ぐ。
+ *   ブロードキャストは 1 回なのでデバウンスしない（他タブの即時更新のため）。
  */
 
 import { useEffect, useRef, useCallback } from "react";
@@ -38,6 +35,12 @@ type RealtimeSyncOptions = {
 };
 
 const DEBOUNCE_MS = 400;
+const VISIBILITY_REFRESH_MS = 350;
+
+/** `group_id=eq.<uuid>` の uuid にハイフンがあるとフィルタが壊れる場合があるため値を引用する。 */
+function realtimeEqUuidFilter(columnName: string, uuidValue: string): string {
+  return `${columnName}=eq."${uuidValue}"`;
+}
 
 export function useRealtimeSync({
   groupId,
@@ -46,36 +49,82 @@ export function useRealtimeSync({
 }: RealtimeSyncOptions): void {
   const router = useRouter();
   const debounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const visibilityTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const onRemoteChangeRef = useRef(onRemoteChange);
   onRemoteChangeRef.current = onRemoteChange;
 
-  const handleChange = useCallback(
+  const refreshTwice = useCallback(() => {
+    router.refresh();
+    requestAnimationFrame(() => {
+      router.refresh();
+    });
+  }, [router]);
+
+  const notifyRemoteToast = useCallback(
+    (payload: { new?: Record<string, unknown>; old?: Record<string, unknown> }) => {
+      const changedByUserId =
+        (payload.new as Record<string, unknown> | undefined)?.payer_id ??
+        (payload.new as Record<string, unknown> | undefined)?.user_id;
+      if (
+        currentUserId &&
+        typeof changedByUserId === "string" &&
+        changedByUserId !== currentUserId
+      ) {
+        onRemoteChangeRef.current?.();
+      } else if (!currentUserId) {
+        onRemoteChangeRef.current?.();
+      }
+    },
+    [currentUserId],
+  );
+
+  const handlePostgresChange = useCallback(
     (payload: { new?: Record<string, unknown>; old?: Record<string, unknown> }) => {
       if (debounceTimer.current) {
         clearTimeout(debounceTimer.current);
       }
       debounceTimer.current = setTimeout(() => {
-        router.refresh();
-
-        const changedByUserId =
-          (payload.new as Record<string, unknown> | undefined)?.payer_id ??
-          (payload.new as Record<string, unknown> | undefined)?.user_id;
-        if (
-          currentUserId &&
-          typeof changedByUserId === "string" &&
-          changedByUserId !== currentUserId
-        ) {
-          onRemoteChangeRef.current?.();
-        } else if (!currentUserId) {
-          onRemoteChangeRef.current?.();
-        }
+        refreshTwice();
+        notifyRemoteToast(payload);
       }, DEBOUNCE_MS);
     },
-    [router, currentUserId],
+    [refreshTwice, notifyRemoteToast],
   );
+
+  /** 他タブからの broadcast。送信側は broadcast.self=false のため受信タブのみ。即時更新。 */
+  const handleBroadcastRefresh = useCallback(() => {
+    refreshTwice();
+    onRemoteChangeRef.current?.();
+  }, [refreshTwice]);
+
+  useEffect(() => {
+    const onVisibilityOrFocus = () => {
+      if (document.visibilityState !== "visible") {
+        return;
+      }
+      if (visibilityTimer.current) {
+        clearTimeout(visibilityTimer.current);
+      }
+      visibilityTimer.current = setTimeout(() => {
+        refreshTwice();
+      }, VISIBILITY_REFRESH_MS);
+    };
+
+    document.addEventListener("visibilitychange", onVisibilityOrFocus);
+    window.addEventListener("focus", onVisibilityOrFocus);
+
+    return () => {
+      document.removeEventListener("visibilitychange", onVisibilityOrFocus);
+      window.removeEventListener("focus", onVisibilityOrFocus);
+      if (visibilityTimer.current) {
+        clearTimeout(visibilityTimer.current);
+      }
+    };
+  }, [refreshTwice]);
 
   useEffect(() => {
     const supabase = createClient();
+    const groupIdFilter = realtimeEqUuidFilter("group_id", groupId);
 
     const channel = supabase
       .channel(`realtime-group:${groupId}`)
@@ -85,9 +134,9 @@ export function useRealtimeSync({
           event: "*",
           schema: "public",
           table: "group_expenses",
-          filter: `group_id=eq.${groupId}`,
+          filter: groupIdFilter,
         },
-        handleChange,
+        handlePostgresChange,
       )
       .on(
         "postgres_changes",
@@ -95,15 +144,11 @@ export function useRealtimeSync({
           event: "*",
           schema: "public",
           table: "group_members",
-          filter: `group_id=eq.${groupId}`,
+          filter: groupIdFilter,
         },
-        handleChange,
+        handlePostgresChange,
       )
-      .on(
-        "broadcast",
-        { event: "data-changed" },
-        () => handleChange({ new: undefined, old: undefined }),
-      )
+      .on("broadcast", { event: "data-changed" }, handleBroadcastRefresh)
       .subscribe((status, error) => {
         if (status === "CHANNEL_ERROR") {
           console.warn("[useRealtimeSync] Realtime channel error:", error?.message ?? error);
@@ -119,5 +164,5 @@ export function useRealtimeSync({
       }
       supabase.removeChannel(channel);
     };
-  }, [groupId, handleChange]);
+  }, [groupId, handlePostgresChange, handleBroadcastRefresh]);
 }
