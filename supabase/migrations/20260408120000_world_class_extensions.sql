@@ -194,7 +194,10 @@ $$;
 
 -- ---------------------------------------------------------------------------
 -- get_group_member_profiles: payment_links + is_guest
+-- RETURNS TABLE の列が変わるため CREATE OR REPLACE 不可 → 先に DROP する。
 -- ---------------------------------------------------------------------------
+drop function if exists public.get_group_member_profiles(uuid);
+
 create or replace function public.get_group_member_profiles(p_group_id uuid)
 returns table (
   id uuid,
