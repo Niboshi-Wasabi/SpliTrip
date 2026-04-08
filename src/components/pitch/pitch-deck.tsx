@@ -25,7 +25,7 @@
  */
 
 import { useEffect, useRef, useState } from "react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import {
   ArrowLeftRight,
   FileStack,
@@ -108,10 +108,45 @@ export function PitchDeck({
   afterPitchPath,
   shouldPersistCompletion,
 }: PitchDeckProps) {
-  const pitchTranslations = useTranslations("Pitch");
+  const pitchDeckTranslations = useTranslations("PitchDeck");
+  const locale = useLocale();
   const router = useRouter();
   const [isFinishing, setIsFinishing] = useState(false);
   const [finishError, setFinishError] = useState<string | null>(null);
+
+  const slideDefinitions = [
+    {
+      icon: ArrowLeftRight,
+      title: pitchDeckTranslations("slide1.title"),
+      body: pitchDeckTranslations("slide1.body"),
+      iconClassName: "text-sky-400/90",
+    },
+    {
+      icon: PieChart,
+      title: pitchDeckTranslations("slide2.title"),
+      body: pitchDeckTranslations("slide2.body"),
+      iconClassName: "text-emerald-400/90",
+    },
+    {
+      icon: ScanLine,
+      title: pitchDeckTranslations("slide3.title"),
+      body: pitchDeckTranslations("slide3.body"),
+      iconClassName: "text-amber-300/90",
+    },
+    {
+      icon: FileStack,
+      title: pitchDeckTranslations("slide4.title"),
+      body: pitchDeckTranslations("slide4.body"),
+      iconClassName: "text-violet-300/90",
+    },
+    {
+      icon: UserPlus,
+      title: pitchDeckTranslations("slide5.title"),
+      body: pitchDeckTranslations("slide5.body"),
+      iconClassName: "text-rose-300/90",
+    },
+  ];
+  const finalSlide = slideDefinitions[4];
 
   async function finishPitch() {
     if (isFinishing) {
@@ -125,7 +160,7 @@ export function PitchDeck({
           method: "POST",
         });
         if (!response.ok) {
-          setFinishError(pitchTranslations("markSeenError"));
+          setFinishError(pitchDeckTranslations("markSeenError"));
           setIsFinishing(false);
           return;
         }
@@ -133,13 +168,16 @@ export function PitchDeck({
       router.push(afterPitchPath);
       router.refresh();
     } catch {
-      setFinishError(pitchTranslations("markSeenError"));
+      setFinishError(pitchDeckTranslations("markSeenError"));
       setIsFinishing(false);
     }
   }
 
   return (
-    <div className="relative min-h-[100dvh] w-full bg-gradient-to-br from-zinc-950 via-zinc-900 to-slate-950 text-zinc-100">
+    <div
+      key={locale}
+      className="relative min-h-[100dvh] w-full bg-gradient-to-br from-zinc-950 via-zinc-900 to-slate-950 text-zinc-100"
+    >
       <button
         type="button"
         onClick={() => void finishPitch()}
@@ -149,7 +187,7 @@ export function PitchDeck({
         {isFinishing ? (
           <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
         ) : (
-          pitchTranslations("backToApp")
+          pitchDeckTranslations("backToApp")
         )}
       </button>
 
@@ -172,93 +210,50 @@ export function PitchDeck({
             />
           </div>
           <h1 className="font-heading text-5xl font-semibold tracking-tight text-white md:text-6xl">
-            {pitchTranslations("heroTitle")}
+            {pitchDeckTranslations("heroTitle")}
           </h1>
           <p className="mt-6 max-w-xl text-lg leading-relaxed text-zinc-400 md:text-xl">
-            {pitchTranslations("heroTagline")}
+            {pitchDeckTranslations("heroTagline")}
           </p>
           <p className="mt-16 text-xs font-medium uppercase tracking-[0.25em] text-zinc-500">
-            {pitchTranslations("heroScrollHint")}
+            {pitchDeckTranslations("heroScrollHint")}
           </p>
         </PitchSlideSection>
 
-        <PitchSlideSection>
-          <div className="mb-10 flex justify-center md:justify-start">
-            <ArrowLeftRight
-              className="h-24 w-24 text-sky-400/90 md:h-28 md:w-28"
-              strokeWidth={1}
-              aria-hidden
-            />
-          </div>
-          <h2 className="font-heading text-3xl font-semibold tracking-tight text-white md:text-4xl">
-            {pitchTranslations("featureSettlementTitle")}
-          </h2>
-          <p className="mt-5 text-base leading-relaxed text-zinc-400 md:text-lg">
-            {pitchTranslations("featureSettlementBody")}
-          </p>
-        </PitchSlideSection>
-
-        <PitchSlideSection>
-          <div className="mb-10 flex justify-center md:justify-start">
-            <PieChart
-              className="h-24 w-24 text-emerald-400/90 md:h-28 md:w-28"
-              strokeWidth={1}
-              aria-hidden
-            />
-          </div>
-          <h2 className="font-heading text-3xl font-semibold tracking-tight text-white md:text-4xl">
-            {pitchTranslations("featureSplitsTitle")}
-          </h2>
-          <p className="mt-5 text-base leading-relaxed text-zinc-400 md:text-lg">
-            {pitchTranslations("featureSplitsBody")}
-          </p>
-        </PitchSlideSection>
-
-        <PitchSlideSection>
-          <div className="mb-10 flex justify-center md:justify-start">
-            <ScanLine
-              className="h-24 w-24 text-amber-300/90 md:h-28 md:w-28"
-              strokeWidth={1}
-              aria-hidden
-            />
-          </div>
-          <h2 className="font-heading text-3xl font-semibold tracking-tight text-white md:text-4xl">
-            {pitchTranslations("featureReceiptTitle")}
-          </h2>
-          <p className="mt-5 text-base leading-relaxed text-zinc-400 md:text-lg">
-            {pitchTranslations("featureReceiptBody")}
-          </p>
-        </PitchSlideSection>
-
-        <PitchSlideSection>
-          <div className="mb-10 flex justify-center md:justify-start">
-            <FileStack
-              className="h-24 w-24 text-violet-300/90 md:h-28 md:w-28"
-              strokeWidth={1}
-              aria-hidden
-            />
-          </div>
-          <h2 className="font-heading text-3xl font-semibold tracking-tight text-white md:text-4xl">
-            {pitchTranslations("featureExportAuditTitle")}
-          </h2>
-          <p className="mt-5 text-base leading-relaxed text-zinc-400 md:text-lg">
-            {pitchTranslations("featureExportAuditBody")}
-          </p>
-        </PitchSlideSection>
+        {slideDefinitions.slice(0, 4).map((slideDefinition) => (
+          <PitchSlideSection key={slideDefinition.title}>
+            <div className="mb-10 flex justify-center md:justify-start">
+              <slideDefinition.icon
+                className={cn(
+                  "h-24 w-24 md:h-28 md:w-28",
+                  slideDefinition.iconClassName,
+                )}
+                strokeWidth={1}
+                aria-hidden
+              />
+            </div>
+            <h2 className="font-heading text-3xl font-semibold tracking-tight text-white md:text-4xl">
+              {slideDefinition.title}
+            </h2>
+            <p className="mt-5 text-base leading-relaxed text-zinc-400 md:text-lg">
+              {slideDefinition.body}
+            </p>
+          </PitchSlideSection>
+        ))}
 
         <PitchSlideSection contentClassName="items-center pb-28 text-center md:items-start md:text-left">
           <div className="mb-10 flex w-full justify-center md:justify-start">
-            <UserPlus
+            <finalSlide.icon
               className="h-24 w-24 text-rose-300/90 md:h-28 md:w-28"
               strokeWidth={1}
               aria-hidden
             />
           </div>
           <h2 className="font-heading w-full text-3xl font-semibold tracking-tight text-white md:text-4xl">
-            {pitchTranslations("featureAccessTitle")}
+            {finalSlide.title}
           </h2>
           <p className="mt-5 max-w-2xl text-base leading-relaxed text-zinc-400 md:text-lg">
-            {pitchTranslations("featureAccessBody")}
+            {finalSlide.body}
           </p>
           <div className="mt-12 flex w-full flex-col items-center gap-4 sm:flex-row sm:justify-center md:justify-start">
             <button
@@ -270,12 +265,12 @@ export function PitchDeck({
               {isFinishing ? (
                 <Loader2 className="h-5 w-5 animate-spin" aria-hidden />
               ) : (
-                pitchTranslations("ctaDashboard")
+                pitchDeckTranslations("ctaDashboard")
               )}
             </button>
             <span className="inline-flex items-center gap-2 text-sm text-zinc-500">
               <LinkIcon className="h-4 w-4" aria-hidden />
-              {pitchTranslations("ctaHint")}
+              {pitchDeckTranslations("ctaHint")}
             </span>
           </div>
         </PitchSlideSection>

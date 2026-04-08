@@ -4,7 +4,24 @@ import { useTransition } from "react";
 import { Languages, Loader2 } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { usePathname, useRouter } from "@/i18n/navigation";
-import { cn } from "@/lib/utils";
+import type { AppLocale } from "@/i18n/routing";
+
+const LOCALE_OPTIONS: { locale: AppLocale; label: string }[] = [
+  { locale: "ja", label: "日本語" },
+  { locale: "en", label: "English" },
+  { locale: "zh-CN", label: "简体中文" },
+  { locale: "zh-TW", label: "繁體中文" },
+  { locale: "ko", label: "한국어" },
+  { locale: "es", label: "Español" },
+  { locale: "fr", label: "Français" },
+  { locale: "de", label: "Deutsch" },
+  { locale: "pt", label: "Português" },
+  { locale: "ru", label: "Русский" },
+  { locale: "tr", label: "Türkçe" },
+  { locale: "ar", label: "العربية" },
+  { locale: "sw", label: "Kiswahili" },
+  { locale: "hi", label: "हिन्दी" },
+];
 
 export function LanguageSwitcher() {
   const translations = useTranslations("LanguageSwitcher");
@@ -13,7 +30,7 @@ export function LanguageSwitcher() {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
 
-  function switchLocale(nextLocale: "ja" | "en") {
+  function switchLocale(nextLocale: AppLocale) {
     if (nextLocale === locale) {
       return;
     }
@@ -24,30 +41,28 @@ export function LanguageSwitcher() {
   }
 
   return (
-    <div
-      className="inline-flex items-center gap-1 rounded-full border border-border bg-card px-1 py-1 shadow-sm"
-      role="group"
-      aria-label={translations("ariaLabel")}
-    >
-      <span className="px-2 text-muted-foreground" aria-hidden>
-        {isPending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Languages className="h-3.5 w-3.5" />}
+    <label className="relative inline-flex min-h-[44px] items-center">
+      <span className="sr-only">{translations("ariaLabel")}</span>
+      <span className="pointer-events-none absolute inset-y-0 start-2 z-10 flex items-center text-muted-foreground">
+        {isPending ? (
+          <Loader2 className="h-4 w-4 animate-spin" />
+        ) : (
+          <Languages className="h-4 w-4" />
+        )}
       </span>
-      {(["ja", "en"] as const).map((localeCode) => (
-        <button
-          key={localeCode}
-          type="button"
-          onClick={() => switchLocale(localeCode)}
-          disabled={isPending}
-          className={cn(
-            "min-h-[32px] rounded-full px-3 text-xs font-medium transition-colors",
-            locale === localeCode
-              ? "bg-primary text-primary-foreground"
-              : "text-muted-foreground hover:bg-muted hover:text-foreground",
-          )}
-        >
-          {localeCode === "ja" ? translations("ja") : translations("en")}
-        </button>
-      ))}
-    </div>
+      <select
+        value={locale}
+        disabled={isPending}
+        onChange={(event) => switchLocale(event.target.value as AppLocale)}
+        className="w-[160px] rounded-full border border-border bg-card py-2 pe-8 ps-8 text-xs font-medium text-foreground shadow-sm outline-none ring-offset-background transition focus:ring-2 focus:ring-primary disabled:opacity-70 sm:w-[190px] sm:text-sm"
+        aria-label={translations("ariaLabel")}
+      >
+        {LOCALE_OPTIONS.map((localeOption) => (
+          <option key={localeOption.locale} value={localeOption.locale}>
+            {localeOption.label}
+          </option>
+        ))}
+      </select>
+    </label>
   );
 }

@@ -1,57 +1,57 @@
 {
   "Login": {
     "brandSubtitle": "SpliTrip",
-    "tagline": "Make group trip expenses simpler.",
-    "title": "Sign in",
-    "description": "Sign in with a social account to start splitting expenses",
+    "tagline": "让多人旅行结算更轻松。",
+    "title": "登录",
+    "description": "使用社交账号登录，开始记录与分摊旅行开销",
     "supabaseNotConfigured": "Supabase is not configured. Set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY in .env.local at the project root, then restart the dev server.",
-    "googleLogin": "Continue with Google",
-    "lineLogin": "Continue with LINE",
-    "guestMode": "Continue as guest (no account)",
-    "guestModeError": "Could not start guest mode. Check that anonymous sign-in is enabled in Supabase.",
-    "terms": "Terms of Service",
-    "privacy": "Privacy Policy",
-    "termsPrivacyLead": "By signing in, you agree to the ",
-    "termsPrivacyJoin": " and ",
-    "termsPrivacyTrail": ".",
-    "commerce": "Commercial Disclosure"
+    "googleLogin": "使用 Google 登录",
+    "lineLogin": "使用 LINE 登录",
+    "guestMode": "以游客身份继续（无需账号）",
+    "guestModeError": "无法进入游客模式。请确认 Supabase 已开启匿名登录。",
+    "terms": "服务条款",
+    "privacy": "隐私政策",
+    "termsPrivacyLead": "登录即表示你同意",
+    "termsPrivacyJoin": "与",
+    "termsPrivacyTrail": "。",
+    "commerce": "特定商取引法披露"
   },
   "LanguageSwitcher": {
-    "ariaLabel": "Switch display language",
+    "ariaLabel": "切换显示语言",
     "ja": "JA",
     "en": "EN"
   },
   "Landing": {
     "hero": {
-      "badge": "Smarter expense sharing for group trips",
-      "title": "From expense tracking to settlement, all in SpliTrip",
-      "description": "Record trip expenses together, scan receipts with AI, get minimal-transfer settlement suggestions, and export reports in one flow.",
-      "primaryCta": "Get started free",
-      "secondaryCta": "See product highlights"
+      "badge": "多人旅行分账，更聪明",
+      "title": "从记账到结算，SpliTrip 一站搞定",
+      "description": "和同行成员一起记开销，AI 识别小票，自动生成更少转账次数的结算方案，还能导出报表。",
+      "primaryCta": "免费开始",
+      "secondaryCta": "查看功能亮点"
     },
     "features": {
-      "heading": "Core Features",
+      "heading": "核心功能",
       "ai": {
-        "title": "Faster entry with AI receipt scan",
-        "description": "Extract amount, date, and memo from images to prefill expense forms in seconds."
+        "title": "AI 扫描小票，录入更快",
+        "description": "从图片中提取金额、日期与备注，自动填充开销表单。"
       },
       "split": {
-        "title": "Advanced split options",
-        "description": "Support equal, exact amount, ratio, percentage, and itemized splits for real-world travel patterns."
+        "title": "灵活的分摊方式",
+        "description": "支持均分、指定金额、比例、百分比与按项目分摊，适配真实旅行场景。"
       },
       "settlement": {
-        "title": "Fewer transfers, clearer settlement",
-        "description": "Calculate who should pay whom and reduce the number of money transfers as much as possible."
+        "title": "更少转账，更清晰结算",
+        "description": "自动计算谁该付给谁，并尽量减少实际转账次数。"
       },
       "export": {
-        "title": "Exportable reports and history",
-        "description": "Keep travel accounting clear with CSV/PDF export and print-friendly summaries."
+        "title": "报表导出与记录留存",
+        "description": "支持 CSV / PDF 导出与打印，旅行账目一目了然。"
       }
     },
     "cta": {
-      "title": "Make your next trip settlement stress-free",
-      "description": "Try an end-to-end flow from invite to final settlement directly from your phone.",
-      "button": "Start with SpliTrip"
+      "title": "下一次旅行，结算不再头疼",
+      "description": "从邀请成员到最终结清，手机上即可完成完整流程。",
+      "button": "立即体验 SpliTrip"
     }
   },
   "JoinGate": {
@@ -97,17 +97,17 @@
     "system": "Match system"
   },
   "Settings": {
-    "backDashboard": "Dashboard",
+    "backDashboard": "仪表盘",
     "displayNameTitle": "Display name",
     "displayNameDescription": "The name shown to other group members in member lists and settlements.",
-    "languageTitle": "Display language",
-    "languageDescription": "While signed in, this choice is used first for the UI.",
-    "languageJa": "Japanese",
-    "languageEn": "English",
+    "languageTitle": "显示语言",
+    "languageDescription": "登录后将优先使用你选择的界面语言。",
+    "languageJa": "日语",
+    "languageEn": "英语",
     "saving": "Saving…",
     "saved": "Saved.",
     "saveError": "Could not save.",
-    "updateLanguage": "Update language",
+    "updateLanguage": "更新语言",
     "paymentMigrationHint": "To save payout handles, run the migration `supabase/migrations/20260405190000_user_profiles_payment_ids.sql` in the Supabase SQL Editor so `user_profiles` has `paypal_me_id` and `cash_app_cashtag`.",
     "paymentSchemaSaveError": "Payout columns are missing in the database. Saving is disabled until an admin applies that migration.",
     "subscriptionTitle": "Billing",
@@ -316,15 +316,15 @@
     "balancedHint": "No big imbalance—who pays next won’t change much."
   },
   "Dashboard": {
-    "guestModeBanner": "You’re in guest mode. Closing the browser or clearing data may erase your records—linking an account is recommended.",
-    "subtitle": "Dashboard",
-    "statTotalSpend": "Total spend",
-    "statGroupCount": "Groups",
-    "statAvgPerGroup": "Per group (avg)",
-    "groupsCardTitle": "Split groups",
-    "groupsCardDescription": "Manage expenses, splits, and settlements per trip",
-    "emptyGroups": "No groups yet. Create one with the button below.",
-    "createGroupButton": "Create a new trip (group)"
+    "guestModeBanner": "你当前使用游客模式。关闭浏览器或清除数据后记录可能丢失，建议绑定账号。",
+    "subtitle": "仪表盘",
+    "statTotalSpend": "总支出",
+    "statGroupCount": "群组数",
+    "statAvgPerGroup": "每组平均",
+    "groupsCardTitle": "分账群组",
+    "groupsCardDescription": "按旅行管理开销、分摊与结算",
+    "emptyGroups": "还没有群组，点击下方按钮创建一个吧。",
+    "createGroupButton": "创建新旅行（群组）"
   },
   "CategoryChart": {
     "empty": "No spending data",
@@ -363,10 +363,10 @@
     "rateUnavailable": "Rate unavailable"
   },
   "BottomNav": {
-    "ariaLabel": "Main navigation",
-    "home": "Home",
-    "settings": "Settings",
-    "logout": "Logout"
+    "ariaLabel": "主导航",
+    "home": "首页",
+    "settings": "设置",
+    "logout": "退出登录"
   },
   "Ads": {
     "promoTitle": "Book your next stay",
@@ -533,34 +533,34 @@
     "markSeenError": "Could not save progress. Check your connection and try again."
   },
   "PitchDeck": {
-    "metaTitle": "SpliTrip — Product deck",
-    "metaDescription": "A scroll-snap deck highlighting what SpliTrip already ships for group trip splitting.",
+    "metaTitle": "SpliTrip — 功能介绍",
+    "metaDescription": "通过沉浸式滑动页面，快速了解 SpliTrip 在多人旅行分账中的核心能力。",
     "heroTitle": "SpliTrip",
-    "heroTagline": "Trip expenses split fairly—with fewer transfers.",
-    "heroScrollHint": "Scroll for the story",
+    "heroTagline": "旅行分账更公平，转账次数更少。",
+    "heroScrollHint": "下滑继续查看",
     "slide1": {
-      "title": "Fewer transfers",
-      "body": "We add up what everyone paid and owed, match people who owe with people who are owed, and shrink the number of transfers."
+      "title": "减少转账次数",
+      "body": "系统会汇总每个人已付与应付金额，自动匹配付款方与收款方，尽可能压缩转账次数。"
     },
     "slide2": {
-      "title": "Splits that fit real trips",
-      "body": "Equal splits, exact amounts, share weights, percentages, and line items—with fair handling of leftover cents in each currency."
+      "title": "贴合真实旅行场景的分摊",
+      "body": "支持均分、指定金额、比例、百分比与按条目分摊，并可公平处理各币种的小额尾差。"
     },
     "slide3": {
-      "title": "AI receipt scan & secure receipts",
-      "body": "Gemini reads amount, merchant, and date from a photo or file to pre-fill the form; receipts can live in Storage for later review in the detail dialog."
+      "title": "AI 小票识别与凭证留存",
+      "body": "Gemini 可从照片中识别金额、商户与日期并自动填表；小票图片可安全存储，随时回看。"
     },
     "slide4": {
-      "title": "Exports you can file—and an audit trail",
-      "body": "Export trips to CSV, print, or PDF reports (PRO). Per-expense audit entries show who changed what and when."
+      "title": "可归档导出与审计记录",
+      "body": "支持 CSV、打印与 PDF 导出（PRO），每笔开销都能追踪“谁在何时改了什么”。"
     },
     "slide5": {
-      "title": "Sign-in choices & invite links",
-      "body": "Google, LINE, or guest mode lower the barrier to join; tokenized invite URLs bring people straight into the group flow."
+      "title": "多种登录方式与邀请链接",
+      "body": "支持 Google、LINE 与游客模式，配合带令牌的邀请链接，成员可快速加入同一行程。"
     },
-    "backToApp": "Back to app",
-    "ctaDashboard": "Open dashboard",
-    "ctaHint": "Create a group and try the flow",
-    "markSeenError": "Could not save progress. Check your connection and try again."
+    "backToApp": "返回应用",
+    "ctaDashboard": "进入仪表盘",
+    "ctaHint": "创建群组并体验完整流程",
+    "markSeenError": "无法保存进度，请检查网络后重试。"
   }
 }

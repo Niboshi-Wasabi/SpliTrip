@@ -11,8 +11,8 @@ import { getSupabaseEnv } from "@/utils/supabase/env";
 /** Default cookie name used by next-intl for persisted locale / next-intl がロケール保存に使う既定名 */
 const NEXT_INTL_LOCALE_COOKIE = "NEXT_LOCALE";
 
-function isAppLocale(value: string): value is "ja" | "en" {
-  return value === "ja" || value === "en";
+function isAppLocale(value: string): value is (typeof routing.locales)[number] {
+  return routing.locales.includes(value as (typeof routing.locales)[number]);
 }
 
 /**
@@ -21,7 +21,7 @@ function isAppLocale(value: string): value is "ja" | "en" {
  */
 function withLocaleCookie(
   request: NextRequest,
-  locale: "ja" | "en",
+  locale: (typeof routing.locales)[number],
 ): NextRequest {
   const jar = new Map<string, string>();
   for (const cookie of request.cookies.getAll()) {

@@ -56,6 +56,7 @@ type LayoutProps = {
  */
 export default async function LocaleLayout({ children, params }: LayoutProps) {
   const { locale } = await params;
+  const direction = locale === "ar" ? "rtl" : "ltr";
 
   if (!hasLocale(routing.locales, locale)) {
     notFound();
@@ -67,6 +68,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
   return (
     <html
       lang={locale}
+      dir={direction}
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
       suppressHydrationWarning
     >

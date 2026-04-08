@@ -1,57 +1,57 @@
 {
   "Login": {
     "brandSubtitle": "SpliTrip",
-    "tagline": "Make group trip expenses simpler.",
-    "title": "Sign in",
-    "description": "Sign in with a social account to start splitting expenses",
+    "tagline": "Simplifiez les dépenses de voyage en groupe.",
+    "title": "Se connecter",
+    "description": "Connectez-vous avec un compte social pour commencer à partager les dépenses",
     "supabaseNotConfigured": "Supabase is not configured. Set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY in .env.local at the project root, then restart the dev server.",
-    "googleLogin": "Continue with Google",
-    "lineLogin": "Continue with LINE",
-    "guestMode": "Continue as guest (no account)",
+    "googleLogin": "Continuer avec Google",
+    "lineLogin": "Continuer avec LINE",
+    "guestMode": "Continuer en invité (sans compte)",
     "guestModeError": "Could not start guest mode. Check that anonymous sign-in is enabled in Supabase.",
-    "terms": "Terms of Service",
-    "privacy": "Privacy Policy",
-    "termsPrivacyLead": "By signing in, you agree to the ",
-    "termsPrivacyJoin": " and ",
+    "terms": "Conditions d'utilisation",
+    "privacy": "Politique de confidentialité",
+    "termsPrivacyLead": "En vous connectant, vous acceptez les ",
+    "termsPrivacyJoin": " et la ",
     "termsPrivacyTrail": ".",
-    "commerce": "Commercial Disclosure"
+    "commerce": "Mentions commerciales"
   },
   "LanguageSwitcher": {
-    "ariaLabel": "Switch display language",
+    "ariaLabel": "Changer la langue d'affichage",
     "ja": "JA",
     "en": "EN"
   },
   "Landing": {
     "hero": {
-      "badge": "Smarter expense sharing for group trips",
-      "title": "From expense tracking to settlement, all in SpliTrip",
-      "description": "Record trip expenses together, scan receipts with AI, get minimal-transfer settlement suggestions, and export reports in one flow.",
-      "primaryCta": "Get started free",
-      "secondaryCta": "See product highlights"
+      "badge": "Partage des dépenses plus intelligent en voyage de groupe",
+      "title": "Du suivi des dépenses au règlement final, tout dans SpliTrip",
+      "description": "Enregistrez les dépenses ensemble, scannez les reçus avec l'IA, obtenez des suggestions pour réduire les virements et exportez vos rapports facilement.",
+      "primaryCta": "Commencer gratuitement",
+      "secondaryCta": "Voir les fonctionnalités"
     },
     "features": {
-      "heading": "Core Features",
+      "heading": "Fonctionnalités clés",
       "ai": {
-        "title": "Faster entry with AI receipt scan",
-        "description": "Extract amount, date, and memo from images to prefill expense forms in seconds."
+        "title": "Saisie accélérée par scan IA",
+        "description": "Montant, date et libellé sont extraits depuis une image pour préremplir le formulaire en quelques secondes."
       },
       "split": {
-        "title": "Advanced split options",
-        "description": "Support equal, exact amount, ratio, percentage, and itemized splits for real-world travel patterns."
+        "title": "Options de répartition avancées",
+        "description": "Répartition égale, montant exact, ratio, pourcentage ou par poste : tout est prévu pour les cas réels."
       },
       "settlement": {
-        "title": "Fewer transfers, clearer settlement",
-        "description": "Calculate who should pay whom and reduce the number of money transfers as much as possible."
+        "title": "Moins de virements, règlements plus clairs",
+        "description": "L'application calcule qui doit payer qui et cherche à minimiser le nombre total de virements."
       },
       "export": {
-        "title": "Exportable reports and history",
-        "description": "Keep travel accounting clear with CSV/PDF export and print-friendly summaries."
+        "title": "Rapports exportables et historique",
+        "description": "Gardez une comptabilité lisible avec export CSV/PDF et vues prêtes à imprimer."
       }
     },
     "cta": {
-      "title": "Make your next trip settlement stress-free",
-      "description": "Try an end-to-end flow from invite to final settlement directly from your phone.",
-      "button": "Start with SpliTrip"
+      "title": "Rendez le prochain voyage sans stress côté règlement",
+      "description": "Testez un parcours complet, de l'invitation à la clôture des comptes, directement depuis votre téléphone.",
+      "button": "Essayer SpliTrip"
     }
   },
   "JoinGate": {
@@ -97,17 +97,17 @@
     "system": "Match system"
   },
   "Settings": {
-    "backDashboard": "Dashboard",
+    "backDashboard": "Tableau de bord",
     "displayNameTitle": "Display name",
     "displayNameDescription": "The name shown to other group members in member lists and settlements.",
-    "languageTitle": "Display language",
-    "languageDescription": "While signed in, this choice is used first for the UI.",
-    "languageJa": "Japanese",
-    "languageEn": "English",
+    "languageTitle": "Langue d'affichage",
+    "languageDescription": "Une fois connecté, ce choix est prioritaire pour l'interface.",
+    "languageJa": "Japonais",
+    "languageEn": "Anglais",
     "saving": "Saving…",
     "saved": "Saved.",
     "saveError": "Could not save.",
-    "updateLanguage": "Update language",
+    "updateLanguage": "Mettre à jour la langue",
     "paymentMigrationHint": "To save payout handles, run the migration `supabase/migrations/20260405190000_user_profiles_payment_ids.sql` in the Supabase SQL Editor so `user_profiles` has `paypal_me_id` and `cash_app_cashtag`.",
     "paymentSchemaSaveError": "Payout columns are missing in the database. Saving is disabled until an admin applies that migration.",
     "subscriptionTitle": "Billing",
@@ -316,15 +316,15 @@
     "balancedHint": "No big imbalance—who pays next won’t change much."
   },
   "Dashboard": {
-    "guestModeBanner": "You’re in guest mode. Closing the browser or clearing data may erase your records—linking an account is recommended.",
-    "subtitle": "Dashboard",
-    "statTotalSpend": "Total spend",
-    "statGroupCount": "Groups",
-    "statAvgPerGroup": "Per group (avg)",
-    "groupsCardTitle": "Split groups",
-    "groupsCardDescription": "Manage expenses, splits, and settlements per trip",
-    "emptyGroups": "No groups yet. Create one with the button below.",
-    "createGroupButton": "Create a new trip (group)"
+    "guestModeBanner": "Vous êtes en mode invité. Fermer le navigateur ou effacer les données peut supprimer vos enregistrements : lier un compte est recommandé.",
+    "subtitle": "Tableau de bord",
+    "statTotalSpend": "Dépenses totales",
+    "statGroupCount": "Groupes",
+    "statAvgPerGroup": "Moyenne par groupe",
+    "groupsCardTitle": "Groupes de partage",
+    "groupsCardDescription": "Gérez dépenses, répartitions et règlements par voyage",
+    "emptyGroups": "Aucun groupe pour le moment. Créez-en un avec le bouton ci-dessous.",
+    "createGroupButton": "Créer un nouveau voyage (groupe)"
   },
   "CategoryChart": {
     "empty": "No spending data",
@@ -363,10 +363,10 @@
     "rateUnavailable": "Rate unavailable"
   },
   "BottomNav": {
-    "ariaLabel": "Main navigation",
-    "home": "Home",
-    "settings": "Settings",
-    "logout": "Logout"
+    "ariaLabel": "Navigation principale",
+    "home": "Accueil",
+    "settings": "Paramètres",
+    "logout": "Se déconnecter"
   },
   "Ads": {
     "promoTitle": "Book your next stay",
@@ -533,34 +533,34 @@
     "markSeenError": "Could not save progress. Check your connection and try again."
   },
   "PitchDeck": {
-    "metaTitle": "SpliTrip — Product deck",
-    "metaDescription": "A scroll-snap deck highlighting what SpliTrip already ships for group trip splitting.",
+    "metaTitle": "SpliTrip — Présentation produit",
+    "metaDescription": "Une présentation immersive qui montre les fonctionnalités clés de SpliTrip pour les dépenses de groupe.",
     "heroTitle": "SpliTrip",
-    "heroTagline": "Trip expenses split fairly—with fewer transfers.",
-    "heroScrollHint": "Scroll for the story",
+    "heroTagline": "Des dépenses de voyage partagées équitablement, avec moins de virements.",
+    "heroScrollHint": "Faites défiler pour découvrir",
     "slide1": {
-      "title": "Fewer transfers",
-      "body": "We add up what everyone paid and owed, match people who owe with people who are owed, and shrink the number of transfers."
+      "title": "Moins de virements",
+      "body": "Nous additionnons ce que chacun a payé et doit, puis nous faisons correspondre débiteurs et créanciers pour réduire les virements."
     },
     "slide2": {
-      "title": "Splits that fit real trips",
-      "body": "Equal splits, exact amounts, share weights, percentages, and line items—with fair handling of leftover cents in each currency."
+      "title": "Répartitions adaptées aux vrais voyages",
+      "body": "Répartition égale, montants exacts, ratios, pourcentages ou par ligne, avec gestion équitable des centimes restants."
     },
     "slide3": {
-      "title": "AI receipt scan & secure receipts",
-      "body": "Gemini reads amount, merchant, and date from a photo or file to pre-fill the form; receipts can live in Storage for later review in the detail dialog."
+      "title": "Scan IA des reçus et stockage sécurisé",
+      "body": "Gemini lit montant, commerçant et date depuis une photo pour préremplir le formulaire, puis les reçus sont conservés pour consultation."
     },
     "slide4": {
-      "title": "Exports you can file—and an audit trail",
-      "body": "Export trips to CSV, print, or PDF reports (PRO). Per-expense audit entries show who changed what and when."
+      "title": "Exports exploitables et piste d'audit",
+      "body": "Exportez en CSV, impression ou PDF (PRO). Chaque dépense affiche qui a modifié quoi et à quel moment."
     },
     "slide5": {
-      "title": "Sign-in choices & invite links",
-      "body": "Google, LINE, or guest mode lower the barrier to join; tokenized invite URLs bring people straight into the group flow."
+      "title": "Choix de connexion et liens d'invitation",
+      "body": "Google, LINE ou mode invité simplifient l'accès, et les liens d'invitation avec jeton amènent directement au bon groupe."
     },
-    "backToApp": "Back to app",
-    "ctaDashboard": "Open dashboard",
-    "ctaHint": "Create a group and try the flow",
-    "markSeenError": "Could not save progress. Check your connection and try again."
+    "backToApp": "Retour à l'application",
+    "ctaDashboard": "Ouvrir le tableau de bord",
+    "ctaHint": "Créez un groupe et testez le parcours",
+    "markSeenError": "Impossible d'enregistrer la progression. Vérifiez votre connexion et réessayez."
   }
 }

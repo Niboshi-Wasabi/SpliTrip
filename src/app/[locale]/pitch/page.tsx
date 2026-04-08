@@ -21,7 +21,7 @@ export async function generateMetadata({
 }: PageProps): Promise<Metadata> {
   const { locale } = await params;
   setRequestLocale(locale);
-  const pitchTranslations = await getTranslations("Pitch");
+  const pitchTranslations = await getTranslations("PitchDeck");
   return {
     title: pitchTranslations("metaTitle"),
     description: pitchTranslations("metaDescription"),
