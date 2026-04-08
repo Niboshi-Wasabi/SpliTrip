@@ -137,6 +137,19 @@
 
 ---
 
+## Stripe Webhook 運用（local / staging / master）
+
+| 項目 | 内容 |
+|------|------|
+| **共通の実装** | `POST /api/webhook/stripe` が `checkout.session.completed` を検証し、`user_profiles.premium_access=true` を反映。`client_reference_id` / `metadata.user_id` が利用される想定。 |
+| **必須環境変数（全環境）** | `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `NEXT_PUBLIC_STRIPE_PAYMENT_LINK`（PRO 購入の Payment Link URL）, `STRIPE_CUSTOMER_PORTAL_URL`（設定画面の Portal リンクを使う場合）。 |
+| **local 再現** | `stripe listen --forward-to localhost:3000/api/webhook/stripe` で表示される `whsec_...` を `.env.local` の `STRIPE_WEBHOOK_SECRET` に設定し、`npm run dev` を再起動。 |
+| **staging / master 再現** | Stripe Dashboard で各環境 URL の Webhook endpoint を作成し、環境ごとに発行された `whsec_...` をデプロイ環境変数へ設定（同じ secret の使い回しはしない）。 |
+| **CLI 検証コマンド** | `stripe trigger checkout.session.completed`（疎通確認）。本番同等の検証は Payment Link 経由で `checkout.session.completed` を発火させる。 |
+| **運用注意** | Stripe CLI の `stripe login` 認証キーは期限があるため、期限切れ時は再ログインが必要。 |
+
+---
+
 ## 補助・将来用 UI
 
 | 機能 | 内容 |

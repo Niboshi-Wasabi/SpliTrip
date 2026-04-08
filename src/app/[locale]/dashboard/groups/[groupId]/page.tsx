@@ -263,6 +263,7 @@ export default async function GroupDetailPage({ params }: PageProps) {
           <DisplayNamePrompt currentName={currentDisplayName} groupId={groupId} />
         </div>
         <GroupPremiumShell
+          currentUserId={user.id}
           hasPremiumAccess={hasPremiumAccess}
           freeOcrRemaining={freeOcrRemaining}
         >
