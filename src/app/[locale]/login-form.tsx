@@ -260,6 +260,13 @@ export function LoginForm() {
           {translations("privacy")}
         </Link>
         {translations("termsPrivacyTrail")}
+        <span className="mx-2">·</span>
+        <Link
+          href="/commerce"
+          className="underline underline-offset-4 hover:text-primary"
+        >
+          {translations("commerce")}
+        </Link>
       </p>
     </div>
   );

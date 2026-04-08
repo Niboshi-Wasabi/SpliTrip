@@ -13,7 +13,8 @@
     "privacy": "Privacy Policy",
     "termsPrivacyLead": "By signing in, you agree to the ",
     "termsPrivacyJoin": " and ",
-    "termsPrivacyTrail": "."
+    "termsPrivacyTrail": ".",
+    "commerce": "Commercial Disclosure"
   },
   "JoinGate": {
     "title": "Join the group",
@@ -434,6 +435,41 @@
     "s10Body": "This policy may be updated as necessary. Material changes will be communicated through the Service.",
     "s11Title": "11. Contact",
     "s11Body": "For questions about this policy, please contact the operator of the Service."
+  },
+  "Commerce": {
+    "pageTitle": "Commercial Disclosure",
+    "lastUpdated": "Last updated: April 8, 2026",
+    "backTop": "Back to top",
+    "intro": "This page provides the required commercial disclosure for paid plans (SpliTrip PRO), including key billing terms for Stripe payments.",
+    "tableTitle": "Seller Information",
+    "labels": [
+      "Seller",
+      "Representative",
+      "Address",
+      "Phone number",
+      "Contact email",
+      "Price",
+      "Additional fees",
+      "Payment timing and method",
+      "Service delivery timing",
+      "Returns and cancellation",
+      "System requirements",
+      "Disclaimer"
+    ],
+    "values": [
+      "SpliTrip Operations",
+      "Makoto Nakanishi",
+      "Disclosed without delay upon request.",
+      "Disclosed without delay upon request.",
+      "support@splitrip.app",
+      "Tax-inclusive pricing is shown on each plan purchase page.",
+      "Internet connection and communication fees are borne by the customer.",
+      "Credit cards and other methods supported by Stripe. Billing timing follows the conditions shown on the checkout page.",
+      "PRO features are typically activated immediately after successful payment.",
+      "Due to the nature of digital services, returns are not accepted after delivery. Cancellation can be completed before the next renewal via Stripe Customer Portal.",
+      "A modern browser (Chrome / Safari / Edge / Firefox) and internet connection are required.",
+      "Settlement suggestions are generated from user-provided data and do not guarantee transfer outcomes."
+    ]
   },
   "Pitch": {
     "metaTitle": "SpliTrip — Product deck",

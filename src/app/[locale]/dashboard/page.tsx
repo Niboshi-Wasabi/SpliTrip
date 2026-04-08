@@ -378,6 +378,10 @@ export default async function DashboardPage({ params }: PageProps) {
         <Link href="/privacy" className="underline underline-offset-4 hover:text-foreground">
           {loginTranslations("privacy")}
         </Link>
+        <span className="mx-2">·</span>
+        <Link href="/commerce" className="underline underline-offset-4 hover:text-foreground">
+          {loginTranslations("commerce")}
+        </Link>
       </footer>
     </div>
   );
