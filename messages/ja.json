@@ -347,6 +347,8 @@
     "benefitNoAds": "広告なしで画面がすっきり",
     "ctaUpgradeNow": "PROプランにアップグレード（月額◯円）",
     "ctaLiveHint": "決済ページに移動します。完了後はPRO機能が有効になります。",
+    "ctaComingSoon": "PROプランは現在準備中です (Coming Soon)",
+    "ctaComingSoonHint": "近日公開予定です！",
     "upgradeSuccess": "アップグレードに成功しました！PRO機能をご利用いただけます。",
     "aiScanLabelPro": "AI読み取り（PRO・無制限）",
     "ocrScanLockedAria": "無料枠の上限に達しました。アップグレードの案内を開く"

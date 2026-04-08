@@ -34,6 +34,7 @@
 | **テーマ** | ライト / ダーク / システム（クライアント側プロバイダ）。 |
 | **モバイル** | ボトムナビ、タッチ向け `min-h-[44px]` などの UI 方針。 |
 | **PWA** | `manifest.webmanifest`、テーマカラー等（レイアウト・メタと連動）。 |
+| **What's New モーダル** | `localStorage.lastSeenUpdateVersion` と `src/config/changelog.ts` のバージョンを比較し、新機能がある初回アクセス時のみダッシュボード配下で表示。 |
 
 ---
 
@@ -108,7 +109,7 @@
 | **表示言語** | `preferred_language` 保存。フルリロードで反映。 |
 | **送金先** | `payment_links` 等を API 経由で更新（マイグレーション未適用時はエラーメッセージ）。 |
 | **PRO / OCR** | `premium_access`（PRO）、`ocr_usage_count`（無料の OCR 累計）。`increment_ocr_usage_if_not_premium` で成功後に加算。 |
-| **支払い管理（PRO）** | 設定画面に Stripe Customer Portal 導線。`STRIPE_CUSTOMER_PORTAL_URL` を設定すると「サブスクリプション管理」ボタンが表示。 |
+| **支払い管理（PRO）** | Stripe 審査対応が完了するまで UI は一時的に **準備中（Coming Soon）**。課金基盤（Webhook / `premium_access` 判定）は将来再開に備えて保持。 |
 
 ---
 

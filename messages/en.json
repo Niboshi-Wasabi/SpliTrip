@@ -347,6 +347,8 @@
     "benefitNoAds": "Ad-free, cleaner screens",
     "ctaUpgradeNow": "Upgrade to PRO (monthly plan)",
     "ctaLiveHint": "You will be redirected to Stripe Checkout. PRO is enabled after payment.",
+    "ctaComingSoon": "PRO plan is currently in preparation (Coming Soon)",
+    "ctaComingSoonHint": "Coming soon!",
     "upgradeSuccess": "Upgrade successful! Your PRO features are now unlocked.",
     "aiScanLabelPro": "AI scan (PRO · unlimited)",
     "ocrScanLockedAria": "Free AI scans used up. Open upgrade info."
