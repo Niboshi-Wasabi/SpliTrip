@@ -16,6 +16,44 @@
     "termsPrivacyTrail": ".",
     "commerce": "Commercial Disclosure"
   },
+  "LanguageSwitcher": {
+    "ariaLabel": "Switch display language",
+    "ja": "JA",
+    "en": "EN"
+  },
+  "Landing": {
+    "hero": {
+      "badge": "Smarter expense sharing for group trips",
+      "title": "From expense tracking to settlement, all in SpliTrip",
+      "description": "Record trip expenses together, scan receipts with AI, get minimal-transfer settlement suggestions, and export reports in one flow.",
+      "primaryCta": "Get started free",
+      "secondaryCta": "See product highlights"
+    },
+    "features": {
+      "heading": "Core Features",
+      "ai": {
+        "title": "Faster entry with AI receipt scan",
+        "description": "Extract amount, date, and memo from images to prefill expense forms in seconds."
+      },
+      "split": {
+        "title": "Advanced split options",
+        "description": "Support equal, exact amount, ratio, percentage, and itemized splits for real-world travel patterns."
+      },
+      "settlement": {
+        "title": "Fewer transfers, clearer settlement",
+        "description": "Calculate who should pay whom and reduce the number of money transfers as much as possible."
+      },
+      "export": {
+        "title": "Exportable reports and history",
+        "description": "Keep travel accounting clear with CSV/PDF export and print-friendly summaries."
+      }
+    },
+    "cta": {
+      "title": "Make your next trip settlement stress-free",
+      "description": "Try an end-to-end flow from invite to final settlement directly from your phone.",
+      "button": "Start with SpliTrip"
+    }
+  },
   "JoinGate": {
     "title": "Join the group",
     "description": "Sign in with Google or LINE, or continue as a guest. After OAuth you’ll continue with this invite and enter the group.",

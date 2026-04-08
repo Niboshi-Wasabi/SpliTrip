@@ -17,7 +17,7 @@ import { createClient } from "@/utils/supabase/client";
 import { isSupabaseConfigured } from "@/utils/supabase/env";
 import { useRouter } from "@/i18n/navigation";
 
-const HIDDEN_PATHS = ["/", "/terms", "/privacy", "/onboarding", "/pitch"];
+const HIDDEN_PATHS = ["/", "/login", "/terms", "/privacy", "/onboarding", "/pitch"];
 
 function isHiddenPath(pathname: string): boolean {
   const withoutLocale = pathname.replace(/^\/(ja|en)/, "") || "/";

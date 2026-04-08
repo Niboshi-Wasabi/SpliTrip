@@ -16,6 +16,44 @@
     "termsPrivacyTrail": "に同意したことになります。",
     "commerce": "特定商取引法に基づく表記"
   },
+  "LanguageSwitcher": {
+    "ariaLabel": "表示言語を切り替える",
+    "ja": "JA",
+    "en": "EN"
+  },
+  "Landing": {
+    "hero": {
+      "badge": "グループ旅行の割り勘を、もっとスマートに",
+      "title": "立替の記録から精算まで、SpliTrip ひとつで完結",
+      "description": "旅行中の出費をみんなで記録し、AIでレシート入力、最小送金プランの提案、CSV/PDF書き出しまで一気通貫で管理できます。",
+      "primaryCta": "無料で始める",
+      "secondaryCta": "機能紹介を見る"
+    },
+    "features": {
+      "heading": "主要機能",
+      "ai": {
+        "title": "レシートAIで入力を時短",
+        "description": "画像から金額・日付・内容を抽出して、出費フォームをすばやく埋められます。"
+      },
+      "split": {
+        "title": "高度な割り勘ロジック",
+        "description": "均等・金額指定・比率・パーセント・品目別まで対応し、旅行スタイルに合わせて柔軟に分割できます。"
+      },
+      "settlement": {
+        "title": "送金回数を減らす精算提案",
+        "description": "誰が誰にいくら払えばよいかを整理し、実際の送金回数をできるだけ少なくします。"
+      },
+      "export": {
+        "title": "レポート出力と履歴管理",
+        "description": "CSV / PDF / 印刷に対応し、旅行の会計記録を後から見返しやすく保存できます。"
+      }
+    },
+    "cta": {
+      "title": "次の旅行は、精算でもめない体験へ",
+      "description": "メンバー招待から精算完了まで、スマホだけで完了するワークフローをすぐに試せます。",
+      "button": "SpliTripをはじめる"
+    }
+  },
   "JoinGate": {
     "title": "グループに参加",
     "description": "Google または LINE でログインするか、ゲストとして参加できます。ログイン後はこの招待のままグループへ進みます。",

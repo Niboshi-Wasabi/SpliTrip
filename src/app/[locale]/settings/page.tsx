@@ -23,6 +23,7 @@ import { DisplayNameForm } from "./display-name-form";
 import { LanguagePreferenceForm } from "./language-preference-form";
 import { PaymentSettingsForm } from "./payment-settings-form";
 import { SupportDeveloper } from "@/components/ads/SupportDeveloper";
+import { LanguageSwitcher } from "@/components/ui/LanguageSwitcher";
 
 export const dynamic = "force-dynamic";
 
@@ -92,7 +93,10 @@ export default async function SettingsPage({ params }: PageProps) {
             <ArrowLeft className="mr-1 h-4 w-4" />
             {t("backDashboard")}
           </Link>
-          <ThemeToggle />
+          <div className="flex items-center gap-2">
+            <LanguageSwitcher />
+            <ThemeToggle />
+          </div>
         </div>
       </header>
       <main className="mx-auto max-w-lg space-y-6 px-4 py-8 pb-24 md:pb-8">
