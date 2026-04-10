@@ -1,23 +1,23 @@
 {
   "Login": {
     "brandSubtitle": "SpliTrip",
-    "tagline": "Make group trip expenses simpler.",
-    "title": "Sign in",
-    "description": "Sign in with a social account to start splitting expenses",
-    "supabaseNotConfigured": "Supabase is not configured. Set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY in .env.local at the project root, then restart the dev server.",
-    "googleLogin": "Continue with Google",
-    "lineLogin": "Continue with LINE",
-    "guestMode": "Continue as guest (no account)",
-    "guestModeError": "Could not start guest mode. Check that anonymous sign-in is enabled in Supabase.",
-    "terms": "Terms of Service",
-    "privacy": "Privacy Policy",
-    "termsPrivacyLead": "By signing in, you agree to the ",
-    "termsPrivacyJoin": " and ",
+    "tagline": "Упрощайте деление расходов в групповых поездках.",
+    "title": "Войти",
+    "description": "Войдите через социальный аккаунт, чтобы начать делить расходы",
+    "supabaseNotConfigured": "Supabase не настроен. Укажите NEXT_PUBLIC_SUPABASE_URL и NEXT_PUBLIC_SUPABASE_ANON_KEY в .env.local в корне проекта и перезапустите dev-сервер.",
+    "googleLogin": "Продолжить с Google",
+    "lineLogin": "Продолжить с LINE",
+    "guestMode": "Продолжить как гость (без аккаунта)",
+    "guestModeError": "Не удалось запустить гостевой режим. Проверьте, что анонимный вход включен в Supabase.",
+    "terms": "Условия использования",
+    "privacy": "Политика конфиденциальности",
+    "termsPrivacyLead": "Входя, вы соглашаетесь с ",
+    "termsPrivacyJoin": " и ",
     "termsPrivacyTrail": ".",
-    "commerce": "Commercial Disclosure"
+    "commerce": "Коммерческая информация"
   },
   "LanguageSwitcher": {
-    "ariaLabel": "Switch display language",
+    "ariaLabel": "Сменить язык интерфейса",
     "ja": "JA",
     "en": "EN",
     "modalTitle": "Язык интерфейса",
@@ -414,10 +414,10 @@
     "rateUnavailable": "Rate unavailable"
   },
   "BottomNav": {
-    "ariaLabel": "Main navigation",
-    "home": "Home",
-    "settings": "Settings",
-    "logout": "Logout"
+    "ariaLabel": "Основная навигация",
+    "home": "Главная",
+    "settings": "Настройки",
+    "logout": "Выйти"
   },
   "Ads": {
     "promoTitle": "Book your next stay",

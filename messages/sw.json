@@ -1,23 +1,23 @@
 {
   "Login": {
     "brandSubtitle": "SpliTrip",
-    "tagline": "Make group trip expenses simpler.",
-    "title": "Sign in",
-    "description": "Sign in with a social account to start splitting expenses",
-    "supabaseNotConfigured": "Supabase is not configured. Set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY in .env.local at the project root, then restart the dev server.",
-    "googleLogin": "Continue with Google",
-    "lineLogin": "Continue with LINE",
-    "guestMode": "Continue as guest (no account)",
-    "guestModeError": "Could not start guest mode. Check that anonymous sign-in is enabled in Supabase.",
-    "terms": "Terms of Service",
-    "privacy": "Privacy Policy",
-    "termsPrivacyLead": "By signing in, you agree to the ",
-    "termsPrivacyJoin": " and ",
+    "tagline": "Rahisisha kugawana gharama za safari za kikundi.",
+    "title": "Ingia",
+    "description": "Ingia kwa akaunti ya kijamii ili kuanza kugawana gharama",
+    "supabaseNotConfigured": "Supabase haijasanidiwa. Weka NEXT_PUBLIC_SUPABASE_URL na NEXT_PUBLIC_SUPABASE_ANON_KEY kwenye .env.local katika mzizi wa mradi, kisha anzisha tena seva ya maendeleo.",
+    "googleLogin": "Endelea na Google",
+    "lineLogin": "Endelea na LINE",
+    "guestMode": "Endelea kama mgeni (bila akaunti)",
+    "guestModeError": "Imeshindikana kuanza hali ya mgeni. Hakikisha kuingia kwa mgeni kumewezeshwa kwenye Supabase.",
+    "terms": "Masharti ya Huduma",
+    "privacy": "Sera ya Faragha",
+    "termsPrivacyLead": "Kwa kuingia, unakubali ",
+    "termsPrivacyJoin": " na ",
     "termsPrivacyTrail": ".",
-    "commerce": "Commercial Disclosure"
+    "commerce": "Taarifa ya Biashara"
   },
   "LanguageSwitcher": {
-    "ariaLabel": "Switch display language",
+    "ariaLabel": "Badili lugha ya kuonyesha",
     "ja": "JA",
     "en": "EN",
     "modalTitle": "Lugha ya kiolesura",
@@ -414,10 +414,10 @@
     "rateUnavailable": "Rate unavailable"
   },
   "BottomNav": {
-    "ariaLabel": "Main navigation",
-    "home": "Home",
-    "settings": "Settings",
-    "logout": "Logout"
+    "ariaLabel": "Urambazaji mkuu",
+    "home": "Nyumbani",
+    "settings": "Mipangilio",
+    "logout": "Ondoka"
   },
   "Ads": {
     "promoTitle": "Book your next stay",

@@ -1,23 +1,23 @@
 {
   "Login": {
     "brandSubtitle": "SpliTrip",
-    "tagline": "Make group trip expenses simpler.",
-    "title": "Sign in",
-    "description": "Sign in with a social account to start splitting expenses",
-    "supabaseNotConfigured": "Supabase is not configured. Set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY in .env.local at the project root, then restart the dev server.",
-    "googleLogin": "Continue with Google",
-    "lineLogin": "Continue with LINE",
-    "guestMode": "Continue as guest (no account)",
-    "guestModeError": "Could not start guest mode. Check that anonymous sign-in is enabled in Supabase.",
-    "terms": "Terms of Service",
-    "privacy": "Privacy Policy",
-    "termsPrivacyLead": "By signing in, you agree to the ",
-    "termsPrivacyJoin": " and ",
+    "tagline": "Gruppenreisekosten einfacher aufteilen.",
+    "title": "Anmelden",
+    "description": "Melden Sie sich mit einem Social-Konto an, um mit der Kostenaufteilung zu beginnen",
+    "supabaseNotConfigured": "Supabase ist nicht konfiguriert. Setzen Sie NEXT_PUBLIC_SUPABASE_URL und NEXT_PUBLIC_SUPABASE_ANON_KEY in .env.local im Projektstamm und starten Sie den Dev-Server neu.",
+    "googleLogin": "Mit Google fortfahren",
+    "lineLogin": "Mit LINE fortfahren",
+    "guestMode": "Als Gast fortfahren (ohne Konto)",
+    "guestModeError": "Gastmodus konnte nicht gestartet werden. Prüfen Sie, ob anonyme Anmeldung in Supabase aktiviert ist.",
+    "terms": "Nutzungsbedingungen",
+    "privacy": "Datenschutzrichtlinie",
+    "termsPrivacyLead": "Mit der Anmeldung stimmen Sie den ",
+    "termsPrivacyJoin": " und der ",
     "termsPrivacyTrail": ".",
-    "commerce": "Commercial Disclosure"
+    "commerce": "Handelsrechtliche Angaben"
   },
   "LanguageSwitcher": {
-    "ariaLabel": "Switch display language",
+    "ariaLabel": "Anzeigesprache wechseln",
     "ja": "JA",
     "en": "EN",
     "modalTitle": "Anzeigesprache",
@@ -414,10 +414,10 @@
     "rateUnavailable": "Rate unavailable"
   },
   "BottomNav": {
-    "ariaLabel": "Main navigation",
-    "home": "Home",
-    "settings": "Settings",
-    "logout": "Logout"
+    "ariaLabel": "Hauptnavigation",
+    "home": "Startseite",
+    "settings": "Einstellungen",
+    "logout": "Abmelden"
   },
   "Ads": {
     "promoTitle": "Book your next stay",

@@ -1,23 +1,23 @@
 {
   "Login": {
     "brandSubtitle": "SpliTrip",
-    "tagline": "Make group trip expenses simpler.",
-    "title": "Sign in",
-    "description": "Sign in with a social account to start splitting expenses",
-    "supabaseNotConfigured": "Supabase is not configured. Set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY in .env.local at the project root, then restart the dev server.",
-    "googleLogin": "Continue with Google",
-    "lineLogin": "Continue with LINE",
-    "guestMode": "Continue as guest (no account)",
-    "guestModeError": "Could not start guest mode. Check that anonymous sign-in is enabled in Supabase.",
-    "terms": "Terms of Service",
-    "privacy": "Privacy Policy",
-    "termsPrivacyLead": "By signing in, you agree to the ",
-    "termsPrivacyJoin": " and ",
-    "termsPrivacyTrail": ".",
-    "commerce": "Commercial Disclosure"
+    "tagline": "Grup seyahati masraflarını daha kolay bölüşün.",
+    "title": "Giriş yap",
+    "description": "Masraf paylaşımına başlamak için bir sosyal hesapla giriş yapın",
+    "supabaseNotConfigured": "Supabase yapılandırılmamış. Proje kökündeki .env.local dosyasına NEXT_PUBLIC_SUPABASE_URL ve NEXT_PUBLIC_SUPABASE_ANON_KEY değerlerini ekleyip geliştirme sunucusunu yeniden başlatın.",
+    "googleLogin": "Google ile devam et",
+    "lineLogin": "LINE ile devam et",
+    "guestMode": "Misafir olarak devam et (hesap yok)",
+    "guestModeError": "Misafir modu başlatılamadı. Supabase’de anonim oturum açmanın etkin olduğundan emin olun.",
+    "terms": "Kullanım Koşulları",
+    "privacy": "Gizlilik Politikası",
+    "termsPrivacyLead": "Giriş yaparak ",
+    "termsPrivacyJoin": " ve ",
+    "termsPrivacyTrail": " metinlerini kabul etmiş olursunuz.",
+    "commerce": "Ticari Açıklama"
   },
   "LanguageSwitcher": {
-    "ariaLabel": "Switch display language",
+    "ariaLabel": "Görüntüleme dilini değiştir",
     "ja": "JA",
     "en": "EN",
     "modalTitle": "Arayüz dili",
@@ -414,10 +414,10 @@
     "rateUnavailable": "Rate unavailable"
   },
   "BottomNav": {
-    "ariaLabel": "Main navigation",
-    "home": "Home",
-    "settings": "Settings",
-    "logout": "Logout"
+    "ariaLabel": "Ana gezinme",
+    "home": "Ana sayfa",
+    "settings": "Ayarlar",
+    "logout": "Çıkış yap"
   },
   "Ads": {
     "promoTitle": "Book your next stay",

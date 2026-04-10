@@ -1,23 +1,23 @@
 {
   "Login": {
     "brandSubtitle": "SpliTrip",
-    "tagline": "Make group trip expenses simpler.",
-    "title": "Sign in",
-    "description": "Sign in with a social account to start splitting expenses",
-    "supabaseNotConfigured": "Supabase is not configured. Set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY in .env.local at the project root, then restart the dev server.",
-    "googleLogin": "Continue with Google",
-    "lineLogin": "Continue with LINE",
-    "guestMode": "Continue as guest (no account)",
-    "guestModeError": "Could not start guest mode. Check that anonymous sign-in is enabled in Supabase.",
-    "terms": "Terms of Service",
-    "privacy": "Privacy Policy",
-    "termsPrivacyLead": "By signing in, you agree to the ",
-    "termsPrivacyJoin": " and ",
-    "termsPrivacyTrail": ".",
-    "commerce": "Commercial Disclosure"
+    "tagline": "ग्रुप ट्रिप के खर्चों का बंटवारा और आसान बनाएं।",
+    "title": "साइन इन",
+    "description": "खर्च बांटना शुरू करने के लिए सोशल अकाउंट से साइन इन करें",
+    "supabaseNotConfigured": "Supabase कॉन्फ़िगर नहीं है। प्रोजेक्ट रूट की .env.local में NEXT_PUBLIC_SUPABASE_URL और NEXT_PUBLIC_SUPABASE_ANON_KEY सेट करें, फिर डेवलपमेंट सर्वर रीस्टार्ट करें।",
+    "googleLogin": "Google से जारी रखें",
+    "lineLogin": "LINE से जारी रखें",
+    "guestMode": "अतिथि के रूप में जारी रखें (बिना अकाउंट)",
+    "guestModeError": "गेस्ट मोड शुरू नहीं हो सका। Supabase में anonymous sign-in सक्षम है या नहीं, जांचें।",
+    "terms": "सेवा की शर्तें",
+    "privacy": "गोपनीयता नीति",
+    "termsPrivacyLead": "साइन इन करके आप ",
+    "termsPrivacyJoin": " और ",
+    "termsPrivacyTrail": " से सहमत होते हैं।",
+    "commerce": "व्यावसायिक प्रकटीकरण"
   },
   "LanguageSwitcher": {
-    "ariaLabel": "Switch display language",
+    "ariaLabel": "प्रदर्शन भाषा बदलें",
     "ja": "JA",
     "en": "EN",
     "modalTitle": "प्रदर्शन भाषा",
@@ -414,10 +414,10 @@
     "rateUnavailable": "Rate unavailable"
   },
   "BottomNav": {
-    "ariaLabel": "Main navigation",
-    "home": "Home",
-    "settings": "Settings",
-    "logout": "Logout"
+    "ariaLabel": "मुख्य नेविगेशन",
+    "home": "होम",
+    "settings": "सेटिंग्स",
+    "logout": "लॉग आउट"
   },
   "Ads": {
     "promoTitle": "Book your next stay",
