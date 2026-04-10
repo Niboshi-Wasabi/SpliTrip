@@ -15,6 +15,8 @@ const geistSans = Geist({
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+  // Mono is sparse on first paint; avoid unused preload warnings in DevTools.
+  preload: false,
 });
 
 export function generateStaticParams() {
@@ -29,22 +31,6 @@ export const metadata: Metadata = {
   title: "SpliTrip（スプリトリップ）- グループ旅行の精算アプリ",
   description:
     "グループ旅行中の立替をリアルタイムに記録し、精算を自動計算するWebアプリ",
-  icons: {
-    icon: [
-      {
-        url: "/icons/favicon-32x32.png",
-        type: "image/png",
-        sizes: "32x32",
-      },
-      {
-        url: "/icons/icon-192x192.png",
-        type: "image/png",
-        sizes: "192x192",
-      },
-    ],
-    shortcut: "/icons/favicon-32x32.png",
-    apple: "/icons/icon-192x192.png",
-  },
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
@@ -91,7 +77,6 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
       <head>
         {/* PWA: テーマカラーをブラウザ UI に反映 / Reflect brand color in browser chrome */}
         <meta name="theme-color" content="#0f766e" />
-        <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
         <script defer src="/theme-bootstrap.js" />
       </head>
       <body
