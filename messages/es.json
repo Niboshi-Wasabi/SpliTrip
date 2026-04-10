@@ -23,14 +23,41 @@
   },
   "Landing": {
     "hero": {
-      "badge": "Gastos compartidos más inteligentes para viajes en grupo",
-      "title": "Del registro de gastos a la liquidación, todo en SpliTrip",
-      "description": "Registra gastos con tu grupo, escanea recibos con IA, obtén sugerencias para reducir transferencias y exporta reportes en un solo flujo.",
+      "badge": "Liquidaciones de viaje con IA",
+      "title": "Divide los gastos del viaje en segundos con IA: quién paga qué, sin dudas.",
+      "description": "Haz una foto al recibo y la IA rellena los datos. Repartos flexibles, liquidación inteligente y menos transferencias, todo desde el móvil.",
       "primaryCta": "Empieza gratis",
       "secondaryCta": "Ver funciones"
     },
     "features": {
+      "highlightsHeading": "Lo que hace diferente a SpliTrip",
       "heading": "Funciones principales",
+      "highlights": {
+        "receiptAi": {
+          "title": "Lectura de recibos con IA",
+          "description": "Solo fotografía el recibo: la IA (Gemini) rellena importe y detalles sin escribir a mano."
+        },
+        "flexibleSplit": {
+          "title": "Opciones de reparto flexibles",
+          "description": "Además de partes iguales: porcentajes, ratios y reparto por líneas para cada situación."
+        },
+        "tapToPay": {
+          "title": "Pago con un toque",
+          "description": "Desde la liquidación, abre los enlaces de pago que cada miembro configuró (p. ej. PayPay) y envía dinero."
+        },
+        "nextPayer": {
+          "title": "Sugerencias de «quién paga después»",
+          "description": "Según los saldos, propone a quién le toca pagar para equilibrar las aportaciones."
+        },
+        "guestJoin": {
+          "title": "Únete al instante sin cuenta",
+          "description": "Comparte URL o código QR. También hay modo invitado anónimo sin registro largo."
+        },
+        "global": {
+          "title": "Pensado para grupos globales",
+          "description": "14 idiomas, incluidos japonés e inglés: ideal para equipos multilingües."
+        }
+      },
       "ai": {
         "title": "Carga más rápida con escaneo IA",
         "description": "Extrae importe, fecha y concepto desde una imagen para completar el formulario en segundos."
@@ -46,6 +73,27 @@
       "export": {
         "title": "Historial y reportes exportables",
         "description": "Mantén la contabilidad del viaje clara con exportación CSV/PDF y resúmenes listos para imprimir."
+      }
+    },
+    "pricing": {
+      "heading": "Planes y precios",
+      "subheading": "Modelo freemium: empieza gratis y amplía cuando lo necesites.",
+      "free": {
+        "title": "Gratis",
+        "badge": "Free",
+        "bullet1": "Grupos y flujo de reparto: ilimitados",
+        "bullet2": "Todos los modos de reparto disponibles",
+        "bullet3": "Lectura IA de recibos: 3 usos de prueba",
+        "bullet4": "Impresión en el navegador de la app"
+      },
+      "pro": {
+        "title": "SpliTrip PRO",
+        "badge": "PRO",
+        "bullet1": "Todo lo del plan gratuito",
+        "bullet2": "Lectura IA de recibos: ilimitada",
+        "bullet3": "Exportación de informes: CSV / PDF",
+        "bullet4": "Sin anuncios ni espacios promocionales",
+        "priceNote": "Precio próximamente (vía Stripe)"
       }
     },
     "cta": {

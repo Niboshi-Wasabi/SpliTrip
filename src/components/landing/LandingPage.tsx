@@ -7,7 +7,19 @@ import { Link } from "@/i18n/navigation";
 import { buttonVariants } from "@/components/ui/button-variants";
 import { LanguageSwitcher } from "@/components/ui/LanguageSwitcher";
 import { cn } from "@/lib/utils";
-import { Brain, ReceiptText, Send, Split } from "lucide-react";
+import {
+  Brain,
+  Check,
+  Globe,
+  Lightbulb,
+  QrCode,
+  ReceiptText,
+  ScanLine,
+  Send,
+  SlidersHorizontal,
+  Split,
+  Wallet,
+} from "lucide-react";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -28,31 +40,24 @@ const fadeUpVariants = {
   },
 };
 
+const highlightFeatureConfig = [
+  { key: "receiptAi" as const, icon: ScanLine },
+  { key: "flexibleSplit" as const, icon: SlidersHorizontal },
+  { key: "tapToPay" as const, icon: Wallet },
+  { key: "nextPayer" as const, icon: Lightbulb },
+  { key: "guestJoin" as const, icon: QrCode },
+  { key: "global" as const, icon: Globe },
+];
+
+const coreFeatureConfig = [
+  { key: "ai" as const, icon: Brain },
+  { key: "split" as const, icon: Split },
+  { key: "settlement" as const, icon: Send },
+  { key: "export" as const, icon: ReceiptText },
+];
+
 export function LandingPage() {
   const landingTranslations = useTranslations("Landing");
-
-  const features = [
-    {
-      icon: Brain,
-      title: landingTranslations("features.ai.title"),
-      description: landingTranslations("features.ai.description"),
-    },
-    {
-      icon: Split,
-      title: landingTranslations("features.split.title"),
-      description: landingTranslations("features.split.description"),
-    },
-    {
-      icon: Send,
-      title: landingTranslations("features.settlement.title"),
-      description: landingTranslations("features.settlement.description"),
-    },
-    {
-      icon: ReceiptText,
-      title: landingTranslations("features.export.title"),
-      description: landingTranslations("features.export.description"),
-    },
-  ];
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background via-background to-muted/30">
@@ -126,11 +131,50 @@ export function LandingPage() {
         </motion.section>
 
         <motion.section
+          className="mx-auto w-full max-w-6xl px-4 pb-12 md:pb-16"
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, amount: 0.2 }}
+        >
+          <motion.h2
+            variants={fadeUpVariants}
+            className="mb-6 text-center text-2xl font-semibold text-foreground md:text-3xl"
+          >
+            {landingTranslations("features.highlightsHeading")}
+          </motion.h2>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {highlightFeatureConfig.map((featureItem) => (
+              <motion.article
+                key={featureItem.key}
+                variants={fadeUpVariants}
+                className="rounded-2xl border border-border bg-card p-5 shadow-sm transition-transform duration-200 hover:-translate-y-1 hover:shadow-lg"
+              >
+                <featureItem.icon
+                  className="mb-3 h-5 w-5 text-primary"
+                  aria-hidden
+                />
+                <h3 className="text-base font-semibold text-foreground">
+                  {landingTranslations(
+                    `features.highlights.${featureItem.key}.title`,
+                  )}
+                </h3>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  {landingTranslations(
+                    `features.highlights.${featureItem.key}.description`,
+                  )}
+                </p>
+              </motion.article>
+            ))}
+          </div>
+        </motion.section>
+
+        <motion.section
           className="mx-auto w-full max-w-6xl px-4 pb-16 md:pb-20"
           variants={containerVariants}
           initial="hidden"
           whileInView="show"
-          viewport={{ once: true, amount: 0.25 }}
+          viewport={{ once: true, amount: 0.2 }}
         >
           <motion.h2
             variants={fadeUpVariants}
@@ -139,21 +183,104 @@ export function LandingPage() {
             {landingTranslations("features.heading")}
           </motion.h2>
           <div className="grid gap-4 md:grid-cols-2">
-            {features.map((feature) => (
+            {coreFeatureConfig.map((featureItem) => (
               <motion.article
-                key={feature.title}
+                key={featureItem.key}
                 variants={fadeUpVariants}
                 className="rounded-2xl border border-border bg-card p-5 shadow-sm transition-transform duration-200 hover:-translate-y-1 hover:shadow-lg"
               >
-                <feature.icon className="mb-3 h-5 w-5 text-primary" aria-hidden />
+                <featureItem.icon
+                  className="mb-3 h-5 w-5 text-primary"
+                  aria-hidden
+                />
                 <h3 className="text-base font-semibold text-foreground">
-                  {feature.title}
+                  {landingTranslations(`features.${featureItem.key}.title`)}
                 </h3>
                 <p className="mt-1 text-sm text-muted-foreground">
-                  {feature.description}
+                  {landingTranslations(
+                    `features.${featureItem.key}.description`,
+                  )}
                 </p>
               </motion.article>
             ))}
+          </div>
+        </motion.section>
+
+        <motion.section
+          className="mx-auto w-full max-w-6xl px-4 pb-16 md:pb-20"
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, amount: 0.2 }}
+        >
+          <motion.div variants={fadeUpVariants} className="mb-8 text-center">
+            <h2 className="text-2xl font-semibold text-foreground md:text-3xl">
+              {landingTranslations("pricing.heading")}
+            </h2>
+            <p className="mx-auto mt-2 max-w-2xl text-sm text-muted-foreground md:text-base">
+              {landingTranslations("pricing.subheading")}
+            </p>
+          </motion.div>
+          <div className="grid gap-6 md:grid-cols-2 md:items-stretch">
+            <motion.article
+              variants={fadeUpVariants}
+              className="flex flex-col rounded-2xl border border-border bg-card p-6 shadow-sm"
+            >
+              <div className="mb-4 flex flex-wrap items-center gap-2">
+                <span className="rounded-full bg-muted px-2.5 py-0.5 text-xs font-medium text-muted-foreground">
+                  {landingTranslations("pricing.free.badge")}
+                </span>
+                <h3 className="text-xl font-semibold text-foreground">
+                  {landingTranslations("pricing.free.title")}
+                </h3>
+              </div>
+              <ul className="flex flex-1 flex-col gap-3 text-sm text-muted-foreground">
+                {(["bullet1", "bullet2", "bullet3", "bullet4"] as const).map(
+                  (bulletKey) => (
+                    <li key={bulletKey} className="flex gap-2">
+                      <Check
+                        className="mt-0.5 h-4 w-4 shrink-0 text-primary"
+                        aria-hidden
+                      />
+                      <span>
+                        {landingTranslations(`pricing.free.${bulletKey}`)}
+                      </span>
+                    </li>
+                  ),
+                )}
+              </ul>
+            </motion.article>
+            <motion.article
+              variants={fadeUpVariants}
+              className="flex flex-col rounded-2xl border border-primary/25 bg-primary/5 p-6 shadow-md ring-1 ring-primary/15"
+            >
+              <div className="mb-4 flex flex-wrap items-center gap-2">
+                <span className="rounded-full bg-primary/15 px-2.5 py-0.5 text-xs font-medium text-primary">
+                  {landingTranslations("pricing.pro.badge")}
+                </span>
+                <h3 className="text-xl font-semibold text-foreground">
+                  {landingTranslations("pricing.pro.title")}
+                </h3>
+              </div>
+              <ul className="flex flex-1 flex-col gap-3 text-sm text-muted-foreground">
+                {(["bullet1", "bullet2", "bullet3", "bullet4"] as const).map(
+                  (bulletKey) => (
+                    <li key={bulletKey} className="flex gap-2">
+                      <Check
+                        className="mt-0.5 h-4 w-4 shrink-0 text-primary"
+                        aria-hidden
+                      />
+                      <span>
+                        {landingTranslations(`pricing.pro.${bulletKey}`)}
+                      </span>
+                    </li>
+                  ),
+                )}
+              </ul>
+              <p className="mt-5 text-center text-xs text-muted-foreground">
+                {landingTranslations("pricing.pro.priceNote")}
+              </p>
+            </motion.article>
           </div>
         </motion.section>
 

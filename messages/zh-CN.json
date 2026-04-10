@@ -23,14 +23,41 @@
   },
   "Landing": {
     "hero": {
-      "badge": "多人旅行分账，更聪明",
-      "title": "从记账到结算，SpliTrip 一站搞定",
-      "description": "和同行成员一起记开销，AI 识别小票，自动生成更少转账次数的结算方案，还能导出报表。",
+      "badge": "AI 助力，旅行分账更省心",
+      "title": "旅行分账交给 AI，秒速搞定谁该付多少，不再纠结。",
+      "description": "拍下小票即可自动填写明细，灵活分账、最少转账的智能结算，一部手机全搞定。",
       "primaryCta": "免费开始",
       "secondaryCta": "查看功能亮点"
     },
     "features": {
+      "highlightsHeading": "SpliTrip 的独特优势",
       "heading": "核心功能",
+      "highlights": {
+        "receiptAi": {
+          "title": "AI 小票识别",
+          "description": "只需拍摄小票，AI（Gemini）自动填入金额与内容，省去手动输入。"
+        },
+        "flexibleSplit": {
+          "title": "灵活的分摊选项",
+          "description": "除均分外，还支持百分比、比例，乃至按品目精细分配，覆盖各种场景。"
+        },
+        "tapToPay": {
+          "title": "一键跳转付款",
+          "description": "在结算页直接跳转到成员设置的支付链接（如 PayPay），快速完成转账。"
+        },
+        "nextPayer": {
+          "title": "「下一个谁付？」建议",
+          "description": "根据当前垫付余额，智能建议下一位付款者，让负担更均衡。"
+        },
+        "guestJoin": {
+          "title": "无需账号即可加入",
+          "description": "分享链接或二维码即可；也支持免注册的访客（匿名）加入。"
+        },
+        "global": {
+          "title": "全球化体验",
+          "description": "支持含日语、英语在内的 14 种语言，多语言团队旅行也安心。"
+        }
+      },
       "ai": {
         "title": "AI 扫描小票，录入更快",
         "description": "从图片中提取金额、日期与备注，自动填充开销表单。"
@@ -46,6 +73,27 @@
       "export": {
         "title": "报表导出与记录留存",
         "description": "支持 CSV / PDF 导出与打印，旅行账目一目了然。"
+      }
+    },
+    "pricing": {
+      "heading": "价格方案",
+      "subheading": "采用免费＋增值模式，可先免费体验。",
+      "free": {
+        "title": "免费",
+        "badge": "Free",
+        "bullet1": "创建分组与分账功能：不限次数",
+        "bullet2": "多种分账方式：全部可用",
+        "bullet3": "AI 小票识别：试用 3 次",
+        "bullet4": "应用内浏览器打印"
+      },
+      "pro": {
+        "title": "SpliTrip PRO",
+        "badge": "PRO",
+        "bullet1": "包含免费版全部功能",
+        "bullet2": "AI 小票识别：不限次数",
+        "bullet3": "报表导出：支持 CSV / PDF",
+        "bullet4": "隐藏广告与推广位",
+        "priceNote": "正式定价即将公布（计划通过 Stripe 等）"
       }
     },
     "cta": {

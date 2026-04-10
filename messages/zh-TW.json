@@ -23,35 +23,83 @@
   },
   "Landing": {
     "hero": {
-      "badge": "Smarter expense sharing for group trips",
-      "title": "From expense tracking to settlement, all in SpliTrip",
-      "description": "Record trip expenses together, scan receipts with AI, get minimal-transfer settlement suggestions, and export reports in one flow.",
-      "primaryCta": "Get started free",
-      "secondaryCta": "See product highlights"
+      "badge": "AI 助力，旅行分帳更省心",
+      "title": "旅行分帳交給 AI，秒速搞定誰該付多少，不再煩惱。",
+      "description": "拍下小票即可自動填寫明細，靈活分帳、最少轉帳的智慧結算，一支手機全搞定。",
+      "primaryCta": "免費開始",
+      "secondaryCta": "查看功能亮點"
     },
     "features": {
-      "heading": "Core Features",
+      "highlightsHeading": "SpliTrip 的獨特優勢",
+      "heading": "核心功能",
+      "highlights": {
+        "receiptAi": {
+          "title": "AI 收據辨識",
+          "description": "只要拍攝收據，AI（Gemini）自動填入金額與內容，省去手動輸入。"
+        },
+        "flexibleSplit": {
+          "title": "靈活的分攤選項",
+          "description": "除均分外，還支援百分比、比例，乃至依品項精細分配，涵蓋各種情境。"
+        },
+        "tapToPay": {
+          "title": "一鍵前往付款",
+          "description": "在結算頁直接前往成員設定的付款連結（如 PayPay），快速完成轉帳。"
+        },
+        "nextPayer": {
+          "title": "「下一個誰付？」建議",
+          "description": "依目前墊付餘額，智慧建議下一位付款者，讓負擔更平均。"
+        },
+        "guestJoin": {
+          "title": "免帳號立即加入",
+          "description": "分享連結或 QR 碼即可；也支援免註冊的訪客（匿名）加入。"
+        },
+        "global": {
+          "title": "全球化體驗",
+          "description": "支援含日文、英文在內的 14 種語言，多語言成員同行也安心。"
+        }
+      },
       "ai": {
-        "title": "Faster entry with AI receipt scan",
-        "description": "Extract amount, date, and memo from images to prefill expense forms in seconds."
+        "title": "AI 掃描收據，輸入更快",
+        "description": "從圖片擷取金額、日期與備註，自動填寫開銷表單。"
       },
       "split": {
-        "title": "Advanced split options",
-        "description": "Support equal, exact amount, ratio, percentage, and itemized splits for real-world travel patterns."
+        "title": "進階分攤方式",
+        "description": "支援均分、指定金額、比例、百分比與依品項分攤，貼近真實旅行情境。"
       },
       "settlement": {
-        "title": "Fewer transfers, clearer settlement",
-        "description": "Calculate who should pay whom and reduce the number of money transfers as much as possible."
+        "title": "更少轉帳，結算更清楚",
+        "description": "計算誰該付給誰，並盡量減少實際轉帳次數。"
       },
       "export": {
-        "title": "Exportable reports and history",
-        "description": "Keep travel accounting clear with CSV/PDF export and print-friendly summaries."
+        "title": "可匯出的報表與紀錄",
+        "description": "以 CSV／PDF 匯出與友善列印摘要，讓旅行帳務一目了然。"
+      }
+    },
+    "pricing": {
+      "heading": "價格方案",
+      "subheading": "採免費＋加值模式，可先免費體驗。",
+      "free": {
+        "title": "免費",
+        "badge": "Free",
+        "bullet1": "建立群組與分帳功能：不限次數",
+        "bullet2": "多種分帳方式：皆可使用",
+        "bullet3": "AI 收據辨識：試用 3 次",
+        "bullet4": "應用程式內瀏覽器列印"
+      },
+      "pro": {
+        "title": "SpliTrip PRO",
+        "badge": "PRO",
+        "bullet1": "包含免費版全部功能",
+        "bullet2": "AI 收據辨識：不限次數",
+        "bullet3": "報表匯出：支援 CSV / PDF",
+        "bullet4": "隱藏廣告與推廣區塊",
+        "priceNote": "正式定價即將公布（計畫透過 Stripe 等）"
       }
     },
     "cta": {
-      "title": "Make your next trip settlement stress-free",
-      "description": "Try an end-to-end flow from invite to final settlement directly from your phone.",
-      "button": "Start with SpliTrip"
+      "title": "下一次旅行，結算不再頭痛",
+      "description": "從邀請成員到最終結清，手機上即可完成完整流程。",
+      "button": "立即體驗 SpliTrip"
     }
   },
   "JoinGate": {

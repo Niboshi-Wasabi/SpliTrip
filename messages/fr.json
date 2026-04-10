@@ -23,14 +23,41 @@
   },
   "Landing": {
     "hero": {
-      "badge": "Partage des dépenses plus intelligent en voyage de groupe",
-      "title": "Du suivi des dépenses au règlement final, tout dans SpliTrip",
-      "description": "Enregistrez les dépenses ensemble, scannez les reçus avec l'IA, obtenez des suggestions pour réduire les virements et exportez vos rapports facilement.",
+      "badge": "Règlements de voyage assistés par l'IA",
+      "title": "Partagez les dépenses en quelques secondes grâce à l'IA—qui paie quoi, sans hésiter.",
+      "description": "Photographiez un reçu : l'IA remplit les montants. Répartition flexible, règlement intelligent et moins de virements, le tout sur mobile.",
       "primaryCta": "Commencer gratuitement",
       "secondaryCta": "Voir les fonctionnalités"
     },
     "features": {
+      "highlightsHeading": "Ce qui distingue SpliTrip",
       "heading": "Fonctionnalités clés",
+      "highlights": {
+        "receiptAi": {
+          "title": "Lecture de reçus par IA",
+          "description": "Une photo suffit : l'IA (Gemini) saisit montant et détails, sans saisie manuelle fastidieuse."
+        },
+        "flexibleSplit": {
+          "title": "Répartitions ultra flexibles",
+          "description": "Au-delà du part égalitaire : pourcentages, ratios et ventilation ligne par ligne pour chaque situation."
+        },
+        "tapToPay": {
+          "title": "Paiement en un geste",
+          "description": "Depuis l'écran de règlement, ouvrez les liens de paiement enregistrés (ex. PayPay) pour envoyer l'argent."
+        },
+        "nextPayer": {
+          "title": "Suggestion « qui paie ensuite ? »",
+          "description": "À partir des soldes, l'app propose qui devrait payer pour équilibrer les contributions."
+        },
+        "guestJoin": {
+          "title": "Rejoindre sans compte",
+          "description": "Partagez une URL ou un QR code. Mode invité anonyme possible sans inscription lourde."
+        },
+        "global": {
+          "title": "Ouvert au monde",
+          "description": "14 langues dont le japonais et l'anglais : idéal pour les groupes multilingues."
+        }
+      },
       "ai": {
         "title": "Saisie accélérée par scan IA",
         "description": "Montant, date et libellé sont extraits depuis une image pour préremplir le formulaire en quelques secondes."
@@ -46,6 +73,27 @@
       "export": {
         "title": "Rapports exportables et historique",
         "description": "Gardez une comptabilité lisible avec export CSV/PDF et vues prêtes à imprimer."
+      }
+    },
+    "pricing": {
+      "heading": "Offres et tarifs",
+      "subheading": "Modèle freemium : commencez gratuitement, passez au niveau supérieur au besoin.",
+      "free": {
+        "title": "Gratuit",
+        "badge": "Free",
+        "bullet1": "Groupes et flux de répartition : illimités",
+        "bullet2": "Tous les modes de répartition disponibles",
+        "bullet3": "Lecture IA des reçus : 3 essais",
+        "bullet4": "Impression dans le navigateur intégré"
+      },
+      "pro": {
+        "title": "SpliTrip PRO",
+        "badge": "PRO",
+        "bullet1": "Tout le contenu du plan gratuit",
+        "bullet2": "Lecture IA des reçus : illimitée",
+        "bullet3": "Export de rapports CSV / PDF",
+        "bullet4": "Masquer pubs et emplacements promo",
+        "priceNote": "Tarification à venir (via Stripe)"
       }
     },
     "cta": {

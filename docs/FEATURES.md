@@ -7,6 +7,7 @@
 ## プロダクト概要
 
 - **用途:** グループ旅行などの **割り勘・出費記録・送金回数を減らした精算プラン** を扱う **Web アプリ（PWA 想定）**。
+- **マーケ LP:** 未ログインのトップ（`/`、`LandingPage`）に AI 訴求のヒーロー、差別化ポイント 6 件＋主要機能 4 件、フリーミアム料金（Free / PRO）、CTA。文言は `messages/*.json` の `Landing` 名前空間。
 - **主な技術:** Next.js App Router、React、TypeScript、Tailwind CSS、Supabase（DB・認証・ストレージ）、`next-intl`（**日本語 / 英語**）。
 - **ビジネスモデル（フリーミアム）:** `user_profiles.premium_access` が **PRO**。無料ユーザーは Gemini レシート OCR を **成功回数で上限（アプリ側で 3 回）**、CSV / PDF レポート出力はロック。プロモ枠は PRO で非表示。Stripe Checkout / Webhook で PRO 付与を連携。
 
