@@ -10,9 +10,10 @@
  */
 
 import { useState, useEffect, useMemo } from "react";
+import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
-import { Plane, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { Link, useRouter } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
 import {
@@ -174,9 +175,14 @@ export function LoginForm() {
       </div>
       <div className="mb-8 flex flex-col items-center gap-2">
         <div className="flex items-center gap-3">
-          <div className="rounded-xl bg-blue-600 p-2.5 text-white shadow-lg dark:bg-blue-500">
-            <Plane className="h-8 w-8" />
-          </div>
+          <Image
+            src="/icons/source-app-icon.svg"
+            alt=""
+            width={48}
+            height={48}
+            className="h-12 w-12 object-contain"
+            priority
+          />
           <h1 className="text-4xl font-bold tracking-tight text-foreground">
             SpliTrip
           </h1>
