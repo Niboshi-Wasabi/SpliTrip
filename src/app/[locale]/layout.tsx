@@ -74,7 +74,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
     >
       <head>
         {/* PWA: テーマカラーをブラウザ UI に反映 / Reflect brand color in browser chrome */}
-        <meta name="theme-color" content="#2563eb" />
+        <meta name="theme-color" content="#0f766e" />
         <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
         <script defer src="/theme-bootstrap.js" />
       </head>

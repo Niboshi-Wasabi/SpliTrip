@@ -9,6 +9,7 @@
     "lint": "eslint",
     "test": "jest",
     "test:watch": "jest --watch",
+    "icons:build": "node scripts/process-app-icon.mjs",
     "vercel:env:push": "node scripts/vercel-env-push-from-local.mjs",
     "vercel:env:preview-staging": "node scripts/vercel-env-push-preview-staging.mjs",
     "github:push": "git push -u origin master",
@@ -47,6 +48,7 @@
     "eslint-config-next": "16.2.2",
     "jest": "^30.3.0",
     "jest-environment-jsdom": "^30.3.0",
+    "sharp": "^0.34.5",
     "tailwindcss": "^4",
     "ts-node": "^10.9.2",
     "typescript": "^5"
