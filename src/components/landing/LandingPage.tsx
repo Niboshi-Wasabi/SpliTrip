@@ -112,7 +112,7 @@ export function LandingPage() {
           <div className="flex items-center gap-2">
             <span className="inline-flex rounded-md bg-primary/15 p-2 text-primary">
               <Image
-                src="/icons/icon-192x192.png"
+                src="/icons/source-app-icon.svg"
                 alt=""
                 width={32}
                 height={32}
