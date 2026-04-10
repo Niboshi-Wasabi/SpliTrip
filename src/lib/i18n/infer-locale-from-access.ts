@@ -55,6 +55,30 @@ function readCountryCode(headers: Headers): string | undefined {
   return undefined;
 }
 
+function acceptLanguageMentionsJapanese(
+  acceptLanguageHeaderValue: string | null,
+): boolean {
+  if (
+    !acceptLanguageHeaderValue ||
+    acceptLanguageHeaderValue.trim().length === 0
+  ) {
+    return false;
+  }
+  try {
+    const preferredLanguages = new Negotiator({
+      headers: {
+        "accept-language": acceptLanguageHeaderValue.trim(),
+      },
+    }).languages();
+    return preferredLanguages.some(
+      (languageTag) =>
+        languageTag === "ja" || languageTag.toLowerCase().startsWith("ja-"),
+    );
+  } catch {
+    return false;
+  }
+}
+
 function localeFromAcceptLanguageHeader(
   acceptLanguageHeaderValue: string | null,
 ): AppLocale {
@@ -100,6 +124,20 @@ export function inferPreferredLocaleForAccess(input: {
 
   if (fromAccept === "en" && fromGeo && fromGeo !== "en") {
     return fromGeo;
+  }
+
+  /*
+   * Japan: Accept-Language が ar だけ、など「日本語を要求していない」交渉結果でも、
+   * 接続元が JP なら既定 UI は日本語に寄せる（ブラウザ誤設定・拡張対策）。
+   * ヘッダに ja が含まれる場合は上書きしない（在日で明示的に日英併記しているケース）。
+   */
+  if (
+    countryUpper === "JP" &&
+    fromGeo === "ja" &&
+    !acceptLanguageMentionsJapanese(input.acceptLanguageHeader) &&
+    fromAccept !== "ja"
+  ) {
+    return "ja";
   }
 
   return fromAccept;

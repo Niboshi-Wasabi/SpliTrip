@@ -19,7 +19,10 @@
   "LanguageSwitcher": {
     "ariaLabel": "Changer la langue d'affichage",
     "ja": "JA",
-    "en": "EN"
+    "en": "EN",
+    "modalTitle": "Langue d'affichage",
+    "modalDescription": "Choisissez la langue de l'interface de l'application.",
+    "openModal": "Choisir la langue"
   },
   "Landing": {
     "hero": {

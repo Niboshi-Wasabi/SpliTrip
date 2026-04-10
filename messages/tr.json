@@ -19,7 +19,10 @@
   "LanguageSwitcher": {
     "ariaLabel": "Switch display language",
     "ja": "JA",
-    "en": "EN"
+    "en": "EN",
+    "modalTitle": "Arayüz dili",
+    "modalDescription": "Uygulama arayüzünde kullanılacak dili seçin.",
+    "openModal": "Dil seç"
   },
   "Landing": {
     "hero": {

@@ -8,9 +8,8 @@
  * Since this app is primarily used on the go, placing nav at the bottom enables easy one-handed use.
  */
 
-import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { Link } from "@/i18n/navigation";
+import { Link, usePathname } from "@/i18n/navigation";
 import { SupportDeveloper } from "@/components/ads/SupportDeveloper";
 import { Home, Settings, LogOut } from "lucide-react";
 import { createClient } from "@/utils/supabase/client";
@@ -19,12 +18,11 @@ import { useRouter } from "@/i18n/navigation";
 
 const HIDDEN_PATHS = ["/", "/login", "/terms", "/privacy", "/onboarding", "/pitch"];
 
-function isHiddenPath(pathname: string): boolean {
-  const withoutLocale = pathname.replace(/^\/(ja|en)/, "") || "/";
-  if (HIDDEN_PATHS.includes(withoutLocale)) {
+function isHiddenPath(pathnameWithoutLocalePrefix: string): boolean {
+  if (HIDDEN_PATHS.includes(pathnameWithoutLocalePrefix)) {
     return true;
   }
-  return withoutLocale.startsWith("/pitch/");
+  return pathnameWithoutLocalePrefix.startsWith("/pitch/");
 }
 
 export function BottomNav() {
@@ -34,10 +32,9 @@ export function BottomNav() {
 
   if (isHiddenPath(pathname)) return null;
 
-  const withoutLocale = pathname.replace(/^\/(ja|en)/, "") || "/";
   const isDashboard =
-    withoutLocale === "/dashboard" || withoutLocale.startsWith("/dashboard/");
-  const isSettings = withoutLocale === "/settings";
+    pathname === "/dashboard" || pathname.startsWith("/dashboard/");
+  const isSettings = pathname === "/settings";
 
   async function handleLogout() {
     if (isSupabaseConfigured()) {

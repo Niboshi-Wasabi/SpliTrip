@@ -31,10 +31,10 @@
 
 | 機能 | 内容 |
 |------|------|
-| **ロケール** | `next-intl` で 14 言語（`ja`, `en`, `zh-CN`, `zh-TW`, `ko`, `es`, `fr`, `de`, `pt`, `ru`, `tr`, `ar`, `sw`, `hi`）をサポート。既定は `ja`。初回（`NEXT_LOCALE` 未設定）は Proxy で `Accept-Language` に加え、Vercel の `x-vercel-ip-country` または Cloudflare の `CF-IPCountry` を参照して言語を補正し、next-intl が適切なロケールへリダイレクト／書き換えする。 |
+| **ロケール** | `next-intl` で 14 言語（`ja`, `en`, `zh-CN`, `zh-TW`, `ko`, `es`, `fr`, `de`, `pt`, `ru`, `tr`, `ar`, `sw`, `hi`）をサポート。既定は `ja`。初回（`NEXT_LOCALE` 未設定）は Proxy で `Accept-Language` に加え、Vercel の `x-vercel-ip-country` または Cloudflare の `CF-IPCountry` を参照して言語を補正し、next-intl が適切なロケールへリダイレクト／書き換えする。**日本（JP）からのアクセス**で `Accept-Language` に `ja` が含まれない場合は、アラビア語など誤設定ヘッダーでも **日本語（`ja`）** を優先（`infer-locale-from-access.ts`）。`ja` を明示したヘッダは上書きしない。 |
 | **UI フォント（本文・見出し）** | ラテン・キリルなど **アルファベット系コードポイント**は **Tiempos Text**（`public/fonts/tiempos/*.woff2`、Klim ライセンスの自前配置。`globals.css` の `@font-face` で `unicode-range` 指定）をスタック先頭に置く。未配置時は Geist / Noto へフォールバック。日本語・中国語・韓国語・アラビア語・ヒンディー等の本文は従来どおり各 Noto Sans（`next/font`）＋ Geist を続ける。ロケール切替は `src/lib/i18n/locale-ui-fonts.ts` と `html[data-ui-sans]`。 |
 | **等幅フォント** | `en` / `es` / `fr` / `de` / `pt` / `tr` / `sw` / `ru` は Fira Code 系スタック（キリル対応）。`ja` / `zh-CN` / `zh-TW` / `ko` は BIZ UD / Noto Sans Mono CJK 系などのサンセリフに近い等幅スタック。`ar` / `hi` は Noto Sans Mono ＋各スクリプト向け UI フォントをフォールバック。`html[data-ui-mono]`。 |
-| **言語スイッチャー** | `LanguageSwitcher` で JA / EN を即時切替。LPヘッダーと設定画面ヘッダーに配置。 |
+| **言語スイッチャー** | `LanguageSwitcher`（セレクト）で 14 言語を即時切替。LP ヘッダー・設定ヘッダー等。LP 以外の画面では `GlobalLanguagePickerFab`（地球アイコン FAB）から **言語選択モーダル**（`language-picker-modal.tsx`）でも同様に切替可能。 |
 | **テーマ** | ライト / ダーク / システム（クライアント側プロバイダ）。 |
 | **モバイル** | ボトムナビ、タッチ向け `min-h-[44px]` などの UI 方針。 |
 | **PWA** | `manifest.webmanifest`、テーマカラー等（レイアウト・メタと連動）。アイコン類は `public/icons/source-app-icon.png` を元に `npm run icons:build` で `public/icons/*` と `src/app/icon.png`・`apple-icon.png`・`favicon.ico` を生成。 |
