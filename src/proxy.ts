@@ -5,6 +5,7 @@
 import createIntlMiddleware from "next-intl/middleware";
 import { type NextRequest, NextResponse } from "next/server";
 import { routing } from "./i18n/routing";
+import { applyAccessBasedLocaleHint } from "./lib/i18n/infer-locale-from-access";
 import { applyProfilePreferredLocaleCookie } from "./lib/i18n/profile-locale-cookie";
 import { finalizeSupabaseSession } from "./utils/supabase/middleware";
 
@@ -23,7 +24,10 @@ export async function proxy(request: NextRequest) {
 
   // Step 1: logged-in users override Accept-Language via profile cookie on the request clone.
   // 手順1: ログイン済みはプロフィール由来の Cookie をリクエストに載せる。
-  const localizedRequest = await applyProfilePreferredLocaleCookie(request);
+  const profileLocaleRequest = await applyProfilePreferredLocaleCookie(request);
+  // Step 1b: first visit (no NEXT_LOCALE): geo + Accept-Language hint for redirect/rewrite.
+  // 手順1b: 初回は国コードと Accept-Language で最適なロケールへ（英語ヘッダー一辺倒を防ぐ）。
+  const localizedRequest = applyAccessBasedLocaleHint(profileLocaleRequest);
   // Step 2: next-intl resolves locale (cookie, Accept-Language, prefix rules).
   // 手順2: next-intl がロケールを解決（Cookie・Accept-Language・プレフィックス）。
   const intlResponse = intlMiddleware(localizedRequest);

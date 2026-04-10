@@ -6,14 +6,11 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextRequest } from "next/server";
 import { routing } from "@/i18n/routing";
+import {
+  isAppLocale,
+  NEXT_INTL_LOCALE_COOKIE_NAME,
+} from "@/lib/i18n/next-intl-locale";
 import { getSupabaseEnv } from "@/utils/supabase/env";
-
-/** Default cookie name used by next-intl for persisted locale / next-intl がロケール保存に使う既定名 */
-const NEXT_INTL_LOCALE_COOKIE = "NEXT_LOCALE";
-
-function isAppLocale(value: string): value is (typeof routing.locales)[number] {
-  return routing.locales.includes(value as (typeof routing.locales)[number]);
-}
 
 /**
  * Clones the request with an added or replaced locale cookie (Request cookie header).
@@ -25,11 +22,11 @@ function withLocaleCookie(
 ): NextRequest {
   const jar = new Map<string, string>();
   for (const cookie of request.cookies.getAll()) {
-    if (cookie.name !== NEXT_INTL_LOCALE_COOKIE) {
+    if (cookie.name !== NEXT_INTL_LOCALE_COOKIE_NAME) {
       jar.set(cookie.name, cookie.value);
     }
   }
-  jar.set(NEXT_INTL_LOCALE_COOKIE, locale);
+  jar.set(NEXT_INTL_LOCALE_COOKIE_NAME, locale);
   const cookieHeader = Array.from(jar.entries())
     .map(([name, value]) => `${name}=${value}`)
     .join("; ");

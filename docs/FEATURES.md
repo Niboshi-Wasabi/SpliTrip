@@ -30,7 +30,7 @@
 
 | 機能 | 内容 |
 |------|------|
-| **ロケール** | `next-intl` で 14 言語（`ja`, `en`, `zh-CN`, `zh-TW`, `ko`, `es`, `fr`, `de`, `pt`, `ru`, `tr`, `ar`, `sw`, `hi`）をサポート。既定は `ja`。 |
+| **ロケール** | `next-intl` で 14 言語（`ja`, `en`, `zh-CN`, `zh-TW`, `ko`, `es`, `fr`, `de`, `pt`, `ru`, `tr`, `ar`, `sw`, `hi`）をサポート。既定は `ja`。初回（`NEXT_LOCALE` 未設定）は Proxy で `Accept-Language` に加え、Vercel の `x-vercel-ip-country` または Cloudflare の `CF-IPCountry` を参照して言語を補正し、next-intl が適切なロケールへリダイレクト／書き換えする。 |
 | **言語スイッチャー** | `LanguageSwitcher` で JA / EN を即時切替。LPヘッダーと設定画面ヘッダーに配置。 |
 | **テーマ** | ライト / ダーク / システム（クライアント側プロバイダ）。 |
 | **モバイル** | ボトムナビ、タッチ向け `min-h-[44px]` などの UI 方針。 |
