@@ -24,6 +24,7 @@ import { LanguagePreferenceForm } from "./language-preference-form";
 import { PaymentSettingsForm } from "./payment-settings-form";
 import { SupportDeveloper } from "@/components/ads/SupportDeveloper";
 import { LanguageSwitcher } from "@/components/ui/LanguageSwitcher";
+import { isAppLocale } from "@/lib/i18n/next-intl-locale";
 
 export const dynamic = "force-dynamic";
 
@@ -79,7 +80,12 @@ export default async function SettingsPage({ params }: PageProps) {
     typeof row?.avatar_url === "string" && row.avatar_url.trim().length > 0
       ? row.avatar_url
       : null;
-  const initialLanguage = row?.preferred_language === "en" ? "en" : "ja";
+  const preferredLanguageValue = row?.preferred_language;
+  const initialLanguage =
+    typeof preferredLanguageValue === "string" &&
+    isAppLocale(preferredLanguageValue)
+      ? preferredLanguageValue
+    : "ja";
   const paymentColumnsMissing = row !== null && !("paypal_me_id" in row);
 
   return (

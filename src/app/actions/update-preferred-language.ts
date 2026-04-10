@@ -7,6 +7,7 @@
 import { revalidatePath } from "next/cache";
 import { withLocalePrefix } from "@/lib/i18n/localized-paths";
 import { routing } from "@/i18n/routing";
+import { isAppLocale } from "@/lib/i18n/next-intl-locale";
 import { createClient } from "@/utils/supabase/server";
 
 export type UpdatePreferredLanguageResult =
@@ -14,12 +15,12 @@ export type UpdatePreferredLanguageResult =
   | { ok: false; errorCode: string };
 
 /**
- * @param language - `ja` or `en` / `ja` または `en`
+ * @param language - any AppLocale / サポート済みロケール
  */
 export async function updatePreferredLanguageAction(
   language: string,
 ): Promise<UpdatePreferredLanguageResult> {
-  if (language !== "ja" && language !== "en") {
+  if (!isAppLocale(language)) {
     return { ok: false, errorCode: "invalid_language" };
   }
 
