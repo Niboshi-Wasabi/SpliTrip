@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Fira_Code, Geist, Geist_Mono } from "next/font/google";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { getMessages, setRequestLocale } from "next-intl/server";
 import { routing } from "@/i18n/routing";
 import { AppProviders } from "@/app/providers";
 import { BottomNav } from "@/components/bottom-nav";
+import { localeUsesLatinScript } from "@/lib/i18n/latin-script-locale";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -16,6 +17,12 @@ const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
   // Mono is sparse on first paint; avoid unused preload warnings in DevTools.
+  preload: false,
+});
+
+const firaCode = Fira_Code({
+  variable: "--font-fira-code",
+  subsets: ["latin"],
   preload: false,
 });
 
@@ -67,11 +74,22 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
   setRequestLocale(locale);
   const messages = await getMessages();
 
+  const useLatinMonoStack = localeUsesLatinScript(locale);
+  const htmlClassName = [
+    geistSans.variable,
+    geistMono.variable,
+    useLatinMonoStack ? firaCode.variable : "",
+    "h-full antialiased",
+  ]
+    .filter(Boolean)
+    .join(" ");
+
   return (
     <html
       lang={locale}
       dir={direction}
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      data-mono-stack={useLatinMonoStack ? "latin" : "geist"}
+      className={htmlClassName}
       suppressHydrationWarning
     >
       <head>

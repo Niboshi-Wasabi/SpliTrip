@@ -132,6 +132,12 @@
     @apply font-sans;
   }
 
+  /* Latin-script UI locales: layout sets data-mono-stack="latin" + --font-fira-code */
+  html[data-mono-stack="latin"] {
+    --font-mono: var(--font-fira-code), "Fira Mono", Menlo, Consolas, "DejaVu Sans Mono",
+      monospace;
+  }
+
   @media print {
     body {
       @apply bg-white text-black;
