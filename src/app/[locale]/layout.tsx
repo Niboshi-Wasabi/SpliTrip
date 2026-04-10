@@ -29,6 +29,22 @@ export const metadata: Metadata = {
   title: "SpliTrip（スプリトリップ）- グループ旅行の精算アプリ",
   description:
     "グループ旅行中の立替をリアルタイムに記録し、精算を自動計算するWebアプリ",
+  icons: {
+    icon: [
+      {
+        url: "/icons/favicon-32x32.png",
+        type: "image/png",
+        sizes: "32x32",
+      },
+      {
+        url: "/icons/icon-192x192.png",
+        type: "image/png",
+        sizes: "192x192",
+      },
+    ],
+    shortcut: "/icons/favicon-32x32.png",
+    apple: "/icons/icon-192x192.png",
+  },
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",

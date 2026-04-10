@@ -166,6 +166,7 @@ const trimmed = sharp(rgbaBuffer).trim({ threshold: 0 });
 const icon192Path = path.join(projectRoot, "public", "icons", "icon-192x192.png");
 const icon512Path = path.join(projectRoot, "public", "icons", "icon-512x512.png");
 const icon512MaskablePath = path.join(projectRoot, "public", "icons", "icon-512-maskable.png");
+const favicon32Path = path.join(projectRoot, "public", "icons", "favicon-32x32.png");
 
 const maskableBackground = { r: 15, g: 118, b: 110, alpha: 1 };
 
@@ -177,6 +178,15 @@ await trimmed
   })
   .png()
   .toFile(icon192Path);
+
+await trimmed
+  .clone()
+  .resize(32, 32, {
+    fit: "contain",
+    background: { r: 0, g: 0, b: 0, alpha: 0 },
+  })
+  .png()
+  .toFile(favicon32Path);
 
 await trimmed
   .clone()
@@ -204,5 +214,5 @@ await trimmed
   .toFile(icon512MaskablePath);
 
 process.stdout.write(
-  `Wrote:\n  ${icon192Path}\n  ${icon512Path}\n  ${icon512MaskablePath}\n`,
+  `Wrote:\n  ${favicon32Path}\n  ${icon192Path}\n  ${icon512Path}\n  ${icon512MaskablePath}\n`,
 );
