@@ -12,6 +12,7 @@ import { updatePreferredLanguageAction } from "@/app/actions/update-preferred-la
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { withLocalePrefix } from "@/lib/i18n/localized-paths";
+import { markLocaleChosenByUser } from "@/lib/i18n/device-locale-bootstrap-storage";
 
 type Props = {
   initialLanguage: "ja" | "en";
@@ -34,6 +35,7 @@ export function LanguagePreferenceForm({ initialLanguage }: Props) {
           setMessage(translations("saveError"));
           return;
         }
+        markLocaleChosenByUser();
         const target = withLocalePrefix(language, "/settings");
         const currentLocale = activeLocale === "en" ? "en" : "ja";
         if (target !== withLocalePrefix(currentLocale, "/settings")) {

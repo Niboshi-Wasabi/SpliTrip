@@ -6,6 +6,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { usePathname, useRouter } from "@/i18n/navigation";
 import type { AppLocale } from "@/i18n/routing";
 import { LOCALE_DISPLAY_OPTIONS } from "@/lib/i18n/locale-display-options";
+import { markLocaleChosenByUser } from "@/lib/i18n/device-locale-bootstrap-storage";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -32,6 +33,7 @@ function LanguagePickerPanel({ onLocaleSelected }: LanguagePickerPanelProps) {
       onLocaleSelected();
       return;
     }
+    markLocaleChosenByUser();
     startTransition(() => {
       router.replace(pathname, { locale: nextLocale });
       router.refresh();

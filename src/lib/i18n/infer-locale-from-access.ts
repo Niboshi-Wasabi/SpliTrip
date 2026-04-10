@@ -1,17 +1,20 @@
 /**
  * First-visit locale hint: combine Accept-Language with edge geo (Vercel / Cloudflare)
- * so English-only browser headers do not always win over the access region.
- * 初回: Accept-Language だけだと en 固定になりがちなので、接続元の国コードで補正する。
+ * and optional device language tags (SPLITRIP_DEVICE_LANGS from navigator.languages).
+ * 初回: Accept-Language に加え、国コードと（あれば）デバイス優先タグで補正する。
  */
-import { match as matchLocale } from "@formatjs/intl-localematcher";
 import Negotiator from "negotiator";
 import { NextRequest } from "next/server";
 import { routing, type AppLocale } from "@/i18n/routing";
+import {
+  SPLITRIP_DEVICE_LANGUAGE_TAGS_COOKIE_NAME,
+  parseDeviceLanguageTagsFromCookieValue,
+} from "@/lib/i18n/device-locale-cookie";
+import {
+  negotiateAppLocaleFromAcceptLanguageHeader,
+  negotiateAppLocaleFromLanguageTags,
+} from "@/lib/i18n/negotiate-app-locale";
 import { NEXT_INTL_LOCALE_COOKIE_NAME } from "@/lib/i18n/next-intl-locale";
-
-const sortedLocalesLongestFirst = [...routing.locales].sort(
-  (firstLocale, secondLocale) => secondLocale.length - firstLocale.length,
-);
 
 /** ISO 3166-1 alpha-2 → primary UI locale for that region (conservative list). */
 const COUNTRY_PRIMARY_LOCALE: Partial<Record<string, AppLocale>> = {
@@ -79,26 +82,20 @@ function acceptLanguageMentionsJapanese(
   }
 }
 
-function localeFromAcceptLanguageHeader(
+/**
+ * Build a synthetic Accept-Language–like list: device tags first, then header.
+ * デバイス優先でタグを先頭に並べ、HTTP ヘッダを続ける。
+ */
+export function mergeDeviceLanguageTagsBeforeAcceptHeader(
+  deviceLanguageTags: readonly string[],
   acceptLanguageHeaderValue: string | null,
-): AppLocale {
-  const trimmed =
-    acceptLanguageHeaderValue && acceptLanguageHeaderValue.trim().length > 0
-      ? acceptLanguageHeaderValue.trim()
-      : "";
-  try {
-    const preferredLanguages = new Negotiator({
-      headers: { "accept-language": trimmed.length > 0 ? trimmed : "en" },
-    }).languages();
-    const matched = matchLocale(
-      preferredLanguages,
-      sortedLocalesLongestFirst,
-      routing.defaultLocale,
-    );
-    return matched as AppLocale;
-  } catch {
-    return routing.defaultLocale;
+): string | null {
+  if (deviceLanguageTags.length === 0) {
+    return acceptLanguageHeaderValue;
   }
+  const headerTrimmed = acceptLanguageHeaderValue?.trim() ?? "";
+  const tail = headerTrimmed.length > 0 ? headerTrimmed : "en;q=0.01";
+  return `${deviceLanguageTags.join(",")},${tail}`;
 }
 
 /**
@@ -107,40 +104,51 @@ function localeFromAcceptLanguageHeader(
 export function inferPreferredLocaleForAccess(input: {
   acceptLanguageHeader: string | null;
   countryCode: string | undefined;
+  deviceLanguageTags?: readonly string[];
 }): AppLocale {
+  const deviceTags = input.deviceLanguageTags ?? [];
+  const effectiveAcceptHeader = mergeDeviceLanguageTagsBeforeAcceptHeader(
+    deviceTags,
+    input.acceptLanguageHeader,
+  );
+
+  const fromMergedAccept =
+    negotiateAppLocaleFromAcceptLanguageHeader(effectiveAcceptHeader);
+
   const acceptLanguageHeaderEmpty =
     !input.acceptLanguageHeader ||
     input.acceptLanguageHeader.trim().length === 0;
 
-  const fromAccept = localeFromAcceptLanguageHeader(input.acceptLanguageHeader);
   const countryUpper = input.countryCode?.toUpperCase();
   const fromGeo = countryUpper
     ? COUNTRY_PRIMARY_LOCALE[countryUpper]
     : undefined;
 
   if (acceptLanguageHeaderEmpty && fromGeo) {
+    if (deviceTags.length > 0) {
+      return negotiateAppLocaleFromLanguageTags(deviceTags);
+    }
     return fromGeo;
   }
 
-  if (fromAccept === "en" && fromGeo && fromGeo !== "en") {
+  if (fromMergedAccept === "en" && fromGeo && fromGeo !== "en") {
     return fromGeo;
   }
 
   /*
-   * Japan: Accept-Language が ar だけ、など「日本語を要求していない」交渉結果でも、
-   * 接続元が JP なら既定 UI は日本語に寄せる（ブラウザ誤設定・拡張対策）。
-   * ヘッダに ja が含まれる場合は上書きしない（在日で明示的に日英併記しているケース）。
+   * Japan: 合成ヘッダに ja が含まれない限り JP からは日本語を優先（誤設定ヘッダ対策）。
+   * デバイスが ja を先頭に載せていれば effective 側で解決済み。
    */
   if (
     countryUpper === "JP" &&
     fromGeo === "ja" &&
-    !acceptLanguageMentionsJapanese(input.acceptLanguageHeader) &&
-    fromAccept !== "ja"
+    !acceptLanguageMentionsJapanese(effectiveAcceptHeader) &&
+    fromMergedAccept !== "ja"
   ) {
     return "ja";
   }
 
-  return fromAccept;
+  return fromMergedAccept;
 }
 
 function acceptLanguagePrimaryTag(locale: AppLocale): string {
@@ -167,19 +175,33 @@ export function applyAccessBasedLocaleHint(request: NextRequest): NextRequest {
   }
 
   const acceptHeader = request.headers.get("accept-language");
-  const fromAccept = localeFromAcceptLanguageHeader(acceptHeader);
+  const deviceTags = parseDeviceLanguageTagsFromCookieValue(
+    request.cookies.get(SPLITRIP_DEVICE_LANGUAGE_TAGS_COOKIE_NAME)?.value,
+  );
+  const effectiveAcceptHeader = mergeDeviceLanguageTagsBeforeAcceptHeader(
+    deviceTags,
+    acceptHeader,
+  );
+
+  const rawNegotiatedLocale =
+    negotiateAppLocaleFromAcceptLanguageHeader(acceptHeader);
+  const fromAcceptWithoutInferenceRules =
+    deviceTags.length > 0 && !acceptHeader?.trim()
+      ? routing.defaultLocale
+      : rawNegotiatedLocale;
   const inferred = inferPreferredLocaleForAccess({
     acceptLanguageHeader: acceptHeader,
     countryCode: readCountryCode(request.headers),
+    deviceLanguageTags: deviceTags,
   });
 
-  if (inferred === fromAccept) {
+  if (inferred === fromAcceptWithoutInferenceRules) {
     return request;
   }
 
   const headers = new Headers(request.headers);
   const primaryTag = acceptLanguagePrimaryTag(inferred);
-  const existing = acceptHeader?.trim() ?? "";
+  const existing = effectiveAcceptHeader?.trim() ?? "";
   headers.set(
     "accept-language",
     existing.length > 0

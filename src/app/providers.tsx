@@ -8,6 +8,7 @@
  * 理由: 旧 `next-themes` 相当だが React 19 で問題になる `<script>` をクライアントツリーに出さない。
  */
 import { SplitripThemeProvider } from "@/components/theme/splitrip-theme-provider";
+import { DeviceLocaleSync } from "@/components/i18n/device-locale-sync";
 import { GlobalLanguagePickerFab } from "@/components/ui/language-picker-modal";
 
 /**
@@ -29,6 +30,7 @@ export function AppProviders({ children }: Props) {
       disableTransitionOnChange
     >
       {children}
+      <DeviceLocaleSync />
       <GlobalLanguagePickerFab />
     </ThemeProvider>
   );
