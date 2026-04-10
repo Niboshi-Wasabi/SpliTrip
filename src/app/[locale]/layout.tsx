@@ -11,6 +11,7 @@ import {
   Noto_Sans_KR,
   Noto_Sans_SC,
   Noto_Sans_TC,
+  Source_Serif_4,
 } from "next/font/google";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { getMessages, setRequestLocale } from "next-intl/server";
@@ -38,6 +39,14 @@ const geistMono = Geist_Mono({
 const firaCode = Fira_Code({
   variable: "--font-fira-code",
   subsets: ["latin"],
+  preload: false,
+});
+
+const sourceSerif4 = Source_Serif_4({
+  variable: "--font-source-serif-4",
+  subsets: ["latin", "latin-ext", "cyrillic", "cyrillic-ext"],
+  weight: ["400", "500", "600", "700"],
+  display: "swap",
   preload: false,
 });
 
@@ -164,6 +173,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
   const htmlClassName = [
     geistSans.variable,
     geistMono.variable,
+    sourceSerif4.variable,
     uiMonoStackId === "fira" ? firaCode.variable : "",
     googleSansKey !== "none" ? googleSansByKey[googleSansKey].variable : "",
     "h-full antialiased",

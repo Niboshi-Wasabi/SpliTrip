@@ -7,49 +7,7 @@
 /* Enables `print:*` utilities (e.g. `print:hidden`) for the export / print flow. */
 @custom-variant print (@media print);
 
-/*
- * Tiempos Text（商業フォント）: `public/fonts/tiempos/*.woff2` を配置すると、
- * 下記 unicode-range のラテン・キリル文字にのみ適用される。未配置時は次のフォントへフォールバック。
- */
-@font-face {
-  font-family: "Tiempos Text";
-  src: url("/fonts/tiempos/TiemposText-Regular.woff2") format("woff2");
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-  unicode-range: U+0020-024F, U+1E00-1EFF, U+0400-052F, U+2000-206F, U+2070-209F,
-    U+20A0-20CF, U+2113, U+2122, U+2190-21FF;
-}
-
-@font-face {
-  font-family: "Tiempos Text";
-  src: url("/fonts/tiempos/TiemposText-Medium.woff2") format("woff2");
-  font-weight: 500;
-  font-style: normal;
-  font-display: swap;
-  unicode-range: U+0020-024F, U+1E00-1EFF, U+0400-052F, U+2000-206F, U+2070-209F,
-    U+20A0-20CF, U+2113, U+2122, U+2190-21FF;
-}
-
-@font-face {
-  font-family: "Tiempos Text";
-  src: url("/fonts/tiempos/TiemposText-Semibold.woff2") format("woff2");
-  font-weight: 600;
-  font-style: normal;
-  font-display: swap;
-  unicode-range: U+0020-024F, U+1E00-1EFF, U+0400-052F, U+2000-206F, U+2070-209F,
-    U+20A0-20CF, U+2113, U+2122, U+2190-21FF;
-}
-
-@font-face {
-  font-family: "Tiempos Text";
-  src: url("/fonts/tiempos/TiemposText-Bold.woff2") format("woff2");
-  font-weight: 700;
-  font-style: normal;
-  font-display: swap;
-  unicode-range: U+0020-024F, U+1E00-1EFF, U+0400-052F, U+2000-206F, U+2070-209F,
-    U+20A0-20CF, U+2113, U+2122, U+2190-21FF;
-}
+/* Open font alternative to Tiempos: Source Serif 4 (loaded via next/font). */
 
 @theme inline {
   --color-background: var(--background);
@@ -181,58 +139,58 @@
    * the matching next/font variables (see `locale-ui-fonts.ts`).
    */
   html[data-ui-sans="latin"] {
-    --font-sans: "Tiempos Text", var(--font-geist-sans), ui-sans-serif, system-ui,
+    --font-sans: var(--font-source-serif-4), var(--font-geist-sans), ui-sans-serif, system-ui,
       sans-serif;
-    --font-heading: "Tiempos Text", var(--font-geist-sans), ui-sans-serif, system-ui,
+    --font-heading: var(--font-source-serif-4), var(--font-geist-sans), ui-sans-serif, system-ui,
       sans-serif;
   }
 
   html[data-ui-sans="ja"] {
-    --font-sans: "Tiempos Text", var(--font-noto-sans-jp), var(--font-geist-sans),
+    --font-sans: var(--font-source-serif-4), var(--font-noto-sans-jp), var(--font-geist-sans),
       "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic UI", "Meiryo", sans-serif;
-    --font-heading: "Tiempos Text", var(--font-noto-sans-jp), var(--font-geist-sans),
+    --font-heading: var(--font-source-serif-4), var(--font-noto-sans-jp), var(--font-geist-sans),
       "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic UI", "Meiryo", sans-serif;
   }
 
   html[data-ui-sans="zh-cn"] {
-    --font-sans: "Tiempos Text", var(--font-noto-sans-sc), var(--font-geist-sans),
+    --font-sans: var(--font-source-serif-4), var(--font-noto-sans-sc), var(--font-geist-sans),
       "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
-    --font-heading: "Tiempos Text", var(--font-noto-sans-sc), var(--font-geist-sans),
+    --font-heading: var(--font-source-serif-4), var(--font-noto-sans-sc), var(--font-geist-sans),
       "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
   }
 
   html[data-ui-sans="zh-tw"] {
-    --font-sans: "Tiempos Text", var(--font-noto-sans-tc), var(--font-geist-sans),
+    --font-sans: var(--font-source-serif-4), var(--font-noto-sans-tc), var(--font-geist-sans),
       "PingFang TC", "Heiti TC", "Microsoft JhengHei", sans-serif;
-    --font-heading: "Tiempos Text", var(--font-noto-sans-tc), var(--font-geist-sans),
+    --font-heading: var(--font-source-serif-4), var(--font-noto-sans-tc), var(--font-geist-sans),
       "PingFang TC", "Heiti TC", "Microsoft JhengHei", sans-serif;
   }
 
   html[data-ui-sans="ko"] {
-    --font-sans: "Tiempos Text", var(--font-noto-sans-kr), var(--font-geist-sans),
+    --font-sans: var(--font-source-serif-4), var(--font-noto-sans-kr), var(--font-geist-sans),
       "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
-    --font-heading: "Tiempos Text", var(--font-noto-sans-kr), var(--font-geist-sans),
+    --font-heading: var(--font-source-serif-4), var(--font-noto-sans-kr), var(--font-geist-sans),
       "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
   }
 
   html[data-ui-sans="ru"] {
-    --font-sans: "Tiempos Text", var(--font-noto-sans-cyrillic), var(--font-geist-sans),
+    --font-sans: var(--font-source-serif-4), var(--font-noto-sans-cyrillic), var(--font-geist-sans),
       ui-sans-serif, system-ui, sans-serif;
-    --font-heading: "Tiempos Text", var(--font-noto-sans-cyrillic), var(--font-geist-sans),
+    --font-heading: var(--font-source-serif-4), var(--font-noto-sans-cyrillic), var(--font-geist-sans),
       ui-sans-serif, system-ui, sans-serif;
   }
 
   html[data-ui-sans="ar"] {
-    --font-sans: "Tiempos Text", var(--font-noto-sans-arabic), var(--font-geist-sans),
+    --font-sans: var(--font-source-serif-4), var(--font-noto-sans-arabic), var(--font-geist-sans),
       "Segoe UI", Tahoma, sans-serif;
-    --font-heading: "Tiempos Text", var(--font-noto-sans-arabic), var(--font-geist-sans),
+    --font-heading: var(--font-source-serif-4), var(--font-noto-sans-arabic), var(--font-geist-sans),
       "Segoe UI", Tahoma, sans-serif;
   }
 
   html[data-ui-sans="hi"] {
-    --font-sans: "Tiempos Text", var(--font-noto-sans-devanagari), var(--font-geist-sans),
+    --font-sans: var(--font-source-serif-4), var(--font-noto-sans-devanagari), var(--font-geist-sans),
       "Nirmala UI", "Mangal", "Kokila", sans-serif;
-    --font-heading: "Tiempos Text", var(--font-noto-sans-devanagari), var(--font-geist-sans),
+    --font-heading: var(--font-source-serif-4), var(--font-noto-sans-devanagari), var(--font-geist-sans),
       "Nirmala UI", "Mangal", "Kokila", sans-serif;
   }
 
