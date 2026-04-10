@@ -3,7 +3,6 @@
  * BCP 47 タグ列をアプリ対応ロケールへ解決する。
  */
 import { match as matchLocale } from "@formatjs/intl-localematcher";
-import Negotiator from "negotiator";
 import { routing, type AppLocale } from "@/i18n/routing";
 
 const sortedLocalesLongestFirst = [...routing.locales].sort(
@@ -31,19 +30,3 @@ export function negotiateAppLocaleFromLanguageTags(
   }
 }
 
-export function negotiateAppLocaleFromAcceptLanguageHeader(
-  acceptLanguageHeaderValue: string | null,
-): AppLocale {
-  const trimmed =
-    acceptLanguageHeaderValue && acceptLanguageHeaderValue.trim().length > 0
-      ? acceptLanguageHeaderValue.trim()
-      : "";
-  try {
-    const preferredLanguages = new Negotiator({
-      headers: { "accept-language": trimmed.length > 0 ? trimmed : "en" },
-    }).languages();
-    return negotiateAppLocaleFromLanguageTags(preferredLanguages);
-  } catch {
-    return routing.defaultLocale;
-  }
-}

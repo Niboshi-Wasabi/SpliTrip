@@ -11,7 +11,6 @@ import {
   parseDeviceLanguageTagsFromCookieValue,
 } from "@/lib/i18n/device-locale-cookie";
 import {
-  negotiateAppLocaleFromAcceptLanguageHeader,
   negotiateAppLocaleFromLanguageTags,
 } from "@/lib/i18n/negotiate-app-locale";
 import { NEXT_INTL_LOCALE_COOKIE_NAME } from "@/lib/i18n/next-intl-locale";
@@ -79,6 +78,23 @@ function acceptLanguageMentionsJapanese(
     );
   } catch {
     return false;
+  }
+}
+
+function negotiateAppLocaleFromAcceptLanguageHeader(
+  acceptLanguageHeaderValue: string | null,
+): AppLocale {
+  const trimmed =
+    acceptLanguageHeaderValue && acceptLanguageHeaderValue.trim().length > 0
+      ? acceptLanguageHeaderValue.trim()
+      : "";
+  try {
+    const preferredLanguages = new Negotiator({
+      headers: { "accept-language": trimmed.length > 0 ? trimmed : "en" },
+    }).languages();
+    return negotiateAppLocaleFromLanguageTags(preferredLanguages);
+  } catch {
+    return routing.defaultLocale;
   }
 }
 
