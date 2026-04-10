@@ -32,7 +32,8 @@
 | 機能 | 内容 |
 |------|------|
 | **ロケール** | `next-intl` で 14 言語（`ja`, `en`, `zh-CN`, `zh-TW`, `ko`, `es`, `fr`, `de`, `pt`, `ru`, `tr`, `ar`, `sw`, `hi`）をサポート。既定は `ja`。初回（`NEXT_LOCALE` 未設定）は Proxy で `Accept-Language` に加え、Vercel の `x-vercel-ip-country` または Cloudflare の `CF-IPCountry` を参照して言語を補正し、next-intl が適切なロケールへリダイレクト／書き換えする。 |
-| **等幅フォント** | ラテン文字を主に使う UI ロケール（`en`, `es`, `fr`, `de`, `pt`, `tr`, `sw`）では `font-mono` を Fira Code（Google Fonts）＋ `"Fira Mono"`, Menlo, Consolas, `"DejaVu Sans Mono"`, `monospace` のスタックに切替。それ以外は Geist Mono を維持。`src/lib/i18n/latin-script-locale.ts` と `html[data-mono-stack]` で切替。 |
+| **UI フォント（サンセリフ）** | ロケールごとに Geist に近いニュートラルなサンセリフへ寄せる。`en` / `es` / `fr` / `de` / `pt` / `tr` / `sw` は Geist のみ。`ja`・`zh-CN`・`zh-TW`・`ko` は各 Noto Sans（JP / SC / TC / KR）、`ru` は Noto Sans（ラテン＋キリル）、`ar` は Noto Sans Arabic、`hi` は Noto Sans Devanagari を `next/font` で読み込み、本文・見出し（`--font-sans` / `--font-heading`）の先頭に置き Geist をフォールバックに回す。`src/lib/i18n/locale-ui-fonts.ts` と `html[data-ui-sans]`。 |
+| **等幅フォント** | `en` / `es` / `fr` / `de` / `pt` / `tr` / `sw` / `ru` は Fira Code 系スタック（キリル対応）。`ja` / `zh-CN` / `zh-TW` / `ko` は BIZ UD / Noto Sans Mono CJK 系などのサンセリフに近い等幅スタック。`ar` / `hi` は Noto Sans Mono ＋各スクリプト向け UI フォントをフォールバック。`html[data-ui-mono]`。 |
 | **言語スイッチャー** | `LanguageSwitcher` で JA / EN を即時切替。LPヘッダーと設定画面ヘッダーに配置。 |
 | **テーマ** | ライト / ダーク / システム（クライアント側プロバイダ）。 |
 | **モバイル** | ボトムナビ、タッチ向け `min-h-[44px]` などの UI 方針。 |

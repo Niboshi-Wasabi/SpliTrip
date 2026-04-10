@@ -132,9 +132,83 @@
     @apply font-sans;
   }
 
-  /* Latin-script UI locales: layout sets data-mono-stack="latin" + --font-fira-code */
-  html[data-mono-stack="latin"] {
+  /*
+   * Per-locale stacks: `[locale]/layout` sets `data-ui-sans` / `data-ui-mono` and loads
+   * the matching next/font variables (see `locale-ui-fonts.ts`).
+   */
+  html[data-ui-sans="latin"] {
+    --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+    --font-heading: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  }
+
+  html[data-ui-sans="ja"] {
+    --font-sans: var(--font-noto-sans-jp), var(--font-geist-sans), "Hiragino Sans",
+      "Hiragino Kaku Gothic ProN", "Yu Gothic UI", "Meiryo", sans-serif;
+    --font-heading: var(--font-noto-sans-jp), var(--font-geist-sans), "Hiragino Sans",
+      "Hiragino Kaku Gothic ProN", "Yu Gothic UI", "Meiryo", sans-serif;
+  }
+
+  html[data-ui-sans="zh-cn"] {
+    --font-sans: var(--font-noto-sans-sc), var(--font-geist-sans), "PingFang SC",
+      "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    --font-heading: var(--font-noto-sans-sc), var(--font-geist-sans), "PingFang SC",
+      "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  }
+
+  html[data-ui-sans="zh-tw"] {
+    --font-sans: var(--font-noto-sans-tc), var(--font-geist-sans), "PingFang TC",
+      "Heiti TC", "Microsoft JhengHei", sans-serif;
+    --font-heading: var(--font-noto-sans-tc), var(--font-geist-sans), "PingFang TC",
+      "Heiti TC", "Microsoft JhengHei", sans-serif;
+  }
+
+  html[data-ui-sans="ko"] {
+    --font-sans: var(--font-noto-sans-kr), var(--font-geist-sans), "Apple SD Gothic Neo",
+      "Malgun Gothic", sans-serif;
+    --font-heading: var(--font-noto-sans-kr), var(--font-geist-sans), "Apple SD Gothic Neo",
+      "Malgun Gothic", sans-serif;
+  }
+
+  html[data-ui-sans="ru"] {
+    --font-sans: var(--font-noto-sans-cyrillic), var(--font-geist-sans), ui-sans-serif,
+      system-ui, sans-serif;
+    --font-heading: var(--font-noto-sans-cyrillic), var(--font-geist-sans), ui-sans-serif,
+      system-ui, sans-serif;
+  }
+
+  html[data-ui-sans="ar"] {
+    --font-sans: var(--font-noto-sans-arabic), var(--font-geist-sans), "Segoe UI",
+      Tahoma, sans-serif;
+    --font-heading: var(--font-noto-sans-arabic), var(--font-geist-sans), "Segoe UI",
+      Tahoma, sans-serif;
+  }
+
+  html[data-ui-sans="hi"] {
+    --font-sans: var(--font-noto-sans-devanagari), var(--font-geist-sans), "Nirmala UI",
+      "Mangal", "Kokila", sans-serif;
+    --font-heading: var(--font-noto-sans-devanagari), var(--font-geist-sans), "Nirmala UI",
+      "Mangal", "Kokila", sans-serif;
+  }
+
+  html[data-ui-mono="fira"] {
     --font-mono: var(--font-fira-code), "Fira Mono", Menlo, Consolas, "DejaVu Sans Mono",
+      monospace;
+  }
+
+  html[data-ui-mono="cjk"] {
+    --font-mono: ui-monospace, "BIZ UDGothic", "BIZ UDPGothic", "Hiragino Maru Gothic ProN",
+      "Noto Sans Mono CJK JP", "Noto Sans Mono CJK SC", "Noto Sans Mono CJK TC",
+      "Noto Sans Mono CJK KR", "Malgun Gothic", "MS Gothic", var(--font-geist-mono),
+      monospace;
+  }
+
+  html[data-ui-mono="arabic"] {
+    --font-mono: ui-monospace, "Noto Sans Mono", "Simplified Arabic Fixed", "Traditional Arabic",
+      var(--font-geist-mono), monospace;
+  }
+
+  html[data-ui-mono="devanagari"] {
+    --font-mono: ui-monospace, "Noto Sans Mono", "Nirmala UI", "Kokila", var(--font-geist-mono),
       monospace;
   }
 

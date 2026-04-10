@@ -1,12 +1,27 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { Fira_Code, Geist, Geist_Mono } from "next/font/google";
+import {
+  Fira_Code,
+  Geist,
+  Geist_Mono,
+  Noto_Sans,
+  Noto_Sans_Arabic,
+  Noto_Sans_Devanagari,
+  Noto_Sans_JP,
+  Noto_Sans_KR,
+  Noto_Sans_SC,
+  Noto_Sans_TC,
+} from "next/font/google";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { getMessages, setRequestLocale } from "next-intl/server";
-import { routing } from "@/i18n/routing";
+import { routing, type AppLocale } from "@/i18n/routing";
 import { AppProviders } from "@/app/providers";
 import { BottomNav } from "@/components/bottom-nav";
-import { localeUsesLatinScript } from "@/lib/i18n/latin-script-locale";
+import {
+  getLocaleGoogleSansVariable,
+  getUiMonoStackId,
+  getUiSansStackId,
+} from "@/lib/i18n/locale-ui-fonts";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -25,6 +40,72 @@ const firaCode = Fira_Code({
   subsets: ["latin"],
   preload: false,
 });
+
+const notoSansJp = Noto_Sans_JP({
+  variable: "--font-noto-sans-jp",
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  display: "swap",
+  preload: false,
+});
+
+const notoSansSc = Noto_Sans_SC({
+  variable: "--font-noto-sans-sc",
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  display: "swap",
+  preload: false,
+});
+
+const notoSansTc = Noto_Sans_TC({
+  variable: "--font-noto-sans-tc",
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  display: "swap",
+  preload: false,
+});
+
+const notoSansKr = Noto_Sans_KR({
+  variable: "--font-noto-sans-kr",
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  display: "swap",
+  preload: false,
+});
+
+const notoSansCyrillic = Noto_Sans({
+  variable: "--font-noto-sans-cyrillic",
+  subsets: ["latin", "cyrillic", "cyrillic-ext"],
+  weight: ["400", "500", "600", "700"],
+  display: "swap",
+  preload: false,
+});
+
+const notoSansArabic = Noto_Sans_Arabic({
+  variable: "--font-noto-sans-arabic",
+  subsets: ["arabic"],
+  weight: ["400", "500", "600", "700"],
+  display: "swap",
+  preload: false,
+});
+
+const notoSansDevanagari = Noto_Sans_Devanagari({
+  variable: "--font-noto-sans-devanagari",
+  subsets: ["devanagari"],
+  weight: ["400", "500", "600", "700"],
+  display: "swap",
+  preload: false,
+});
+
+const googleSansByKey = {
+  notoJp: notoSansJp,
+  notoSc: notoSansSc,
+  notoTc: notoSansTc,
+  notoKr: notoSansKr,
+  notoCyrillic: notoSansCyrillic,
+  notoArabic: notoSansArabic,
+  notoDevanagari: notoSansDevanagari,
+} as const;
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
@@ -64,21 +145,27 @@ type LayoutProps = {
  * 理由: React 19 はツリー内のインライン script を警告するため `public/theme-bootstrap.js` を `src` で読み込み、`defer` で同期スクリプト ESLint 違反を避ける。
  */
 export default async function LocaleLayout({ children, params }: LayoutProps) {
-  const { locale } = await params;
-  const direction = locale === "ar" ? "rtl" : "ltr";
+  const { locale: localeParam } = await params;
+  const direction = localeParam === "ar" ? "rtl" : "ltr";
 
-  if (!hasLocale(routing.locales, locale)) {
+  if (!hasLocale(routing.locales, localeParam)) {
     notFound();
   }
 
-  setRequestLocale(locale);
+  const locale = localeParam as AppLocale;
+
+  setRequestLocale(localeParam);
   const messages = await getMessages();
 
-  const useLatinMonoStack = localeUsesLatinScript(locale);
+  const uiSansStackId = getUiSansStackId(locale);
+  const uiMonoStackId = getUiMonoStackId(locale);
+  const googleSansKey = getLocaleGoogleSansVariable(locale);
+
   const htmlClassName = [
     geistSans.variable,
     geistMono.variable,
-    useLatinMonoStack ? firaCode.variable : "",
+    uiMonoStackId === "fira" ? firaCode.variable : "",
+    googleSansKey !== "none" ? googleSansByKey[googleSansKey].variable : "",
     "h-full antialiased",
   ]
     .filter(Boolean)
@@ -86,9 +173,10 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
 
   return (
     <html
-      lang={locale}
+      lang={localeParam}
       dir={direction}
-      data-mono-stack={useLatinMonoStack ? "latin" : "geist"}
+      data-ui-sans={uiSansStackId}
+      data-ui-mono={uiMonoStackId}
       className={htmlClassName}
       suppressHydrationWarning
     >
