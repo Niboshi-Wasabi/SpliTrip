@@ -109,17 +109,15 @@ export function LandingPage() {
     <div className="min-h-screen bg-gradient-to-b from-background via-background to-muted/30">
       <header className="border-b border-border/70 bg-background/90 backdrop-blur supports-[backdrop-filter]:bg-background/70">
         <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-3 px-4 py-3">
-          <div className="flex items-center gap-2">
-            <span className="inline-flex rounded-md bg-primary/15 p-2 text-primary">
-              <Image
-                src="/icons/source-app-icon.svg"
-                alt=""
-                width={32}
-                height={32}
-                className="h-8 w-8 object-contain"
-                priority
-              />
-            </span>
+          <div className="flex items-center gap-3">
+            <Image
+              src="/icons/source-app-icon.svg"
+              alt=""
+              width={48}
+              height={48}
+              className="h-12 w-12 object-contain"
+              priority
+            />
             <p className="text-sm font-semibold text-foreground">SpliTrip</p>
           </div>
           <LanguageSwitcher />
