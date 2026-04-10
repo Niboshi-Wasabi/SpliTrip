@@ -1,12 +1,13 @@
 "use client";
 
 import { motion } from "framer-motion";
+import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { buttonVariants } from "@/components/ui/button-variants";
 import { LanguageSwitcher } from "@/components/ui/LanguageSwitcher";
 import { cn } from "@/lib/utils";
-import { Brain, ReceiptText, Send, Sparkles, Split } from "lucide-react";
+import { Brain, ReceiptText, Send, Split } from "lucide-react";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -58,8 +59,15 @@ export function LandingPage() {
       <header className="border-b border-border/70 bg-background/90 backdrop-blur supports-[backdrop-filter]:bg-background/70">
         <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-3 px-4 py-3">
           <div className="flex items-center gap-2">
-            <span className="rounded-md bg-primary/15 p-2 text-primary">
-              <Sparkles className="h-4 w-4" aria-hidden />
+            <span className="inline-flex rounded-md bg-primary/15 p-2 text-primary">
+              <Image
+                src="/icons/icon-192x192.png"
+                alt=""
+                width={32}
+                height={32}
+                className="h-8 w-8 object-contain"
+                priority
+              />
             </span>
             <p className="text-sm font-semibold text-foreground">SpliTrip</p>
           </div>
