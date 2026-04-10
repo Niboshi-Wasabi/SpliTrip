@@ -34,7 +34,7 @@
 | **言語スイッチャー** | `LanguageSwitcher` で JA / EN を即時切替。LPヘッダーと設定画面ヘッダーに配置。 |
 | **テーマ** | ライト / ダーク / システム（クライアント側プロバイダ）。 |
 | **モバイル** | ボトムナビ、タッチ向け `min-h-[44px]` などの UI 方針。 |
-| **PWA** | `manifest.webmanifest`、テーマカラー等（レイアウト・メタと連動）。 |
+| **PWA** | `manifest.webmanifest`、テーマカラー等（レイアウト・メタと連動）。アイコン類は `public/icons/source-app-icon.png` を元に `npm run icons:build` で `public/icons/*` と `src/app/icon.png`・`apple-icon.png`・`favicon.ico` を生成。 |
 | **What's New モーダル** | `localStorage.lastSeenUpdateVersion` と `src/config/changelog.ts` のバージョンを比較し、新機能がある初回アクセス時のみダッシュボード配下で表示。 |
 
 ---

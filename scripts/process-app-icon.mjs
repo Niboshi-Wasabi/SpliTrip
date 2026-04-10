@@ -6,6 +6,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import pngToIco from "png-to-ico";
 import sharp from "sharp";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -167,6 +168,9 @@ const icon192Path = path.join(projectRoot, "public", "icons", "icon-192x192.png"
 const icon512Path = path.join(projectRoot, "public", "icons", "icon-512x512.png");
 const icon512MaskablePath = path.join(projectRoot, "public", "icons", "icon-512-maskable.png");
 const favicon32Path = path.join(projectRoot, "public", "icons", "favicon-32x32.png");
+const faviconIcoPath = path.join(projectRoot, "src", "app", "favicon.ico");
+const appIconPath = path.join(projectRoot, "src", "app", "icon.png");
+const appleIconPath = path.join(projectRoot, "src", "app", "apple-icon.png");
 
 const maskableBackground = { r: 15, g: 118, b: 110, alpha: 1 };
 
@@ -181,12 +185,46 @@ await trimmed
 
 await trimmed
   .clone()
-  .resize(32, 32, {
+  .resize(180, 180, {
     fit: "contain",
     background: { r: 0, g: 0, b: 0, alpha: 0 },
   })
   .png()
-  .toFile(favicon32Path);
+  .toFile(appleIconPath);
+
+const transparentBackground = { r: 0, g: 0, b: 0, alpha: 0 };
+
+const favicon48PngBuffer = await trimmed
+  .clone()
+  .resize(48, 48, {
+    fit: "contain",
+    background: transparentBackground,
+  })
+  .png()
+  .toBuffer();
+
+const favicon32PngBuffer = await trimmed
+  .clone()
+  .resize(32, 32, {
+    fit: "contain",
+    background: transparentBackground,
+  })
+  .png()
+  .toBuffer();
+
+const favicon16PngBuffer = await trimmed
+  .clone()
+  .resize(16, 16, {
+    fit: "contain",
+    background: transparentBackground,
+  })
+  .png()
+  .toBuffer();
+
+fs.writeFileSync(favicon32Path, favicon32PngBuffer);
+
+const faviconIcoBuffer = await pngToIco([favicon48PngBuffer, favicon32PngBuffer, favicon16PngBuffer]);
+fs.writeFileSync(faviconIcoPath, faviconIcoBuffer);
 
 await trimmed
   .clone()
@@ -196,6 +234,15 @@ await trimmed
   })
   .png()
   .toFile(icon512Path);
+
+await trimmed
+  .clone()
+  .resize(512, 512, {
+    fit: "contain",
+    background: { r: 0, g: 0, b: 0, alpha: 0 },
+  })
+  .png()
+  .toFile(appIconPath);
 
 await trimmed
   .clone()
@@ -214,5 +261,5 @@ await trimmed
   .toFile(icon512MaskablePath);
 
 process.stdout.write(
-  `Wrote:\n  ${favicon32Path}\n  ${icon192Path}\n  ${icon512Path}\n  ${icon512MaskablePath}\n`,
+  `Wrote:\n  ${favicon32Path}\n  ${faviconIcoPath}\n  ${icon192Path}\n  ${icon512Path}\n  ${icon512MaskablePath}\n  ${appIconPath}\n  ${appleIconPath}\n`,
 );
