@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import {
   Fira_Code,
-  Geist,
   Geist_Mono,
   Noto_Sans,
   Noto_Sans_Arabic,
@@ -23,11 +22,6 @@ import {
   getUiMonoStackId,
   getUiSansStackId,
 } from "@/lib/i18n/locale-ui-fonts";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
@@ -171,7 +165,6 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
   const googleSansKey = getLocaleGoogleSansVariable(locale);
 
   const htmlClassName = [
-    geistSans.variable,
     geistMono.variable,
     sourceSerif4.variable,
     uiMonoStackId === "fira" ? firaCode.variable : "",
