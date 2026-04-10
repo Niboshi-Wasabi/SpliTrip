@@ -56,6 +56,52 @@ const coreFeatureConfig = [
   { key: "export" as const, icon: ReceiptText },
 ];
 
+const highlightAccentClasses = [
+  {
+    card: "border-sky-200/80 bg-sky-50/70 dark:border-sky-400/30 dark:bg-sky-500/10",
+    icon: "bg-sky-100 text-sky-700 dark:bg-sky-500/20 dark:text-sky-200",
+  },
+  {
+    card: "border-violet-200/80 bg-violet-50/70 dark:border-violet-400/30 dark:bg-violet-500/10",
+    icon: "bg-violet-100 text-violet-700 dark:bg-violet-500/20 dark:text-violet-200",
+  },
+  {
+    card: "border-emerald-200/80 bg-emerald-50/70 dark:border-emerald-400/30 dark:bg-emerald-500/10",
+    icon: "bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-200",
+  },
+  {
+    card: "border-amber-200/80 bg-amber-50/70 dark:border-amber-400/30 dark:bg-amber-500/10",
+    icon: "bg-amber-100 text-amber-700 dark:bg-amber-500/20 dark:text-amber-200",
+  },
+  {
+    card: "border-rose-200/80 bg-rose-50/70 dark:border-rose-400/30 dark:bg-rose-500/10",
+    icon: "bg-rose-100 text-rose-700 dark:bg-rose-500/20 dark:text-rose-200",
+  },
+  {
+    card: "border-cyan-200/80 bg-cyan-50/70 dark:border-cyan-400/30 dark:bg-cyan-500/10",
+    icon: "bg-cyan-100 text-cyan-700 dark:bg-cyan-500/20 dark:text-cyan-200",
+  },
+] as const;
+
+const coreAccentClasses = [
+  {
+    card: "border-indigo-200/80 bg-indigo-50/60 dark:border-indigo-400/30 dark:bg-indigo-500/10",
+    icon: "bg-indigo-100 text-indigo-700 dark:bg-indigo-500/20 dark:text-indigo-200",
+  },
+  {
+    card: "border-teal-200/80 bg-teal-50/60 dark:border-teal-400/30 dark:bg-teal-500/10",
+    icon: "bg-teal-100 text-teal-700 dark:bg-teal-500/20 dark:text-teal-200",
+  },
+  {
+    card: "border-fuchsia-200/80 bg-fuchsia-50/60 dark:border-fuchsia-400/30 dark:bg-fuchsia-500/10",
+    icon: "bg-fuchsia-100 text-fuchsia-700 dark:bg-fuchsia-500/20 dark:text-fuchsia-200",
+  },
+  {
+    card: "border-lime-200/80 bg-lime-50/60 dark:border-lime-400/30 dark:bg-lime-500/10",
+    icon: "bg-lime-100 text-lime-700 dark:bg-lime-500/20 dark:text-lime-200",
+  },
+] as const;
+
 export function LandingPage() {
   const landingTranslations = useTranslations("Landing");
 
@@ -144,14 +190,25 @@ export function LandingPage() {
             {landingTranslations("features.highlightsHeading")}
           </motion.h2>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {highlightFeatureConfig.map((featureItem) => (
+            {highlightFeatureConfig.map((featureItem, featureIndex) => {
+              const accentClass =
+                highlightAccentClasses[
+                  featureIndex % highlightAccentClasses.length
+                ];
+              return (
               <motion.article
                 key={featureItem.key}
                 variants={fadeUpVariants}
-                className="rounded-2xl border border-border bg-card p-5 shadow-sm transition-transform duration-200 hover:-translate-y-1 hover:shadow-lg"
+                className={cn(
+                  "rounded-2xl border p-5 shadow-sm transition-transform duration-200 hover:-translate-y-1 hover:shadow-lg",
+                  accentClass.card,
+                )}
               >
                 <featureItem.icon
-                  className="mb-3 h-5 w-5 text-primary"
+                  className={cn(
+                    "mb-3 h-9 w-9 rounded-lg p-2",
+                    accentClass.icon,
+                  )}
                   aria-hidden
                 />
                 <h3 className="text-base font-semibold text-foreground">
@@ -165,7 +222,8 @@ export function LandingPage() {
                   )}
                 </p>
               </motion.article>
-            ))}
+              );
+            })}
           </div>
         </motion.section>
 
@@ -183,14 +241,23 @@ export function LandingPage() {
             {landingTranslations("features.heading")}
           </motion.h2>
           <div className="grid gap-4 md:grid-cols-2">
-            {coreFeatureConfig.map((featureItem) => (
+            {coreFeatureConfig.map((featureItem, featureIndex) => {
+              const accentClass =
+                coreAccentClasses[featureIndex % coreAccentClasses.length];
+              return (
               <motion.article
                 key={featureItem.key}
                 variants={fadeUpVariants}
-                className="rounded-2xl border border-border bg-card p-5 shadow-sm transition-transform duration-200 hover:-translate-y-1 hover:shadow-lg"
+                className={cn(
+                  "rounded-2xl border p-5 shadow-sm transition-transform duration-200 hover:-translate-y-1 hover:shadow-lg",
+                  accentClass.card,
+                )}
               >
                 <featureItem.icon
-                  className="mb-3 h-5 w-5 text-primary"
+                  className={cn(
+                    "mb-3 h-9 w-9 rounded-lg p-2",
+                    accentClass.icon,
+                  )}
                   aria-hidden
                 />
                 <h3 className="text-base font-semibold text-foreground">
@@ -202,7 +269,8 @@ export function LandingPage() {
                   )}
                 </p>
               </motion.article>
-            ))}
+              );
+            })}
           </div>
         </motion.section>
 
