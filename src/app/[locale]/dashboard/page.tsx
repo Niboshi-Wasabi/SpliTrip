@@ -4,10 +4,10 @@ export const dynamic = "force-dynamic";
  * Main dashboard: group-based expense overview with per-group breakdown.
  */
 
+import Image from "next/image";
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import {
-  Plane,
   Receipt,
   FolderOpen,
   TrendingUp,
@@ -225,9 +225,13 @@ export default async function DashboardPage({ params }: PageProps) {
       <header className="border-b border-border bg-card shadow-sm">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
           <div className="flex items-center gap-3">
-            <div className="rounded-lg bg-blue-600 p-1.5 text-white dark:bg-blue-500">
-              <Plane className="h-5 w-5" />
-            </div>
+            <Image
+              src="/icons/source-app-icon.svg"
+              alt=""
+              width={32}
+              height={32}
+              className="h-8 w-8 shrink-0 object-contain"
+            />
             <div>
               <h1 className="text-lg font-bold text-foreground">SpliTrip</h1>
               <p className="text-xs text-muted-foreground">
