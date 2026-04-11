@@ -1,6 +1,6 @@
 /**
- * Freemium / PRO gating. DB columns: `user_profiles.premium_access`, `user_profiles.ocr_usage_count`.
- * フリーミアムと PRO の判定。DB: premium_access / ocr_usage_count。
+ * Freemium / PRO gating. DB: `user_profiles.premium_access`, `ocr_usage_count`, `premium_access_source`.
+ * フリーミアムと PRO の判定（PRO 判定は premium_access のみ）。
  */
 
 /** Free tier: Gemini OCR runs allowed before this count is reached (each successful parse increments). */

@@ -15,7 +15,7 @@
 | `group_members` | グループ所属 | `20260405120000`, `08120000` |
 | `group_expenses` | グループの支出 | `20260405120000`, `06230000`, `08120000` |
 | `expense_splits` | 支出の負担按分 | `20260405120000` |
-| `user_profiles` | ユーザープロフィール | `06140000`, `05190000`, `05200000`, `07100000`, `08120000`, `09120000` |
+| `user_profiles` | ユーザープロフィール | `06140000`, `05190000`, `05200000`, `07100000`, `08120000`, `09120000`, `12140000` |
 | `audit_logs` | 支出の監査ログ | `06230000` |
 | `expense_comments` | 支出へのコメント | `08120000` |
 
@@ -131,8 +131,10 @@ erDiagram
 | `pitch_deck_seen_at` | `timestamptz` | NULL | — | — | 機能紹介スライドを最後まで見た日時（NULL は未表示扱いのロジックあり） |
 | `ocr_usage_count` | `integer` | NOT NULL | `0` | CHECK `>= 0` | レシート OCR 利用回数 |
 | `premium_access` | `boolean` | NOT NULL | `false` | — | PRO 等のフラグ |
+| `premium_access_source` | `text` | NOT NULL | `'none'` | CHECK `none \| stripe \| manual` | PRO 付与の根拠（課金・運営手動など） |
 
 **備考:** `pitch_deck_seen_at` のバックフィル・`needs_pitch_deck` / `mark_pitch_deck_seen` は `07100000`。  
+**PRO 手動付与:** Supabase **SQL Editor** で `premium_access = true` と `premium_access_source = 'manual'` を同一ユーザ行に更新する（JWT なしの管理者実行を想定）。認証ユーザーによる自己昇格は `user_profiles_guard_premium_flags_trigger` で拒否。  
 **RLS:** 有効（自己更新・同一グループメンバー間の参照など）。
 
 ---
@@ -198,3 +200,4 @@ erDiagram
 | 日付 | 内容 |
 |------|------|
 | 2026-04-07 | 初版（現行マイグレーションに基づく `public` テーブル定義） |
+| 2026-04-11 | `user_profiles.premium_access_source` と PRO フラグ自己変更防止トリガー（`20260412140000`） |

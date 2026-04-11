@@ -9,7 +9,7 @@
 - **用途:** グループ旅行などの **割り勘・出費記録・送金回数を減らした精算プラン** を扱う **Web アプリ（PWA 想定）**。
 - **マーケ LP:** 未ログインのトップ（`/`、`LandingPage`）に AI 訴求のヒーロー、差別化ポイント 6 件＋主要機能 4 件、フリーミアム料金（Free / PRO）、CTA。文言は `messages/*.json` の `Landing` 名前空間。
 - **主な技術:** Next.js App Router、React、TypeScript、Tailwind CSS、Supabase（DB・認証・ストレージ）、`next-intl`（**日本語 / 英語**）。
-- **ビジネスモデル（フリーミアム）:** `user_profiles.premium_access` が **PRO**。無料ユーザーは Gemini レシート OCR を **成功回数で上限（アプリ側で 3 回）**、CSV / PDF レポート出力はロック。プロモ枠は PRO で非表示。Stripe Checkout / Webhook で PRO 付与を連携。
+- **ビジネスモデル（フリーミアム）:** `user_profiles.premium_access` が **PRO**（付与根拠は `premium_access_source`: `none` / `stripe` / `manual`）。無料ユーザーは Gemini レシート OCR を **成功回数で上限（アプリ側で 3 回）**、CSV / PDF レポート出力はロック。プロモ枠は PRO で非表示。Stripe Checkout / Webhook で `stripe` を付与。運営による個別付与は **Supabase SQL Editor** で `manual` に更新（手順は下記「PRO 手動付与」）。
 - **本番の想定オリジン（カスタムドメイン）:** `https://splitrip.net`（Cloudflare で DNS 管理）。アプリ内の OAuth `redirectTo` 等は `getPublicSiteOrigin()`（`src/utils/public-site-url.ts`）が **`NEXT_PUBLIC_SITE_URL`** を優先するため、**本番・staging の Vercel（等）環境変数に必ず設定**すること。未設定のサーバー環境ではオリジンが空になりログイン周りが壊れ得る。
 
 ---
@@ -129,8 +129,32 @@
 | **表示名** | 設定・ダッシュボード・プロンプトコンポーネントから変更。API: `PATCH /api/profile/display-name`。 |
 | **表示言語** | `preferred_language` に 14 言語（`ja`, `en`, `zh-CN`, `zh-TW`, `ko`, `es`, `fr`, `de`, `pt`, `ru`, `tr`, `ar`, `sw`, `hi`）を保存。フルリロードで反映。 |
 | **送金先** | `payment_links` 等を API 経由で更新（マイグレーション未適用時はエラーメッセージ）。 |
-| **PRO / OCR** | `premium_access`（PRO）、`ocr_usage_count`（無料の OCR 累計）。`increment_ocr_usage_if_not_premium` で成功後に加算。 |
+| **PRO / OCR** | `premium_access`（PRO）、`premium_access_source`（`stripe`＝課金、`manual`＝運営付与）、`ocr_usage_count`（無料の OCR 累計）。認証ユーザーが自分の PRO フラグだけを書き換えることは DB トリガーで拒否。`increment_ocr_usage_if_not_premium` で成功後に加算。 |
 | **支払い管理（PRO）** | Stripe 審査対応が完了するまで UI は一時的に **準備中（Coming Soon）**。課金基盤（Webhook / `premium_access` 判定）は将来再開に備えて保持。 |
+
+### PRO 手動付与（Supabase SQL）
+
+個別アカウントに PRO を付与・解除するには、**Supabase Dashboard → SQL → New query** で次を実行する（**`auth.users` の UUID** と `user_profiles.id` は同一）。認証ユーザーによるクライアントからの自己昇格は DB トリガーで拒否される。
+
+**付与:**
+
+```sql
+update public.user_profiles
+set premium_access = true,
+    premium_access_source = 'manual'
+where id = '<ユーザーUUID>';
+```
+
+**解除:**
+
+```sql
+update public.user_profiles
+set premium_access = false,
+    premium_access_source = 'none'
+where id = '<ユーザーUUID>';
+```
+
+`user_profiles` に行がまだ無いユーザーは、一度ログイン等で行が作成されたあとに実行する。
 
 ---
 
@@ -155,7 +179,7 @@
 | コメント | `…/expenses/[expenseId]/comments`（GET/POST） |
 | 監査 | `…/expenses/[expenseId]/audit` |
 | プロフィール | `display-name`、`payment-methods`、`pitch-deck-seen` |
-| 決済 Webhook | `POST /api/webhook/stripe` — `checkout.session.completed` を検証し `user_profiles.premium_access=true` を反映 |
+| 決済 Webhook | `POST /api/webhook/stripe` — `checkout.session.completed` を検証し `user_profiles.premium_access=true` と `premium_access_source='stripe'` を反映 |
 | 通知（枠） | `POST /api/notifications/web-push` — **未実装のプレースホルダー（例: 501）** |
 
 ---
@@ -164,7 +188,7 @@
 
 | 項目 | 内容 |
 |------|------|
-| **共通の実装** | `POST /api/webhook/stripe` が `checkout.session.completed` を検証し、`user_profiles.premium_access=true` を反映。`client_reference_id` / `metadata.user_id` が利用される想定。 |
+| **共通の実装** | `POST /api/webhook/stripe` が `checkout.session.completed` を検証し、`user_profiles.premium_access=true` と `premium_access_source='stripe'` を反映。`client_reference_id` / `metadata.user_id` が利用される想定。 |
 | **必須環境変数（全環境）** | `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `NEXT_PUBLIC_STRIPE_PAYMENT_LINK`（PRO 購入の Payment Link URL）, `STRIPE_CUSTOMER_PORTAL_URL`（設定画面の Portal リンクを使う場合）。 |
 | **local 再現** | `stripe listen --forward-to localhost:3000/api/webhook/stripe` で表示される `whsec_...` を `.env.local` の `STRIPE_WEBHOOK_SECRET` に設定し、`npm run dev` を再起動。 |
 | **staging / master 再現** | Stripe Dashboard で各環境 URL の Webhook endpoint を作成し、環境ごとに発行された `whsec_...` をデプロイ環境変数へ設定（同じ secret の使い回しはしない）。 |

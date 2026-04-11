@@ -87,6 +87,7 @@ export async function POST(request: Request) {
         id: userId,
         display_name: "ユーザー",
         premium_access: true,
+        premium_access_source: "stripe",
       },
       { onConflict: "id" },
     );

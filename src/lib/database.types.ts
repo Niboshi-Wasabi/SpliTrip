@@ -17,8 +17,12 @@ export type PaymentLinkStored = {
   label?: string;
 };
 
+/** `user_profiles.premium_access_source` / DB check と一致。 */
+export type PremiumAccessSourceDb = "none" | "stripe" | "manual";
+
 /** Subset of `user_profiles` used for freemium / PRO gating. */
 export type UserProfileFreemiumFields = {
   premium_access: boolean;
+  premium_access_source: PremiumAccessSourceDb;
   ocr_usage_count: number;
 };
