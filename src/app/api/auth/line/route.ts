@@ -4,6 +4,7 @@ import { AUTH_ERROR } from "@/lib/auth/auth-error-codes";
 import { redirectToLoginError } from "@/lib/auth/auth-redirects";
 import { sanitizeRedirectPath } from "@/lib/auth/sanitize-redirect-path";
 import {
+  LINE_OAUTH_INTENT_COOKIE,
   LINE_OAUTH_NONCE_COOKIE,
   LINE_OAUTH_RETURN_PATH_COOKIE,
   LINE_OAUTH_STATE_COOKIE,
@@ -31,6 +32,8 @@ export async function GET(request: NextRequest) {
   const returnPath = sanitizeRedirectPath(
     request.nextUrl.searchParams.get("next"),
   );
+  const linkIntent =
+    request.nextUrl.searchParams.get("intent") === "link" ? "link" : null;
 
   const authorizeQuery = new URLSearchParams({
     response_type: "code",
@@ -53,6 +56,15 @@ export async function GET(request: NextRequest) {
   } else {
     redirectToLine.cookies.set(
       LINE_OAUTH_RETURN_PATH_COOKIE,
+      "",
+      lineOAuthCookieClearOptions(),
+    );
+  }
+  if (linkIntent === "link") {
+    redirectToLine.cookies.set(LINE_OAUTH_INTENT_COOKIE, "link", pending);
+  } else {
+    redirectToLine.cookies.set(
+      LINE_OAUTH_INTENT_COOKIE,
       "",
       lineOAuthCookieClearOptions(),
     );

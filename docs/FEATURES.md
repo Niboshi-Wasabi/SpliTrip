@@ -45,8 +45,9 @@
 | 機能 | 内容 |
 |------|------|
 | **Google ログイン** | OAuth（PKCE）。`/auth/callback` でコード交換・セッション確立。 |
-| **LINE ログイン** | `/api/auth/line` → LINE → `/api/auth/callback/line` → `signInWithIdToken` 系のフロー。 |
+| **LINE ログイン** | `/api/auth/line` → LINE → `/api/auth/callback/line` → サービスロール＋`verifyOtp` 相当でセッション確立（従来）。 |
 | **ゲスト（匿名）** | Supabase 匿名サインイン。ブラウザセッション前提（データ消失リスクの注意表示あり）。 |
+| **ゲスト → Google / LINE 紐づけ** | ダッシュボードヘッダーのモーダルから **Google** は `auth.linkIdentity`（OAuth、`/auth/callback` に戻る）、**LINE** は `/api/auth/line?intent=link` → コールバックで匿名セッション時のみ `linkIdentity`（id_token）。**Supabase の「手動で ID をリンク」（Manual linking）をオン**にしないと紐づけは失敗する。 |
 | **セッション維持** | ミドルウェアで Supabase セッション更新。`/dashboard`・`/settings` は未ログイン時にガード。 |
 | **オンボーディング** | 初回表示名など（`/onboarding`）。 |
 | **ピッチデッキ** | `/pitch` のスライド紹介。初回は `needs_pitch_deck` RPC 等で **閲覧必須ルート**になり得る。閲覧完了は `mark_pitch_deck_seen` / `POST /api/profile/pitch-deck-seen`。 |

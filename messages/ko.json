@@ -375,7 +375,13 @@
     "groupsCardTitle": "Split groups",
     "groupsCardDescription": "Manage expenses, splits, and settlements per trip",
     "emptyGroups": "No groups yet. Create one with the button below.",
-    "createGroupButton": "Create a new trip (group)"
+    "createGroupButton": "Create a new trip (group)",
+    "guestLinkAccountButton": "Link account",
+    "guestLinkModalTitle": "Link Google or LINE",
+    "guestLinkModalDescription": "Link an account to keep your trips when you switch devices or clear this browser's data.",
+    "guestLinkGoogleLabel": "Continue with Google",
+    "guestLinkLineLabel": "Continue with LINE",
+    "guestLinkBusy": "Please wait…"
   },
   "CategoryChart": {
     "empty": "No spending data",

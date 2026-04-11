@@ -38,6 +38,7 @@ import { PromoBanner } from "@/components/ads/PromoBanner";
 import { SupportDeveloper } from "@/components/ads/SupportDeveloper";
 import { DashboardSpendingChart } from "./dashboard-spending-chart";
 import { LogoutButton } from "./logout-button";
+import { GuestAccountLinkModal } from "./guest-account-link-modal";
 import { getCategoryColor, getExpenseCategoryChartColor } from "@/lib/categories";
 import {
   EXPENSE_CATEGORY_IDS,
@@ -244,6 +245,7 @@ export default async function DashboardPage({ params }: PageProps) {
             <SupportDeveloper variant="header" />
           </div>
           <div className="flex items-center gap-1 sm:gap-2">
+            {isGuestMode ? <GuestAccountLinkModal /> : null}
             <ThemeToggle />
             {/* PC: テキスト付きナビ、モバイル: ボトムナビに移譲 */}
             {/* PC: text nav buttons, Mobile: delegated to bottom nav */}

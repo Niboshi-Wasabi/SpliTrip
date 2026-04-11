@@ -1,11 +1,13 @@
 import { NextResponse } from "next/server";
 import {
+  LINE_OAUTH_INTENT_COOKIE,
   LINE_OAUTH_NONCE_COOKIE,
   LINE_OAUTH_RETURN_PATH_COOKIE,
   LINE_OAUTH_STATE_COOKIE,
 } from "@/lib/line-oauth-cookie-names";
 
 export {
+  LINE_OAUTH_INTENT_COOKIE,
   LINE_OAUTH_NONCE_COOKIE,
   LINE_OAUTH_RETURN_PATH_COOKIE,
   LINE_OAUTH_STATE_COOKIE,
@@ -33,6 +35,7 @@ export function clearLineOAuthCookies(response: NextResponse): void {
   response.cookies.set(LINE_OAUTH_STATE_COOKIE, "", options);
   response.cookies.set(LINE_OAUTH_NONCE_COOKIE, "", options);
   response.cookies.set(LINE_OAUTH_RETURN_PATH_COOKIE, "", options);
+  response.cookies.set(LINE_OAUTH_INTENT_COOKIE, "", options);
 }
 
 /**

@@ -375,7 +375,13 @@
     "groupsCardTitle": "Groupes de partage",
     "groupsCardDescription": "Gérez dépenses, répartitions et règlements par voyage",
     "emptyGroups": "Aucun groupe pour le moment. Créez-en un avec le bouton ci-dessous.",
-    "createGroupButton": "Créer un nouveau voyage (groupe)"
+    "createGroupButton": "Créer un nouveau voyage (groupe)",
+    "guestLinkAccountButton": "Link account",
+    "guestLinkModalTitle": "Link Google or LINE",
+    "guestLinkModalDescription": "Link an account to keep your trips when you switch devices or clear this browser's data.",
+    "guestLinkGoogleLabel": "Continue with Google",
+    "guestLinkLineLabel": "Continue with LINE",
+    "guestLinkBusy": "Please wait…"
   },
   "CategoryChart": {
     "empty": "No spending data",

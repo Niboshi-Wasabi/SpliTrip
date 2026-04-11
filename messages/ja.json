@@ -375,7 +375,13 @@
     "groupsCardTitle": "割り勘グループ",
     "groupsCardDescription": "旅行ごとのグループで、出費と割り方と送金のしかたをまとめて管理",
     "emptyGroups": "まだグループがありません。下のボタンから作成できます。",
-    "createGroupButton": "新しい旅行（グループ）を作成"
+    "createGroupButton": "新しい旅行（グループ）を作成",
+    "guestLinkAccountButton": "アカウントを紐づける",
+    "guestLinkModalTitle": "Google または LINE と紐づける",
+    "guestLinkModalDescription": "紐づけると、別の端末やブラウザでも同じ記録を使えます。",
+    "guestLinkGoogleLabel": "Googleで紐づける",
+    "guestLinkLineLabel": "LINEで紐づける",
+    "guestLinkBusy": "処理中…"
   },
   "CategoryChart": {
     "empty": "支出データがありません",

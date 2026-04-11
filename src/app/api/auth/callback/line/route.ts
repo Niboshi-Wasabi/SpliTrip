@@ -39,6 +39,7 @@ export async function GET(request: NextRequest) {
   }
 
   const cookies = readLineOAuthCookies(request);
+  const intentIsLink = cookies.intentFromCookie === "link";
   const postAuthPath =
     sanitizeRedirectPath(cookies.returnPathFromCookie) ??
     localizedDashboardPathFromRequest(request);
@@ -55,7 +56,7 @@ export async function GET(request: NextRequest) {
     return redirectLineOAuthFailed(origin, AUTH_ERROR.LINE_AUTH);
   }
 
-  const { idToken } = tokenResult;
+  const { idToken, accessToken: lineAccessToken } = tokenResult;
 
   const idPayload = decodeJwtPayloadOrNull(idToken);
   if (!idPayload) {
@@ -81,6 +82,48 @@ export async function GET(request: NextRequest) {
   const verified = await verifyLineIdTokenAtLineApi(idToken, lineEnv.channelId);
   if (!verified.ok) {
     return redirectLineOAuthFailed(origin, AUTH_ERROR.LINE_AUTH);
+  }
+
+  if (intentIsLink) {
+    const {
+      data: { user: sessionUser },
+      error: sessionUserError,
+    } = await supabase.auth.getUser();
+    if (sessionUserError || !sessionUser) {
+      console.error("LINE link: no Supabase session for link intent");
+      return redirectLineOAuthFailed(origin, AUTH_ERROR.LINE_AUTH);
+    }
+    if (sessionUser.is_anonymous !== true) {
+      console.error(
+        "LINE link: intent=link requires an anonymous (guest) session",
+      );
+      return redirectLineOAuthFailed(origin, AUTH_ERROR.LINE_AUTH);
+    }
+
+    const { data: linkSessionData, error: linkIdentityError } =
+      await supabase.auth.linkIdentity({
+        provider: "line",
+        token: idToken,
+        ...(lineAccessToken ? { access_token: lineAccessToken } : {}),
+        nonce: nonceCookie,
+      });
+
+    if (linkIdentityError || !linkSessionData?.session?.user) {
+      console.error(
+        "LINE linkIdentity:",
+        linkIdentityError?.message ?? "missing session",
+      );
+      return redirectLineOAuthFailed(origin, AUTH_ERROR.LINE_AUTH);
+    }
+
+    const overrides = profileOverridesFromLineIdToken(verified.payload);
+    await upsertUserProfileFromAuth(
+      supabase,
+      linkSessionData.session.user,
+      overrides,
+    );
+
+    return response;
   }
 
   const sessionResult = await establishSupabaseSessionFromLineVerifyPayload(

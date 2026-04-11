@@ -375,7 +375,13 @@
     "groupsCardTitle": "مجموعات التقسيم",
     "groupsCardDescription": "إدارة المصاريف والتقسيم والتسوية لكل رحلة",
     "emptyGroups": "لا توجد مجموعات بعد. أنشئ مجموعة عبر الزر أدناه.",
-    "createGroupButton": "إنشاء رحلة جديدة (مجموعة)"
+    "createGroupButton": "إنشاء رحلة جديدة (مجموعة)",
+    "guestLinkAccountButton": "Link account",
+    "guestLinkModalTitle": "Link Google or LINE",
+    "guestLinkModalDescription": "Link an account to keep your trips when you switch devices or clear this browser's data.",
+    "guestLinkGoogleLabel": "Continue with Google",
+    "guestLinkLineLabel": "Continue with LINE",
+    "guestLinkBusy": "Please wait…"
   },
   "CategoryChart": {
     "empty": "No spending data",

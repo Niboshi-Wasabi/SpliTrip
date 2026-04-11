@@ -1,6 +1,7 @@
 import { timingSafeEqual } from "crypto";
 import type { NextRequest } from "next/server";
 import {
+  LINE_OAUTH_INTENT_COOKIE,
   LINE_OAUTH_NONCE_COOKIE,
   LINE_OAUTH_RETURN_PATH_COOKIE,
   LINE_OAUTH_STATE_COOKIE,
@@ -10,6 +11,7 @@ export type LineOAuthCookieBundle = {
   stateFromCookie: string | undefined;
   nonceFromCookie: string | undefined;
   returnPathFromCookie: string | undefined;
+  intentFromCookie: string | undefined;
 };
 
 export function readLineOAuthCookies(
@@ -21,6 +23,7 @@ export function readLineOAuthCookies(
     returnPathFromCookie: request.cookies.get(
       LINE_OAUTH_RETURN_PATH_COOKIE,
     )?.value,
+    intentFromCookie: request.cookies.get(LINE_OAUTH_INTENT_COOKIE)?.value,
   };
 }
 
