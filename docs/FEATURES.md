@@ -10,6 +10,23 @@
 - **マーケ LP:** 未ログインのトップ（`/`、`LandingPage`）に AI 訴求のヒーロー、差別化ポイント 6 件＋主要機能 4 件、フリーミアム料金（Free / PRO）、CTA。文言は `messages/*.json` の `Landing` 名前空間。
 - **主な技術:** Next.js App Router、React、TypeScript、Tailwind CSS、Supabase（DB・認証・ストレージ）、`next-intl`（**日本語 / 英語**）。
 - **ビジネスモデル（フリーミアム）:** `user_profiles.premium_access` が **PRO**。無料ユーザーは Gemini レシート OCR を **成功回数で上限（アプリ側で 3 回）**、CSV / PDF レポート出力はロック。プロモ枠は PRO で非表示。Stripe Checkout / Webhook で PRO 付与を連携。
+- **本番の想定オリジン（カスタムドメイン）:** `https://splitrip.net`（Cloudflare で DNS 管理）。アプリ内の OAuth `redirectTo` 等は `getPublicSiteOrigin()`（`src/utils/public-site-url.ts`）が **`NEXT_PUBLIC_SITE_URL`** を優先するため、**本番・staging の Vercel（等）環境変数に必ず設定**すること。未設定のサーバー環境ではオリジンが空になりログイン周りが壊れ得る。
+
+---
+
+## 本番 URL・カスタムドメイン（splitrip.net）
+
+コードに旧ドメインの固定文字列は置かず、**ホスティングの環境変数と各種コンソール**で本番 URL を揃える運用です。切り替え時は **DNS が新ホストを指してから** Vercel の Production にドメインを載せ、**証明書が有効になったあと**に OAuth / Stripe の URL を更新すると安全です。
+
+| 作業場所 | 内容 |
+|----------|------|
+| **Cloudflare DNS** | ホスティング先（例: Vercel）の指示に従い、`splitrip.net`（および使うなら `www`）に **A / CNAME / ドメイン検証用 TXT** を設定。`www` を使う場合は **apex へのリダイレクト** か **両方を Vercel に追加** のどちらかに統一する。 |
+| **Vercel（例）** | プロジェクトの **Production ドメイン** に `splitrip.net` を追加し、SSL が **Ready** になるまで待つ。旧 `*.vercel.app` は当面残してもよいが、ユーザー向けリンクは新ドメインへ寄せる。 |
+| **Vercel 環境変数（本番）** | `NEXT_PUBLIC_SITE_URL` = `https://splitrip.net`（末尾スラッシュなしで可。`new URL(...).origin` で正規化される）。LINE 利用時は `NEXT_PUBLIC_LINE_REDIRECT_URI` = `https://splitrip.net/api/auth/callback/line`（**LINE Developers のコールバック URL と完全一致**）。変更後は **再デプロイ**。 |
+| **Supabase** | **Authentication → URL Configuration**: **Site URL** を `https://splitrip.net` に。**Redirect URLs** に `https://splitrip.net/**` および `https://splitrip.net/auth/callback` 等、実際に使うパスを追加（移行期間は旧ドメインも残してよい）。 |
+| **Google Cloud Console** | OAuth クライアントの **承認済みリダイレクト URI** に、Supabase の `.../auth/v1/callback` と、アプリが使う URL があれば追加（プロジェクトの Google ログイン設定に準拠）。 |
+| **LINE Developers** | チャネルの **Callback URL** を `https://splitrip.net/api/auth/callback/line` に合わせる（`NEXT_PUBLIC_LINE_REDIRECT_URI` と一致必須）。 |
+| **Stripe** | 本番用 **Webhook エンドポイント** を `https://splitrip.net/api/webhook/stripe` に作成または更新し、発行された **`whsec_...`** を本番の `STRIPE_WEBHOOK_SECRET` に設定。Payment Link / Customer Portal はダッシュボード上の URL がドメイン非依存なら変更不要なことが多いが、**成功時のリダイレクト先**を固定 URL にしている場合は要確認。 |
 
 ---
 
