@@ -4,12 +4,55 @@
  */
 import createIntlMiddleware from "next-intl/middleware";
 import { type NextRequest, NextResponse } from "next/server";
-import { routing } from "./i18n/routing";
+import { routing, type AppLocale } from "./i18n/routing";
 import { applyAccessBasedLocaleHint } from "./lib/i18n/infer-locale-from-access";
 import { applyProfilePreferredLocaleCookie } from "./lib/i18n/profile-locale-cookie";
+import { isMaintenanceModeEnabled } from "./lib/maintenance";
 import { finalizeSupabaseSession } from "./utils/supabase/middleware";
 
 const intlMiddleware = createIntlMiddleware(routing);
+
+function pathnameStartsWithLocaleMaintenance(pathname: string): boolean {
+  const segments = pathname.split("/").filter(Boolean);
+  if (segments.length < 2) {
+    return false;
+  }
+  const maybeLocale = segments[0];
+  const rest = segments.slice(1);
+  if (!routing.locales.includes(maybeLocale as AppLocale)) {
+    return false;
+  }
+  return rest.length === 1 && rest[0] === "maintenance";
+}
+
+function pathnameIsMaintenancePath(pathname: string): boolean {
+  if (pathname === "/maintenance") {
+    return true;
+  }
+  return pathnameStartsWithLocaleMaintenance(pathname);
+}
+
+function pathnameAllowedDuringMaintenance(pathname: string): boolean {
+  if (pathname.startsWith("/_next") || pathname.startsWith("/_vercel")) {
+    return true;
+  }
+  if (pathnameIsMaintenancePath(pathname)) {
+    return true;
+  }
+  return false;
+}
+
+function buildMaintenanceRedirectUrl(request: NextRequest): URL {
+  const pathname = request.nextUrl.pathname;
+  const firstSegment = pathname.split("/").filter(Boolean)[0];
+  if (
+    firstSegment &&
+    routing.locales.includes(firstSegment as AppLocale)
+  ) {
+    return new URL(`/${firstSegment}/maintenance`, request.url);
+  }
+  return new URL("/maintenance", request.url);
+}
 
 export async function proxy(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
@@ -20,6 +63,13 @@ export async function proxy(request: NextRequest) {
       request,
       NextResponse.next({ request }),
     );
+  }
+
+  if (
+    isMaintenanceModeEnabled() &&
+    !pathnameAllowedDuringMaintenance(pathname)
+  ) {
+    return NextResponse.redirect(buildMaintenanceRedirectUrl(request));
   }
 
   // Step 1: logged-in users override Accept-Language via profile cookie on the request clone.

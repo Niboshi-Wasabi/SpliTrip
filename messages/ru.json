@@ -428,6 +428,13 @@
     "supportCompact": "Support",
     "supportUrlHint": "Set NEXT_PUBLIC_SUPPORT_DEVELOPER_URL to enable the donation link"
   },
+  "Maintenance": {
+    "pageTitle": "Maintenance | SpliTrip",
+    "headline": "We are under maintenance",
+    "body": "Please try again in a little while.",
+    "tryAgain": "Retry from home",
+    "announcementLabel": "Notice"
+  },
   "Premium": {
     "modalTitle": "Upgrade to SpliTrip PRO for smarter trip splitting.",
     "modalSubtitle": "The paid plan unlocks all features below.",

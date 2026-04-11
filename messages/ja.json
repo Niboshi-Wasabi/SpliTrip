@@ -428,6 +428,13 @@
     "supportCompact": "開発を支援",
     "supportUrlHint": "寄付リンクは環境変数 NEXT_PUBLIC_SUPPORT_DEVELOPER_URL で有効化できます"
   },
+  "Maintenance": {
+    "pageTitle": "メンテナンス中 | SpliTrip",
+    "headline": "ただいまメンテナンス中です",
+    "body": "現在システムの保守作業を実施しています。しばらくしてから再度アクセスしてください。",
+    "tryAgain": "トップを再読み込み",
+    "announcementLabel": "サービスお知らせ"
+  },
   "Premium": {
     "modalTitle": "SpliTrip PROにアップグレードして、旅行の精算をもっとスマートに。",
     "modalSubtitle": "有料プランでは、次の機能がまとめて使えるようになります。",

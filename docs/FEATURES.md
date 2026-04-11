@@ -30,6 +30,16 @@
 
 ---
 
+## メンテナンス・事前告知
+
+| 項目 | 内容 |
+|------|------|
+| **全画面メンテ** | `MAINTENANCE_MODE` または `NEXT_PUBLIC_MAINTENANCE_MODE` を `true` / `1` / `yes` にすると、`src/proxy.ts` が **OAuth 用 `/auth/*` 通過後**に一般ページを **`/maintenance` または `/{locale}/maintenance`** へ **302 リダイレクト**。メンテページは `messages` の `Maintenance` 名前空間。`robots`: noindex。 |
+| **ミドルウェア対象外** | `matcher` により **`/api/*` は `proxy` 未実行**（API・Webhook は従来どおり。監視用 **`GET /api/health`** は常時 200 JSON）。 |
+| **事前告知バナー** | `NEXT_PUBLIC_MAINTENANCE_ANNOUNCEMENT` に任意の一文を入れると、**メンテモードの有無に関わらず** `[locale]/layout` 上部にアンバー帯で表示（本文は環境変数のまま。ラベルは i18n）。 |
+
+---
+
 ## 認証・アカウント
 
 | 機能 | 内容 |
@@ -180,6 +190,7 @@ where id = '<ユーザーUUID>';
 | 監査 | `…/expenses/[expenseId]/audit` |
 | プロフィール | `display-name`、`payment-methods`、`pitch-deck-seen` |
 | 決済 Webhook | `POST /api/webhook/stripe` — `checkout.session.completed` を検証し `user_profiles.premium_access=true` と `premium_access_source='stripe'` を反映 |
+| ヘルス | `GET /api/health` — `{ ok: true }`（メンテ中も利用可・`proxy` 対象外） |
 | 通知（枠） | `POST /api/notifications/web-push` — **未実装のプレースホルダー（例: 501）** |
 
 ---

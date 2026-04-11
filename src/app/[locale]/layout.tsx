@@ -16,6 +16,7 @@ import { getMessages, setRequestLocale } from "next-intl/server";
 import { routing, type AppLocale } from "@/i18n/routing";
 import { AppProviders } from "@/app/providers";
 import { BottomNav } from "@/components/bottom-nav";
+import { MaintenanceAnnouncementBanner } from "@/components/maintenance/maintenance-announcement-banner";
 import {
   getLocaleGoogleSansVariable,
   getUiMonoStackId,
@@ -185,6 +186,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
       >
         <NextIntlClientProvider messages={messages}>
           <AppProviders>
+            <MaintenanceAnnouncementBanner />
             {children}
             <BottomNav />
           </AppProviders>
