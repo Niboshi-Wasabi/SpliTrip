@@ -202,7 +202,7 @@ where id = '<ユーザーUUID>';
 | 機能 | 内容 |
 |------|------|
 | **プロモ枠** | `PromoBanner`（提携・広告用のプレースホルダー）。 |
-| **開発者支援** | `SupportDeveloper`（環境変数で寄付リンクを有効化可能な想定）。 |
+| **開発者支援** | `SupportDeveloper`（`NEXT_PUBLIC_SUPPORT_DEVELOPER_URL` で有効化）。設定時はダッシュボードヘッダー中央（`md` 以上）に `variant="header"`、設定画面・ボトムナビにも表示。未設定時はヘッダー枠は出さない。 |
 | **ヘルプ** | 割り方などに **「?」ツールチップ**（`HelpHint` + i18n）。 |
 | **ランディングページ（LP）** | 未ログイン時のトップ（`/[locale]`）にヒーロー・機能紹介・CTA を配置。`framer-motion` で Fade Up / Stagger の導入。 |
 

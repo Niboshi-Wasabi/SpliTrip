@@ -35,6 +35,7 @@ import { redirect } from "@/i18n/navigation";
 import { UserAvatar } from "@/components/user-avatar";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { PromoBanner } from "@/components/ads/PromoBanner";
+import { SupportDeveloper } from "@/components/ads/SupportDeveloper";
 import { DashboardSpendingChart } from "./dashboard-spending-chart";
 import { LogoutButton } from "./logout-button";
 import { getCategoryColor, getExpenseCategoryChartColor } from "@/lib/categories";
@@ -223,7 +224,7 @@ export default async function DashboardPage({ params }: PageProps) {
       ) : null}
 
       <header className="border-b border-border bg-card shadow-sm">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
+        <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3">
           <div className="flex items-center gap-3">
             <Image
               src="/icons/source-app-icon.svg"
@@ -238,6 +239,9 @@ export default async function DashboardPage({ params }: PageProps) {
                 {dashboardPageTranslations("subtitle")}
               </p>
             </div>
+          </div>
+          <div className="hidden min-w-0 flex-1 justify-center md:flex">
+            <SupportDeveloper variant="header" />
           </div>
           <div className="flex items-center gap-1 sm:gap-2">
             <ThemeToggle />

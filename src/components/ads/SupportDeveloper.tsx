@@ -10,8 +10,8 @@ import { Coffee } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 type Props = {
-  /** Full button on Settings; one compact row in bottom nav. */
-  variant?: "default" | "compact";
+  /** Full button on Settings; compact row in bottom nav; header chip on md+ only (caller wraps). */
+  variant?: "default" | "compact" | "header";
 };
 
 function supportUrl(): string {
@@ -28,15 +28,34 @@ export function SupportDeveloper({ variant = "default" }: Props) {
     "hover:border-border hover:bg-muted/30 hover:text-foreground",
     variant === "compact"
       ? "min-h-[40px] w-full px-2 py-1.5 text-[11px] font-medium"
-      : "min-h-[44px] w-full px-4 py-2.5 text-sm font-medium md:min-h-10",
+      : variant === "header"
+        ? "min-h-[44px] shrink-0 px-3 py-2 text-sm font-medium"
+        : "min-h-[44px] w-full px-4 py-2.5 text-sm font-medium md:min-h-10",
   );
 
   const label =
-    variant === "compact"
+    variant === "compact" || variant === "header"
       ? adsTranslations("supportCompact")
       : adsTranslations("supportLabel");
 
   const description = adsTranslations("supportDescription");
+
+  if (variant === "header") {
+    if (!hasUrl) {
+      return null;
+    }
+    return (
+      <a
+        href={externalUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        className={baseClassName}
+      >
+        <Coffee className="h-4 w-4 shrink-0" aria-hidden />
+        <span className="whitespace-nowrap">{label}</span>
+      </a>
+    );
+  }
 
   if (variant === "compact") {
     if (hasUrl) {
