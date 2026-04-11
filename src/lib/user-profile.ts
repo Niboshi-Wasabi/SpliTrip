@@ -114,6 +114,9 @@ export async function upsertUserProfileFromAuth(
   });
 
   if (error) {
-    console.error("user_profiles upsert failed:", error.message);
+    console.error(
+      "[API/Action Error - upsertUserProfileFromAuth upsert_user_profile]:",
+      error,
+    );
   }
 }

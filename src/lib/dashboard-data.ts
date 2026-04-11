@@ -52,7 +52,7 @@ export async function fetchDashboardData(): Promise<DashboardData> {
   } = await supabase.auth.getUser();
 
   if (userError) {
-    console.error("getUser failed:", userError.message);
+    console.error("[API/Action Error - fetchDashboardData getUser]:", userError);
     throw new Error("unauthorized");
   }
 
@@ -69,7 +69,10 @@ export async function fetchDashboardData(): Promise<DashboardData> {
     .maybeSingle();
 
   if (membershipError) {
-    console.error("trip_members fetch (non-fatal):", membershipError.message);
+    console.error(
+      "[API/Action Error - fetchDashboardData trip_members (non-fatal)]:",
+      membershipError,
+    );
     return {
       ...EMPTY_DASHBOARD,
       isGuestMode: user.is_anonymous === true,
@@ -92,7 +95,10 @@ export async function fetchDashboardData(): Promise<DashboardData> {
     .single();
 
   if (tripError) {
-    console.error("Failed to fetch trip:", tripError.message);
+    console.error(
+      "[API/Action Error - fetchDashboardData trips]:",
+      tripError,
+    );
   }
 
   const { data: memberRows, error: membersError } = await supabase
@@ -101,7 +107,10 @@ export async function fetchDashboardData(): Promise<DashboardData> {
     .eq("trip_id", tripId);
 
   if (membersError) {
-    console.error("trip members list (non-fatal):", membersError.message);
+    console.error(
+      "[API/Action Error - fetchDashboardData trip_members list (non-fatal)]:",
+      membersError,
+    );
     return {
       ...EMPTY_DASHBOARD,
       tripName: trip?.name ?? DEFAULT_TRIP_NAME,
@@ -134,7 +143,10 @@ export async function fetchDashboardData(): Promise<DashboardData> {
       .in("id", userIds);
 
     if (profilesError) {
-      console.error("user_profiles fetch (non-fatal):", profilesError.message);
+      console.error(
+        "[API/Action Error - fetchDashboardData user_profiles (non-fatal)]:",
+        profilesError,
+      );
     }
 
     profileByUserId = new Map(
@@ -163,7 +175,10 @@ export async function fetchDashboardData(): Promise<DashboardData> {
     .order("created_at", { ascending: false });
 
   if (expensesError) {
-    console.error("expenses fetch (non-fatal):", expensesError.message);
+    console.error(
+      "[API/Action Error - fetchDashboardData expenses (non-fatal)]:",
+      expensesError,
+    );
   }
 
   const expenseRows = expenses ?? [];

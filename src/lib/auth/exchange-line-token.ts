@@ -27,20 +27,29 @@ export type LineTokenExchangeResult =
 function logTokenExchangeFailure(failure: LineTokenExchangeFailure): void {
   switch (failure.reason) {
     case "fetch_failed":
-      console.error("LINE token fetch failed:", failure.cause);
+      console.error(
+        "[API/Action Error - exchangeLineAuthorizationCode fetch]:",
+        failure.cause,
+      );
       break;
     case "invalid_json":
-      console.error("LINE token response was not valid JSON");
+      console.error(
+        "[API/Action Error - exchangeLineAuthorizationCode invalid JSON]",
+      );
       break;
     case "line_rejected":
       console.error(
-        "LINE token exchange failed:",
-        failure.error,
-        failure.description,
+        "[API/Action Error - exchangeLineAuthorizationCode line_rejected]:",
+        {
+          error: failure.error,
+          description: failure.description,
+        },
       );
       break;
     case "missing_id_token":
-      console.error("LINE token response missing id_token");
+      console.error(
+        "[API/Action Error - exchangeLineAuthorizationCode missing id_token]",
+      );
       break;
   }
 }

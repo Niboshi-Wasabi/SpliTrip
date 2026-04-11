@@ -1,5 +1,10 @@
 -- Expand preferred_language to all supported app locales.
 -- 14言語ロケール（ja/en/zh-CN/.../hi）を許可する。
+--
+-- Dynamic SQL note / 動的 SQL の注意:
+-- `conname` comes only from pg_catalog (trusted). `format(..., %I)` quotes it as an
+-- SQL identifier per PostgreSQL rules — do not replace %I with %s or string concat.
+-- `conname` はシステムカタログ由来のみ。`%I` は識別子用の安全なエスケープ（`%s` や || 連結にしないこと）。
 
 do $$
 declare

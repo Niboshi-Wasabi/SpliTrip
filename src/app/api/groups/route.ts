@@ -9,6 +9,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/utils/supabase/server";
 
+const INTERNAL_SERVER_ERROR_MESSAGE =
+  "サーバーで予期せぬエラーが発生しました。";
+
 export async function POST(request: NextRequest) {
   const supabase = await createClient();
 
@@ -51,7 +54,7 @@ export async function POST(request: NextRequest) {
   );
 
   if (error) {
-    console.error("POST /api/groups:", error.message);
+    console.error("[API/Action Error - POST /api/groups create_group_with_invite]:", error);
     if (error.message.includes("not_authenticated")) {
       return NextResponse.json({ error: "unauthorized" }, { status: 401 });
     }
@@ -59,7 +62,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "name_required" }, { status: 400 });
     }
     return NextResponse.json(
-      { error: "insert_failed", message: error.message },
+      { error: "insert_failed", message: INTERNAL_SERVER_ERROR_MESSAGE },
       { status: 500 },
     );
   }

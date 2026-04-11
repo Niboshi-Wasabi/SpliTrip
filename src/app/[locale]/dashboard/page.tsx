@@ -113,8 +113,8 @@ export default async function DashboardPage({ params }: PageProps) {
 
     if (expensesError) {
       console.error(
-        "dashboard group_expenses (non-fatal):",
-        expensesError.message,
+        "[API/Action Error - dashboard group_expenses (non-fatal)]:",
+        expensesError,
       );
     }
 

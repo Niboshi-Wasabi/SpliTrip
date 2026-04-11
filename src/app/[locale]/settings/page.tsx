@@ -52,7 +52,7 @@ export default async function SettingsPage({ params }: PageProps) {
   const { data: profileJson, error } = await supabase.rpc("get_own_profile");
 
   if (error) {
-    console.error("settings profile:", error.message);
+    console.error("[API/Action Error - settings get_own_profile]:", error);
     return (
       <div className="min-h-screen bg-background px-4 py-10">
         <p className="mx-auto max-w-lg text-sm text-destructive">

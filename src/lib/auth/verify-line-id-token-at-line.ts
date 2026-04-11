@@ -19,8 +19,11 @@ export async function verifyLineIdTokenAtLineApi(
       }),
       signal: AbortSignal.timeout(15_000),
     });
-  } catch (e) {
-    console.error("LINE /oauth2/v2.1/verify fetch failed:", e);
+  } catch (caughtError) {
+    console.error(
+      "[API/Action Error - verifyLineIdTokenAtLineApi fetch]:",
+      caughtError,
+    );
     return { ok: false, reason: "fetch_failed" };
   }
 
@@ -29,7 +32,10 @@ export async function verifyLineIdTokenAtLineApi(
     .catch(() => null)) as Record<string, unknown> | null;
 
   if (!res.ok || !json || typeof json.sub !== "string") {
-    console.error("LINE /oauth2/v2.1/verify failed:", res.status, json);
+    console.error(
+      "[API/Action Error - verifyLineIdTokenAtLineApi invalid response]:",
+      { status: res.status, json },
+    );
     return { ok: false, reason: "invalid_response" };
   }
 

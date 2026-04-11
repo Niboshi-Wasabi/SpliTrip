@@ -61,8 +61,6 @@ export default async function GroupDetailPage({ params }: PageProps) {
     return;
   }
 
-  console.log("[GroupDetail] user.id =", user.id, "groupId =", groupId);
-
   const pitchHref = await getMandatoryPitchHref(
     supabase,
     `/dashboard/groups/${groupId}`,

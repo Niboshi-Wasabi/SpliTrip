@@ -30,7 +30,10 @@ export async function GET(request: NextRequest) {
   );
 
   if (exchangeError) {
-    console.error("Auth code exchange failed:", exchangeError.message);
+    console.error(
+      "[API/Action Error - GET /auth/callback exchangeCodeForSession]:",
+      exchangeError,
+    );
     return redirectToLoginError(origin, AUTH_ERROR.AUTH);
   }
 

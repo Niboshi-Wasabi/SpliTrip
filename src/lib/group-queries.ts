@@ -87,8 +87,11 @@ export async function listGroupsForUser(
     .eq("user_id", userId);
 
   if (membershipError) {
-    console.error("listGroupsForUser:", membershipError.message);
-    return { ok: false, error: membershipError.message };
+    console.error(
+      "[API/Action Error - listGroupsForUser memberships]:",
+      membershipError,
+    );
+    return { ok: false, error: "groups_list_failed" };
   }
 
   const distinctGroupIds = [
@@ -108,8 +111,11 @@ export async function listGroupsForUser(
     .in("id", distinctGroupIds);
 
   if (groupsError) {
-    console.error("listGroupsForUser groups:", groupsError.message);
-    return { ok: false, error: groupsError.message };
+    console.error(
+      "[API/Action Error - listGroupsForUser groups]:",
+      groupsError,
+    );
+    return { ok: false, error: "groups_list_failed" };
   }
 
   const roleByGroupId = new Map(
@@ -151,8 +157,12 @@ export async function fetchGroupDetailForUser(
     .maybeSingle();
 
   if (groupError) {
-    console.error("fetchGroup group:", groupError.message, { groupId, userId });
-    return { ok: false, error: groupError.message };
+    console.error("[API/Action Error - fetchGroupDetailForUser group row]:", {
+      error: groupError,
+      groupId,
+      userId,
+    });
+    return { ok: false, error: "group_row_fetch_failed" };
   }
 
   if (!group) {
@@ -166,8 +176,12 @@ export async function fetchGroupDetailForUser(
     .eq("group_id", groupId);
 
   if (membersError) {
-    console.error("fetchGroup members:", membersError.message, { groupId, userId });
-    return { ok: false, error: membersError.message };
+    console.error("[API/Action Error - fetchGroupDetailForUser members]:", {
+      error: membersError,
+      groupId,
+      userId,
+    });
+    return { ok: false, error: "group_members_fetch_failed" };
   }
 
   const membersList = memberRows ?? [];
@@ -189,7 +203,10 @@ export async function fetchGroupDetailForUser(
   );
 
   if (profilesError) {
-    console.error("fetchGroup profiles (non-fatal):", profilesError.message);
+    console.error(
+      "[API/Action Error - fetchGroupDetailForUser profiles (non-fatal)]:",
+      profilesError,
+    );
   }
 
   type ProfileRow = {
@@ -258,10 +275,14 @@ export async function fetchGroupDetailForUser(
     .order("expense_date", { ascending: false });
 
   if (expensesError) {
-    console.error("fetchGroup expenses (non-fatal):", expensesError.message, {
-      groupId,
-      userId,
-    });
+    console.error(
+      "[API/Action Error - fetchGroupDetailForUser expenses (non-fatal)]:",
+      {
+        error: expensesError,
+        groupId,
+        userId,
+      },
+    );
   }
 
   const expensesTyped = (expenseRows ?? []).map((rawRow) => {

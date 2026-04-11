@@ -41,6 +41,9 @@ type RpcGroupRow = {
   invite_token: string;
 };
 
+const UNEXPECTED_SERVER_ERROR_MESSAGE =
+  "サーバーで予期せぬエラーが発生しました。";
+
 /**
  * Map Postgres exception text from `create_group_with_invite` to client error codes.
  * RPC が投げた例外文言をクライアント向けコードに寄せる。
@@ -95,15 +98,18 @@ export async function createGroupWithInviteAction(
   );
 
   if (rpcError) {
-    console.error("createGroupWithInviteAction:", rpcError.message);
+    console.error(
+      "[API/Action Error - createGroupWithInviteAction RPC]:",
+      rpcError,
+    );
     const mapped = errorCodeFromRpcMessage(rpcError.message);
     if (mapped) {
-      return { ok: false, errorCode: mapped, message: rpcError.message };
+      return { ok: false, errorCode: mapped };
     }
     return {
       ok: false,
       errorCode: "insert_failed",
-      message: rpcError.message,
+      message: UNEXPECTED_SERVER_ERROR_MESSAGE,
     };
   }
 

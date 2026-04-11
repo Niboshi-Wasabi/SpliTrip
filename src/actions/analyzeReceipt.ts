@@ -33,6 +33,9 @@ type AnalyzeReceiptResult =
       code: AnalyzeReceiptErrorCode;
     };
 
+const UNEXPECTED_SERVER_ERROR_MESSAGE =
+  "サーバーで予期せぬエラーが発生しました。";
+
 function parseProfileJson(
   raw: unknown,
 ): PremiumProfileFields & Record<string, unknown> {
@@ -74,7 +77,10 @@ export async function analyzeReceipt(
   const { data: profileJson, error: profileError } =
     await supabase.rpc("get_own_profile");
   if (profileError) {
-    console.error("analyzeReceipt get_own_profile:", profileError.message);
+    console.error(
+      "[API/Action Error - analyzeReceipt get_own_profile]:",
+      profileError,
+    );
   }
 
   const profile = parseProfileJson(profileJson);
@@ -180,8 +186,8 @@ export async function analyzeReceipt(
       );
       if (incrementError) {
         console.error(
-          "increment_ocr_usage_if_not_premium:",
-          incrementError.message,
+          "[API/Action Error - analyzeReceipt increment_ocr_usage_if_not_premium]:",
+          incrementError,
         );
       }
     }
@@ -191,12 +197,13 @@ export async function analyzeReceipt(
       error: null,
     };
   } catch (caughtError) {
-    const errorMessage =
-      caughtError instanceof Error ? caughtError.message : "Unknown error";
-    console.error("analyzeReceipt Gemini API error:", errorMessage);
+    console.error(
+      "[API/Action Error - analyzeReceipt Gemini inference]:",
+      caughtError,
+    );
     return {
       data: null,
-      error: errorMessage,
+      error: UNEXPECTED_SERVER_ERROR_MESSAGE,
       code: "GEMINI",
     };
   }

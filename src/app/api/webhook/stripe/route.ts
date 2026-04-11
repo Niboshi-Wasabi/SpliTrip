@@ -60,8 +60,10 @@ export async function POST(request: Request) {
       env.stripeWebhookSecret,
     );
   } catch (error) {
-    const message = error instanceof Error ? error.message : "invalid_signature";
-    console.error("stripe webhook verification failed:", message);
+    console.error(
+      "[API/Action Error - POST /api/webhook/stripe signature verification]:",
+      error,
+    );
     return NextResponse.json({ ok: false, error: "signature_verification_failed" }, { status: 400 });
   }
 
@@ -93,10 +95,14 @@ export async function POST(request: Request) {
     );
 
   if (error) {
-    console.error("stripe webhook user_profiles update failed:", error.message, {
-      userId,
-      eventId: event.id,
-    });
+    console.error(
+      "[API/Action Error - POST /api/webhook/stripe user_profiles update]:",
+      error,
+      {
+        userId,
+        eventId: event.id,
+      },
+    );
     return NextResponse.json({ ok: false, error: "db_update_failed" }, { status: 500 });
   }
 

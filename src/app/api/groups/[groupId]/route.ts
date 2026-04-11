@@ -7,6 +7,8 @@ import { fetchGroupDetailForUser } from "@/lib/group-queries";
 import { createClient } from "@/utils/supabase/server";
 
 type RouteContext = { params: Promise<{ groupId: string }> };
+const INTERNAL_SERVER_ERROR_MESSAGE =
+  "サーバーで予期せぬエラーが発生しました。";
 
 export async function GET(_request: Request, context: RouteContext) {
   const { groupId } = await context.params;
@@ -29,7 +31,15 @@ export async function GET(_request: Request, context: RouteContext) {
     if (result.error === "group_not_found") {
       return NextResponse.json({ error: "not_found" }, { status: 404 });
     }
-    return NextResponse.json({ error: result.error }, { status: 500 });
+    console.error("[API/Action Error - GET /api/groups/[groupId] detail lookup]:", {
+      groupId,
+      lookupError: result.error,
+      userId: user.id,
+    });
+    return NextResponse.json(
+      { error: "group_detail_failed", message: INTERNAL_SERVER_ERROR_MESSAGE },
+      { status: 500 },
+    );
   }
 
   return NextResponse.json({ data: result.data });

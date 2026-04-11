@@ -110,8 +110,11 @@ export async function GET(request: NextRequest) {
 
     if (linkIdentityError || !linkSessionData?.session?.user) {
       console.error(
-        "LINE linkIdentity:",
-        linkIdentityError?.message ?? "missing session",
+        "[API/Action Error - GET /api/auth/callback/line linkIdentity]:",
+        {
+          linkIdentityError,
+          hasSession: Boolean(linkSessionData?.session?.user),
+        },
       );
       return redirectLineOAuthFailed(origin, AUTH_ERROR.LINE_AUTH);
     }
@@ -135,7 +138,10 @@ export async function GET(request: NextRequest) {
   );
 
   if (!sessionResult.ok) {
-    console.error("LINE web session:", sessionResult.message);
+    console.error(
+      "[API/Action Error - GET /api/auth/callback/line establishSupabaseSession]:",
+      sessionResult,
+    );
     return redirectLineOAuthFailed(origin, AUTH_ERROR.LINE_AUTH);
   }
 

@@ -38,7 +38,10 @@ export async function updatePreferredLanguageAction(
   });
 
   if (rpcError) {
-    console.error("updatePreferredLanguageAction:", rpcError.message);
+    console.error(
+      "[API/Action Error - updatePreferredLanguageAction RPC]:",
+      rpcError,
+    );
     return { ok: false, errorCode: "update_failed" };
   }
 

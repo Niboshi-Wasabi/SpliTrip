@@ -28,7 +28,10 @@ export async function GET(_request: Request, context: RouteContext) {
     .maybeSingle();
 
   if (expenseError) {
-    console.error("audit expense lookup:", expenseError.message);
+    console.error(
+      "[API/Action Error - GET /api/groups/[groupId]/expenses/[expenseId]/audit expense lookup]:",
+      expenseError,
+    );
     return NextResponse.json({ error: "lookup_failed" }, { status: 500 });
   }
 
@@ -44,7 +47,10 @@ export async function GET(_request: Request, context: RouteContext) {
     .order("created_at", { ascending: false });
 
   if (logsError) {
-    console.error("audit_logs:", logsError.message);
+    console.error(
+      "[API/Action Error - GET /api/groups/[groupId]/expenses/[expenseId]/audit logs query]:",
+      logsError,
+    );
     return NextResponse.json({ error: "audit_fetch_failed" }, { status: 500 });
   }
 

@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/utils/supabase/server";
 
+const INTERNAL_SERVER_ERROR_MESSAGE =
+  "サーバーで予期せぬエラーが発生しました。";
+
 /**
  * Marks the pitch deck as completed for the signed-in user (`mark_pitch_deck_seen` RPC).
  * ログイン中ユーザーについてピッチ閲覧済みを記録する。
@@ -18,9 +21,9 @@ export async function POST() {
   const { error } = await supabase.rpc("mark_pitch_deck_seen");
 
   if (error) {
-    console.error("mark_pitch_deck_seen:", error.message);
+    console.error("[API/Action Error - POST /api/profile/pitch-deck-seen]:", error);
     return NextResponse.json(
-      { error: "rpc_failed", message: error.message },
+      { error: "rpc_failed", message: INTERNAL_SERVER_ERROR_MESSAGE },
       { status: 500 },
     );
   }

@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { validateDisplayNameInput } from "@/lib/validation/display-name";
 import { createClient } from "@/utils/supabase/server";
 
+const INTERNAL_SERVER_ERROR_MESSAGE =
+  "サーバーで予期せぬエラーが発生しました。";
+
 export async function PATCH(request: NextRequest) {
   const supabase = await createClient();
   const {
@@ -43,9 +46,9 @@ export async function PATCH(request: NextRequest) {
   });
 
   if (error) {
-    console.error("display-name PATCH:", error.message);
+    console.error("[API/Action Error - PATCH /api/profile/display-name]:", error);
     return NextResponse.json(
-      { error: "save_failed", message: error.message },
+      { error: "save_failed", message: INTERNAL_SERVER_ERROR_MESSAGE },
       { status: 500 },
     );
   }

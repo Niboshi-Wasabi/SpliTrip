@@ -16,6 +16,8 @@ import { createClient } from "@/utils/supabase/server";
 type RouteContext = { params: Promise<{ groupId: string }> };
 
 const RECEIPT_MAX_BYTES = 4_500_000;
+const INTERNAL_SERVER_ERROR_MESSAGE =
+  "サーバーで予期せぬエラーが発生しました。";
 
 const ALLOWED_RECEIPT_MIMES = new Set([
   "image/jpeg",
@@ -102,7 +104,15 @@ export async function POST(request: NextRequest, context: RouteContext) {
     if (detail.error === "group_not_found") {
       return NextResponse.json({ error: "not_found" }, { status: 404 });
     }
-    return NextResponse.json({ error: detail.error }, { status: 500 });
+    console.error("[API/Action Error - POST /api/groups/[groupId]/expenses detail lookup]:", {
+      groupId,
+      userId: user.id,
+      lookupError: detail.error,
+    });
+    return NextResponse.json(
+      { error: "group_lookup_failed", message: INTERNAL_SERVER_ERROR_MESSAGE },
+      { status: 500 },
+    );
   }
 
   const memberUserIdsOrdered = detail.data.members.map((member) => member.user_id);
@@ -229,19 +239,20 @@ export async function POST(request: NextRequest, context: RouteContext) {
   const { data: expenseId, error: rpcError } = expenseIdResult;
 
   if (rpcError || !expenseId) {
-    console.error("insert_expense_with_splits:", rpcError?.message);
+    console.error("[API/Action Error - POST /api/groups/[groupId]/expenses RPC insert]:", {
+      rpcError,
+      groupId,
+      payerId: payer_id,
+      splitMode,
+    });
     if (isPostgrestRpcFunctionMissingError(rpcError?.message)) {
       return NextResponse.json(
-        {
-          error: "expense_insert_failed",
-          message:
-            "RPC insert_expense_with_splits が DB にありません。`supabase/migrations` の該当マイグレーションを本番に適用し、Supabase でスキーマを再読み込みしてください。",
-        },
+        { error: "expense_insert_failed", message: INTERNAL_SERVER_ERROR_MESSAGE },
         { status: 503 },
       );
     }
     return NextResponse.json(
-      { error: "expense_insert_failed", message: rpcError?.message },
+      { error: "expense_insert_failed", message: INTERNAL_SERVER_ERROR_MESSAGE },
       { status: 500 },
     );
   }
@@ -275,7 +286,10 @@ export async function POST(request: NextRequest, context: RouteContext) {
             });
 
           if (uploadError) {
-            console.error("receipt upload:", uploadError.message);
+            console.error(
+              "[API/Action Error - POST /api/groups/[groupId]/expenses receipt upload]:",
+              uploadError,
+            );
             receiptUploadError = "receipt_upload_failed";
           } else {
             const { error: linkError } = await supabase
@@ -285,7 +299,10 @@ export async function POST(request: NextRequest, context: RouteContext) {
               .eq("group_id", groupId);
 
             if (linkError) {
-              console.error("receipt_url update:", linkError.message);
+              console.error(
+                "[API/Action Error - POST /api/groups/[groupId]/expenses receipt link]:",
+                linkError,
+              );
               receiptUploadError = "receipt_link_failed";
             } else {
               receiptUploaded = true;

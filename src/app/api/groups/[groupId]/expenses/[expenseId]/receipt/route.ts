@@ -34,7 +34,10 @@ export async function GET(_request: Request, context: RouteContext) {
     .maybeSingle();
 
   if (expenseError) {
-    console.error("receipt expense lookup:", expenseError.message);
+    console.error(
+      "[API/Action Error - GET /api/groups/[groupId]/expenses/[expenseId]/receipt expense lookup]:",
+      expenseError,
+    );
     return NextResponse.json({ error: "lookup_failed" }, { status: 500 });
   }
 
@@ -66,7 +69,10 @@ export async function GET(_request: Request, context: RouteContext) {
     .createSignedUrl(storagePath, SIGNED_URL_TTL_SECONDS);
 
   if (signError || !signed?.signedUrl) {
-    console.error("createSignedUrl:", signError?.message);
+    console.error(
+      "[API/Action Error - GET /api/groups/[groupId]/expenses/[expenseId]/receipt createSignedUrl]:",
+      signError,
+    );
     return NextResponse.json({ error: "sign_failed" }, { status: 500 });
   }
 

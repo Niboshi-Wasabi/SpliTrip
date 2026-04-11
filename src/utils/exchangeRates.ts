@@ -72,10 +72,11 @@ export async function fetchExchangeRates(
 
     return { ok: true, rates: payload.rates };
   } catch (caughtError) {
-    const errorMessage =
-      caughtError instanceof Error ? caughtError.message : "Network error";
-    console.error("fetchExchangeRates error:", errorMessage);
-    return { ok: false, error: errorMessage };
+    console.error(
+      "[API/Action Error - fetchExchangeRates fetch]:",
+      caughtError,
+    );
+    return { ok: false, error: "exchange_rate_fetch_failed" };
   }
 }
 

@@ -67,7 +67,10 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
     .select("id");
 
   if (updateError) {
-    console.error("group_expenses patch:", updateError.message);
+    console.error(
+      "[API/Action Error - PATCH /api/groups/[groupId]/expenses/[expenseId]]:",
+      updateError,
+    );
     return NextResponse.json({ error: "update_failed" }, { status: 500 });
   }
 
@@ -98,7 +101,10 @@ export async function DELETE(_request: NextRequest, context: RouteContext) {
     .select("id");
 
   if (deleteError) {
-    console.error("group_expenses delete:", deleteError.message);
+    console.error(
+      "[API/Action Error - DELETE /api/groups/[groupId]/expenses/[expenseId]]:",
+      deleteError,
+    );
     return NextResponse.json({ error: "delete_failed" }, { status: 500 });
   }
 

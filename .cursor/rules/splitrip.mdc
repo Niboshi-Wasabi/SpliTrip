@@ -32,6 +32,18 @@ alwaysApply: true
   - 良い例: `sum`, `groupItem`, `expense`, `response`, `entry.amount`, `groups.map((groupItem, groupIndex) => ...)`
 - **コメント:** コードの動作をそのまま繰り返すコメント（`// ループ`, `// 取得` 等）は不要。「なぜそうするか」や非自明な制約のみコメントする。
 
+## API / Server Actions — エラーレスポンスのセキュリティ
+
+- **No internal details to clients / クライアントへ内部情報を渡さない:** Route Handlers（`src/app/api/**`）と Server Actions（`"use server"`）では、`error.message`・`error.stack`・Supabase/PostgREST の生エラーをレスポンス本文や戻り値に載せない。500 相当は汎用メッセージのみ（可能なら `messages/*.json`）。
+- **Server logging / サーバーログ:** 原因調査用に `console.error("[API/Action Error - 処理名]:", error)` でエラー全体を出力する。
+- **400 / 401 / 403:** 入力バリデーションや認可の明確な失敗は、UI に必要な範囲で安全なコード・文言を返してよい（DB 構造が推測される内容は避ける）。
+
+## SQL インジェクション対策（SQL injection）
+
+- **App / アプリ:** Never build SQL by concatenating or templating user input in TypeScript. Use Supabase `.from()` / `.rpc()` (parameterized). No `` `SELECT ... ${id}` `` against a real DB.
+- **PL/pgSQL / migrations:** Do not `EXECUTE` SQL built with `||` from function arguments or user-controlled text. Use static DML/DDL where possible; for dynamic identifiers/literals use PostgreSQL `format()` with **`%I` (identifier)** and **`%L` (literal)** — not `%s` for untrusted values.
+- **Why / 理由:** Future features (raw SQL, dynamic RPCs) are the main risk; keep one consistent safe pattern.
+
 ## レスポンシブとモバイルファースト (Responsive & Mobile-First)
 
 - **Mobile-First Approach:** Tailwind CSS を用いて、基本のクラスはモバイル（スマホ）向けに記述し、PCやタブレット向けのスタイルは `md:` や `lg:` プレフィックスを使用して上書きすること。

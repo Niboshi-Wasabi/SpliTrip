@@ -163,7 +163,7 @@ export function JoinGate({ token }: Props) {
     );
 
     if (rpcError) {
-      console.error("join_group_by_invite:", rpcError.message);
+      console.error("[Client join_group_by_invite]:", rpcError);
       setError(translations("joinRpcError"));
       setLoadingAction(null);
       return;

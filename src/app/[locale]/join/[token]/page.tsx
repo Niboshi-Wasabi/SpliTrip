@@ -32,8 +32,6 @@ export default async function JoinByInvitePage({ params }: PageProps) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  console.log("[JoinPage] user =", user?.id ?? "null", "isAnon =", user?.is_anonymous, "token =", trimmedToken);
-
   if (!user) {
     if (!isInviteTokenFormat(trimmedToken)) {
       notFound();
@@ -69,22 +67,24 @@ export default async function JoinByInvitePage({ params }: PageProps) {
     },
   );
 
-  console.log("[JoinPage] RPC result: groupId =", groupId, "error =", joinError?.message ?? "none");
-
   if (joinError) {
     if (joinError.message.includes("Could not find the function")) {
       console.error(
-        "join_group_by_invite: RPC が Supabase にありません。SQL Editor で supabase/migrations/20260405160000_group_invite_token.sql を実行するか、Dashboard → Project Settings → API でスキーマをリロードしてください。",
-        joinError.message,
+        "[API/Action Error - join_group_by_invite RPC missing (check migrations / schema reload)]:",
+        joinError,
       );
     } else {
-      console.error("join_group_by_invite:", joinError.message);
+      console.error("[API/Action Error - join_group_by_invite]:", joinError);
     }
     redirect({ href: "/dashboard", locale });
   }
 
   if (!groupId) {
-    console.error("[JoinPage] groupId is null after RPC — invalid token?", { token: trimmedToken });
+    console.error(
+      "[JoinPage] groupId is null after RPC — invalid or expired invite (token length:",
+      trimmedToken.length,
+      ")",
+    );
     redirect({ href: "/dashboard", locale });
   }
 
@@ -99,10 +99,12 @@ export default async function JoinByInvitePage({ params }: PageProps) {
       },
     );
     if (guestFlagError) {
-      console.error("set_own_member_guest_flag:", guestFlagError.message);
+      console.error(
+        "[API/Action Error - set_own_member_guest_flag]:",
+        guestFlagError,
+      );
     }
   }
 
-  console.log("[JoinPage] redirecting to /dashboard/groups/" + groupId);
   redirect({ href: `/dashboard/groups/${groupId}`, locale });
 }

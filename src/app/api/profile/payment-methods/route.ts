@@ -6,6 +6,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { sanitizeCashAppCashtag, sanitizePaypalMeId } from "@/lib/payment-ids";
 import { createClient } from "@/utils/supabase/server";
 
+const INTERNAL_SERVER_ERROR_MESSAGE =
+  "サーバーで予期せぬエラーが発生しました。";
+
 function buildPaymentLinksJson(
   paypalMeId: string | null,
   cashAppCashtag: string | null,
@@ -74,9 +77,9 @@ export async function PATCH(request: NextRequest) {
   });
 
   if (error) {
-    console.error("payment-methods PATCH:", error.message);
+    console.error("[API/Action Error - PATCH /api/profile/payment-methods]:", error);
     return NextResponse.json(
-      { error: "save_failed", message: error.message },
+      { error: "save_failed", message: INTERNAL_SERVER_ERROR_MESSAGE },
       { status: 500 },
     );
   }
