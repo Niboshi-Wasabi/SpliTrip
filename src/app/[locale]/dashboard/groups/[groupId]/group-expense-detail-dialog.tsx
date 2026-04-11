@@ -390,6 +390,8 @@ export function GroupExpenseDetailDialog({
                 <p className="text-xs text-destructive">{receiptError}</p>
               ) : null}
               {receiptSrc ? (
+                // Signed Supabase URLs are per-request; static remotePatterns are impractical. / 署名URLは都度変わるため next/image の固定ドメイン指定が難しい
+                // eslint-disable-next-line @next/next/no-img-element -- receipt preview uses short-lived signed URL / 短命の署名URLで領収書プレビュー
                 <img
                   src={receiptSrc}
                   alt=""

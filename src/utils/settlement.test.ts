@@ -33,7 +33,7 @@ describe("computeEqualSplitParts", () => {
     });
     const sum = parts.reduce((s, p) => s + p.amount, 0);
     expect(sum).toBe(100);
-    expect(parts.map((p) => p.amount).sort()).toEqual([33, 33, 34]);
+    expect(parts.map((part) => part.amount).sort()).toEqual([33, 33, 34]);
   });
 });
 
@@ -54,7 +54,9 @@ describe("computeShareSplitParts", () => {
     if (!r.ok) {
       return;
     }
-    const by = Object.fromEntries(r.parts.map((p) => [p.userId, p.amount]));
+    const by = Object.fromEntries(
+      r.parts.map((part) => [part.userId, part.amount]),
+    );
     expect(by.c).toBe(0);
     expect(by.a + by.b).toBe(100);
     expect(by.a).toBeGreaterThan(by.b);
@@ -77,7 +79,9 @@ describe("computePercentSplitParts", () => {
     if (!r.ok) {
       return;
     }
-    const by = Object.fromEntries(r.parts.map((p) => [p.userId, p.amount]));
+    const by = Object.fromEntries(
+      r.parts.map((part) => [part.userId, part.amount]),
+    );
     expect(by.a + by.b).toBe(100);
     expect(by.a).toBe(60);
     expect(by.b).toBe(40);
@@ -100,7 +104,9 @@ describe("computeItemizedSplitParts", () => {
     if (!r.ok) {
       return;
     }
-    const by = Object.fromEntries(r.parts.map((p) => [p.userId, p.amount]));
+    const by = Object.fromEntries(
+      r.parts.map((part) => [part.userId, part.amount]),
+    );
     expect(by.a).toBe(70);
     expect(by.b).toBe(30);
   });
@@ -119,7 +125,9 @@ describe("finalizeExactAmountSplits", () => {
     if (!r.ok) {
       return;
     }
-    const by = Object.fromEntries(r.parts.map((p) => [p.userId, p.amount]));
+    const by = Object.fromEntries(
+      r.parts.map((part) => [part.userId, part.amount]),
+    );
     expect(by.a + by.b).toBe(100);
     expect(by.a).toBe(60);
     expect(by.b).toBe(40);

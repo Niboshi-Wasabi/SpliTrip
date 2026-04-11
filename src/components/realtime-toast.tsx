@@ -29,10 +29,18 @@ export function RealtimeToast({ show, onDismiss }: Props) {
   const [exiting, setExiting] = useState(false);
 
   useEffect(() => {
-    if (!show) return;
+    if (!show) {
+      queueMicrotask(() => {
+        setVisible(false);
+        setExiting(false);
+      });
+      return;
+    }
 
-    setVisible(true);
-    setExiting(false);
+    queueMicrotask(() => {
+      setVisible(true);
+      setExiting(false);
+    });
 
     const exitTimer = setTimeout(() => {
       setExiting(true);

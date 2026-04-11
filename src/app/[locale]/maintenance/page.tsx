@@ -3,7 +3,7 @@ import { hasLocale } from "next-intl";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { Link } from "@/i18n/navigation";
-import { routing, type AppLocale } from "@/i18n/routing";
+import { routing } from "@/i18n/routing";
 import { buttonVariants } from "@/components/ui/button-variants";
 import { cn } from "@/lib/utils";
 
@@ -31,7 +31,6 @@ export default async function MaintenancePage({ params }: PageProps) {
   if (!hasLocale(routing.locales, localeParam)) {
     notFound();
   }
-  const locale = localeParam as AppLocale;
   setRequestLocale(localeParam);
   const translations = await getTranslations("Maintenance");
 

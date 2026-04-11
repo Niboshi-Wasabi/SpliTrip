@@ -33,10 +33,12 @@ export function WhatsNewModal() {
   const [hasCheckedStorage, setHasCheckedStorage] = useState(false);
 
   useEffect(() => {
-    const lastSeenVersion = localStorage.getItem(LAST_SEEN_UPDATE_VERSION_KEY);
-    const shouldOpen = lastSeenVersion !== APP_CHANGELOG_VERSION;
-    setIsOpen(shouldOpen);
-    setHasCheckedStorage(true);
+    queueMicrotask(() => {
+      const lastSeenVersion = localStorage.getItem(LAST_SEEN_UPDATE_VERSION_KEY);
+      const shouldOpen = lastSeenVersion !== APP_CHANGELOG_VERSION;
+      setIsOpen(shouldOpen);
+      setHasCheckedStorage(true);
+    });
   }, []);
 
   const changelogEntries = useMemo(() => APP_CHANGELOG_ENTRIES, []);
@@ -59,7 +61,7 @@ export function WhatsNewModal() {
               <PartyPopper className="h-5 w-5" aria-hidden />
             </span>
             <DialogTitle className="text-left text-base leading-snug">
-              What's New - 新機能のお知らせ
+              What&apos;s New - 新機能のお知らせ
             </DialogTitle>
           </div>
           <DialogDescription className="text-left text-sm">

@@ -56,7 +56,10 @@ export function useRealtimeSync({
   const debounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const visibilityTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const onRemoteChangeRef = useRef(onRemoteChange);
-  onRemoteChangeRef.current = onRemoteChange;
+
+  useEffect(() => {
+    onRemoteChangeRef.current = onRemoteChange;
+  }, [onRemoteChange]);
 
   const refreshUi = useCallback(() => {
     router.refresh();
