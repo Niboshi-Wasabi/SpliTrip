@@ -7,6 +7,7 @@ import { Loader2, Plane } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { DISPLAY_NAME_MAX_LENGTH } from "@/lib/validation/display-name";
 
 type Props = {
   suggestedName: string;
@@ -28,7 +29,7 @@ export function OnboardingForm({ suggestedName, nextPath }: Props) {
       setErrorMessage(translations("required"));
       return;
     }
-    if (trimmed.length > 50) {
+    if (trimmed.length > DISPLAY_NAME_MAX_LENGTH) {
       setErrorMessage(translations("tooLong"));
       return;
     }
@@ -42,8 +43,18 @@ export function OnboardingForm({ suggestedName, nextPath }: Props) {
       body: JSON.stringify({ display_name: trimmed }),
     });
 
+    const responseBody = (await response.json().catch(() => ({}))) as {
+      error?: string;
+    };
+
     if (!response.ok) {
-      setErrorMessage(translations("saveError"));
+      if (responseBody.error === "display_name_too_long") {
+        setErrorMessage(translations("tooLong"));
+      } else if (responseBody.error === "display_name_required") {
+        setErrorMessage(translations("required"));
+      } else {
+        setErrorMessage(translations("saveError"));
+      }
       setSubmitting(false);
       return;
     }
@@ -76,7 +87,7 @@ export function OnboardingForm({ suggestedName, nextPath }: Props) {
                 setDisplayName(changeEvent.target.value)
               }
               placeholder={translations("placeholder")}
-              maxLength={50}
+              maxLength={DISPLAY_NAME_MAX_LENGTH}
               autoFocus
               disabled={submitting}
               className="text-base"

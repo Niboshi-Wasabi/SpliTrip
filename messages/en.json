@@ -181,7 +181,7 @@
     "cancel": "Cancel",
     "currentLabel": "Display name",
     "required": "Please enter a display name.",
-    "tooLong": "Must be 50 characters or fewer.",
+    "tooLong": "Name must be 50 characters or less.",
     "saveError": "Could not save."
   },
   "GroupExport": {
@@ -405,7 +405,7 @@
     "hint": "Max 50 characters. Shown in member lists and settlements.",
     "submit": "Save and continue",
     "required": "Please enter a username.",
-    "tooLong": "Must be 50 characters or fewer.",
+    "tooLong": "Name must be 50 characters or less.",
     "saveError": "Could not save. Please try again."
   },
   "Invite": {

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { validateDisplayNameInput } from "@/lib/validation/display-name";
 import { createClient } from "@/utils/supabase/server";
 
 export async function PATCH(request: NextRequest) {
@@ -17,14 +18,28 @@ export async function PATCH(request: NextRequest) {
   }
 
   const body = parsed as { display_name?: unknown };
-  const raw = typeof body.display_name === "string" ? body.display_name.trim() : "";
+  const validation = validateDisplayNameInput(body.display_name);
 
-  if (raw.length === 0 || raw.length > 50) {
+  if (!validation.ok) {
+    if (validation.reason === "too_long") {
+      return NextResponse.json(
+        { error: "display_name_too_long" },
+        { status: 400 },
+      );
+    }
+    if (validation.reason === "empty") {
+      return NextResponse.json(
+        { error: "display_name_required" },
+        { status: 400 },
+      );
+    }
     return NextResponse.json({ error: "invalid_display_name" }, { status: 400 });
   }
 
+  const displayNameValue = validation.value;
+
   const { error } = await supabase.rpc("update_display_name", {
-    p_display_name: raw,
+    p_display_name: displayNameValue,
   });
 
   if (error) {
@@ -35,5 +50,5 @@ export async function PATCH(request: NextRequest) {
     );
   }
 
-  return NextResponse.json({ display_name: raw });
+  return NextResponse.json({ display_name: displayNameValue });
 }

@@ -7,6 +7,7 @@ import { Loader2, Pencil, UserRound } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { broadcastGroupRefresh } from "@/lib/realtime-broadcast";
+import { DISPLAY_NAME_MAX_LENGTH } from "@/lib/validation/display-name";
 
 type Props = {
   currentName: string;
@@ -36,7 +37,7 @@ export function DisplayNamePrompt({
       setError(translations("required"));
       return;
     }
-    if (trimmed.length > 50) {
+    if (trimmed.length > DISPLAY_NAME_MAX_LENGTH) {
       setError(translations("tooLong"));
       return;
     }
@@ -103,7 +104,7 @@ export function DisplayNamePrompt({
               value={name}
               onChange={(changeEvent) => setName(changeEvent.target.value)}
               placeholder={translations("placeholder")}
-              maxLength={50}
+              maxLength={DISPLAY_NAME_MAX_LENGTH}
               className="max-w-xs bg-white dark:bg-background"
               disabled={saving}
               onKeyDown={(keyEvent) => {

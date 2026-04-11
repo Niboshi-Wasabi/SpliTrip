@@ -3,6 +3,8 @@
  * Google/LINE のプロフィール画像があれば表示し、なければ表示名の頭文字を表示する。
  */
 
+import { stringToColor } from "@/lib/string-to-color";
+
 type Props = {
   displayName: string;
   avatarUrl?: string | null;
@@ -15,27 +17,6 @@ const SIZE_CLASSES = {
   md: "h-8 w-8 text-xs",
   lg: "h-10 w-10 text-sm",
 } as const;
-
-const PALETTE = [
-  "bg-blue-500",
-  "bg-emerald-500",
-  "bg-amber-500",
-  "bg-rose-500",
-  "bg-violet-500",
-  "bg-cyan-500",
-  "bg-pink-500",
-  "bg-teal-500",
-  "bg-orange-500",
-  "bg-indigo-500",
-];
-
-function hashColor(name: string): string {
-  let hash = 0;
-  for (let charIndex = 0; charIndex < name.length; charIndex++) {
-    hash = (hash * 31 + name.charCodeAt(charIndex)) | 0;
-  }
-  return PALETTE[Math.abs(hash) % PALETTE.length];
-}
 
 function firstGrapheme(text: string): string {
   const segmenter = typeof Intl?.Segmenter === "function"
@@ -71,11 +52,12 @@ export function UserAvatar({
   }
 
   const initial = firstGrapheme(displayName.trim());
-  const colorClass = hashColor(displayName);
+  const { background, foreground } = stringToColor(displayName);
 
   return (
     <span
-      className={`${sizeClass} inline-flex shrink-0 items-center justify-center rounded-full font-medium text-white ${colorClass} ${className}`}
+      className={`${sizeClass} inline-flex shrink-0 items-center justify-center rounded-full font-medium ${className}`}
+      style={{ backgroundColor: background, color: foreground }}
       aria-label={displayName}
     >
       {initial}

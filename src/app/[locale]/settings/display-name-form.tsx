@@ -6,6 +6,7 @@ import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { DISPLAY_NAME_MAX_LENGTH } from "@/lib/validation/display-name";
 
 type Props = {
   initialDisplayName: string;
@@ -25,7 +26,7 @@ export function DisplayNameForm({ initialDisplayName }: Props) {
       setError(translations("required"));
       return;
     }
-    if (trimmed.length > 50) {
+    if (trimmed.length > DISPLAY_NAME_MAX_LENGTH) {
       setError(translations("tooLong"));
       return;
     }
@@ -40,14 +41,26 @@ export function DisplayNameForm({ initialDisplayName }: Props) {
       body: JSON.stringify({ display_name: trimmed }),
     });
 
+    const responseBody = (await res.json().catch(() => ({}))) as {
+      error?: string;
+      display_name?: string;
+    };
+
     if (!res.ok) {
-      setError(translations("saveError"));
+      if (responseBody.error === "display_name_too_long") {
+        setError(translations("tooLong"));
+      } else if (responseBody.error === "display_name_required") {
+        setError(translations("required"));
+      } else {
+        setError(translations("saveError"));
+      }
       setSaving(false);
       return;
     }
 
-    const body = (await res.json()) as { display_name: string };
-    setDisplayName(body.display_name);
+    if (typeof responseBody.display_name === "string") {
+      setDisplayName(responseBody.display_name);
+    }
     setMessage(translations("saved"));
     setSaving(false);
   }
@@ -63,7 +76,7 @@ export function DisplayNameForm({ initialDisplayName }: Props) {
           autoComplete="name"
           placeholder={translations("placeholder")}
           value={displayName}
-          maxLength={50}
+          maxLength={DISPLAY_NAME_MAX_LENGTH}
           disabled={saving}
           onChange={(changeEvent) => setDisplayName(changeEvent.target.value)}
         />

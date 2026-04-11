@@ -49,7 +49,8 @@
 | **ゲスト（匿名）** | Supabase 匿名サインイン。ブラウザセッション前提（データ消失リスクの注意表示あり）。 |
 | **ゲスト → Google / LINE 紐づけ** | ダッシュボードヘッダーのモーダルから **Google** は `auth.linkIdentity`（OAuth、`/auth/callback` に戻る）、**LINE** は `/api/auth/line?intent=link` → コールバックで匿名セッション時のみ `linkIdentity`（id_token）。**Supabase の「手動で ID をリンク」（Manual linking）をオン**にしないと紐づけは失敗する。 |
 | **セッション維持** | ミドルウェアで Supabase セッション更新。`/dashboard`・`/settings` は未ログイン時にガード。 |
-| **オンボーディング** | 初回表示名など（`/onboarding`）。 |
+| **オンボーディング** | 初回表示名など（`/onboarding`）。表示名は **最大 50 文字**（`DISPLAY_NAME_MAX_LENGTH`、フォーム `maxLength` と `PATCH /api/profile/display-name` の共通検証）。 |
+| **アバター（頭文字）** | プロフィール画像がない場合、`UserAvatar` が表示名から `stringToColor` で **決定論的なパステル背景**と **コントラストの前景色**（相対輝度に基づく）を適用。 |
 | **ピッチデッキ** | `/pitch` のスライド紹介。初回は `needs_pitch_deck` RPC 等で **閲覧必須ルート**になり得る。閲覧完了は `mark_pitch_deck_seen` / `POST /api/profile/pitch-deck-seen`。 |
 | **ログアウト** | ダッシュボード周辺から利用可能。 |
 

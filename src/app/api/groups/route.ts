@@ -1,5 +1,6 @@
 /**
  * Create a new split group; DB trigger adds the creator as owner member.
+ * 表示名（display_name）の更新は `PATCH /api/profile/display-name` で行う（50 文字制限あり）。
  * Returns `invite_token` so API clients can share the link without a second query.
  * 新しい割り勘グループを作成する。DB トリガーで作成者を owner メンバーに追加する。
  * `invite_token` を返し、2 回目の取得なしで招待リンクを共有できるようにする。
