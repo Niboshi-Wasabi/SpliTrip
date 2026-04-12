@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { isSupabaseAnonymousSession } from "@/lib/auth/is-supabase-anonymous-session";
 import { validateDisplayNameInput } from "@/lib/validation/display-name";
 import { createClient } from "@/utils/supabase/server";
 
@@ -13,6 +14,10 @@ export async function PATCH(request: NextRequest) {
 
   if (!user) {
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+  }
+
+  if (await isSupabaseAnonymousSession(supabase)) {
+    return NextResponse.json({ error: "guest_read_only" }, { status: 403 });
   }
 
   const parsed: unknown = await request.json().catch(() => null);
@@ -46,6 +51,10 @@ export async function PATCH(request: NextRequest) {
   });
 
   if (error) {
+    const detail = `${error.message ?? ""} ${"details" in error && typeof error.details === "string" ? error.details : ""}`;
+    if (detail.includes("anonymous_mutation_forbidden")) {
+      return NextResponse.json({ error: "guest_read_only" }, { status: 403 });
+    }
     console.error("[API/Action Error - PATCH /api/profile/display-name]:", error);
     return NextResponse.json(
       { error: "save_failed", message: INTERNAL_SERVER_ERROR_MESSAGE },

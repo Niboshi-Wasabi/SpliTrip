@@ -1,5 +1,7 @@
 import type { SupabaseClient, User } from "@supabase/supabase-js";
 
+import { isSupabaseAnonymousSession } from "@/lib/auth/is-supabase-anonymous-session";
+
 /** Best-effort display string from OAuth metadata or email local-part. */
 export function extractDisplayName(user: User): string {
   const meta = user.user_metadata ?? {};
@@ -31,6 +33,10 @@ export const DEFAULT_DISPLAY_NAMES = new Set(["ユーザー", "User", ""]);
 export async function checkNeedsOnboarding(
   supabase: SupabaseClient,
 ): Promise<boolean> {
+  if (await isSupabaseAnonymousSession(supabase)) {
+    return false;
+  }
+
   const { data: existingName, error } =
     await supabase.rpc("get_own_display_name");
   if (error) {
@@ -51,6 +57,10 @@ export async function checkNeedsOnboarding(
 export async function checkNeedsPitchDeck(
   supabase: SupabaseClient,
 ): Promise<boolean> {
+  if (await isSupabaseAnonymousSession(supabase)) {
+    return false;
+  }
+
   const { data, error } = await supabase.rpc("needs_pitch_deck");
   if (error) {
     console.error(
@@ -90,6 +100,10 @@ export async function upsertUserProfileFromAuth(
   user: User,
   overrides?: { displayName?: string; avatarUrl?: string | null },
 ): Promise<void> {
+  if (await isSupabaseAnonymousSession(supabase)) {
+    return;
+  }
+
   const oauthName =
     overrides?.displayName != null && overrides.displayName.length > 0
       ? overrides.displayName

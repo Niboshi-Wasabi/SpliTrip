@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { isSupabaseAnonymousSession } from "@/lib/auth/is-supabase-anonymous-session";
 import { createClient } from "@/utils/supabase/server";
 
 const INTERNAL_SERVER_ERROR_MESSAGE =
@@ -18,7 +19,7 @@ export async function POST() {
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
 
-  if (user.is_anonymous === true) {
+  if (await isSupabaseAnonymousSession(supabase)) {
     return NextResponse.json({ error: "guest_read_only" }, { status: 403 });
   }
 
