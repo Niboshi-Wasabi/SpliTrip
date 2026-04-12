@@ -5,25 +5,23 @@
 
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import { routing, type AppLocale } from "@/i18n/routing";
 import { getSupabaseEnv } from "./env";
 
 /**
- * Removes optional `/en` or `/ja` prefix so auth rules match localized URLs.
- * 先頭の `/en` `/ja` を除き、認証判定をローカライズ済み URL に適用する。
+ * Removes optional `/{locale}` prefix (any app locale) so auth rules match localized URLs.
+ * 先頭の `/{locale}` を除き、認証判定をローカライズ済み URL に適用する。
  */
 export function stripLocaleFromPathname(pathname: string): string {
-  if (pathname === "/en" || pathname === "/ja") {
+  const segments = pathname.split("/").filter(Boolean);
+  if (segments.length === 0) {
     return "/";
   }
-  if (pathname.startsWith("/en/")) {
-    const rest = pathname.slice(3);
-    return rest.length > 0 ? rest : "/";
+  const [first, ...rest] = segments;
+  if (routing.locales.includes(first as AppLocale)) {
+    return rest.length === 0 ? "/" : `/${rest.join("/")}`;
   }
-  if (pathname.startsWith("/ja/")) {
-    const rest = pathname.slice(3);
-    return rest.length > 0 ? rest : "/";
-  }
-  return pathname;
+  return pathname.startsWith("/") ? pathname : `/${pathname}`;
 }
 
 function isProtectedPath(pathname: string): boolean {

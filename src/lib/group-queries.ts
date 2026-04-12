@@ -31,8 +31,6 @@ export type GroupMemberRow = {
   cash_app_cashtag: string | null;
   /** Extra settlement URLs from `user_profiles.payment_links` (JSON array). */
   payment_links: PaymentLinkStored[] | null;
-  /** True for anonymous / lightweight guest accounts when flagged in DB. */
-  is_guest: boolean;
 };
 
 export type SplitRow = {
@@ -216,7 +214,6 @@ export async function fetchGroupDetailForUser(
     paypal_me_id: string | null;
     cash_app_cashtag: string | null;
     payment_links: unknown;
-    is_guest: boolean;
   };
   const profiles = (profilesRaw ?? []) as ProfileRow[];
 
@@ -308,7 +305,6 @@ export async function fetchGroupDetailForUser(
 
   const members: GroupMemberRow[] = membersList.map((memberRow) => {
     const payment = paymentFieldsByUserId[memberRow.user_id];
-    const profileRow = profiles.find((profile) => profile.id === memberRow.user_id);
     return {
       user_id: memberRow.user_id,
       role: memberRow.role,
@@ -318,7 +314,6 @@ export async function fetchGroupDetailForUser(
       paypal_me_id: payment?.paypal_me_id ?? null,
       cash_app_cashtag: payment?.cash_app_cashtag ?? null,
       payment_links: payment?.payment_links ?? null,
-      is_guest: profileRow?.is_guest ?? false,
     };
   });
 

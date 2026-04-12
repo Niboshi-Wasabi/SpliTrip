@@ -1,11 +1,9 @@
 "use client";
 
 /**
- * Unauthenticated invite: OAuth (Google / LINE), anonymous sign-in, or guest path via `join_group_by_invite`.
- * 未ログイン向け招待: Google / LINE OAuth または匿名参加。
+ * 未ログイン向け招待: Google / LINE OAuth のみ（ゲスト匿名は廃止）。
  *
  * No CAPTCHA gate: same UX rationale as the main login screen (smooth mobile + desktop).
- * CAPTCHA は置かない。ログイン画面と同様、操作の摩擦を減らすため。
  */
 
 import { useState, type FC } from "react";
@@ -27,7 +25,6 @@ import { isSupabaseConfigured } from "@/utils/supabase/env";
 import { getPublicSiteOrigin } from "@/utils/public-site-url";
 
 type LoginProvider = "google" | "line";
-type LoadingAction = LoginProvider | "guest";
 
 function GoogleIcon() {
   return (
@@ -96,7 +93,7 @@ export function JoinGate({ token }: Props) {
   const locale = useLocale();
   const translations = useTranslations("JoinGate");
   const tLogin = useTranslations("Login");
-  const [loadingAction, setLoadingAction] = useState<LoadingAction | null>(null);
+  const [loadingAction, setLoadingAction] = useState<LoginProvider | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const supabaseReady = isSupabaseConfigured();
@@ -130,52 +127,6 @@ export function JoinGate({ token }: Props) {
       setError(formatOAuthLoginError(authError));
       setLoadingAction(null);
     }
-  }
-
-  async function handleJoinAsGuest() {
-    if (!supabaseReady) {
-      setError(tLogin("supabaseNotConfigured"));
-      return;
-    }
-
-    setLoadingAction("guest");
-    setError(null);
-
-    const supabase = createClient();
-    const { data: anonData, error: authError } =
-      await supabase.auth.signInAnonymously();
-
-    if (authError) {
-      setError(authError.message || tLogin("guestModeError"));
-      setLoadingAction(null);
-      return;
-    }
-
-    if (anonData.user) {
-      await supabase.rpc("update_display_name", {
-        p_display_name: "ユーザー",
-      });
-    }
-
-    const { data: groupId, error: rpcError } = await supabase.rpc(
-      "join_group_by_invite",
-      { p_token: token },
-    );
-
-    if (rpcError) {
-      console.error("[Client join_group_by_invite]:", rpcError);
-      setError(translations("joinRpcError"));
-      setLoadingAction(null);
-      return;
-    }
-
-    if (!groupId) {
-      setError(translations("invalidInvite"));
-      setLoadingAction(null);
-      return;
-    }
-
-    window.location.replace(joinPath);
   }
 
   const authButtonsDisabled = !supabaseReady || loadingAction !== null;
@@ -217,20 +168,6 @@ export function JoinGate({ token }: Props) {
               );
             },
           )}
-
-          <Button
-            type="button"
-            variant="secondary"
-            size="lg"
-            className="flex w-full items-center justify-center gap-2 text-sm font-medium"
-            disabled={authButtonsDisabled}
-            onClick={() => void handleJoinAsGuest()}
-          >
-            {loadingAction === "guest" ? (
-              <Loader2 className="size-4 shrink-0 animate-spin" />
-            ) : null}
-            {loadingAction === "guest" ? translations("joining") : tLogin("guestMode")}
-          </Button>
         </CardContent>
       </Card>
     </div>

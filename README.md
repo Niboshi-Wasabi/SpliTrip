@@ -8,7 +8,7 @@
 
 ## 主な機能
 
-- **認証:** Google（OAuth / PKCE）、LINE、匿名ゲスト。ゲストからの Google / LINE 紐づけ。
+- **認証:** Google（OAuth / PKCE）、LINE。
 - **グループ:** 作成・招待（トークン / QR）・参加、メンバー表示、閲覧専用共有リンク（`public_share_token`）。
 - **出費:** カテゴリ、均等 / 金額指定 / シェア / パーセント / 品目別、端数ポリシー、領収書ストレージ、コメント・監査ログ。
 - **レシート AI:** Gemini による金額・説明・日付の候補抽出（無料枠あり、PRO は無制限）。
@@ -55,6 +55,7 @@ npm install
 | 変数（例） | 用途 |
 |------------|------|
 | `NEXT_PUBLIC_SUPABASE_URL` / `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase クライアント |
+| `SUPABASE_SERVICE_ROLE_KEY` | Stripe Webhook・サーバー専用処理など（クライアントに埋め込まない）。 |
 | `NEXT_PUBLIC_SITE_URL` | 本番・プレビューで OAuth 等のオリジン解決（例: `https://splitrip.net`） |
 | Google / LINE ログイン利用時 | Supabase・各コンソールのリダイレクト URL と整合させる（`LINE_CHANNEL_*`, `NEXT_PUBLIC_LINE_REDIRECT_URI` 等） |
 | Stripe 利用時 | `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `NEXT_PUBLIC_STRIPE_PAYMENT_LINK` 等 |

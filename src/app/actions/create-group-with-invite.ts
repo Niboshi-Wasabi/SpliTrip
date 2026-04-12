@@ -102,7 +102,15 @@ export async function createGroupWithInviteAction(
       "[API/Action Error - createGroupWithInviteAction RPC]:",
       rpcError,
     );
-    const mapped = errorCodeFromRpcMessage(rpcError.message);
+    const rpcDetail = [
+      rpcError.message,
+      "details" in rpcError && typeof rpcError.details === "string"
+        ? rpcError.details
+        : "",
+    ]
+      .filter(Boolean)
+      .join(" ");
+    const mapped = errorCodeFromRpcMessage(rpcDetail);
     if (mapped) {
       return { ok: false, errorCode: mapped };
     }

@@ -7,8 +7,6 @@
     "supabaseNotConfigured": "Supabase yapılandırılmamış. Proje kökündeki .env.local dosyasına NEXT_PUBLIC_SUPABASE_URL ve NEXT_PUBLIC_SUPABASE_ANON_KEY değerlerini ekleyip geliştirme sunucusunu yeniden başlatın.",
     "googleLogin": "Google ile devam et",
     "lineLogin": "LINE ile devam et",
-    "guestMode": "Misafir olarak devam et (hesap yok)",
-    "guestModeError": "Misafir modu başlatılamadı. Supabase’de anonim oturum açmanın etkin olduğundan emin olun.",
     "terms": "Kullanım Koşulları",
     "privacy": "Gizlilik Politikası",
     "termsPrivacyLead": "Giriş yaparak ",
@@ -52,9 +50,9 @@
           "title": "“Who pays next?” suggestions",
           "description": "Based on current balances, we suggest who should pay next to keep contributions fair."
         },
-        "guestJoin": {
-          "title": "Join instantly—no account required",
-          "description": "Share a URL or QR code. Guests can join anonymously without a full signup."
+        "inviteJoin": {
+          "title": "Quick join with invite links",
+          "description": "Share a URL or QR code. Members sign in with Google or LINE and join the group using the tokenized invite link."
         },
         "global": {
           "title": "Built for global groups",
@@ -107,10 +105,7 @@
   },
   "JoinGate": {
     "title": "Join the group",
-    "description": "Sign in with Google or LINE, or continue as a guest. After OAuth you’ll continue with this invite and enter the group.",
-    "joining": "Joining…",
-    "joinRpcError": "Could not join the group.",
-    "invalidInvite": "This invite link is invalid or the group was not found."
+    "description": "Sign in with Google or LINE. After signing in, you will continue with this invite into the group."
   },
   "GroupNew": {
     "backDashboard": "Dashboard",
@@ -367,7 +362,6 @@
     "balancedHint": "No big imbalance—who pays next won’t change much."
   },
   "Dashboard": {
-    "guestModeBanner": "You’re in guest mode. Closing the browser or clearing data may erase your records—linking an account is recommended.",
     "subtitle": "Dashboard",
     "statTotalSpend": "Total spend",
     "statGroupCount": "Groups",
@@ -375,13 +369,7 @@
     "groupsCardTitle": "Split groups",
     "groupsCardDescription": "Manage expenses, splits, and settlements per trip",
     "emptyGroups": "No groups yet. Create one with the button below.",
-    "createGroupButton": "Create a new trip (group)",
-    "guestLinkAccountButton": "Link account",
-    "guestLinkModalTitle": "Link Google or LINE",
-    "guestLinkModalDescription": "Link an account to keep your trips when you switch devices or clear this browser's data.",
-    "guestLinkGoogleLabel": "Continue with Google",
-    "guestLinkLineLabel": "Continue with LINE",
-    "guestLinkBusy": "Please wait…"
+    "createGroupButton": "Create a new trip (group)"
   },
   "CategoryChart": {
     "empty": "No spending data",
@@ -466,13 +454,13 @@
   },
   "Terms": {
     "pageTitle": "Terms of Service",
-    "lastUpdated": "Last updated: April 6, 2026",
+    "lastUpdated": "Last updated: April 13, 2026",
     "backTop": "Back to top",
     "intro": "These Terms of Service (the \"Terms\") govern the use of SpliTrip (the \"Service\"). By using the Service, you agree to these Terms.",
     "s1Title": "1. Overview",
     "s1Body": "The Service is a web application that helps users record group trip expenses, calculate how to split them, and share who should pay whom.",
     "s2Title": "2. Accounts & Authentication",
-    "s2Body": "Users may sign in with a Google account, a LINE account, or as a guest. When signing in through social login, the Service retrieves your public profile information (display name and profile picture) solely to set your display name and avatar within the Service.",
+    "s2Body": "Users may sign in with a Google account or a LINE account. When signing in through social login, the Service retrieves your public profile information (display name and profile picture) solely to set your display name and avatar within the Service.",
     "s3Title": "3. Prohibited Activities",
     "s3Items": [
       "Interfering with the normal operation of the Service",
@@ -485,8 +473,8 @@
     "s4Body": "The Service is a tool for recording and splitting expenses; it does not mediate, facilitate, or guarantee any actual monetary transfers between users. The operator assumes no liability whatsoever for financial disputes between users, or for any issues arising from the use of third-party payment services.",
     "s5Title": "5. AI Features & Data",
     "s5Body": "The receipt scanning feature uses the Google Gemini API. Images uploaded by users are sent to Google's servers solely for data extraction purposes and are NOT used to train AI models. The Service does not store uploaded images on its own servers; images are discarded after analysis.",
-    "s6Title": "6. Guest Mode Limitations",
-    "s6Body": "When using the Service in guest mode, data is tied to the browser session. Data may be lost if the browser is closed or cookies/cache are cleared. The operator assumes no responsibility for data recovery in guest mode.",
+    "s6Title": "6. Environment and Service Dependencies",
+    "s6Body": "The Service depends on internet connectivity and your browser environment. The operator is not liable for inability to use the Service or loss of data due to device loss, clearing browser data, or outages or policy changes by third-party services (Google, LINE, Supabase, etc.).",
     "s7Title": "7. Changes & Discontinuation",
     "s7Body": "The operator may modify, suspend, or terminate the Service at any time without prior notice. The operator is not liable for any disadvantage or damage caused to users as a result.",
     "s8Title": "8. Intellectual Property",
@@ -498,7 +486,7 @@
   },
   "Privacy": {
     "pageTitle": "Privacy Policy",
-    "lastUpdated": "Last updated: April 6, 2026",
+    "lastUpdated": "Last updated: April 13, 2026",
     "backTop": "Back to top",
     "intro": "This Privacy Policy explains how SpliTrip (the \"Service\") collects, uses, and protects user information.",
     "s1Title": "1. Information We Collect",
@@ -520,8 +508,8 @@
     "s3Body": "When you sign in with Google, we retrieve your Google public profile (display name, profile picture, email address). When you sign in with LINE, we retrieve your LINE public profile (display name, profile picture). This information is used solely for user identification and initializing your display name and avatar within the Service. We do not share this information with third parties.",
     "s4Title": "4. AI Feature Data Handling",
     "s4Body": "When using the receipt scanning feature, uploaded images are sent to the Google Gemini API. Images are processed solely for data extraction (recognizing amounts, store names, and dates) and are NOT used to train Google's AI models. The Service does not store image data on its own servers.",
-    "s5Title": "5. Guest Mode Data",
-    "s5Body": "In guest mode, account information is tied to the browser session. Data may be lost if the browser is closed or the cache is cleared. The operator does not guarantee data persistence for guest mode and is not responsible for recovering lost data.",
+    "s5Title": "5. Cookies and Sessions",
+    "s5Body": "The Service uses cookies to maintain authentication. If your session expires due to browser or device settings, you may need to sign in again.",
     "s6Title": "6. Data Storage & Security",
     "s6Body": "User data is stored on Supabase, a cloud database service. All communications are encrypted via HTTPS, and database access is controlled through Row Level Security (RLS).",
     "s7Title": "7. Third-Party Sharing",
@@ -589,8 +577,8 @@
     "featureReceiptBody": "Gemini reads amount, merchant, and date from a photo or file to pre-fill the form; receipts can live in Storage for later review in the detail dialog.",
     "featureExportAuditTitle": "Exports you can file—and an audit trail",
     "featureExportAuditBody": "Export trips to CSV, print, or PDF reports (PRO). Per-expense audit entries show who changed what and when.",
-    "featureAccessTitle": "Sign-in choices & invite links",
-    "featureAccessBody": "Google, LINE, or guest mode lower the barrier to join; tokenized invite URLs bring people straight into the group flow.",
+    "featureAccessTitle": "Google, LINE & invite links",
+    "featureAccessBody": "Social sign-in keeps onboarding simple; share a tokenized invite URL to add members to a group.",
     "backToApp": "Back to app",
     "ctaDashboard": "Open dashboard",
     "ctaHint": "Create a group and try the flow",
@@ -619,8 +607,8 @@
       "body": "Export trips to CSV, print, or PDF reports (PRO). Per-expense audit entries show who changed what and when."
     },
     "slide5": {
-      "title": "Sign-in choices & invite links",
-      "body": "Google, LINE, or guest mode lower the barrier to join; tokenized invite URLs bring people straight into the group flow."
+      "title": "Google, LINE & invite links",
+      "body": "Social sign-in keeps onboarding simple; share a tokenized invite URL to add members to a group."
     },
     "backToApp": "Back to app",
     "ctaDashboard": "Open dashboard",

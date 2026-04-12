@@ -70,7 +70,6 @@ erDiagram
 | `user_id` | `uuid` | NOT NULL | — | FK → `auth.users(id)` ON DELETE CASCADE, PK 一部 | ユーザー |
 | `role` | `text` | NOT NULL | `'member'` | CHECK `('owner','member')` | 役割 |
 | `joined_at` | `timestamptz` | NOT NULL | `now()` | — | 参加日時 |
-| `is_guest` | `boolean` | NOT NULL | `false` | — | 匿名ゲスト等の場合 true |
 
 **主キー:** `(group_id, user_id)`  
 **インデックス:** `user_id`（`idx_group_members_user_id`）
@@ -189,6 +188,12 @@ erDiagram
 
 ---
 
+## 付録: Security Advisor
+
+Supabase Dashboard の Advisor 警告の整理方針は **`SUPABASE_SECURITY_ADVISOR.md`** を参照。ゲスト（匿名）専用の RLS は **`20260413120000_remove_guest_and_anonymous_mode.sql`** で撤去済み。
+
+---
+
 ## 付録: Storage（テーブル外）
 
 領収書ファイルは **`receipts`** プライベートバケットに保存し、`group_expenses.receipt_url` にバケット内パスを保持する設計（`06230000` 付近のマイグレーション・ポリシー参照）。
@@ -201,3 +206,5 @@ erDiagram
 |------|------|
 | 2026-04-07 | 初版（現行マイグレーションに基づく `public` テーブル定義） |
 | 2026-04-11 | `user_profiles.premium_access_source` と PRO フラグ自己変更防止トリガー（`20260412140000`） |
+| 2026-04-11 | Security Advisor 想定 WARN の参照先として `SUPABASE_SECURITY_ADVISOR.md` を追記 |
+| 2026-04-13 | ゲストモード廃止（`is_guest` 列削除・匿名 RLS 撤去、`20260413120000`） |

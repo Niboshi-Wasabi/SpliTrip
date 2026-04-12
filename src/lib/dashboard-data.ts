@@ -23,8 +23,6 @@ export interface DashboardData {
   settlements: Settlement[];
   totalExpense: number;
   perPerson: number;
-  /** Supabase の匿名サインイン（signInAnonymously）利用中 */
-  isGuestMode: boolean;
 }
 
 const DEFAULT_CATEGORY = "その他";
@@ -40,7 +38,6 @@ const EMPTY_DASHBOARD: DashboardData = {
   settlements: [],
   totalExpense: 0,
   perPerson: 0,
-  isGuestMode: false,
 };
 
 export async function fetchDashboardData(): Promise<DashboardData> {
@@ -75,14 +72,12 @@ export async function fetchDashboardData(): Promise<DashboardData> {
     );
     return {
       ...EMPTY_DASHBOARD,
-      isGuestMode: user.is_anonymous === true,
     };
   }
 
   if (!membership) {
     return {
       ...EMPTY_DASHBOARD,
-      isGuestMode: user.is_anonymous === true,
     };
   }
 
@@ -114,7 +109,6 @@ export async function fetchDashboardData(): Promise<DashboardData> {
     return {
       ...EMPTY_DASHBOARD,
       tripName: trip?.name ?? DEFAULT_TRIP_NAME,
-      isGuestMode: user.is_anonymous === true,
     };
   }
 
@@ -238,6 +232,5 @@ export async function fetchDashboardData(): Promise<DashboardData> {
     settlements,
     totalExpense,
     perPerson,
-    isGuestMode: user.is_anonymous === true,
   };
 }

@@ -84,7 +84,6 @@ export default async function GroupDetailPage({ params }: PageProps) {
     console.error("[GroupDetail] fetchGroupDetailForUser failed:", result.error, {
       groupId,
       userId: user.id,
-      isAnonymous: user.is_anonymous,
     });
     notFound();
   }

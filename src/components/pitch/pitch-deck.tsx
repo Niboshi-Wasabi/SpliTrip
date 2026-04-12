@@ -12,7 +12,7 @@
  *   Receipt scan via server action + stored attachments for review.
  * - 書き出し・監査: `group-export-toolbar.tsx`（CSV / PDF / print・PRO）+ 出費詳細の audit API
  *   Exports and per-expense audit timeline for accountability.
- * - 認証・招待: Google / LINE / ゲスト + `create-group-with-invite` / join フロー（トークン招待）
+ * - 認証・招待: Google / LINE + `create-group-with-invite` / join フロー（トークン招待）
  *   Flexible auth and shareable invite links for groups.
  *
  * UI rationale — 構成の意図:
@@ -42,7 +42,7 @@ import { cn } from "@/lib/utils";
 type PitchDeckProps = {
   /** Open-redirect-safe path after finishing (e.g. /dashboard or /onboarding?next=…). */
   afterPitchPath: string;
-  /** When true, POST /api/profile/pitch-deck-seen before navigating（永続ログインのみ。匿名は DB 変異不可）。 */
+  /** When true, POST /api/profile/pitch-deck-seen before navigating（ログイン中のみ）。 */
   shouldPersistCompletion: boolean;
 };
 

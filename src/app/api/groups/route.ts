@@ -55,10 +55,11 @@ export async function POST(request: NextRequest) {
 
   if (error) {
     console.error("[API/Action Error - POST /api/groups create_group_with_invite]:", error);
-    if (error.message.includes("not_authenticated")) {
+    const detail = `${error.message ?? ""} ${"details" in error && typeof error.details === "string" ? error.details : ""}`;
+    if (detail.includes("not_authenticated")) {
       return NextResponse.json({ error: "unauthorized" }, { status: 401 });
     }
-    if (error.message.includes("name_required")) {
+    if (detail.includes("name_required")) {
       return NextResponse.json({ error: "name_required" }, { status: 400 });
     }
     return NextResponse.json(

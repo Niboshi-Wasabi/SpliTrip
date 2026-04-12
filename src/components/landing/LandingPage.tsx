@@ -45,7 +45,7 @@ const highlightFeatureConfig = [
   { key: "flexibleSplit" as const, icon: SlidersHorizontal },
   { key: "tapToPay" as const, icon: Wallet },
   { key: "nextPayer" as const, icon: Lightbulb },
-  { key: "guestJoin" as const, icon: QrCode },
+  { key: "inviteJoin" as const, icon: QrCode },
   { key: "global" as const, icon: Globe },
 ];
 

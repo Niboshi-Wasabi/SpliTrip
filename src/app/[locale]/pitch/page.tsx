@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { PitchDeck } from "@/components/pitch/pitch-deck";
-import { isAnonymousFromAuthState } from "@/lib/auth/is-supabase-anonymous-session";
 import { sanitizeRedirectPath } from "@/lib/auth/sanitize-redirect-path";
 import { createClient } from "@/utils/supabase/server";
 
@@ -39,18 +38,11 @@ export default async function PitchPage({ params, searchParams }: PageProps) {
     "/dashboard";
 
   const supabase = await createClient();
-  const [{ data: userData }, { data: sessionData }] = await Promise.all([
-    supabase.auth.getUser(),
-    supabase.auth.getSession(),
-  ]);
-  const user = userData.user;
-  const isAnonymous = isAnonymousFromAuthState({
-    user,
-    session: sessionData.session,
-  });
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
-  /** 匿名セッションは DB 変異不可のため閲覧完了の永続化は行わない（永続ユーザーだけ POST）。 */
-  const shouldPersistCompletion = user !== null && !isAnonymous;
+  const shouldPersistCompletion = user !== null;
 
   return (
     <PitchDeck

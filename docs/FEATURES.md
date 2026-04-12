@@ -45,9 +45,7 @@
 | 機能 | 内容 |
 |------|------|
 | **Google ログイン** | OAuth（PKCE）。`/auth/callback` でコード交換・セッション確立。 |
-| **LINE ログイン** | `/api/auth/line` → LINE → `/api/auth/callback/line` → サービスロール＋`verifyOtp` 相当でセッション確立（従来）。 |
-| **ゲスト（匿名）** | Supabase 匿名サインイン。ブラウザセッション前提（データ消失リスクの注意表示あり）。 |
-| **ゲスト → Google / LINE 紐づけ** | ダッシュボードヘッダーのモーダルから **Google** は `auth.linkIdentity`（OAuth、`/auth/callback` に戻る）、**LINE** は `/api/auth/line?intent=link` → コールバックで匿名セッション時のみ `linkIdentity`（id_token）。**Supabase の「手動で ID をリンク」（Manual linking）をオン**にしないと紐づけは失敗する。 |
+| **LINE ログイン** | `/api/auth/line` → LINE → `/api/auth/callback/line` → サービスロール＋`verifyOtp` 相当でセッション確立。 |
 | **セッション維持** | ミドルウェアで Supabase セッション更新。`/dashboard`・`/settings` は未ログイン時にガード。 |
 | **オンボーディング** | 初回表示名など（`/onboarding`）。表示名は **最大 50 文字**（`DISPLAY_NAME_MAX_LENGTH`、フォーム `maxLength` と `PATCH /api/profile/display-name` の共通検証）。 |
 | **アバター（頭文字）** | プロフィール画像がない場合、`UserAvatar` が表示名から `stringToColor` で **決定論的なパステル背景**と **コントラストの前景色**（相対輝度に基づく）を適用。 |
@@ -80,8 +78,8 @@
 | **グループ詳細** | `/dashboard/groups/[groupId]`：メンバー・アバター、通貨、招待、出費・グラフ・精算・エクスポートを一画面に集約。 |
 | **公開 URL エイリアス** | `/groups/[id]` → 認証済みダッシュボードの同グループへリダイレクト（招待メール用など）。 |
 | **招待** | `invite_token` ベースの `/join/[token]`。リンクコピー・共有・**QR 表示**。 |
-| **参加** | ログイン済みは RPC で参加。未ログインは **Google / LINE / ゲスト参加**（`JoinGate`）。匿名参加時に **ゲストフラグ** を RPC で付与する流れあり。 |
-| **メンバー** | 表示名・アバター。**ゲストメンバー**（`is_guest`）を区別可能。 |
+| **参加** | ログイン済みは RPC で参加。未ログインは **Google / LINE**（`JoinGate`）。 |
+| **メンバー** | 表示名・アバター。 |
 | **閲覧専用共有** | `/groups/[id]/shared?t=…` — ログイン不要。**`public_share_token` と一致する `t`** で RPC 経由のサマリー表示。 |
 
 ---
@@ -119,7 +117,6 @@
 |------|------|
 | **統計カード** | 総支出・グループ数・グループあたり平均など。 |
 | **支出グラフ** | **グループ別** / **カテゴリ別** の切替（Recharts）。グループ内でも **支払った人別 / カテゴリ別** の円グラフ。 |
-| **ゲスト注意バナー** | 匿名利用時のデータ消失リスクの案内。 |
 
 ---
 

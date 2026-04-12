@@ -38,7 +38,6 @@ import { PromoBanner } from "@/components/ads/PromoBanner";
 import { SupportDeveloper } from "@/components/ads/SupportDeveloper";
 import { DashboardSpendingChart } from "./dashboard-spending-chart";
 import { LogoutButton } from "./logout-button";
-import { GuestAccountLinkModal } from "./guest-account-link-modal";
 import { getCategoryColor, getExpenseCategoryChartColor } from "@/lib/categories";
 import {
   EXPENSE_CATEGORY_IDS,
@@ -51,12 +50,15 @@ export default async function DashboardPage({ params }: PageProps) {
   const { locale } = await params;
   const supabase = await createClient();
   const {
-    data: { user },
+    data: { user: authUser },
   } = await supabase.auth.getUser();
 
-  if (!user) {
-    throw new Error("unauthorized");
+  if (!authUser) {
+    redirect({ href: "/", locale });
+    throw new Error("unreachable");
   }
+
+  const user = authUser;
 
   const pitchHref = await getMandatoryPitchHref(supabase, "/dashboard");
   if (pitchHref) {
@@ -68,8 +70,6 @@ export default async function DashboardPage({ params }: PageProps) {
     redirect({ href: "/onboarding?next=/dashboard", locale });
     return;
   }
-
-  const isGuestMode = user.is_anonymous === true;
 
   const { data: ownProfileRaw } = await supabase.rpc("get_own_profile");
   const ownProfile =
@@ -215,15 +215,6 @@ export default async function DashboardPage({ params }: PageProps) {
 
   return (
     <div className="min-h-screen bg-background">
-      {isGuestMode ? (
-        <div
-          role="status"
-          className="border-b border-amber-200 bg-amber-50 px-4 py-2.5 text-center text-sm leading-snug text-amber-950 dark:border-amber-900/60 dark:bg-amber-950/35 dark:text-amber-100"
-        >
-          ⚠️ {dashboardPageTranslations("guestModeBanner")}
-        </div>
-      ) : null}
-
       <header className="border-b border-border bg-card shadow-sm">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3">
           <div className="flex items-center gap-3">
@@ -245,7 +236,6 @@ export default async function DashboardPage({ params }: PageProps) {
             <SupportDeveloper variant="header" />
           </div>
           <div className="flex items-center gap-1 sm:gap-2">
-            {isGuestMode ? <GuestAccountLinkModal /> : null}
             <ThemeToggle />
             {/* PC: テキスト付きナビ、モバイル: ボトムナビに移譲 */}
             {/* PC: text nav buttons, Mobile: delegated to bottom nav */}

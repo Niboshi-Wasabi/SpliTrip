@@ -15,23 +15,31 @@ import { getSupabaseEnv } from "@/utils/supabase/env";
 /**
  * Clones the request with an added or replaced locale cookie (Request cookie header).
  * ロケール Cookie を付け替えたリクエストを複製する。
+ *
+ * `request.cookies.getAll()` から Cookie ヘッダーを組み直すと、値のエンコーディングや分割 Cookie
+ * の扱いで Supabase セッションが欠落することがあるため、生の `Cookie` から `NEXT_LOCALE` 行だけを差し替える。
  */
 function withLocaleCookie(
   request: NextRequest,
   locale: (typeof routing.locales)[number],
 ): NextRequest {
-  const jar = new Map<string, string>();
-  for (const cookie of request.cookies.getAll()) {
-    if (cookie.name !== NEXT_INTL_LOCALE_COOKIE_NAME) {
-      jar.set(cookie.name, cookie.value);
-    }
-  }
-  jar.set(NEXT_INTL_LOCALE_COOKIE_NAME, locale);
-  const cookieHeader = Array.from(jar.entries())
-    .map(([name, value]) => `${name}=${value}`)
-    .join("; ");
+  const name = NEXT_INTL_LOCALE_COOKIE_NAME;
+  const raw = request.headers.get("cookie") ?? "";
+  const kept = raw
+    .split(";")
+    .map((part) => part.trim())
+    .filter((part) => {
+      if (part.length === 0) return false;
+      const eq = part.indexOf("=");
+      if (eq <= 0) return true;
+      const segmentName = part.slice(0, eq).trim();
+      return segmentName !== name;
+    });
+  const assignment = `${name}=${locale}`;
+  const nextCookie =
+    kept.length > 0 ? `${kept.join("; ")}; ${assignment}` : assignment;
   const headers = new Headers(request.headers);
-  headers.set("cookie", cookieHeader);
+  headers.set("cookie", nextCookie);
   return new NextRequest(request.url, { headers, method: request.method });
 }
 

@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { redirect } from "@/i18n/navigation";
 import { JoinGate } from "./join-gate";
 import { isInviteTokenFormat } from "@/lib/invite-token";
+import { joinGroupByInviteForUser } from "@/lib/join-group-by-invite";
 import {
   upsertUserProfileFromAuth,
   checkNeedsOnboarding,
@@ -14,14 +15,13 @@ export const dynamic = "force-dynamic";
 type PageProps = { params: Promise<{ locale: string; token: string }> };
 
 /**
- * Invite landing: authenticated users join via RPC; guests see `JoinGate`.
- * 招待ランディング: ログイン済みは RPC で参加し、未ログインは `JoinGate` を表示する。
+ * Invite landing: authenticated users join via RPC; unauthenticated users see `JoinGate` (OAuth only).
+ * 招待ランディング: ログイン済みは RPC で参加し、未ログインは `JoinGate`（OAuth）を表示する。
  *
  * Logged-in users never get 404 here: bad/expired invites redirect to `/dashboard`.
  * ログイン済みは 404 にせず、無効・期限切れ招待は `/dashboard` へ送る。
  *
- * Why hybrid: same `join_group_by_invite` RPC for both paths keeps RLS and token rules in one place.
- * ハイブリッドの理由: 両経路で同一 RPC を使い、RLS とトークン検証を一箇所に集約する。
+ * Join: `joinGroupByInviteForUser`（`join_group_by_invite` RPC）。
  */
 export default async function JoinByInvitePage({ params }: PageProps) {
   const { locale, token } = await params;
@@ -60,51 +60,19 @@ export default async function JoinByInvitePage({ params }: PageProps) {
     return;
   }
 
-  const { data: groupId, error: joinError } = await supabase.rpc(
-    "join_group_by_invite",
-    {
-      p_token: trimmedToken,
-    },
-  );
+  const joinResult = await joinGroupByInviteForUser(supabase, user, trimmedToken);
 
-  if (joinError) {
-    if (joinError.message.includes("Could not find the function")) {
-      console.error(
-        "[API/Action Error - join_group_by_invite RPC missing (check migrations / schema reload)]:",
-        joinError,
-      );
-    } else {
-      console.error("[API/Action Error - join_group_by_invite]:", joinError);
-    }
+  if (!joinResult.ok) {
+    console.error("[JoinPage] joinGroupByInviteForUser failed:", joinResult.error, {
+      tokenLen: trimmedToken.length,
+    });
     redirect({ href: "/dashboard", locale });
+    throw new Error("unreachable");
   }
 
-  if (!groupId) {
-    console.error(
-      "[JoinPage] groupId is null after RPC — invalid or expired invite (token length:",
-      trimmedToken.length,
-      ")",
-    );
-    redirect({ href: "/dashboard", locale });
-  }
+  const groupId = joinResult.groupId;
 
   await upsertUserProfileFromAuth(supabase, user);
-
-  if (user.is_anonymous === true) {
-    const { error: guestFlagError } = await supabase.rpc(
-      "set_own_member_guest_flag",
-      {
-        p_group_id: groupId as string,
-        p_is_guest: true,
-      },
-    );
-    if (guestFlagError) {
-      console.error(
-        "[API/Action Error - set_own_member_guest_flag]:",
-        guestFlagError,
-      );
-    }
-  }
 
   redirect({ href: `/dashboard/groups/${groupId}`, locale });
 }

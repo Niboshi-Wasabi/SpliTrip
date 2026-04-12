@@ -54,12 +54,12 @@ export function CreateGroupForm() {
               : result.errorCode === "name_required"
                 ? tErr("name_required")
                 : result.errorCode === "insert_failed"
-                  ? tErr("insert_failed")
-                  : result.errorCode === "session_invalid"
-                    ? tErr("session_invalid")
-                    : result.errorCode === "invalid_response"
-                      ? tErr("invalid_response")
-                      : null;
+                    ? tErr("insert_failed")
+                    : result.errorCode === "session_invalid"
+                      ? tErr("session_invalid")
+                      : result.errorCode === "invalid_response"
+                        ? tErr("invalid_response")
+                        : null;
           setError(
             mapped ??
               result.message ??

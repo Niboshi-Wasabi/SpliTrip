@@ -10,7 +10,6 @@ jest.mock("@/utils/supabase/client", () => ({
   createClient: () => ({
     auth: {
       signInWithOAuth: jest.fn().mockResolvedValue({ error: null }),
-      signInAnonymously: jest.fn().mockResolvedValue({ error: null }),
     },
   }),
 }));
@@ -90,19 +89,10 @@ describe("LoginForm", () => {
     expect(screen.getByText("LINEでログイン")).toBeInTheDocument();
   });
 
-  it("認証ボタン3つとテーマ切り替えが存在する", () => {
+  it("OAuth 2 つとテーマ切り替えが存在する", () => {
     render(<LoginForm />);
     const buttons = screen.getAllByRole("button");
-    expect(buttons).toHaveLength(4);
-  });
-
-  it("ゲストモードボタンが表示される", () => {
-    render(<LoginForm />);
-    expect(
-      screen.getByRole("button", {
-        name: /アカウント作成せずに利用する（ゲストモード）/,
-      }),
-    ).toBeInTheDocument();
+    expect(buttons).toHaveLength(3);
   });
 
   it("キャッチコピーが表示される", () => {

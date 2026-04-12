@@ -1,8 +1,7 @@
 "use client";
 
 /**
- * OAuth + guest entry; copy is driven by next-intl `Login` messages.
- * OAuth・ゲスト入口。文言は next-intl の `Login` 名前空間で管理する。
+ * OAuth ログイン。文言は next-intl の `Login` 名前空間で管理する。
  *
  * Intentionally no third-party CAPTCHA (e.g. Cloudflare Turnstile): we removed it
  * so sign-in stays frictionless on mobile and desktop (better UX).
@@ -14,7 +13,7 @@ import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { Loader2 } from "lucide-react";
-import { Link, useRouter } from "@/i18n/navigation";
+import { Link } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -33,7 +32,7 @@ import { getPublicSiteOrigin } from "@/utils/public-site-url";
 import type { Provider } from "@supabase/supabase-js";
 
 type LoginProvider = "google" | "line";
-type LoadingAction = LoginProvider | "guest";
+type LoadingAction = LoginProvider;
 
 function GoogleIcon() {
   return (
@@ -94,7 +93,6 @@ const PROVIDER_CONFIG: {
 ];
 
 export function LoginForm() {
-  const router = useRouter();
   const locale = useLocale();
   const translations = useTranslations("Login");
   const searchParams = useSearchParams();
@@ -142,28 +140,6 @@ export function LoginForm() {
       setError(formatOAuthLoginError(authError));
       setLoadingAction(null);
     }
-  }
-
-  async function handleGuestSignIn() {
-    if (!isSupabaseConfigured()) {
-      setError(translations("supabaseNotConfigured"));
-      return;
-    }
-
-    setLoadingAction("guest");
-    setError(urlErrorMessage);
-
-    const supabase = createClient();
-    const { error: authError } = await supabase.auth.signInAnonymously();
-
-    if (authError) {
-      setError(authError.message || translations("guestModeError"));
-      setLoadingAction(null);
-      return;
-    }
-
-    router.push("/dashboard");
-    router.refresh();
   }
 
   const authButtonsDisabled = !supabaseReady || loadingAction !== null;
@@ -233,20 +209,6 @@ export function LoginForm() {
               );
             },
           )}
-
-          <Button
-            type="button"
-            variant="secondary"
-            size="lg"
-            className="flex w-full items-center justify-center gap-2 text-sm font-medium"
-            disabled={authButtonsDisabled}
-            onClick={() => void handleGuestSignIn()}
-          >
-            {loadingAction === "guest" ? (
-              <Loader2 className="h-5 w-5 shrink-0 animate-spin" />
-            ) : null}
-            {translations("guestMode")}
-          </Button>
         </CardContent>
       </Card>
 

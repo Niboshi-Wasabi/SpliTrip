@@ -32,9 +32,6 @@ export async function GET(request: NextRequest) {
   const returnPath = sanitizeRedirectPath(
     request.nextUrl.searchParams.get("next"),
   );
-  const linkIntent =
-    request.nextUrl.searchParams.get("intent") === "link" ? "link" : null;
-
   const authorizeQuery = new URLSearchParams({
     response_type: "code",
     client_id: lineEnv.channelId,
@@ -60,15 +57,11 @@ export async function GET(request: NextRequest) {
       lineOAuthCookieClearOptions(),
     );
   }
-  if (linkIntent === "link") {
-    redirectToLine.cookies.set(LINE_OAUTH_INTENT_COOKIE, "link", pending);
-  } else {
-    redirectToLine.cookies.set(
-      LINE_OAUTH_INTENT_COOKIE,
-      "",
-      lineOAuthCookieClearOptions(),
-    );
-  }
+  redirectToLine.cookies.set(
+    LINE_OAUTH_INTENT_COOKIE,
+    "",
+    lineOAuthCookieClearOptions(),
+  );
 
   return redirectToLine;
 }
