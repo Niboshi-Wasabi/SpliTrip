@@ -42,7 +42,7 @@ import { cn } from "@/lib/utils";
 type PitchDeckProps = {
   /** Open-redirect-safe path after finishing (e.g. /dashboard or /onboarding?next=…). */
   afterPitchPath: string;
-  /** When true, POST /api/profile/pitch-deck-seen before navigating (logged-in users). */
+  /** When true, POST /api/profile/pitch-deck-seen before navigating（永続ログインのみ。匿名は DB 変異不可）。 */
   shouldPersistCompletion: boolean;
 };
 

@@ -42,10 +42,14 @@ export default async function PitchPage({ params, searchParams }: PageProps) {
     data: { user },
   } = await supabase.auth.getUser();
 
+  /** 匿名セッションは DB 変異不可のため閲覧完了の永続化は行わない（永続ユーザーだけ POST）。 */
+  const shouldPersistCompletion =
+    user !== null && user.is_anonymous !== true;
+
   return (
     <PitchDeck
       afterPitchPath={safeNextPath}
-      shouldPersistCompletion={user !== null}
+      shouldPersistCompletion={shouldPersistCompletion}
     />
   );
 }

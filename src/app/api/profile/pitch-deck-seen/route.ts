@@ -18,9 +18,17 @@ export async function POST() {
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
 
+  if (user.is_anonymous === true) {
+    return NextResponse.json({ error: "guest_read_only" }, { status: 403 });
+  }
+
   const { error } = await supabase.rpc("mark_pitch_deck_seen");
 
   if (error) {
+    const detail = `${error.message ?? ""} ${"details" in error && typeof error.details === "string" ? error.details : ""}`;
+    if (detail.includes("anonymous_mutation_forbidden")) {
+      return NextResponse.json({ error: "guest_read_only" }, { status: 403 });
+    }
     console.error("[API/Action Error - POST /api/profile/pitch-deck-seen]:", error);
     return NextResponse.json(
       { error: "rpc_failed", message: INTERNAL_SERVER_ERROR_MESSAGE },
