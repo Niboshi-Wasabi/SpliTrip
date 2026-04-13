@@ -1,9 +1,9 @@
 {
   "Login": {
     "brandSubtitle": "SpliTrip",
-    "tagline": "Make group trip expenses simpler.",
+    "tagline": "Split trip expenses, simply.",
     "title": "Sign in",
-    "description": "Sign in with a social account to start splitting expenses",
+    "description": "Sign in with Google or LINE to start.",
     "supabaseNotConfigured": "Supabase is not configured. Set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY in .env.local at the project root, then restart the dev server.",
     "googleLogin": "Continue with Google",
     "lineLogin": "Continue with LINE",
@@ -19,17 +19,17 @@
     "ja": "JA",
     "en": "EN",
     "modalTitle": "Display language",
-    "modalDescription": "Choose the language used in the app interface.",
+    "modalDescription": "Choose your display language.",
     "openModal": "Choose language"
   },
   "Beta": {
     "badge": "BETA",
     "badgeAria": "This app is in open beta",
-    "dashboardTitle": "Welcome to SpliTrip Open Beta",
-    "dashboardNote": "Features and UI may change. You might run into bugs—thank you for your patience and feedback."
+    "dashboardTitle": "SpliTrip Open Beta",
+    "dashboardNote": "Features and UI may change. If you find issues, please send feedback."
   },
   "AppFooter": {
-    "betaBugReport": "Report bugs & feedback (open beta)"
+    "betaBugReport": "Send feedback"
   },
   "Landing": {
     "header": {
@@ -37,38 +37,38 @@
     },
     "hero": {
       "badge": "AI trip expense splits",
-      "description": "Scan receipts, split flexibly, and trim transfers. Your phone is enough.",
+      "description": "Scan receipts, split flexibly, and settle with fewer transfers.",
       "primaryCta": "Get started free",
-      "secondaryCta": "See product highlights",
-      "title": "Split costs and settle up—with less friction."
+      "secondaryCta": "View features",
+      "title": "Split costs and settle up, faster."
     },
     "features": {
-      "highlightsHeading": "What makes SpliTrip different",
+      "highlightsHeading": "Why SpliTrip",
       "heading": "Core features",
       "highlights": {
         "receiptAi": {
           "title": "AI receipt capture",
-          "description": "Photograph a receipt and AI (Gemini) fills in amount and details—no tedious typing."
+          "description": "Take a receipt photo and AI (Gemini) fills in amount and details."
         },
         "flexibleSplit": {
           "title": "Flexible split options",
-          "description": "Beyond equal splits: percentages, ratios, and per-line item allocation for every real-world scenario."
+          "description": "Use equal, percentage, ratio, or itemized splits as needed."
         },
         "tapToPay": {
           "title": "One-tap payouts",
-          "description": "From the settlement screen, jump straight to each member’s payment links (e.g. PayPay) to send money."
+          "description": "Open each member's payment link (for example, PayPay) right from settlement."
         },
         "nextPayer": {
           "title": "“Who pays next?” suggestions",
-          "description": "Based on current balances, we suggest who should pay next to keep contributions fair."
+          "description": "Based on current balances, we suggest who should pay next."
         },
         "inviteJoin": {
           "title": "Quick join with invite links",
-          "description": "Share a URL or QR code. Members sign in with Google or LINE and join the group using the tokenized invite link."
+          "description": "Share a URL or QR code. Members can sign in and join quickly."
         },
         "global": {
           "title": "Built for global groups",
-          "description": "Japanese and English support for multilingual travel crews."
+          "description": "Japanese and English support for multilingual groups."
         }
       },
       "ai": {
@@ -90,7 +90,7 @@
     },
     "pricing": {
       "heading": "Pricing",
-      "subheading": "Start free on our freemium plan—upgrade when you need more.",
+      "subheading": "Start free, then upgrade when needed.",
       "free": {
         "title": "Free",
         "badge": "Free",
@@ -110,19 +110,19 @@
       }
     },
     "cta": {
-      "title": "Make your next trip settlement stress-free",
-      "description": "Try an end-to-end flow from invite to final settlement directly from your phone.",
-      "button": "Start with SpliTrip"
+      "title": "Settle your next trip without the hassle",
+      "description": "From invite to settlement, everything works on your phone.",
+      "button": "Get started"
     }
   },
   "JoinGate": {
     "title": "Join the group",
-    "description": "Sign in with Google or LINE. After signing in, you will continue with this invite into the group."
+    "description": "Sign in with Google or LINE to join this group."
   },
   "GroupNew": {
     "backDashboard": "Dashboard",
-    "pageTitle": "Create a new trip (group)",
-    "pageDescription": "Record expenses together and share how to split and who pays whom.",
+    "pageTitle": "Create a new trip group",
+    "pageDescription": "Track expenses and share split and settlement details.",
     "groupNameLabel": "Group name (trip name)",
     "groupNamePlaceholder": "e.g. Okinawa 2026",
     "currencyLabel": "Currency code",
@@ -140,7 +140,7 @@
     },
     "postCreate": {
       "title": "Group created",
-      "description": "Invite members now. You can copy the link later from the group page too.",
+      "description": "Invite members now, or copy the link later from the group page.",
       "copy": "Copy invite link",
       "copied": "Copied",
       "openGroup": "Open group",
@@ -157,13 +157,13 @@
   "Settings": {
     "backDashboard": "Dashboard",
     "displayNameTitle": "Display name",
-    "displayNameDescription": "The name shown to other group members in member lists and settlements.",
+    "displayNameDescription": "This name appears in member lists and settlements.",
     "languageTitle": "Display language",
-    "languageDescription": "While signed in, this choice is used first for the UI.",
+    "languageDescription": "While signed in, this setting takes priority.",
     "languageJa": "Japanese",
     "languageEn": "English",
     "saving": "Saving…",
-    "saved": "Saved.",
+    "saved": "Saved",
     "saveError": "Could not save.",
     "updateLanguage": "Update language",
     "paymentMigrationHint": "To save payout handles, run the migration `supabase/migrations/20260405190000_user_profiles_payment_ids.sql` in the Supabase SQL Editor so `user_profiles` has `paypal_me_id` and `cash_app_cashtag`.",
@@ -175,13 +175,13 @@
   },
   "DisplayName": {
     "title": "Set your display name",
-    "description": "Enter the name shown to other group members.",
+    "description": "Enter the name shown in your groups.",
     "label": "Display name",
     "placeholder": "e.g. John Doe",
     "hint": "Shown in member lists and settlement summaries. Max 50 characters.",
     "save": "Save",
     "saving": "Saving…",
-    "saved": "Display name saved.",
+    "saved": "Saved",
     "skip": "Later",
     "edit": "Edit",
     "editTitle": "Change display name",
@@ -234,7 +234,7 @@
     "hintExactOk": "Split amounts add up to the payment total.",
     "sharesZeroHint": "Relative weights (e.g. 2 and 1 means a 2:1 split). People with 0 are left out of this split.",
     "validationErrors": {
-      "split_sum_mismatch": "Split amounts don’t match the payment total. Please double-check the numbers.",
+      "split_sum_mismatch": "Split amounts don’t match the payment total. Check the values.",
       "manual_splits_required": "Enter an amount for each person",
       "share_inputs_required": "Enter share weights",
       "percent_inputs_required": "Enter percentages",
@@ -253,7 +253,7 @@
       "invalid_total": "The total amount doesn’t look right"
     },
     "title": "Add expense",
-    "emptyMembers": "You can’t add an expense because there are no members.",
+    "emptyMembers": "No members yet. Add members first.",
     "payerLabel": "Who paid",
     "ownerSuffix": " (owner)",
     "amountLabelInteger": "Amount ({currency}, whole units)",
@@ -379,9 +379,9 @@
     "statGroupCount": "Groups",
     "statAvgPerGroup": "Per group (avg)",
     "groupsCardTitle": "Split groups",
-    "groupsCardDescription": "Manage expenses, splits, and settlements per trip",
-    "emptyGroups": "No groups yet. Create one with the button below.",
-    "createGroupButton": "Create a new trip (group)"
+    "groupsCardDescription": "Manage expenses, splits, and settlements by trip",
+    "emptyGroups": "No groups yet. Create your first one.",
+    "createGroupButton": "Create group"
   },
   "CategoryChart": {
     "empty": "No spending data",
@@ -398,8 +398,8 @@
     "faviconAlt": ""
   },
   "Onboarding": {
-    "title": "Set your username",
-    "description": "Enter the name shown to other group members. You can change it later.",
+    "title": "Set your name",
+    "description": "This name is shown to other group members. You can change it later.",
     "label": "Username",
     "placeholder": "e.g. John Doe",
     "hint": "Max 50 characters. Shown in member lists and settlements.",
@@ -413,7 +413,7 @@
     "qrHint": "Scan with your phone to join"
   },
   "Realtime": {
-    "updated": "Data updated"
+    "updated": "Updated"
   },
   "Exchange": {
     "approx": "≈ {converted}",
@@ -436,14 +436,14 @@
   },
   "Maintenance": {
     "pageTitle": "Maintenance | SpliTrip",
-    "headline": "We are under maintenance",
-    "body": "Please try again in a little while.",
+    "headline": "Under maintenance",
+    "body": "Please try again shortly.",
     "tryAgain": "Retry from home",
     "announcementLabel": "Notice"
   },
   "Premium": {
-    "modalTitle": "Upgrade to SpliTrip PRO for smarter trip splitting.",
-    "modalSubtitle": "The paid plan unlocks all features below.",
+    "modalTitle": "Upgrade to SpliTrip PRO",
+    "modalSubtitle": "The paid plan includes the features below.",
     "benefitOcr": "Unlimited AI receipt scanning",
     "benefitExport": "PDF & CSV report export",
     "benefitNoAds": "Ad-free, cleaner screens",
@@ -451,7 +451,7 @@
     "ctaLiveHint": "You will be redirected to Stripe Checkout. PRO is enabled after payment.",
     "ctaComingSoon": "PRO plan is currently in preparation (Coming Soon)",
     "ctaComingSoonHint": "Coming soon!",
-    "upgradeSuccess": "Upgrade successful! Your PRO features are now unlocked.",
+    "upgradeSuccess": "Upgrade complete. PRO is now active.",
     "aiScanLabelPro": "AI scan (PRO · unlimited)",
     "ocrScanLockedAria": "Free AI scans used up. Open upgrade info."
   },
@@ -460,7 +460,7 @@
     "scanning": "Analyzing image…",
     "success": "Scan complete. Please review the details.",
     "error": "Failed to read the image",
-    "hint": "Auto-fill amount, description & date from a receipt or screenshot",
+    "hint": "Auto-fill amount, description, and date from a receipt or screenshot",
     "aiScanRemaining": "AI scan ({count} left)",
     "ocrLimitReached": "You’ve used all free AI scans. Upgrade to PRO to keep going."
   },
@@ -639,52 +639,52 @@
     },
     "hero": {
       "kicker": "OPEN BETA",
-      "titleLine1": "Make travel expense splitting and settlement",
-      "titleLine2": "radically smoother.",
-      "description": "Speed up input with AI receipt scanning. Use flexible split logic across equal, exact amount, ratio, percentage, and itemized modes. Then minimize transfer hops with an optimized settlement algorithm.",
+      "titleLine1": "Split and settle travel expenses",
+      "titleLine2": "with less effort.",
+      "description": "Use AI receipt scan, flexible split rules, and optimized settlement in one flow.",
       "cta": "JOIN THE OPEN BETA",
       "note": "* No credit card required. Free to start."
     },
     "bento": {
-      "title": "Bento Feature Highlights",
-      "subtitle": "A practical overview of SpliTrip's strongest capabilities.",
+      "title": "Feature highlights",
+      "subtitle": "A quick look at what SpliTrip can do.",
       "ai": {
         "title": "AI Receipt Parsing",
-        "body": "Gemini AI analyzes receipt images in seconds and auto-fills line items and amounts, dramatically reducing manual entry."
+        "body": "Gemini AI reads receipt images and auto-fills items and amounts."
       },
       "split": {
         "title": "Flexible Splits",
-        "body": "Support equal split, exact amount, ratio share, percentage, and itemized allocation so each trip can use the right rule."
+        "body": "Use equal split, exact amounts, ratios, percentages, or itemized allocation."
       },
       "optimize": {
         "title": "Settlement Algorithm",
-        "body": "Our optimization logic minimizes transfer count and clearly shows who should pay whom, and how much."
+        "body": "Shows who should pay whom while reducing transfer count."
       }
     },
     "detailed": {
       "title": "Detailed Features",
       "items": {
         "global": {
-          "title": "Global Ready",
-          "body": "Bilingual support in Japanese and English, plus reference FX conversion for cross-currency trip budgeting."
+          "title": "Global support",
+          "body": "Japanese and English support, plus reference FX conversion."
         },
         "join": {
-          "title": "Seamless Onboarding",
-          "body": "No app install required. Join instantly via QR code or invite link using Google or LINE login."
+          "title": "Quick onboarding",
+          "body": "No app install. Join by QR code or invite link with Google or LINE."
         },
         "payment": {
           "title": "Payment Link Integration",
-          "body": "Save transfer URLs (such as PayPay) in your profile and jump to payment with one tap from settlement rows."
+          "body": "Save payout URLs (such as PayPay) and open them from settlement rows."
         },
         "audit": {
-          "title": "Transparent Team Accounting",
-          "body": "Category charts, per-expense comments, and audit logs provide visibility and trust for shared travel costs."
+          "title": "Clear team accounting",
+          "body": "Use category charts, comments, and audit logs to keep records clear."
         }
       }
     },
     "pricing": {
       "title": "Pricing",
-      "subtitle": "Start with Free and upgrade to PRO when you need deeper automation.",
+      "subtitle": "Start with Free, upgrade to PRO when needed.",
       "free": {
         "title": "Free",
         "badge": "Free",
@@ -700,7 +700,7 @@
         "items": {
           "receipt": "Unlimited AI receipt scanning",
           "export": "Advanced CSV/PDF report export",
-          "advanced": "Extended workflows for heavy group operations"
+          "advanced": "Advanced tools for larger groups"
         }
       }
     }
