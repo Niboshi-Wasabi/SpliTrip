@@ -12,6 +12,37 @@ import type { Config } from "tailwindcss";
  */
 const config = {
   darkMode: "class",
+  theme: {
+    extend: {
+      fontFamily: {
+        /**
+         * 明朝ベースの本文スタック。実体は `globals.css` の `--font-serif`（`data-ui-sans` ごと）。
+         * Source Serif 4 → Noto Serif JP（ja）→ OS 明朝 → serif。
+         */
+        serif: [
+          "var(--font-serif)",
+          "var(--font-source-serif)",
+          '"Yu Mincho"',
+          '"Hiragino Mincho ProN"',
+          '"Hiragino Mincho Pro"',
+          '"MS PMincho"',
+          "serif",
+        ],
+        /** 明示的な UI ゴシック（`font-sans`）。body の既定は `font-serif`。 */
+        sans: [
+          "ui-sans-serif",
+          "system-ui",
+          "-apple-system",
+          "BlinkMacSystemFont",
+          '"Segoe UI"',
+          "Roboto",
+          '"Helvetica Neue"',
+          "Arial",
+          "sans-serif",
+        ],
+      },
+    },
+  },
 } satisfies Config;
 
 export default config;

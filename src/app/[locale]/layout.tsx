@@ -5,10 +5,10 @@ import {
   Noto_Sans,
   Noto_Sans_Arabic,
   Noto_Sans_Devanagari,
-  Noto_Sans_JP,
   Noto_Sans_KR,
   Noto_Sans_SC,
   Noto_Sans_TC,
+  Noto_Serif_JP,
   Source_Serif_4,
 } from "next/font/google";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
@@ -30,15 +30,15 @@ const firaCode = Fira_Code({
 });
 
 const sourceSerif4 = Source_Serif_4({
-  variable: "--font-source-serif-4",
+  variable: "--font-source-serif",
   subsets: ["latin", "latin-ext", "cyrillic", "cyrillic-ext"],
   weight: ["400", "500", "600", "700"],
   display: "swap",
   preload: false,
 });
 
-const notoSansJp = Noto_Sans_JP({
-  variable: "--font-noto-sans-jp",
+const notoSerifJp = Noto_Serif_JP({
+  variable: "--font-noto-serif-jp",
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
   display: "swap",
@@ -94,7 +94,7 @@ const notoSansDevanagari = Noto_Sans_Devanagari({
 });
 
 const googleSansByKey = {
-  notoJp: notoSansJp,
+  notoJp: notoSerifJp,
   notoSc: notoSansSc,
   notoTc: notoSansTc,
   notoKr: notoSansKr,
@@ -181,7 +181,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
         <script defer src="/theme-bootstrap.js" />
       </head>
       <body
-        className="flex min-h-full flex-col bg-background text-foreground antialiased transition-colors"
+        className="font-serif flex min-h-full flex-col bg-background text-foreground antialiased transition-colors"
         suppressHydrationWarning
       >
         <NextIntlClientProvider messages={messages}>
