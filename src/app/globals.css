@@ -163,6 +163,23 @@
   }
 
   /*
+   * Source Serif 4 tuning (site-wide for latin/en):
+   * provide clearer hierarchy without an overly heavy look.
+   */
+  html[data-ui-sans="latin"] .font-bold,
+  html:lang(en) .font-bold {
+    font-weight: 640;
+  }
+  html[data-ui-sans="latin"] .font-semibold,
+  html:lang(en) .font-semibold {
+    font-weight: 580;
+  }
+  html[data-ui-sans="latin"] .font-medium,
+  html:lang(en) .font-medium {
+    font-weight: 500;
+  }
+
+  /*
    * Japanese typography tuning (site-wide):
    * avoid overly heavy rendering while keeping clear hierarchy by class.
    */
