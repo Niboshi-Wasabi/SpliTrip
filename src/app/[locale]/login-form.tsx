@@ -153,9 +153,6 @@ export function LoginForm() {
         <div className="flex items-center text-foreground">
           <LogoMark className="text-4xl md:text-4xl" />
         </div>
-        <p className="text-sm font-medium text-muted-foreground">
-          {translations("brandSubtitle")}
-        </p>
         <p className="text-lg text-muted-foreground">{translations("tagline")}</p>
       </div>
 

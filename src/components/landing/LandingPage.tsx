@@ -72,7 +72,6 @@ export function LandingPage() {
               {t("hero.cta")}
             </Button>
           </Link>
-          <p className="mt-3 text-xs font-light text-zinc-500">{t("hero.note")}</p>
         </section>
 
         <section id="features" className="border-t border-zinc-900 py-20 md:py-24">
