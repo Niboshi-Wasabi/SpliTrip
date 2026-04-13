@@ -3,6 +3,11 @@
  * Google/LINE のプロフィール画像があれば表示し、なければ表示名の頭文字を表示する。
  */
 
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@/components/ui/avatar";
 import { stringToColor } from "@/lib/string-to-color";
 
 type Props = {
@@ -37,30 +42,26 @@ export function UserAvatar({
   className = "",
 }: Props) {
   const sizeClass = SIZE_CLASSES[size];
-
-  if (avatarUrl) {
-    return (
-      /* eslint-disable-next-line @next/next/no-img-element */
-      <img
-        src={avatarUrl}
-        alt={displayName}
-        className={`${sizeClass} shrink-0 rounded-full object-cover ${className}`}
-        crossOrigin="anonymous"
-        referrerPolicy="no-referrer"
-      />
-    );
-  }
-
   const initial = firstGrapheme(displayName.trim());
   const { background, foreground } = stringToColor(displayName);
 
   return (
-    <span
-      className={`${sizeClass} inline-flex shrink-0 items-center justify-center rounded-full font-medium ${className}`}
-      style={{ backgroundColor: background, color: foreground }}
+    <Avatar
+      className={`${sizeClass} shrink-0 ${className}`}
       aria-label={displayName}
     >
-      {initial}
-    </span>
+      <AvatarImage
+        src={avatarUrl ?? undefined}
+        alt={displayName}
+        crossOrigin="anonymous"
+        referrerPolicy="no-referrer"
+      />
+      <AvatarFallback
+        className="font-medium"
+        style={{ backgroundColor: background, color: foreground }}
+      >
+        {initial}
+      </AvatarFallback>
+    </Avatar>
   );
 }

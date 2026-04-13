@@ -9,6 +9,14 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { UserAvatar } from "@/components/user-avatar";
 import { ExpenseCategoryIcon } from "@/components/expense-category-icon";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { formatMoneyByCurrency } from "@/lib/currency-payment-amount";
 import { parseExpenseCategoryId } from "@/lib/expense-categories";
 import { convertAmount } from "@/utils/exchangeRates";
@@ -132,45 +140,45 @@ export function GroupExpenseList({
 
       <div className="hidden md:block">
         <div className="overflow-x-auto rounded-lg border border-border">
-          <table className="w-full text-sm">
-            <thead className="border-b border-border bg-muted/50 text-left text-xs font-medium text-muted-foreground">
-              <tr>
-                <th className="px-3 py-2">{listTranslations("colCategory")}</th>
-                <th className="px-3 py-2">{listTranslations("colDate")}</th>
-                <th className="px-3 py-2">{listTranslations("colDescription")}</th>
-                <th className="px-3 py-2">{listTranslations("colPayer")}</th>
-                <th className="px-3 py-2 text-right">
+          <Table>
+            <TableHeader className="bg-muted/50">
+              <TableRow>
+                <TableHead className="px-3 py-2">{listTranslations("colCategory")}</TableHead>
+                <TableHead className="px-3 py-2">{listTranslations("colDate")}</TableHead>
+                <TableHead className="px-3 py-2">{listTranslations("colDescription")}</TableHead>
+                <TableHead className="px-3 py-2">{listTranslations("colPayer")}</TableHead>
+                <TableHead className="px-3 py-2 text-right">
                   {listTranslations("colAmount")}
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-border">
+                </TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
               {expenses.map((expense) => {
                 const payerMember = members.find(
                   (member) => member.user_id === expense.payer_id,
                 );
                 const categoryId = parseExpenseCategoryId(expense.category);
                 return (
-                  <tr
+                  <TableRow
                     key={expense.id}
                     className="cursor-pointer transition-colors hover:bg-muted/30"
                     onClick={() => openDetail(expense)}
                   >
-                    <td className="px-3 py-2.5">
+                    <TableCell className="px-3 py-2.5">
                       <span
                         className="inline-flex items-center gap-1.5"
                         title={categoryTranslations(categoryId)}
                       >
                         <ExpenseCategoryIcon categoryId={categoryId} />
                       </span>
-                    </td>
-                    <td className="whitespace-nowrap px-3 py-2.5 text-muted-foreground">
+                    </TableCell>
+                    <TableCell className="whitespace-nowrap px-3 py-2.5 text-muted-foreground">
                       {expense.expense_date}
-                    </td>
-                    <td className="px-3 py-2.5 font-medium">
+                    </TableCell>
+                    <TableCell className="px-3 py-2.5 font-medium">
                       {expense.description?.trim() || listTranslations("untitled")}
-                    </td>
-                    <td className="px-3 py-2.5">
+                    </TableCell>
+                    <TableCell className="px-3 py-2.5">
                       <div className="flex items-center gap-1.5">
                         <UserAvatar
                           displayName={payerMember?.display_name ?? "?"}
@@ -181,19 +189,19 @@ export function GroupExpenseList({
                           {payerMember?.display_name ?? expense.payer_id}
                         </span>
                       </div>
-                    </td>
-                    <td className="whitespace-nowrap px-3 py-2.5 text-right font-semibold">
+                    </TableCell>
+                    <TableCell className="whitespace-nowrap px-3 py-2.5 text-right font-semibold">
                       <AmountWithConversion
                         amount={Number(expense.amount)}
                         currencyCode={currencyCode}
                         exchangeRates={exchangeRates}
                       />
-                    </td>
-                  </tr>
+                    </TableCell>
+                  </TableRow>
                 );
               })}
-            </tbody>
-          </table>
+            </TableBody>
+          </Table>
         </div>
       </div>
 
