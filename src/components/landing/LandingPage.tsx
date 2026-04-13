@@ -31,7 +31,7 @@ export function LandingPage() {
           <Link href="/" className="text-zinc-100">
             <LogoMark />
           </Link>
-          <nav className="hidden items-center gap-12 text-sm text-zinc-300 md:flex">
+          <nav className="hidden items-center gap-12 text-sm font-medium text-zinc-300 md:flex">
             <a href="#features" className="transition hover:text-zinc-100">{t("nav.features")}</a>
             <a href="#details" className="transition hover:text-zinc-100">{t("nav.details")}</a>
             <a href="#pricing" className="transition hover:text-zinc-100">{t("nav.pricing")}</a>
@@ -58,10 +58,10 @@ export function LandingPage() {
             {t("hero.kicker")}
           </Badge>
           <h1 className="max-w-5xl text-5xl tracking-tight md:text-7xl md:leading-none">
-            <span className="block">{t("hero.titleLine1")}</span>
-            <span className="block">{t("hero.titleLine2")}</span>
+            <span className="block font-medium text-zinc-200">{t("hero.titleLine1")}</span>
+            <span className="block font-bold text-zinc-50">{t("hero.titleLine2")}</span>
           </h1>
-          <p className="mt-8 max-w-3xl text-base leading-relaxed text-zinc-400 md:text-lg">
+          <p className="mt-8 max-w-3xl text-base leading-relaxed font-normal text-zinc-400 md:text-lg">
             {t("hero.description")}
           </p>
           <Link href="/login">
@@ -72,13 +72,13 @@ export function LandingPage() {
               {t("hero.cta")}
             </Button>
           </Link>
-          <p className="mt-3 text-xs text-zinc-500">{t("hero.note")}</p>
+          <p className="mt-3 text-xs font-light text-zinc-500">{t("hero.note")}</p>
         </section>
 
         <section id="features" className="border-t border-zinc-900 py-20 md:py-24">
           <div className="mb-8">
-            <h2 className="text-2xl font-semibold tracking-tight text-zinc-100 md:text-3xl">{t("bento.title")}</h2>
-            <p className="mt-2 text-sm text-zinc-400">{t("bento.subtitle")}</p>
+            <h2 className="text-2xl font-bold tracking-tight text-zinc-100 md:text-3xl">{t("bento.title")}</h2>
+            <p className="mt-2 text-sm font-normal text-zinc-400">{t("bento.subtitle")}</p>
           </div>
           <div className="grid gap-5 md:grid-cols-3">
             <Card className="border-zinc-800 bg-zinc-900/50 md:col-span-2 md:row-span-2">
@@ -87,7 +87,7 @@ export function LandingPage() {
                   <ScanText className="h-5 w-5 text-zinc-300" />
                   <p className="text-lg font-semibold tracking-tight">{t("bento.ai.title")}</p>
                 </div>
-                <p className="text-sm leading-7 text-zinc-300 md:text-base">
+                <p className="text-sm leading-7 font-normal text-zinc-300 md:text-base">
                   {t("bento.ai.body")}
                 </p>
               </CardContent>
@@ -96,9 +96,9 @@ export function LandingPage() {
               <CardContent className="p-6">
                 <div className="mb-3 flex items-center gap-2">
                   <Split className="h-4 w-4 text-zinc-300" />
-                  <p className="text-base font-semibold tracking-tight">{t("bento.split.title")}</p>
+                  <p className="text-base font-medium tracking-tight">{t("bento.split.title")}</p>
                 </div>
-                <p className="text-sm leading-relaxed text-zinc-400">
+                <p className="text-sm leading-relaxed font-normal text-zinc-400">
                   {t("bento.split.body")}
                 </p>
               </CardContent>
@@ -107,9 +107,9 @@ export function LandingPage() {
               <CardContent className="p-6">
                 <div className="mb-3 flex items-center gap-2">
                   <ArrowRightLeft className="h-4 w-4 text-zinc-300" />
-                  <p className="text-base font-semibold tracking-tight">{t("bento.optimize.title")}</p>
+                  <p className="text-base font-medium tracking-tight">{t("bento.optimize.title")}</p>
                 </div>
-                <p className="text-sm leading-relaxed text-zinc-400">
+                <p className="text-sm leading-relaxed font-normal text-zinc-400">
                   {t("bento.optimize.body")}
                 </p>
               </CardContent>
@@ -118,50 +118,50 @@ export function LandingPage() {
         </section>
 
         <section id="details" className="border-t border-zinc-900 py-20 md:py-24">
-          <h2 className="text-2xl font-semibold tracking-tight text-zinc-100 md:text-3xl">{t("detailed.title")}</h2>
+          <h2 className="text-2xl font-bold tracking-tight text-zinc-100 md:text-3xl">{t("detailed.title")}</h2>
           <div className="mt-8 grid gap-4 md:grid-cols-2">
             <Card className="border-zinc-800 bg-zinc-900/40">
               <CardContent className="p-5">
                 <div className="mb-2 flex items-center gap-2 text-zinc-100">
                   <Languages className="h-4 w-4 text-zinc-300" />
-                  <p className="font-semibold tracking-tight">{t("detailed.items.global.title")}</p>
+                  <p className="font-medium tracking-tight">{t("detailed.items.global.title")}</p>
                 </div>
-                <p className="text-sm leading-relaxed text-zinc-400">{t("detailed.items.global.body")}</p>
+                <p className="text-sm leading-relaxed font-normal text-zinc-400">{t("detailed.items.global.body")}</p>
               </CardContent>
             </Card>
             <Card className="border-zinc-800 bg-zinc-900/40">
               <CardContent className="p-5">
                 <div className="mb-2 flex items-center gap-2 text-zinc-100">
                   <QrCode className="h-4 w-4 text-zinc-300" />
-                  <p className="font-semibold tracking-tight">{t("detailed.items.join.title")}</p>
+                  <p className="font-medium tracking-tight">{t("detailed.items.join.title")}</p>
                 </div>
-                <p className="text-sm leading-relaxed text-zinc-400">{t("detailed.items.join.body")}</p>
+                <p className="text-sm leading-relaxed font-normal text-zinc-400">{t("detailed.items.join.body")}</p>
               </CardContent>
             </Card>
             <Card className="border-zinc-800 bg-zinc-900/40">
               <CardContent className="p-5">
                 <div className="mb-2 flex items-center gap-2 text-zinc-100">
                   <Link2 className="h-4 w-4 text-zinc-300" />
-                  <p className="font-semibold tracking-tight">{t("detailed.items.payment.title")}</p>
+                  <p className="font-medium tracking-tight">{t("detailed.items.payment.title")}</p>
                 </div>
-                <p className="text-sm leading-relaxed text-zinc-400">{t("detailed.items.payment.body")}</p>
+                <p className="text-sm leading-relaxed font-normal text-zinc-400">{t("detailed.items.payment.body")}</p>
               </CardContent>
             </Card>
             <Card className="border-zinc-800 bg-zinc-900/40">
               <CardContent className="p-5">
                 <div className="mb-2 flex items-center gap-2 text-zinc-100">
                   <ShieldCheck className="h-4 w-4 text-zinc-300" />
-                  <p className="font-semibold tracking-tight">{t("detailed.items.audit.title")}</p>
+                  <p className="font-medium tracking-tight">{t("detailed.items.audit.title")}</p>
                 </div>
-                <p className="text-sm leading-relaxed text-zinc-400">{t("detailed.items.audit.body")}</p>
+                <p className="text-sm leading-relaxed font-normal text-zinc-400">{t("detailed.items.audit.body")}</p>
               </CardContent>
             </Card>
           </div>
         </section>
 
         <section id="pricing" className="border-t border-zinc-900 py-20 md:py-24">
-          <h2 className="text-2xl font-semibold tracking-tight text-zinc-100 md:text-3xl">{t("pricing.title")}</h2>
-          <p className="mt-2 text-sm text-zinc-400">{t("pricing.subtitle")}</p>
+          <h2 className="text-2xl font-bold tracking-tight text-zinc-100 md:text-3xl">{t("pricing.title")}</h2>
+          <p className="mt-2 text-sm font-normal text-zinc-400">{t("pricing.subtitle")}</p>
           <div className="mt-8 grid gap-5 md:grid-cols-2">
             <Card className="border-zinc-800 bg-zinc-900/50">
               <CardContent className="p-6">
@@ -169,7 +169,7 @@ export function LandingPage() {
                   <p className="text-xl font-semibold tracking-tight">{t("pricing.free.title")}</p>
                   <Badge variant="outline" className="border-zinc-700 bg-zinc-900 text-zinc-300">{t("pricing.free.badge")}</Badge>
                 </div>
-                <ul className="space-y-3 text-sm text-zinc-300">
+                <ul className="space-y-3 text-sm font-normal text-zinc-300">
                   <li className="flex items-start gap-2"><Check className="mt-0.5 h-4 w-4 text-zinc-400" />{t("pricing.free.items.receipt")}</li>
                   <li className="flex items-start gap-2"><Check className="mt-0.5 h-4 w-4 text-zinc-400" />{t("pricing.free.items.groups")}</li>
                   <li className="flex items-start gap-2"><Check className="mt-0.5 h-4 w-4 text-zinc-400" />{t("pricing.free.items.split")}</li>
@@ -182,7 +182,7 @@ export function LandingPage() {
                   <p className="text-xl font-semibold tracking-tight">{t("pricing.pro.title")}</p>
                   <Badge className="bg-zinc-50 text-zinc-900">{t("pricing.pro.badge")}</Badge>
                 </div>
-                <ul className="space-y-3 text-sm text-zinc-200">
+                <ul className="space-y-3 text-sm font-normal text-zinc-200">
                   <li className="flex items-start gap-2"><Bot className="mt-0.5 h-4 w-4 text-zinc-300" />{t("pricing.pro.items.receipt")}</li>
                   <li className="flex items-start gap-2"><Receipt className="mt-0.5 h-4 w-4 text-zinc-300" />{t("pricing.pro.items.export")}</li>
                   <li className="flex items-start gap-2"><Banknote className="mt-0.5 h-4 w-4 text-zinc-300" />{t("pricing.pro.items.advanced")}</li>
