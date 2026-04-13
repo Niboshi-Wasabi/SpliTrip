@@ -221,8 +221,7 @@ export default async function DashboardPage({ params }: PageProps) {
           <div className="flex items-center gap-3">
             <LogoMark className="text-lg md:text-xl" />
             <div>
-              <h1 className="text-lg font-bold text-foreground">SpliTrip</h1>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-base font-medium text-muted-foreground">
                 {dashboardPageTranslations("subtitle")}
               </p>
             </div>
