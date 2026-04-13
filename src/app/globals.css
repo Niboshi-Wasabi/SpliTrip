@@ -198,6 +198,41 @@
     --ui-button-sm-font-size: 0.84rem;
   }
 
+  /*
+   * Button small text scale fallback by actual locale (`lang`),
+   * so every next-intl locale gets deterministic sizing.
+   */
+  html:lang(ja) {
+    --ui-button-sm-font-size: 0.86rem;
+  }
+  html:lang(zh-CN) {
+    --ui-button-sm-font-size: 0.85rem;
+  }
+  html:lang(zh-TW) {
+    --ui-button-sm-font-size: 0.85rem;
+  }
+  html:lang(ko) {
+    --ui-button-sm-font-size: 0.84rem;
+  }
+  html:lang(ru) {
+    --ui-button-sm-font-size: 0.81rem;
+  }
+  html:lang(ar) {
+    --ui-button-sm-font-size: 0.84rem;
+  }
+  html:lang(hi) {
+    --ui-button-sm-font-size: 0.84rem;
+  }
+  html:lang(en),
+  html:lang(es),
+  html:lang(fr),
+  html:lang(de),
+  html:lang(pt),
+  html:lang(tr),
+  html:lang(sw) {
+    --ui-button-sm-font-size: 0.8rem;
+  }
+
   html[data-ui-mono="fira"] {
     --font-mono: var(--font-fira-code), "Fira Mono", Menlo, Consolas, "DejaVu Sans Mono",
       monospace;
