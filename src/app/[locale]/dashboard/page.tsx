@@ -211,6 +211,7 @@ export default async function DashboardPage({ params }: PageProps) {
 
   const dashboardChartsTranslations = await getTranslations("GroupCharts");
   const dashboardPageTranslations = await getTranslations("Dashboard");
+  const bottomNavTranslations = await getTranslations("BottomNav");
   const loginTranslations = await getTranslations("Login");
 
   return (
@@ -246,7 +247,7 @@ export default async function DashboardPage({ params }: PageProps) {
                 "hidden text-muted-foreground md:inline-flex",
               )}
             >
-              設定
+              {bottomNavTranslations("settings")}
             </Link>
             <div className="hidden md:block">
               <LogoutButton />

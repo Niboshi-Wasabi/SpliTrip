@@ -39,7 +39,7 @@ export function LanguagePreferenceForm({ initialLanguage }: Props) {
         }
         markLocaleChosenByUser();
         const target = withLocalePrefix(language, "/settings");
-        const currentLocale = activeLocale === "en" ? "en" : "ja";
+        const currentLocale = activeLocale as AppLocale;
         if (target !== withLocalePrefix(currentLocale, "/settings")) {
           window.location.assign(target);
           return;
