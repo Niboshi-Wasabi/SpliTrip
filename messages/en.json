@@ -638,14 +638,9 @@
     },
     "hero": {
       "kicker": "OPEN BETA",
-      "titleLead": "EFFORTLESSLY SETTLE GROUP EXPENSES,",
-      "titleTail": "categorize spending and keep your team budget in sync.",
-      "typewriterPhrases": [
-        "[categorize spend in seconds...]",
-        "[sync your group's budget live...]",
-        "[simplify debts and settle clearly...]"
-      ],
-      "description": "SpliTrip helps travel teams record expenses, split costs, and settle fast with less back-and-forth.",
+      "titleLead": "Effortlessly settle group expenses",
+      "titleTail": "with clarity.",
+      "description": "From AI receipt capture to flexible splits and simplified settlement plans, SpliTrip keeps group travel accounting organized end to end.",
       "cta": "JOIN THE OPEN BETA"
     },
     "mock": {
