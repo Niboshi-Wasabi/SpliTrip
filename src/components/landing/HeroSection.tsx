@@ -1,11 +1,11 @@
 "use client";
 
 import { motion, type Variants } from "framer-motion";
-import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { buttonVariants } from "@/components/ui/button-variants";
 import { LanguageSwitcher } from "@/components/ui/LanguageSwitcher";
+import { LogoMark } from "@/components/logo-mark";
 import { cn } from "@/lib/utils";
 
 const fadeUpVariants: Variants = {
@@ -34,18 +34,8 @@ export function LandingHeader() {
   return (
     <header className="border-b border-border/70 bg-background/90 backdrop-blur supports-[backdrop-filter]:bg-background/70">
       <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-3 px-4 py-3">
-        <div className="flex min-w-0 items-center gap-3">
-          <Image
-            src="/icons/source-app-icon.svg"
-            alt=""
-            width={48}
-            height={48}
-            className="h-12 w-12 shrink-0 object-contain"
-            priority
-          />
-          <p className="truncate text-sm font-semibold text-foreground">
-            SpliTrip
-          </p>
+        <div className="flex min-w-0 items-center gap-3 text-foreground">
+          <LogoMark className="truncate text-xl md:text-2xl" />
         </div>
         <div className="flex shrink-0 items-center gap-2 sm:gap-3">
           <span

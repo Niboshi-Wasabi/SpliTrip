@@ -1,5 +1,5 @@
-import Image from "next/image";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { LogoMark } from "@/components/logo-mark";
 
 const STAT_CARD_COUNT = 3;
 const MEMBER_SKELETON_COUNT = 4;
@@ -18,13 +18,7 @@ export default function DashboardLoading() {
       <header className="border-b border-border bg-card shadow-sm">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
           <div className="flex items-center gap-3">
-            <Image
-              src="/icons/source-app-icon.svg"
-              alt=""
-              width={32}
-              height={32}
-              className="h-8 w-8 shrink-0 object-contain"
-            />
+            <LogoMark className="text-lg md:text-lg" />
             <div>
               <Skeleton className="mb-1 h-5 w-20" />
               <Skeleton className="h-3 w-28" />

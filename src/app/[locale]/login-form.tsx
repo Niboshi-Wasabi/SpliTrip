@@ -9,12 +9,12 @@
  */
 
 import { useState, useEffect, useMemo } from "react";
-import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
 import { Loader2 } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
+import { LogoMark } from "@/components/logo-mark";
 import {
   Card,
   CardContent,
@@ -150,18 +150,8 @@ export function LoginForm() {
         <ThemeToggle />
       </div>
       <div className="mb-8 flex flex-col items-center gap-2">
-        <div className="flex items-center gap-3">
-          <Image
-            src="/icons/source-app-icon.svg"
-            alt=""
-            width={48}
-            height={48}
-            className="h-12 w-12 object-contain"
-            priority
-          />
-          <h1 className="text-4xl font-bold tracking-tight text-foreground">
-            SpliTrip
-          </h1>
+        <div className="flex items-center text-foreground">
+          <LogoMark className="text-4xl md:text-4xl" />
         </div>
         <p className="text-sm font-medium text-muted-foreground">
           {translations("brandSubtitle")}

@@ -4,7 +4,6 @@ export const dynamic = "force-dynamic";
  * Main dashboard: group-based expense overview with per-group breakdown.
  */
 
-import Image from "next/image";
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import {
@@ -33,6 +32,7 @@ import {
 } from "@/lib/user-profile";
 import { redirect } from "@/i18n/navigation";
 import { UserAvatar } from "@/components/user-avatar";
+import { LogoMark } from "@/components/logo-mark";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { PromoBanner } from "@/components/ads/PromoBanner";
 import { SupportDeveloper } from "@/components/ads/SupportDeveloper";
@@ -219,13 +219,7 @@ export default async function DashboardPage({ params }: PageProps) {
       <header className="border-b border-border bg-card shadow-sm">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3">
           <div className="flex items-center gap-3">
-            <Image
-              src="/icons/source-app-icon.svg"
-              alt=""
-              width={32}
-              height={32}
-              className="h-8 w-8 shrink-0 object-contain"
-            />
+            <LogoMark className="text-lg md:text-xl" />
             <div>
               <h1 className="text-lg font-bold text-foreground">SpliTrip</h1>
               <p className="text-xs text-muted-foreground">

@@ -11,7 +11,7 @@ import sharp from "sharp";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const projectRoot = path.join(__dirname, "..");
-const defaultInput = path.join(projectRoot, "public", "icons", "source-app-icon.svg");
+const defaultInput = path.join(projectRoot, "public", "icons", "icon.svg");
 
 const inputPath = process.argv[2] ?? defaultInput;
 

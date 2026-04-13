@@ -1,13 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
 import { useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { LogoMark } from "@/components/logo-mark";
 import { DISPLAY_NAME_MAX_LENGTH } from "@/lib/validation/display-name";
 
 type Props = {
@@ -68,14 +68,7 @@ export function OnboardingForm({ suggestedName, nextPath }: Props) {
       <div className="w-full max-w-md space-y-8">
         <div className="text-center">
           <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-xl shadow-md ring-1 ring-border">
-            <Image
-              src="/icons/source-app-icon.svg"
-              alt=""
-              width={56}
-              height={56}
-              className="h-14 w-14 object-contain"
-              priority
-            />
+            <LogoMark className="text-lg md:text-lg" />
           </div>
           <h1 className="text-2xl font-bold text-foreground">
             {translations("title")}

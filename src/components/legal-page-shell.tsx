@@ -6,9 +6,9 @@
  * Since @tailwindcss/typography is not installed, we replicate readable styles with utility classes.
  */
 
-import Image from "next/image";
 import { Link } from "@/i18n/navigation";
 import { ArrowLeft } from "lucide-react";
+import { LogoMark } from "@/components/logo-mark";
 
 type Props = {
   title: string;
@@ -34,15 +34,8 @@ export function LegalPageShell({
             <ArrowLeft className="h-4 w-4" />
             {backLabel}
           </Link>
-          <div className="ml-auto flex items-center gap-2 text-sm font-semibold text-foreground">
-            <Image
-              src="/icons/source-app-icon.svg"
-              alt=""
-              width={24}
-              height={24}
-              className="h-6 w-6 shrink-0 object-contain"
-            />
-            SpliTrip
+          <div className="ml-auto flex items-center text-foreground">
+            <LogoMark className="text-base md:text-lg" />
           </div>
         </div>
       </header>

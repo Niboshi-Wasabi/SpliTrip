@@ -7,6 +7,7 @@ import { ArrowRightLeft, Receipt, Split } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { LogoMark } from "@/components/logo-mark";
 
 export function LandingPage() {
   const t = useTranslations("LandingV2");
@@ -15,9 +16,8 @@ export function LandingPage() {
     <div className="min-h-screen bg-gradient-to-b from-zinc-950 via-zinc-900 to-zinc-950 text-zinc-100">
       <header className="sticky top-0 z-30 bg-zinc-950/30 backdrop-blur-md">
         <div className="mx-auto flex h-20 w-full max-w-6xl items-center justify-between px-4 md:px-6">
-          <Link href="/" className="text-2xl font-bold tracking-tight md:text-3xl">
-            <span className="text-zinc-100">Spli</span>
-            <span className="text-zinc-300">Trip</span>
+          <Link href="/" className="text-zinc-100">
+            <LogoMark />
           </Link>
           <nav className="hidden items-center gap-12 text-sm text-zinc-300 md:flex">
             <a href="#features" className="transition hover:text-zinc-100">{t("nav.features")}</a>
