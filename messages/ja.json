@@ -1,9 +1,9 @@
 {
   "Login": {
     "brandSubtitle": "スプリトリップ",
-    "tagline": "グループ旅行の精算を、もっとシンプルに。",
+    "tagline": "グループ旅行の精算をシンプルに。",
     "title": "ログイン",
-    "description": "SNSアカウントでログインして、旅の精算を始めましょう",
+    "description": "SNSログインで精算を始める",
     "supabaseNotConfigured": "Supabase の接続情報が未設定です。プロジェクト直下の .env.local に NEXT_PUBLIC_SUPABASE_URL と NEXT_PUBLIC_SUPABASE_ANON_KEY を設定し、開発サーバーを再起動してください。",
     "googleLogin": "Googleでログイン",
     "lineLogin": "LINEでログイン",
@@ -19,17 +19,17 @@
     "ja": "JA",
     "en": "EN",
     "modalTitle": "表示言語",
-    "modalDescription": "アプリの表示に使う言語を選びます。",
+    "modalDescription": "表示言語を選択",
     "openModal": "言語を選ぶ"
   },
   "Beta": {
     "badge": "BETA",
     "badgeAria": "このアプリはオープンベータ版です",
-    "dashboardTitle": "SpliTrip オープンベータへようこそ",
-    "dashboardNote": "機能や表示はアップデートされることがあり、不具合が含まれる場合があります。ご意見・ご報告に感謝します。"
+    "dashboardTitle": "SpliTrip オープンベータ",
+    "dashboardNote": "機能や表示は変更される場合があります。不具合やご意見はフィードバックからお知らせください。"
   },
   "AppFooter": {
-    "betaBugReport": "オープンベータの不具合・ご意見はこちら"
+    "betaBugReport": "不具合・ご意見を送る"
   },
   "Landing": {
     "header": {
@@ -37,38 +37,38 @@
     },
     "hero": {
       "badge": "旅の割り勘にAI",
-      "description": "レシート読取・柔軟な割り方・精算まで。スマホで完結。",
+      "description": "レシート読取、柔軟な割り勘、精算まで。スマホで完結。",
       "primaryCta": "無料で始める",
-      "secondaryCta": "機能紹介を見る",
-      "title": "旅行の割り勘と精算を、もっと手軽に。"
+      "secondaryCta": "機能を見る",
+      "title": "割り勘と精算を、もっとラクに。"
     },
     "features": {
-      "highlightsHeading": "SpliTripならではの強み",
+      "highlightsHeading": "SpliTripの特長",
       "heading": "主要機能",
       "highlights": {
         "receiptAi": {
           "title": "AIレシート読み取り",
-          "description": "レシートを撮影するだけで、金額や内容をAI（Gemini）が自動入力。手入力の手間を省きます。"
+          "description": "レシートを撮るだけで、金額や内容をAI（Gemini）が自動入力。手入力を減らせます。"
         },
         "flexibleSplit": {
           "title": "柔軟な割り勘オプション",
-          "description": "均等割りだけでなく、パーセント指定、比率指定、さらには品目別の細かな割り当てまで、あらゆるシチュエーションに対応します。"
+          "description": "均等割りに加え、パーセント、比率、品目別にも対応。状況に合わせて選べます。"
         },
         "tapToPay": {
           "title": "ワンタップで送金",
-          "description": "清算画面から、メンバーが設定した各種決済サービス（PayPayなど）のリンクへ直接飛んで送金できます。"
+          "description": "精算画面から、メンバーの決済リンク（PayPay など）へ直接移動して送金できます。"
         },
         "nextPayer": {
           "title": "「次は誰が払う？」提案",
-          "description": "現在の立て替え残高から、次に支払うと負担が平準化される人を、システムが賢く提案します。"
+          "description": "現在の残高から、次に払うとバランスが整いやすい人を提案します。"
         },
         "inviteJoin": {
           "title": "招待リンクで素早く参加",
-          "description": "URLやQRコードを共有するだけ。Google または LINE でログインしたメンバーがトークン付きリンクからグループに参加できます。"
+          "description": "URLやQRコードを共有するだけ。Google / LINE ログインで参加できます。"
         },
         "global": {
           "title": "グローバル対応",
-          "description": "日本語と英語に対応。異なる言語を話すメンバーとの旅行でも安心です。"
+          "description": "日本語と英語に対応。言語が違うメンバーでも使えます。"
         }
       },
       "ai": {
@@ -90,7 +90,7 @@
     },
     "pricing": {
       "heading": "料金プラン",
-      "subheading": "フリーミアムで始められます。まずは無料プランでお試しください。",
+      "subheading": "無料で始めて、必要になったらPROへ。",
       "free": {
         "title": "無料",
         "badge": "Free",
@@ -110,19 +110,19 @@
       }
     },
     "cta": {
-      "title": "次の旅行は、精算でもめない体験へ",
-      "description": "メンバー招待から精算完了まで、スマホだけで完了するワークフローをすぐに試せます。",
-      "button": "SpliTripをはじめる"
+      "title": "次の旅行は、精算でもめない。",
+      "description": "招待から精算完了まで、スマホだけで試せます。",
+      "button": "今すぐ始める"
     }
   },
   "JoinGate": {
     "title": "グループに参加",
-    "description": "Google または LINE でログインしてください。ログイン後はこの招待のままグループへ進みます。"
+    "description": "Google または LINE でログインしてください。ログイン後、この招待で参加できます。"
   },
   "GroupNew": {
     "backDashboard": "ダッシュボード",
-    "pageTitle": "新しい旅行（グループ）を作成",
-    "pageDescription": "メンバー全員で出費を記録し、割り方と送金のしかたを共有できます。",
+    "pageTitle": "新しい旅行グループを作成",
+    "pageDescription": "出費を記録して、割り勘と精算を共有できます。",
     "groupNameLabel": "グループ名（旅行名）",
     "groupNamePlaceholder": "例: 沖縄旅行 2026",
     "currencyLabel": "通貨コード",
@@ -140,7 +140,7 @@
     },
     "postCreate": {
       "title": "グループを作成しました",
-      "description": "すぐにメンバーを招待できます。リンクは後からグループ画面でもコピーできます。",
+      "description": "このままメンバーを招待できます。リンクは後からもコピーできます。",
       "copy": "招待リンクをコピー",
       "copied": "コピー済み",
       "openGroup": "グループを開く",
@@ -157,13 +157,13 @@
   "Settings": {
     "backDashboard": "ダッシュボード",
     "displayNameTitle": "表示名",
-    "displayNameDescription": "グループのメンバーリストや精算で表示される名前です。",
+    "displayNameDescription": "メンバー一覧や精算で表示される名前です。",
     "languageTitle": "表示言語",
-    "languageDescription": "ログイン中はこの設定を最優先して表示します。",
+    "languageDescription": "ログイン中はこの設定を優先します。",
     "languageJa": "日本語",
     "languageEn": "English",
     "saving": "保存中…",
-    "saved": "保存しました",
+    "saved": "保存しました。",
     "saveError": "保存に失敗しました。",
     "updateLanguage": "言語を更新",
     "paymentMigrationHint": "送金先を保存するには、Supabase の SQL Editor でマイグレーション「supabase/migrations/20260405190000_user_profiles_payment_ids.sql」を実行し、user_profiles に paypal_me_id / cash_app_cashtag カラムを追加してください。",
@@ -175,13 +175,13 @@
   },
   "DisplayName": {
     "title": "表示名を設定しましょう",
-    "description": "グループのメンバーに表示される名前を入力してください。",
+    "description": "グループで表示する名前を入力してください。",
     "label": "表示名",
     "placeholder": "例: 田中太郎",
     "hint": "グループ内のメンバーリストや精算で表示されます。50文字以内。",
     "save": "保存",
     "saving": "保存中…",
-    "saved": "表示名を保存しました。",
+    "saved": "保存しました。",
     "skip": "あとで",
     "edit": "変更",
     "editTitle": "表示名を変更",
@@ -230,11 +230,11 @@
     "splitModeLegend": "割り方（だれがいくら負担するか）",
     "receiptPending": "領収書画像は登録するときにアップロードします",
     "clearReceiptAttach": "添付を解除",
-    "receiptUploadFailed": "出費は保存しましたが、領収書画像のアップロードに失敗しました。あとでもう一度試してくださいね。",
+    "receiptUploadFailed": "出費は保存しましたが、領収書画像のアップロードに失敗しました。あとで再試行してください。",
     "hintExactOk": "割り方の合計が支払額と一致しています。",
     "sharesZeroHint": "相対的な比率（例: 2 と 1 なら 2:1）。0 の人はこの割り方から外れます。",
     "validationErrors": {
-      "split_sum_mismatch": "割り方の合計が支払額と一致しません。数字を見直してくださいね。",
+      "split_sum_mismatch": "割り方の合計が支払額と一致しません。数字を見直してください。",
       "manual_splits_required": "金額を一人ずつ入れてください",
       "share_inputs_required": "比率（シェア）を入れてください",
       "percent_inputs_required": "パーセントを入れてください",
@@ -278,7 +278,7 @@
     "itemizedLineAmount": "項目の金額",
     "itemizedRemoveRow": "削除",
     "submitButton": "出費を登録",
-    "clientInvalidAmount": "金額を正しく入力してくださいね",
+    "clientInvalidAmount": "金額を正しく入力してください",
     "clientSelectPayer": "支払う人を選んでください",
     "clientPercentMust100": "パーセントの合計を 100% にしてください",
     "clientItemizedMustMatch": "項目ごとの金額の合計を、支払額と一致させてください",
@@ -379,9 +379,9 @@
     "statGroupCount": "グループ数",
     "statAvgPerGroup": "1グループあたり",
     "groupsCardTitle": "割り勘グループ",
-    "groupsCardDescription": "旅行ごとのグループで、出費と割り方と送金のしかたをまとめて管理",
-    "emptyGroups": "まだグループがありません。下のボタンから作成できます。",
-    "createGroupButton": "新しい旅行（グループ）を作成"
+    "groupsCardDescription": "旅行ごとの出費、割り勘、精算を管理",
+    "emptyGroups": "まだグループがありません。まずは作成しましょう。",
+    "createGroupButton": "新しいグループを作成"
   },
   "CategoryChart": {
     "empty": "支出データがありません",
@@ -398,12 +398,12 @@
     "faviconAlt": ""
   },
   "Onboarding": {
-    "title": "ユーザー名を設定してください",
-    "description": "グループのメンバーに表示される名前を登録します。あとから変更することもできます。",
+    "title": "ユーザー名を設定",
+    "description": "グループで表示する名前を登録します。後で変更できます。",
     "label": "ユーザー名",
     "placeholder": "例: 田中太郎",
     "hint": "50文字以内。グループ内のメンバーリストや精算に表示されます。",
-    "submit": "登録して次へ",
+    "submit": "保存して次へ",
     "required": "ユーザー名を入力してください。",
     "tooLong": "名前は50文字以内で入力してください。",
     "saveError": "保存に失敗しました。もう一度お試しください。"
@@ -413,7 +413,7 @@
     "qrHint": "スマホでスキャンして参加できます"
   },
   "Realtime": {
-    "updated": "データが更新されました"
+    "updated": "更新しました"
   },
   "Exchange": {
     "approx": "約 {converted}",
@@ -437,21 +437,21 @@
   "Maintenance": {
     "pageTitle": "メンテナンス中 | SpliTrip",
     "headline": "ただいまメンテナンス中です",
-    "body": "現在システムの保守作業を実施しています。しばらくしてから再度アクセスしてください。",
+    "body": "現在メンテナンスを実施しています。しばらくしてから再度アクセスしてください。",
     "tryAgain": "トップを再読み込み",
     "announcementLabel": "サービスお知らせ"
   },
   "Premium": {
-    "modalTitle": "SpliTrip PROにアップグレードして、旅行の精算をもっとスマートに。",
-    "modalSubtitle": "有料プランでは、次の機能がまとめて使えるようになります。",
+    "modalTitle": "SpliTrip PROにアップグレード",
+    "modalSubtitle": "有料プランで使える機能です。",
     "benefitOcr": "レシートのAI読み取りが無制限",
     "benefitExport": "PDF・CSVレポートの出力",
     "benefitNoAds": "広告なしで画面がすっきり",
     "ctaUpgradeNow": "PROプランにアップグレード（月額◯円）",
-    "ctaLiveHint": "決済ページに移動します。完了後はPRO機能が有効になります。",
+    "ctaLiveHint": "決済ページへ移動します。完了後にPRO機能が有効になります。",
     "ctaComingSoon": "PROプランは現在準備中です (Coming Soon)",
     "ctaComingSoonHint": "近日公開予定です！",
-    "upgradeSuccess": "アップグレードに成功しました！PRO機能をご利用いただけます。",
+    "upgradeSuccess": "アップグレードしました。PRO機能が有効です。",
     "aiScanLabelPro": "AI読み取り（PRO・無制限）",
     "ocrScanLockedAria": "無料枠の上限に達しました。アップグレードの案内を開く"
   },
@@ -460,7 +460,7 @@
     "scanning": "画像を解析中…",
     "success": "読み取り完了。内容を確認してください。",
     "error": "画像の読み取りに失敗しました",
-    "hint": "レシートやスクショから金額・内容・日付をAIで自動入力",
+    "hint": "レシートやスクショから金額・内容・日付を自動入力",
     "aiScanRemaining": "AI読み取り（残り{count}回）",
     "ocrLimitReached": "無料のAI読み取り回数の上限に達しました。PROにアップグレードすると続けて使えます。"
   },
@@ -579,8 +579,8 @@
     "metaTitle": "SpliTrip — プロダクト紹介",
     "metaDescription": "グループ旅行の精算アプリ SpliTrip の開発ハイライトをスライド形式で紹介します。",
     "heroTitle": "SpliTrip",
-    "heroTagline": "旅でまとめて払ったお金を、送金は少なく。",
-    "heroScrollHint": "スクロールで次へ",
+    "heroTagline": "旅の立替を、少ない送金で精算。",
+    "heroScrollHint": "スクロール",
     "featureSettlementTitle": "送金回数を少なくする",
     "featureSettlementBody": "メンバー全員の支払いと負担を集計し、「お金をもらう人」と「払う人」を突き合わせて、送金の回数を減らします。",
     "featureSplitsTitle": "旅行に合わせた割り方",
@@ -593,7 +593,7 @@
     "featureAccessBody": "ソーシャルログインで参加しやすくし、トークン付きの招待 URL でメンバーをグループに招けます。",
     "backToApp": "アプリへ",
     "ctaDashboard": "ダッシュボードへ",
-    "ctaHint": "グループを作成して試す",
+    "ctaHint": "グループを作って試す",
     "markSeenError": "完了処理に失敗しました。通信を確認してもう一度お試しください。"
   },
   "PitchDeck": {
@@ -640,33 +640,33 @@
     "hero": {
       "kicker": "OPEN BETA",
       "titleLine1": "旅行の割り勘と精算を、",
-      "titleLine2": "極限までスムーズに。",
-      "description": "AIレシート読み取りで入力を高速化。均等・金額指定・比率・パーセント・品目別まで対応する多様な割り勘ロジック。さらに送金回数最小化アルゴリズムで、精算の面倒を最小限に。",
-      "cta": "JOIN THE OPEN BETA",
+      "titleLine2": "もっとスムーズに。",
+      "description": "AIレシート読取、柔軟な割り勘、送金回数を抑える精算に対応。旅行の会計をすばやく終えられます。",
+      "cta": "オープンベータに参加",
       "note": "※ クレジットカード不要・基本無料"
     },
     "bento": {
       "title": "機能ハイライト",
-      "subtitle": "SpliTripの中核機能を、実運用ベースでまとめて紹介します。",
+      "subtitle": "SpliTripの主要機能をまとめて紹介します。",
       "ai": {
         "title": "AIレシート解析",
-        "body": "Gemini AIがレシート画像を瞬時に解析し、品目や金額を自動入力。手作業の入力コストを大幅に削減します。"
+        "body": "Gemini AIがレシート画像を解析し、品目や金額を自動入力。手入力を減らせます。"
       },
       "split": {
         "title": "多様なスプリット",
-        "body": "均等割り、金額指定、シェア比率、パーセント、品目別の割り勘まで対応。旅行ごとの事情に合わせて柔軟に分割できます。"
+        "body": "均等割り、金額指定、比率、パーセント、品目別に対応。旅行ごとに最適な割り方を選べます。"
       },
       "optimize": {
         "title": "精算アルゴリズム",
-        "body": "送金回数を最小化するアルゴリズムで、誰から誰へいくら払えばよいかを自動で最適化し、精算フローをシンプルに保ちます。"
+        "body": "送金回数を抑えるアルゴリズムで、誰が誰にいくら払うかを整理します。"
       }
     },
     "detailed": {
-      "title": "Detailed Features",
+      "title": "詳細機能",
       "items": {
         "global": {
           "title": "グローバル対応",
-          "body": "日本語・英語のバイリンガル対応。外貨旅行でも参考レート換算で、通貨の違いをまたいだ会計確認がしやすくなります。"
+          "body": "日本語・英語に対応。外貨旅行でも参考レートで確認できます。"
         },
         "join": {
           "title": "シームレスな参加",
@@ -674,17 +674,17 @@
         },
         "payment": {
           "title": "送金リンク連携",
-          "body": "PayPayなどの送金先URLをプロフィールに登録しておけば、精算画面からワンタップで送金ページへ遷移できます。"
+          "body": "PayPayなどの送金先URLを登録すると、精算画面からすぐに送金できます。"
         },
         "audit": {
           "title": "透明性の高いチーム会計",
-          "body": "カテゴリ別グラフ、出費コメント、監査ログで変更履歴を可視化。チーム内での会計トラブルを未然に防ぎます。"
+          "body": "カテゴリ別グラフ、出費コメント、監査ログで履歴を可視化。会計の認識違いを防ぎます。"
         }
       }
     },
     "pricing": {
-      "title": "Pricing",
-      "subtitle": "まずは無料ではじめて、必要に応じてPROへアップグレードできます。",
+      "title": "料金プラン",
+      "subtitle": "無料で始めて、必要ならPROへ。",
       "free": {
         "title": "Free",
         "badge": "無料",
@@ -700,7 +700,7 @@
         "items": {
           "receipt": "AIレシート読み取り無制限",
           "export": "CSV / PDF の高度なレポート出力",
-          "advanced": "大人数運用向けの拡張会計ワークフロー"
+          "advanced": "大人数向けの拡張機能"
         }
       }
     }
