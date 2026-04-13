@@ -14,7 +14,7 @@
 - **レシート AI:** Gemini による金額・説明・日付の候補抽出（無料枠あり、PRO は無制限）。
 - **精算:** ネット残差からの送金プラン、送金先リンク（PayPal / Cash App 等）とファビコン表示。
 - **書き出し:** CSV / PDF は **PRO**、ブラウザ印刷は無料でも利用可。
-- **国際化:** **14 言語**（`ja`, `en`, `zh-CN`, `zh-TW`, `ko`, `es`, `fr`, `de`, `pt`, `ru`, `tr`, `ar`, `sw`, `hi`）。文言は `messages/*.json`（next-intl）。
+- **国際化:** **2 言語**（`ja`, `en`）。文言は `messages/ja.json` / `messages/en.json`（next-intl）。
 - **フリーミアム:** `user_profiles.premium_access`。Stripe Checkout / Webhook で PRO 付与。
 
 詳細な機能・API・運用メモは **[`docs/FEATURES.md`](docs/FEATURES.md)** を参照してください。DB スキーマの一覧は **[`docs/DATABASE_TABLES.md`](docs/DATABASE_TABLES.md)** です。

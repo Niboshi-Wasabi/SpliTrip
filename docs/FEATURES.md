@@ -58,10 +58,10 @@
 
 | 機能 | 内容 |
 |------|------|
-| **ロケール** | `next-intl` で 14 言語（`ja`, `en`, `zh-CN`, `zh-TW`, `ko`, `es`, `fr`, `de`, `pt`, `ru`, `tr`, `ar`, `sw`, `hi`）をサポート。既定は `ja`。初回（`NEXT_LOCALE` 未設定）は Proxy で `Accept-Language` に加え、Vercel の `x-vercel-ip-country` または Cloudflare の `CF-IPCountry` を参照して言語を補正し、next-intl が適切なロケールへリダイレクト／書き換えする。**日本（JP）からのアクセス**で `Accept-Language` に `ja` が含まれない場合は、アラビア語など誤設定ヘッダーでも **日本語（`ja`）** を優先（`infer-locale-from-access.ts`）。`ja` を明示したヘッダは上書きしない。**デバイス UI 言語**は `navigator.languages` を Cookie `SPLITRIP_DEVICE_LANGS` に保存し、初回リクエスト以降は `Accept-Language` より先に交渉へ載せる。クライアントの `DeviceLocaleSync` が初回のみ URL ロケールをデバイスに合わせ、ユーザーが言語を手動変更したら `localStorage` / `sessionStorage` の `splitrip_locale_bootstrap_done` で自動合わせを止める。 |
-| **UI フォント（本文・見出し）** | ラテン・キリルなど **アルファベット系コードポイント**は、Tiempos に近いオープンフォント **Source Serif 4**（`next/font/google`）をスタック先頭に置く。商用フォントの手動配置は不要。日本語・中国語・韓国語・アラビア語・ヒンディー等の本文は各 Noto Sans（`next/font`）と OS 標準フォントへフォールバックし、サンセリフ系のフォールバックから Geist Sans は除外。ロケール切替は `src/lib/i18n/locale-ui-fonts.ts` と `html[data-ui-sans]`。 |
-| **等幅フォント** | `en` / `es` / `fr` / `de` / `pt` / `tr` / `sw` / `ru` は Fira Code 系スタック（キリル対応）。`ja` / `zh-CN` / `zh-TW` / `ko` は BIZ UD / Noto Sans Mono CJK 系などのサンセリフに近い等幅スタック。`ar` / `hi` は Noto Sans Mono ＋各スクリプト向け UI フォントをフォールバック。等幅の最終フォールバックも OS 標準 monospace に統一し、Geist Mono 依存は削除。`html[data-ui-mono]`。 |
-| **言語スイッチャー** | `LanguageSwitcher`（セレクト）で 14 言語を即時切替。LP ヘッダー・設定ヘッダー等。LP 以外の画面では `GlobalLanguagePickerFab`（地球アイコン FAB）から **言語選択モーダル**（`language-picker-modal.tsx`）でも同様に切替可能。 |
+| **ロケール** | `next-intl` で **2 言語（`ja`, `en`）** をサポート。既定は `ja`。初回（`NEXT_LOCALE` 未設定）は Proxy で `Accept-Language` と国コードを参照して言語を補正し、next-intl が適切なロケールへリダイレクト／書き換えする。**日本（JP）からのアクセス**で `Accept-Language` に `ja` が含まれない場合は **日本語（`ja`）** を優先（`infer-locale-from-access.ts`）。`ja` を明示したヘッダは上書きしない。**デバイス UI 言語**は `navigator.languages` を Cookie `SPLITRIP_DEVICE_LANGS` に保存し、初回リクエスト以降は `Accept-Language` より先に交渉へ載せる。クライアントの `DeviceLocaleSync` が初回のみ URL ロケールをデバイスに合わせ、ユーザーが言語を手動変更したら `localStorage` / `sessionStorage` の `splitrip_locale_bootstrap_done` で自動合わせを止める。 |
+| **UI フォント（本文・見出し）** | アルファベット系コードポイントは **Source Serif 4**、日本語は **Noto Serif JP** を優先。ロケール切替は `src/lib/i18n/locale-ui-fonts.ts` と `html[data-ui-sans]` で `ja/en` を扱う。 |
+| **等幅フォント** | `ja` / `en` ともに Fira Code 系スタックを利用（最終フォールバックは OS 標準 monospace）。`html[data-ui-mono]`。 |
+| **言語スイッチャー** | `LanguageSwitcher` は **JA / EN トグル**で即時切替。LP ヘッダー・設定ヘッダー等。LP 以外の画面では `GlobalLanguagePickerFab`（地球アイコン FAB）から **言語選択モーダル**（`language-picker-modal.tsx`）でも同様に切替可能。 |
 | **テーマ** | ライト / ダーク / システム（クライアント側プロバイダ）。 |
 | **モバイル** | ボトムナビ、タッチ向け `min-h-[44px]` などの UI 方針。 |
 | **PWA** | `manifest.webmanifest`、テーマカラー等（レイアウト・メタと連動）。アイコン類は `public/icons/source-app-icon.svg` を元に `npm run icons:build` で `public/icons/*` と `src/app/icon.png`・`apple-icon.png`・`favicon.ico` を生成。 |
@@ -136,7 +136,7 @@
 | 機能 | 内容 |
 |------|------|
 | **表示名** | 設定・ダッシュボード・プロンプトコンポーネントから変更。API: `PATCH /api/profile/display-name`。 |
-| **表示言語** | `preferred_language` に 14 言語（`ja`, `en`, `zh-CN`, `zh-TW`, `ko`, `es`, `fr`, `de`, `pt`, `ru`, `tr`, `ar`, `sw`, `hi`）を保存。フルリロードで反映。 |
+| **表示言語** | `preferred_language` は `ja` / `en` のみを保存。フルリロードで反映。 |
 | **送金先** | `payment_links` 等を API 経由で更新（マイグレーション未適用時はエラーメッセージ）。 |
 | **PRO / OCR** | `premium_access`（PRO）、`premium_access_source`（`stripe`＝課金、`manual`＝運営付与）、`ocr_usage_count`（無料の OCR 累計）。認証ユーザーが自分の PRO フラグだけを書き換えることは DB トリガーで拒否。`increment_ocr_usage_if_not_premium` で成功後に加算。 |
 | **支払い管理（PRO）** | Stripe 審査対応が完了するまで UI は一時的に **準備中（Coming Soon）**。課金基盤（Webhook / `premium_access` 判定）は将来再開に備えて保持。 |
