@@ -162,6 +162,20 @@
     --ui-button-sm-font-size: 0.8rem;
   }
 
+  /*
+   * Japanese typography tuning (site-wide):
+   * avoid overly heavy rendering while keeping clear hierarchy by class.
+   */
+  html:lang(ja) .font-bold {
+    font-weight: 650;
+  }
+  html:lang(ja) .font-semibold {
+    font-weight: 600;
+  }
+  html:lang(ja) .font-medium {
+    font-weight: 500;
+  }
+
   html[data-ui-mono="fira"] {
     --font-mono: var(--font-fira-code), "Fira Mono", Menlo, Consolas, "DejaVu Sans Mono",
       monospace;
