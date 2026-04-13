@@ -1,14 +1,14 @@
 ---
-description: LP/画面デザインでテンプレ感を避けるためのUI原則
+description: shadcn/ui + エディトリアル調LPのデザイン原則
 alwaysApply: true
 ---
 
-# UI/UX Design Principles (No Template Feel)
+# UI/UX Design Principles (No AI-template Look)
 
-- Whitespace: avoid cramped defaults like `p-4`/`gap-4` for primary sections; use generous spacing such as `py-24` to `py-32` and breathable internal rhythm.
-- Typography baseline: keep body in `font-serif`; make H1/H2 large with `tracking-tight` and `leading-none` or `leading-tight` to create strong typographic blocks.
-- Label contrast: small labels and badges should be `uppercase` with `tracking-widest` to create deliberate contrast against large serif headings.
-- Border/Shadow subtlety: avoid heavy default shadows (`shadow-md`) and obvious gray borders; prefer soft custom shadows like `shadow-[0_8px_30px_rgba(0,0,0,0.04)]` or `shadow-[0_20px_40px_rgba(0,0,0,0.08)]`.
-- Glass-like edges: for cards/badges on dark backgrounds, use subtle translucent borders such as `border-white/10` and light blur where helpful.
-- Color direction: for LP-style hero pages, prefer deep navy base with mint/coral accents and low-noise text contrast (`text-slate-100` / `text-slate-300`).
+- Core stack: always prioritize `shadcn/ui` components (`Button`, `Card`, `Badge` etc.) before custom primitive markup.
+- Typography: keep global base in `font-serif` (Source Serif 4 + Noto Serif JP). H1/H2 must use `tracking-tight` and `leading-none` or `leading-tight` for editorial weight.
+- Dark theme strategy: avoid neon accents; use refined zinc/slate palette (`bg-zinc-950`, `text-zinc-100`, `text-zinc-300`) with minimal accent usage.
+- Whitespace-first layout: primary sections should breathe (`py-24` to `py-32`, generous vertical rhythm). Avoid cramped spacing patterns.
+- Surface treatment: avoid heavy default shadows and obvious borders; use subtle borders (`border-zinc-800` / translucent) and minimal soft shadows only when needed.
+- Badge/label hierarchy: small labels (e.g. BETA) should be `uppercase` with `tracking-widest` to create typographic contrast against large serif headlines.
 
