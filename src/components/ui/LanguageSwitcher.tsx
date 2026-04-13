@@ -1,16 +1,16 @@
 "use client";
 
 import { useTransition } from "react";
-import { Languages, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { usePathname, useRouter } from "@/i18n/navigation";
 import type { AppLocale } from "@/i18n/routing";
-import { LOCALE_DISPLAY_OPTIONS } from "@/lib/i18n/locale-display-options";
 import { markLocaleChosenByUser } from "@/lib/i18n/device-locale-bootstrap-storage";
+import { cn } from "@/lib/utils";
 
 export function LanguageSwitcher() {
   const translations = useTranslations("LanguageSwitcher");
-  const locale = useLocale();
+  const locale = useLocale() as AppLocale;
   const pathname = usePathname();
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -26,29 +26,36 @@ export function LanguageSwitcher() {
     });
   }
 
+  const isJa = locale === "ja";
+
   return (
-    <label className="relative inline-flex min-h-[44px] items-center">
+    <div className="inline-flex min-h-[44px] items-center rounded-full border border-border bg-card p-1">
       <span className="sr-only">{translations("ariaLabel")}</span>
-      <span className="pointer-events-none absolute inset-y-0 start-2 z-10 flex items-center text-muted-foreground">
-        {isPending ? (
-          <Loader2 className="h-4 w-4 animate-spin" />
-        ) : (
-          <Languages className="h-4 w-4" />
-        )}
-      </span>
-      <select
-        value={locale}
+      <button
+        type="button"
         disabled={isPending}
-        onChange={(event) => switchLocale(event.target.value as AppLocale)}
-        className="w-[160px] rounded-full border border-border bg-card py-2 pe-8 ps-8 text-xs font-medium text-foreground shadow-sm outline-none ring-offset-background transition focus:ring-2 focus:ring-primary disabled:opacity-70 sm:w-[190px] sm:text-sm"
-        aria-label={translations("ariaLabel")}
+        onClick={() => switchLocale("ja")}
+        className={cn(
+          "h-8 rounded-full px-3 text-xs font-medium transition sm:text-sm",
+          isJa ? "bg-foreground text-background" : "text-muted-foreground hover:text-foreground",
+        )}
+        aria-pressed={isJa}
       >
-        {LOCALE_DISPLAY_OPTIONS.map((localeOption) => (
-          <option key={localeOption.locale} value={localeOption.locale}>
-            {localeOption.label}
-          </option>
-        ))}
-      </select>
-    </label>
+        JA
+      </button>
+      <button
+        type="button"
+        disabled={isPending}
+        onClick={() => switchLocale("en")}
+        className={cn(
+          "h-8 rounded-full px-3 text-xs font-medium transition sm:text-sm",
+          !isJa ? "bg-foreground text-background" : "text-muted-foreground hover:text-foreground",
+        )}
+        aria-pressed={!isJa}
+      >
+        EN
+      </button>
+      {isPending ? <Loader2 className="ml-1 h-4 w-4 animate-spin text-muted-foreground" /> : null}
+    </div>
   );
 }

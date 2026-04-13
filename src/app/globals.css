@@ -156,102 +156,16 @@
     --ui-button-sm-font-size: 0.86rem;
   }
 
-  html[data-ui-sans="zh-cn"] {
-    --font-serif: var(--font-source-serif), var(--font-noto-sans-sc),
-      "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Yu Mincho", serif;
-    --font-heading: var(--font-serif);
-    --ui-button-sm-font-size: 0.85rem;
-  }
-
-  html[data-ui-sans="zh-tw"] {
-    --font-serif: var(--font-source-serif), var(--font-noto-sans-tc),
-      "PingFang TC", "Heiti TC", "Microsoft JhengHei", "Yu Mincho", serif;
-    --font-heading: var(--font-serif);
-    --ui-button-sm-font-size: 0.85rem;
-  }
-
-  html[data-ui-sans="ko"] {
-    --font-serif: var(--font-source-serif), var(--font-noto-sans-kr),
-      "Apple SD Gothic Neo", "Malgun Gothic", "Yu Mincho", serif;
-    --font-heading: var(--font-serif);
-    --ui-button-sm-font-size: 0.84rem;
-  }
-
-  html[data-ui-sans="ru"] {
-    --font-serif: var(--font-source-serif), var(--font-noto-sans-cyrillic),
-      ui-serif, Georgia, serif;
-    --font-heading: var(--font-serif);
-    --ui-button-sm-font-size: 0.81rem;
-  }
-
-  html[data-ui-sans="ar"] {
-    --font-serif: var(--font-source-serif), var(--font-noto-sans-arabic),
-      "Segoe UI", Tahoma, serif;
-    --font-heading: var(--font-serif);
-    --ui-button-sm-font-size: 0.84rem;
-  }
-
-  html[data-ui-sans="hi"] {
-    --font-serif: var(--font-source-serif), var(--font-noto-sans-devanagari),
-      "Nirmala UI", "Mangal", "Kokila", serif;
-    --font-heading: var(--font-serif);
-    --ui-button-sm-font-size: 0.84rem;
-  }
-
-  /*
-   * Button small text scale fallback by actual locale (`lang`),
-   * so every next-intl locale gets deterministic sizing.
-   */
+  /* Button small text scale fallback by locale. */
   html:lang(ja) {
     --ui-button-sm-font-size: 0.86rem;
   }
-  html:lang(zh-CN) {
-    --ui-button-sm-font-size: 0.85rem;
-  }
-  html:lang(zh-TW) {
-    --ui-button-sm-font-size: 0.85rem;
-  }
-  html:lang(ko) {
-    --ui-button-sm-font-size: 0.84rem;
-  }
-  html:lang(ru) {
-    --ui-button-sm-font-size: 0.81rem;
-  }
-  html:lang(ar) {
-    --ui-button-sm-font-size: 0.84rem;
-  }
-  html:lang(hi) {
-    --ui-button-sm-font-size: 0.84rem;
-  }
-  html:lang(en),
-  html:lang(es),
-  html:lang(fr),
-  html:lang(de),
-  html:lang(pt),
-  html:lang(tr),
-  html:lang(sw) {
+  html:lang(en) {
     --ui-button-sm-font-size: 0.8rem;
   }
 
   html[data-ui-mono="fira"] {
     --font-mono: var(--font-fira-code), "Fira Mono", Menlo, Consolas, "DejaVu Sans Mono",
-      monospace;
-  }
-
-  html[data-ui-mono="cjk"] {
-    --font-mono: ui-monospace, "BIZ UDGothic", "BIZ UDPGothic", "Hiragino Maru Gothic ProN",
-      "Noto Sans Mono CJK JP", "Noto Sans Mono CJK SC", "Noto Sans Mono CJK TC",
-      "Noto Sans Mono CJK KR", "Malgun Gothic", "MS Gothic",
-      monospace;
-  }
-
-  html[data-ui-mono="arabic"] {
-    --font-mono: ui-monospace, "Noto Sans Mono", "Simplified Arabic Fixed", "Traditional Arabic",
-      monospace;
-  }
-
-  html[data-ui-mono="devanagari"] {
-    --font-mono: ui-monospace, "Noto Sans Mono", "Nirmala UI", "Kokila",
       monospace;
   }
 

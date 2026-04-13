@@ -2,12 +2,6 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import {
   Fira_Code,
-  Noto_Sans,
-  Noto_Sans_Arabic,
-  Noto_Sans_Devanagari,
-  Noto_Sans_KR,
-  Noto_Sans_SC,
-  Noto_Sans_TC,
   Noto_Serif_JP,
   Source_Serif_4,
 } from "next/font/google";
@@ -46,62 +40,8 @@ const notoSerifJp = Noto_Serif_JP({
   preload: false,
 });
 
-const notoSansSc = Noto_Sans_SC({
-  variable: "--font-noto-sans-sc",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  display: "swap",
-  preload: false,
-});
-
-const notoSansTc = Noto_Sans_TC({
-  variable: "--font-noto-sans-tc",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  display: "swap",
-  preload: false,
-});
-
-const notoSansKr = Noto_Sans_KR({
-  variable: "--font-noto-sans-kr",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  display: "swap",
-  preload: false,
-});
-
-const notoSansCyrillic = Noto_Sans({
-  variable: "--font-noto-sans-cyrillic",
-  subsets: ["latin", "cyrillic", "cyrillic-ext"],
-  weight: ["400", "500", "600", "700"],
-  display: "swap",
-  preload: false,
-});
-
-const notoSansArabic = Noto_Sans_Arabic({
-  variable: "--font-noto-sans-arabic",
-  subsets: ["arabic"],
-  weight: ["400", "500", "600", "700"],
-  display: "swap",
-  preload: false,
-});
-
-const notoSansDevanagari = Noto_Sans_Devanagari({
-  variable: "--font-noto-sans-devanagari",
-  subsets: ["devanagari"],
-  weight: ["400", "500", "600", "700"],
-  display: "swap",
-  preload: false,
-});
-
 const googleSansByKey = {
   notoJp: notoSerifJp,
-  notoSc: notoSansSc,
-  notoTc: notoSansTc,
-  notoKr: notoSansKr,
-  notoCyrillic: notoSansCyrillic,
-  notoArabic: notoSansArabic,
-  notoDevanagari: notoSansDevanagari,
 } as const;
 
 export function generateStaticParams() {
@@ -143,7 +83,7 @@ type LayoutProps = {
  */
 export default async function LocaleLayout({ children, params }: LayoutProps) {
   const { locale: localeParam } = await params;
-  const direction = localeParam === "ar" ? "rtl" : "ltr";
+  const direction = "ltr";
 
   if (!hasLocale(routing.locales, localeParam)) {
     notFound();

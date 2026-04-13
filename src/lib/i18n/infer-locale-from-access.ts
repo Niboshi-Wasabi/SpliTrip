@@ -18,31 +18,6 @@ import { NEXT_INTL_LOCALE_COOKIE_NAME } from "@/lib/i18n/next-intl-locale";
 /** ISO 3166-1 alpha-2 → primary UI locale for that region (conservative list). */
 const COUNTRY_PRIMARY_LOCALE: Partial<Record<string, AppLocale>> = {
   JP: "ja",
-  KR: "ko",
-  CN: "zh-CN",
-  TW: "zh-TW",
-  HK: "zh-TW",
-  MO: "zh-TW",
-  DE: "de",
-  AT: "de",
-  FR: "fr",
-  ES: "es",
-  MX: "es",
-  AR: "es",
-  CO: "es",
-  CL: "es",
-  PE: "es",
-  BR: "pt",
-  PT: "pt",
-  RU: "ru",
-  TR: "tr",
-  SA: "ar",
-  AE: "ar",
-  EG: "ar",
-  IN: "hi",
-  NP: "hi",
-  KE: "sw",
-  TZ: "sw",
 };
 
 function readCountryCode(headers: Headers): string | undefined {
@@ -170,12 +145,6 @@ export function inferPreferredLocaleForAccess(input: {
 function acceptLanguagePrimaryTag(locale: AppLocale): string {
   if (locale === "ja") {
     return "ja-JP,ja";
-  }
-  if (locale === "zh-CN") {
-    return "zh-CN,zh";
-  }
-  if (locale === "zh-TW") {
-    return "zh-TW,zh";
   }
   return locale;
 }
