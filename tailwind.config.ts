@@ -25,16 +25,16 @@ const config = {
       },
       fontFamily: {
         /**
-         * 明朝ベースの本文スタック。実体は `globals.css` の `--font-serif`（`data-ui-sans` ごと）。
-         * Source Serif 4 → Noto Serif JP（ja）→ OS 明朝 → serif。
+         * 本文スタック。実体は `globals.css` の `--font-serif`（`data-ui-sans` ごと）。
+         * ja は Noto Sans JP 優先、en は Source Serif 4 優先。
          */
         serif: [
           "var(--font-serif)",
           "var(--font-source-serif)",
-          '"Yu Mincho"',
-          '"Hiragino Mincho ProN"',
-          '"Hiragino Mincho Pro"',
-          '"MS PMincho"',
+          '"Noto Sans JP"',
+          '"Hiragino Kaku Gothic ProN"',
+          '"Yu Gothic"',
+          '"Meiryo"',
           "serif",
         ],
         /** 明示的な UI ゴシック（`font-sans`）。body の既定は `font-serif`。 */

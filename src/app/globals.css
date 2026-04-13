@@ -13,8 +13,7 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   /* Body stack: set per `data-ui-sans` below; `--font-source-serif` comes from `[locale]/layout`. */
-  --font-serif: var(--font-source-serif), "Yu Mincho", "Hiragino Mincho ProN",
-    ui-serif, serif;
+  --font-serif: var(--font-source-serif), "Hiragino Mincho ProN", ui-serif, serif;
   --font-sans: var(--font-sans);
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
     "Liberation Mono", "Courier New", monospace;
@@ -143,15 +142,14 @@
    * next/font variables (see `locale-ui-fonts.ts`). Use `font-sans` class for explicit UIゴシック。
    */
   html[data-ui-sans="latin"] {
-    --font-serif: var(--font-source-serif), "Yu Mincho", "Hiragino Mincho ProN",
-      "Times New Roman", ui-serif, serif;
+    --font-serif: var(--font-source-serif), "Times New Roman", ui-serif, serif;
     --font-heading: var(--font-serif);
     --ui-button-sm-font-size: 0.8rem;
   }
 
   html[data-ui-sans="ja"] {
-    --font-serif: var(--font-source-serif), var(--font-noto-sans-jp),
-      "Yu Mincho", "Hiragino Mincho ProN", "Hiragino Mincho Pro", "MS PMincho", serif;
+    --font-serif: var(--font-noto-sans-jp), "Hiragino Kaku Gothic ProN", "Yu Gothic",
+      "Meiryo", sans-serif;
     --font-heading: var(--font-serif);
     --ui-button-sm-font-size: 0.86rem;
   }
