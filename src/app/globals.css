@@ -55,6 +55,7 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
+  --ui-button-sm-font-size: 0.8rem;
 }
 
 :root {
@@ -145,48 +146,56 @@
     --font-serif: var(--font-source-serif), "Yu Mincho", "Hiragino Mincho ProN",
       "Times New Roman", ui-serif, serif;
     --font-heading: var(--font-serif);
+    --ui-button-sm-font-size: 0.8rem;
   }
 
   html[data-ui-sans="ja"] {
     --font-serif: var(--font-source-serif), var(--font-noto-serif-jp),
       "Yu Mincho", "Hiragino Mincho ProN", "Hiragino Mincho Pro", "MS PMincho", serif;
     --font-heading: var(--font-serif);
+    --ui-button-sm-font-size: 0.86rem;
   }
 
   html[data-ui-sans="zh-cn"] {
     --font-serif: var(--font-source-serif), var(--font-noto-sans-sc),
       "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Yu Mincho", serif;
     --font-heading: var(--font-serif);
+    --ui-button-sm-font-size: 0.85rem;
   }
 
   html[data-ui-sans="zh-tw"] {
     --font-serif: var(--font-source-serif), var(--font-noto-sans-tc),
       "PingFang TC", "Heiti TC", "Microsoft JhengHei", "Yu Mincho", serif;
     --font-heading: var(--font-serif);
+    --ui-button-sm-font-size: 0.85rem;
   }
 
   html[data-ui-sans="ko"] {
     --font-serif: var(--font-source-serif), var(--font-noto-sans-kr),
       "Apple SD Gothic Neo", "Malgun Gothic", "Yu Mincho", serif;
     --font-heading: var(--font-serif);
+    --ui-button-sm-font-size: 0.84rem;
   }
 
   html[data-ui-sans="ru"] {
     --font-serif: var(--font-source-serif), var(--font-noto-sans-cyrillic),
       ui-serif, Georgia, serif;
     --font-heading: var(--font-serif);
+    --ui-button-sm-font-size: 0.81rem;
   }
 
   html[data-ui-sans="ar"] {
     --font-serif: var(--font-source-serif), var(--font-noto-sans-arabic),
       "Segoe UI", Tahoma, serif;
     --font-heading: var(--font-serif);
+    --ui-button-sm-font-size: 0.84rem;
   }
 
   html[data-ui-sans="hi"] {
     --font-serif: var(--font-source-serif), var(--font-noto-sans-devanagari),
       "Nirmala UI", "Mangal", "Kokila", serif;
     --font-heading: var(--font-serif);
+    --ui-button-sm-font-size: 0.84rem;
   }
 
   html[data-ui-mono="fira"] {
