@@ -1,4 +1,8 @@
 import "./globals.css";
+import { Geist } from "next/font/google";
+
+const geist = Geist({subsets:['latin'],variable:'--font-sans'});
+
 
 /**
  * Root shell required by Next.js; real `<html>` lives in `[locale]/layout`.
