@@ -1,4 +1,5 @@
 import type { SupabaseClient, User } from "@supabase/supabase-js";
+import { clampDisplayNameForProfileStorage } from "@/lib/validation/display-name";
 
 /** Best-effort display string from OAuth metadata or email local-part. */
 export function extractDisplayName(user: User): string {
@@ -106,7 +107,9 @@ export async function upsertUserProfileFromAuth(
     existing.trim().length > 0 &&
     !DEFAULT_DISPLAY_NAMES.has(existing.trim());
 
-  const display_name = hasCustomName ? existing : oauthName;
+  const display_name = clampDisplayNameForProfileStorage(
+    hasCustomName ? existing : oauthName,
+  );
 
   const { error } = await supabase.rpc("upsert_user_profile", {
     p_display_name: display_name,

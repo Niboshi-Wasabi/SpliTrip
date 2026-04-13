@@ -4,6 +4,18 @@
 
 export const DISPLAY_NAME_MAX_LENGTH = 50;
 
+/** OAuth 由来などで長い表示名を `user_profiles` 保存用に切り詰める（`.length` は UTF-16 コードユニット）。 */
+export function clampDisplayNameForProfileStorage(raw: string): string {
+  const trimmed = raw.trim();
+  if (trimmed.length === 0) {
+    return "ユーザー";
+  }
+  if (trimmed.length <= DISPLAY_NAME_MAX_LENGTH) {
+    return trimmed;
+  }
+  return trimmed.slice(0, DISPLAY_NAME_MAX_LENGTH);
+}
+
 export type DisplayNameValidationFailure =
   | "not_string"
   | "empty"

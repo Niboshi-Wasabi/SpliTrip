@@ -1,5 +1,6 @@
 import {
   DISPLAY_NAME_MAX_LENGTH,
+  clampDisplayNameForProfileStorage,
   validateDisplayNameInput,
 } from "./display-name";
 
@@ -29,5 +30,22 @@ describe("validateDisplayNameInput", () => {
   it("文字列以外は not_string", () => {
     expect(validateDisplayNameInput(123).ok).toBe(false);
     expect(validateDisplayNameInput(null).ok).toBe(false);
+  });
+});
+
+describe("clampDisplayNameForProfileStorage", () => {
+  it("51文字超は先頭50文字に切り詰め", () => {
+    const long = "あ".repeat(DISPLAY_NAME_MAX_LENGTH + 5);
+    expect(clampDisplayNameForProfileStorage(long).length).toBe(
+      DISPLAY_NAME_MAX_LENGTH,
+    );
+  });
+
+  it("空白のみはユーザーにフォールバック", () => {
+    expect(clampDisplayNameForProfileStorage("  \t  ")).toBe("ユーザー");
+  });
+
+  it("トリムしてそのまま返す", () => {
+    expect(clampDisplayNameForProfileStorage("  abc  ")).toBe("abc");
   });
 });
