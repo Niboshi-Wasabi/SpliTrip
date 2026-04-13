@@ -36,12 +36,11 @@
       "signIn": "ログイン"
     },
     "hero": {
-      "badge": "AIが支える、グループ旅行の精算",
-      "typewriterPrefix": "グループ旅行の割り勘を、もっとスムーズに。",
-      "typewriterSuffix": " カテゴリ分けから同期、精算まで、AIがチームの会計を静かにサポートします。",
-      "description": "レシートを撮るだけで出費が入力され、柔軟な割り方と最小送金の精算まで。スマホひとつで、会計のストレスから解放されます。",
+      "badge": "旅の割り勘にAI",
+      "description": "レシート読取・柔軟な割り方・精算まで。スマホで完結。",
       "primaryCta": "無料で始める",
-      "secondaryCta": "機能紹介を見る"
+      "secondaryCta": "機能紹介を見る",
+      "title": "旅行の割り勘と精算を、もっと手軽に。"
     },
     "features": {
       "highlightsHeading": "SpliTripならではの強み",

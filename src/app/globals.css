@@ -127,23 +127,6 @@
   --sidebar-ring: oklch(0.556 0 0);
 }
 
-@layer utilities {
-  @keyframes typewriter-caret-blink {
-    0%,
-    40% {
-      opacity: 1;
-    }
-    45%,
-    100% {
-      opacity: 0;
-    }
-  }
-
-  .animate-typewriter-caret {
-    animation: typewriter-caret-blink 1s step-end infinite;
-  }
-}
-
 @layer base {
   * {
     @apply border-border outline-ring/50;

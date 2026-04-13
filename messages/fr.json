@@ -24,12 +24,11 @@
   },
   "Landing": {
     "hero": {
-      "badge": "Règlements de voyage assistés par l'IA",
-      "description": "Photographiez un reçu : l'IA remplit les montants. Répartition flexible, règlement intelligent et moins de virements, le tout sur mobile.",
+      "badge": "Frais de voyage & IA",
+      "description": "Scan de tickets, répartitions flexibles, moins de virements — sur le téléphone.",
       "primaryCta": "Commencer gratuitement",
       "secondaryCta": "Voir les fonctionnalités",
-      "typewriterPrefix": "Réglez les dépenses de groupe sans effort,",
-      "typewriterSuffix": " avec une IA qui classe les dépenses, garde toute l’équipe alignée et simplifie les remboursements."
+      "title": "Partagez et réglez les frais, plus simplement."
     },
     "features": {
       "highlightsHeading": "Ce qui distingue SpliTrip",

@@ -24,12 +24,11 @@
   },
   "Landing": {
     "hero": {
-      "badge": "AI로 더 똑똑한 그룹 여행 정산",
-      "description": "영수증만 촬영하면 AI가 내용을 채우고, 유연한 분할·최소 송금 정산까지 스마트폰 하나로 끝냅니다.",
+      "badge": "여행 정산에 AI",
+      "description": "영수증 스캔·유연한 분할·정산까지. 스마트폰 하나로.",
       "primaryCta": "무료로 시작",
       "secondaryCta": "기능 살펴보기",
-      "typewriterPrefix": "번거로운 모임 비용, 이제 훨씬 수월하게,",
-      "typewriterSuffix": " AI가 카테고리 분류·동기화·정산 준비까지 팀 예산을 차분히 돕습니다."
+      "title": "N분의1과 정산을 더 쉽게."
     },
     "features": {
       "highlightsHeading": "SpliTrip만의 강점",

@@ -2,8 +2,7 @@
 
 import { motion, type Variants } from "framer-motion";
 import Image from "next/image";
-import Typewriter from "typewriter-effect";
-import { useLocale, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { buttonVariants } from "@/components/ui/button-variants";
 import { LanguageSwitcher } from "@/components/ui/LanguageSwitcher";
@@ -73,10 +72,6 @@ export function LandingHeader() {
 
 export function HeroSection() {
   const landingTranslations = useTranslations("Landing");
-  const locale = useLocale();
-  const prefix = landingTranslations("hero.typewriterPrefix");
-  const suffix = landingTranslations("hero.typewriterSuffix");
-  const headlineLabel = `${prefix} ${suffix}`.replace(/\s+/g, " ").trim();
 
   return (
     <motion.section
@@ -91,31 +86,12 @@ export function HeroSection() {
       >
         {landingTranslations("hero.badge")}
       </motion.p>
-      <motion.div variants={fadeUpVariants}>
-        <h1
-          className="mx-auto max-w-4xl text-balance text-3xl font-bold leading-snug text-foreground md:text-4xl md:leading-tight lg:text-5xl"
-          aria-label={headlineLabel}
-        >
-          <span className="block">{prefix}</span>
-          <span className="mt-2 flex min-h-[1.35em] w-full justify-center font-semibold tracking-tight text-foreground/95 md:min-h-[1.2em]">
-            <Typewriter
-              key={`${locale}-${suffix.slice(0, 24)}`}
-              onInit={(typewriter) => {
-                typewriter.typeString(suffix).start();
-              }}
-              options={{
-                delay: 32,
-                cursor: "_",
-                loop: false,
-                skipAddStyles: true,
-                wrapperClassName: "inline-block max-w-full text-balance text-center",
-                cursorClassName:
-                  "ml-0.5 inline-block align-baseline font-normal text-teal-500 animate-typewriter-caret dark:text-teal-400",
-              }}
-            />
-          </span>
-        </h1>
-      </motion.div>
+      <motion.h1
+        variants={fadeUpVariants}
+        className="mx-auto max-w-3xl text-balance text-3xl font-bold leading-tight text-foreground md:text-4xl lg:text-5xl"
+      >
+        {landingTranslations("hero.title")}
+      </motion.h1>
       <motion.p
         variants={fadeUpVariants}
         className="mx-auto max-w-2xl text-pretty text-sm text-muted-foreground md:text-base"

@@ -24,12 +24,11 @@
   },
   "Landing": {
     "hero": {
-      "badge": "Liquidaciones de viaje con IA",
-      "description": "Haz una foto al recibo y la IA rellena los datos. Repartos flexibles, liquidación inteligente y menos transferencias, todo desde el móvil.",
+      "badge": "Gastos de viaje con IA",
+      "description": "Escanea tickets, reparte con flexibilidad y reduce transferencias. En el móvil.",
       "primaryCta": "Empieza gratis",
       "secondaryCta": "Ver funciones",
-      "typewriterPrefix": "Liquida los gastos del grupo sin esfuerzo,",
-      "typewriterSuffix": " con IA que categoriza los gastos, mantiene al equipo alineado y agiliza los pagos."
+      "title": "Divide y liquida con menos fricción."
     },
     "features": {
       "highlightsHeading": "Lo que hace diferente a SpliTrip",

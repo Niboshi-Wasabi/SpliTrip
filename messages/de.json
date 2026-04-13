@@ -24,12 +24,11 @@
   },
   "Landing": {
     "hero": {
-      "badge": "AI-powered group trip settlements",
-      "description": "Snap a receipt and let AI fill in the details. Flexible split rules, smart settlement, and minimal transfers—managed entirely on your phone.",
+      "badge": "KI für Reisekosten",
+      "description": "Beleg-Scan, flexible Aufteilung, weniger Überweisungen – auf dem Smartphone.",
       "primaryCta": "Get started free",
       "secondaryCta": "See product highlights",
-      "typewriterPrefix": "Gruppenreisekosten mühelos abrechnen,",
-      "typewriterSuffix": " mit KI, die Ausgaben kategorisiert, das Team synchron hält und Zahlungen vereinfacht."
+      "title": "Teilen und abrechnen – mit weniger Aufwand."
     },
     "features": {
       "highlightsHeading": "What makes SpliTrip different",
