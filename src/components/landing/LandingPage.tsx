@@ -1,11 +1,10 @@
 "use client";
 
 import { motion } from "framer-motion";
-import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { buttonVariants } from "@/components/ui/button-variants";
-import { LanguageSwitcher } from "@/components/ui/LanguageSwitcher";
+import { HeroSection, LandingHeader } from "@/components/landing/HeroSection";
 import { cn } from "@/lib/utils";
 import {
   Brain,
@@ -106,73 +105,11 @@ export function LandingPage() {
   const landingTranslations = useTranslations("Landing");
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background via-background to-muted/30">
-      <header className="border-b border-border/70 bg-background/90 backdrop-blur supports-[backdrop-filter]:bg-background/70">
-        <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-3 px-4 py-3">
-          <div className="flex items-center gap-3">
-            <Image
-              src="/icons/source-app-icon.svg"
-              alt=""
-              width={48}
-              height={48}
-              className="h-12 w-12 object-contain"
-              priority
-            />
-            <p className="text-sm font-semibold text-foreground">SpliTrip</p>
-          </div>
-          <LanguageSwitcher />
-        </div>
-      </header>
+    <div className="flex min-h-screen flex-col bg-gradient-to-b from-background via-background to-muted/30">
+      <LandingHeader />
 
-      <main>
-        <motion.section
-          className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-4 py-14 text-center md:py-20"
-          variants={containerVariants}
-          initial="hidden"
-          animate="show"
-        >
-          <motion.p
-            variants={fadeUpVariants}
-            className="mx-auto rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-xs font-medium text-primary"
-          >
-            {landingTranslations("hero.badge")}
-          </motion.p>
-          <motion.h1
-            variants={fadeUpVariants}
-            className="mx-auto max-w-3xl text-balance text-3xl font-bold leading-tight text-foreground md:text-5xl"
-          >
-            {landingTranslations("hero.title")}
-          </motion.h1>
-          <motion.p
-            variants={fadeUpVariants}
-            className="mx-auto max-w-2xl text-pretty text-sm text-muted-foreground md:text-base"
-          >
-            {landingTranslations("hero.description")}
-          </motion.p>
-          <motion.div
-            variants={fadeUpVariants}
-            className="flex flex-col items-center justify-center gap-3 sm:flex-row"
-          >
-            <Link
-              href="/login"
-              className={cn(
-                buttonVariants({ size: "lg" }),
-                "min-h-[44px] w-full shadow-sm transition-transform duration-200 hover:-translate-y-0.5 hover:shadow-lg sm:w-auto",
-              )}
-            >
-              {landingTranslations("hero.primaryCta")}
-            </Link>
-            <Link
-              href="/pitch"
-              className={cn(
-                buttonVariants({ variant: "outline", size: "lg" }),
-                "min-h-[44px] w-full transition-transform duration-200 hover:-translate-y-0.5 hover:shadow-md sm:w-auto",
-              )}
-            >
-              {landingTranslations("hero.secondaryCta")}
-            </Link>
-          </motion.div>
-        </motion.section>
+      <main className="flex-1">
+        <HeroSection />
 
         <motion.section
           className="mx-auto w-full max-w-6xl px-4 pb-12 md:pb-16"

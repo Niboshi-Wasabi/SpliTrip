@@ -25,10 +25,11 @@
   "Landing": {
     "hero": {
       "badge": "AI로 더 똑똑한 그룹 여행 정산",
-      "title": "번거로운 N빵을 AI가 순식간에. 누가 얼마를 낼지 더 이상 고민하지 마세요.",
       "description": "영수증만 촬영하면 AI가 내용을 채우고, 유연한 분할·최소 송금 정산까지 스마트폰 하나로 끝냅니다.",
       "primaryCta": "무료로 시작",
-      "secondaryCta": "기능 살펴보기"
+      "secondaryCta": "기능 살펴보기",
+      "typewriterPrefix": "번거로운 모임 비용, 이제 훨씬 수월하게,",
+      "typewriterSuffix": " AI가 카테고리 분류·동기화·정산 준비까지 팀 예산을 차분히 돕습니다."
     },
     "features": {
       "highlightsHeading": "SpliTrip만의 강점",
@@ -101,6 +102,9 @@
       "title": "다음 여행 정산은 스트레스 없이",
       "description": "초대부터 최종 정산까지 휴대폰에서 끝까지 이어지는 흐름을 바로 경험해 보세요.",
       "button": "SpliTrip 시작하기"
+    },
+    "header": {
+      "signIn": "Sign in"
     }
   },
   "JoinGate": {
@@ -614,5 +618,14 @@
     "ctaDashboard": "Open dashboard",
     "ctaHint": "Create a group and try the flow",
     "markSeenError": "Could not save progress. Check your connection and try again."
+  },
+  "Beta": {
+    "badge": "BETA",
+    "badgeAria": "This app is in open beta",
+    "dashboardTitle": "Welcome to SpliTrip Open Beta",
+    "dashboardNote": "Features and UI may change. You might run into bugs—thank you for your patience and feedback."
+  },
+  "AppFooter": {
+    "betaBugReport": "Report bugs & feedback (open beta)"
   }
 }

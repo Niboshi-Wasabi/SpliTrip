@@ -25,10 +25,11 @@
   "Landing": {
     "hero": {
       "badge": "Règlements de voyage assistés par l'IA",
-      "title": "Partagez les dépenses en quelques secondes grâce à l'IA—qui paie quoi, sans hésiter.",
       "description": "Photographiez un reçu : l'IA remplit les montants. Répartition flexible, règlement intelligent et moins de virements, le tout sur mobile.",
       "primaryCta": "Commencer gratuitement",
-      "secondaryCta": "Voir les fonctionnalités"
+      "secondaryCta": "Voir les fonctionnalités",
+      "typewriterPrefix": "Réglez les dépenses de groupe sans effort,",
+      "typewriterSuffix": " avec une IA qui classe les dépenses, garde toute l’équipe alignée et simplifie les remboursements."
     },
     "features": {
       "highlightsHeading": "Ce qui distingue SpliTrip",
@@ -101,6 +102,9 @@
       "title": "Rendez le prochain voyage sans stress côté règlement",
       "description": "Testez un parcours complet, de l'invitation à la clôture des comptes, directement depuis votre téléphone.",
       "button": "Essayer SpliTrip"
+    },
+    "header": {
+      "signIn": "Se connecter"
     }
   },
   "JoinGate": {
@@ -614,5 +618,14 @@
     "ctaDashboard": "Ouvrir le tableau de bord",
     "ctaHint": "Créez un groupe et testez le parcours",
     "markSeenError": "Impossible d'enregistrer la progression. Vérifiez votre connexion et réessayez."
+  },
+  "Beta": {
+    "badge": "BETA",
+    "badgeAria": "This app is in open beta",
+    "dashboardTitle": "Welcome to SpliTrip Open Beta",
+    "dashboardNote": "Features and UI may change. You might run into bugs—thank you for your patience and feedback."
+  },
+  "AppFooter": {
+    "betaBugReport": "Report bugs & feedback (open beta)"
   }
 }

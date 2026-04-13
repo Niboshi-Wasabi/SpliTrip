@@ -25,10 +25,11 @@
   "Landing": {
     "hero": {
       "badge": "Liquidaciones de viaje con IA",
-      "title": "Divide los gastos del viaje en segundos con IA: quién paga qué, sin dudas.",
       "description": "Haz una foto al recibo y la IA rellena los datos. Repartos flexibles, liquidación inteligente y menos transferencias, todo desde el móvil.",
       "primaryCta": "Empieza gratis",
-      "secondaryCta": "Ver funciones"
+      "secondaryCta": "Ver funciones",
+      "typewriterPrefix": "Liquida los gastos del grupo sin esfuerzo,",
+      "typewriterSuffix": " con IA que categoriza los gastos, mantiene al equipo alineado y agiliza los pagos."
     },
     "features": {
       "highlightsHeading": "Lo que hace diferente a SpliTrip",
@@ -101,6 +102,9 @@
       "title": "Haz que la próxima liquidación del viaje sea sin estrés",
       "description": "Prueba el flujo completo, desde la invitación hasta el cierre final, directamente desde tu móvil.",
       "button": "Comenzar con SpliTrip"
+    },
+    "header": {
+      "signIn": "Iniciar sesión"
     }
   },
   "JoinGate": {
@@ -614,5 +618,14 @@
     "ctaDashboard": "Abrir panel",
     "ctaHint": "Crea un grupo y prueba el flujo",
     "markSeenError": "No se pudo guardar el progreso. Revisa tu conexión e inténtalo de nuevo."
+  },
+  "Beta": {
+    "badge": "BETA",
+    "badgeAria": "This app is in open beta",
+    "dashboardTitle": "Welcome to SpliTrip Open Beta",
+    "dashboardNote": "Features and UI may change. You might run into bugs—thank you for your patience and feedback."
+  },
+  "AppFooter": {
+    "betaBugReport": "Report bugs & feedback (open beta)"
   }
 }

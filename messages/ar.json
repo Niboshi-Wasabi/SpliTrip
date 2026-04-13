@@ -25,10 +25,11 @@
   "Landing": {
     "hero": {
       "badge": "تسويات رحلات جماعية مدعومة بالذكاء الاصطناعي",
-      "title": "قسّم تكاليف السفر في ثوانٍ بمساعدة الذكاء الاصطناعي—اعرف من يدفع ماذا بوضوح.",
       "description": "التقط صورة للإيصال ليملأ الذكاء الاصطناعي التفاصيل. قواعد تقسيم مرنة، تسوية ذكية، وتحويلات أقل—كل ذلك من هاتفك.",
       "primaryCta": "ابدأ مجانًا",
-      "secondaryCta": "استعراض المزايا"
+      "secondaryCta": "استعراض المزايا",
+      "typewriterPrefix": "سوِّ مصاريف المجموعة بسهولة،",
+      "typewriterSuffix": " مع ذكاء اصطناعي يصنّف الإنفاق ويُبقي الفريق متزامناً ويُبسّط التسويات."
     },
     "features": {
       "highlightsHeading": "ما الذي يميز SpliTrip",
@@ -101,6 +102,9 @@
       "title": "اجعل تسوية رحلتك القادمة بلا توتر",
       "description": "جرّب مسارًا متكاملًا من الدعوة حتى إغلاق الحسابات مباشرة من هاتفك.",
       "button": "ابدأ مع SpliTrip"
+    },
+    "header": {
+      "signIn": "تسجيل الدخول"
     }
   },
   "JoinGate": {
@@ -614,5 +618,14 @@
     "ctaDashboard": "فتح لوحة التحكم",
     "ctaHint": "أنشئ مجموعة وجرّب سير العمل",
     "markSeenError": "تعذّر حفظ التقدّم. تحقّق من الاتصال ثم حاول مرة أخرى."
+  },
+  "Beta": {
+    "badge": "BETA",
+    "badgeAria": "This app is in open beta",
+    "dashboardTitle": "Welcome to SpliTrip Open Beta",
+    "dashboardNote": "Features and UI may change. You might run into bugs—thank you for your patience and feedback."
+  },
+  "AppFooter": {
+    "betaBugReport": "Report bugs & feedback (open beta)"
   }
 }

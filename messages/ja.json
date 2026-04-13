@@ -22,10 +22,23 @@
     "modalDescription": "アプリの表示に使う言語を選びます。",
     "openModal": "言語を選ぶ"
   },
+  "Beta": {
+    "badge": "BETA",
+    "badgeAria": "このアプリはオープンベータ版です",
+    "dashboardTitle": "SpliTrip オープンベータへようこそ",
+    "dashboardNote": "機能や表示はアップデートされることがあり、不具合が含まれる場合があります。ご意見・ご報告に感謝します。"
+  },
+  "AppFooter": {
+    "betaBugReport": "オープンベータの不具合・ご意見はこちら"
+  },
   "Landing": {
+    "header": {
+      "signIn": "ログイン"
+    },
     "hero": {
       "badge": "AIが支える、グループ旅行の精算",
-      "title": "旅行の面倒な割り勘を、AIが一瞬で解決。誰がいくら払うか、もう迷わない。",
+      "typewriterPrefix": "グループ旅行の割り勘を、もっとスムーズに。",
+      "typewriterSuffix": " カテゴリ分けから同期、精算まで、AIがチームの会計を静かにサポートします。",
       "description": "レシートを撮るだけで出費が入力され、柔軟な割り方と最小送金の精算まで。スマホひとつで、会計のストレスから解放されます。",
       "primaryCta": "無料で始める",
       "secondaryCta": "機能紹介を見る"

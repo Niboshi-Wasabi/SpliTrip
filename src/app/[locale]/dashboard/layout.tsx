@@ -1,3 +1,4 @@
+import { OpenBetaBanner } from "@/components/beta/open-beta-banner";
 import { WhatsNewModal } from "@/components/ui/WhatsNewModal";
 
 type DashboardLayoutProps = {
@@ -7,6 +8,7 @@ type DashboardLayoutProps = {
 export default function DashboardLayout({ children }: DashboardLayoutProps) {
   return (
     <>
+      <OpenBetaBanner />
       {children}
       <WhatsNewModal />
     </>
