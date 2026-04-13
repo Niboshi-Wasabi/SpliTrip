@@ -626,5 +626,52 @@
     "ctaDashboard": "ダッシュボードへ",
     "ctaHint": "グループを作成して試す",
     "markSeenError": "完了処理に失敗しました。通信を確認してもう一度お試しください。"
+  },
+  "LandingV2": {
+    "nav": {
+      "features": "機能",
+      "pricing": "料金",
+      "about": "SpliTripについて"
+    },
+    "actions": {
+      "login": "ログイン"
+    },
+    "hero": {
+      "kicker": "OPEN BETA",
+      "titleLead": "グループ旅行の割り勘を、",
+      "titleTail": "美しく、迷いなく。",
+      "typewriterPhrases": [
+        "【出費を自動でカテゴリ分け中...】",
+        "【チーム予算をリアルタイム同期中...】",
+        "【最短ルートで精算を提案中...】"
+      ],
+      "description": "SpliTripは、出費記録から割り勘、精算までをなめらかに繋ぎ、チーム会計をスマートに整えます。",
+      "cta": "オープンベータに参加"
+    },
+    "mock": {
+      "betaBanner": "WELCOME TO SPLITRIP OPEN BETA"
+    },
+    "cards": {
+      "receipt": {
+        "title": "AIレシート読み取り",
+        "body": "レシートをすばやく取り込み、入力の手間を削減。"
+      },
+      "split": {
+        "title": "柔軟な割り勘",
+        "body": "均等・比率・金額指定など、多様な分割に対応。"
+      },
+      "debts": {
+        "title": "精算を最適化",
+        "body": "送金回数を減らし、わかりやすく清算。"
+      }
+    },
+    "pricing": {
+      "title": "わかりやすい料金設計",
+      "body": "まずは無料で。必要に応じて上位プランへ。"
+    },
+    "about": {
+      "title": "旅のチーム会計を上質に",
+      "body": "明快さ・速さ・信頼感を重視した体験設計。"
+    }
   }
 }

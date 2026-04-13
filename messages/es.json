@@ -626,5 +626,47 @@
   },
   "AppFooter": {
     "betaBugReport": "Report bugs & feedback (open beta)"
+  },
+  "LandingV2": {
+    "nav": {
+      "features": "Features",
+      "pricing": "Pricing",
+      "about": "About"
+    },
+    "actions": {
+      "login": "Log In"
+    },
+    "hero": {
+      "kicker": "OPEN BETA",
+      "titleLead": "EFFORTLESSLY SETTLE GROUP EXPENSES,",
+      "titleTail": "categorize spending and keep your team budget in sync.",
+      "description": "SpliTrip helps travel teams record expenses, split costs, and settle fast with less back-and-forth.",
+      "cta": "JOIN THE OPEN BETA"
+    },
+    "mock": {
+      "betaBanner": "WELCOME TO SPLITRIP OPEN BETA"
+    },
+    "cards": {
+      "receipt": {
+        "title": "AI Receipt Scan",
+        "body": "Capture receipts instantly and prefill key fields."
+      },
+      "split": {
+        "title": "Flexible Split",
+        "body": "Equal, ratio, percentage, or custom amounts."
+      },
+      "debts": {
+        "title": "Simplify Debts",
+        "body": "Reduce payment hops and settle clearly."
+      }
+    },
+    "pricing": {
+      "title": "Simple pricing",
+      "body": "Start free and upgrade when your group needs more automation."
+    },
+    "about": {
+      "title": "Built for modern travel groups",
+      "body": "Designed for clarity, speed, and trust across every trip."
+    }
   }
 }

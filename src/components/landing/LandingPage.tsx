@@ -1,320 +1,144 @@
 "use client";
 
 import { motion } from "framer-motion";
+import Typewriter from "typewriter-effect";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { buttonVariants } from "@/components/ui/button-variants";
-import { HeroSection, LandingHeader } from "@/components/landing/HeroSection";
+import { LanguageSwitcher } from "@/components/ui/LanguageSwitcher";
 import { cn } from "@/lib/utils";
-import {
-  Brain,
-  Check,
-  Globe,
-  Lightbulb,
-  QrCode,
-  ReceiptText,
-  ScanLine,
-  Send,
-  SlidersHorizontal,
-  Split,
-  Wallet,
-} from "lucide-react";
-
-const containerVariants = {
-  hidden: { opacity: 0 },
-  show: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.12,
-    },
-  },
-};
-
-const fadeUpVariants = {
-  hidden: { opacity: 0, y: 24 },
-  show: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.45 },
-  },
-};
-
-const highlightFeatureConfig = [
-  { key: "receiptAi" as const, icon: ScanLine },
-  { key: "flexibleSplit" as const, icon: SlidersHorizontal },
-  { key: "tapToPay" as const, icon: Wallet },
-  { key: "nextPayer" as const, icon: Lightbulb },
-  { key: "inviteJoin" as const, icon: QrCode },
-  { key: "global" as const, icon: Globe },
-];
-
-const coreFeatureConfig = [
-  { key: "ai" as const, icon: Brain },
-  { key: "split" as const, icon: Split },
-  { key: "settlement" as const, icon: Send },
-  { key: "export" as const, icon: ReceiptText },
-];
-
-const highlightAccentClasses = [
-  {
-    card: "border-sky-200/80 bg-sky-50/70 dark:border-sky-400/30 dark:bg-sky-500/10",
-    icon: "bg-sky-100 text-sky-700 dark:bg-sky-500/20 dark:text-sky-200",
-  },
-  {
-    card: "border-violet-200/80 bg-violet-50/70 dark:border-violet-400/30 dark:bg-violet-500/10",
-    icon: "bg-violet-100 text-violet-700 dark:bg-violet-500/20 dark:text-violet-200",
-  },
-  {
-    card: "border-emerald-200/80 bg-emerald-50/70 dark:border-emerald-400/30 dark:bg-emerald-500/10",
-    icon: "bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-200",
-  },
-  {
-    card: "border-amber-200/80 bg-amber-50/70 dark:border-amber-400/30 dark:bg-amber-500/10",
-    icon: "bg-amber-100 text-amber-700 dark:bg-amber-500/20 dark:text-amber-200",
-  },
-  {
-    card: "border-rose-200/80 bg-rose-50/70 dark:border-rose-400/30 dark:bg-rose-500/10",
-    icon: "bg-rose-100 text-rose-700 dark:bg-rose-500/20 dark:text-rose-200",
-  },
-  {
-    card: "border-cyan-200/80 bg-cyan-50/70 dark:border-cyan-400/30 dark:bg-cyan-500/10",
-    icon: "bg-cyan-100 text-cyan-700 dark:bg-cyan-500/20 dark:text-cyan-200",
-  },
-] as const;
-
-const coreAccentClasses = [
-  {
-    card: "border-indigo-200/80 bg-indigo-50/60 dark:border-indigo-400/30 dark:bg-indigo-500/10",
-    icon: "bg-indigo-100 text-indigo-700 dark:bg-indigo-500/20 dark:text-indigo-200",
-  },
-  {
-    card: "border-teal-200/80 bg-teal-50/60 dark:border-teal-400/30 dark:bg-teal-500/10",
-    icon: "bg-teal-100 text-teal-700 dark:bg-teal-500/20 dark:text-teal-200",
-  },
-  {
-    card: "border-fuchsia-200/80 bg-fuchsia-50/60 dark:border-fuchsia-400/30 dark:bg-fuchsia-500/10",
-    icon: "bg-fuchsia-100 text-fuchsia-700 dark:bg-fuchsia-500/20 dark:text-fuchsia-200",
-  },
-  {
-    card: "border-lime-200/80 bg-lime-50/60 dark:border-lime-400/30 dark:bg-lime-500/10",
-    icon: "bg-lime-100 text-lime-700 dark:bg-lime-500/20 dark:text-lime-200",
-  },
-] as const;
+import { ArrowRightLeft, Receipt, Split } from "lucide-react";
 
 export function LandingPage() {
-  const landingTranslations = useTranslations("Landing");
+  const t = useTranslations("LandingV2");
+  const phrasesRaw = t.raw("hero.typewriterPhrases");
+  const typewriterPhrases = Array.isArray(phrasesRaw)
+    ? phrasesRaw.filter((phrase): phrase is string => typeof phrase === "string")
+    : [t("hero.titleTail")];
 
   return (
-    <div className="flex min-h-screen flex-col bg-gradient-to-b from-background via-background to-muted/30">
-      <LandingHeader />
-
-      <main className="flex-1">
-        <HeroSection />
-
-        <motion.section
-          className="mx-auto w-full max-w-6xl px-4 pb-12 md:pb-16"
-          variants={containerVariants}
-          initial="hidden"
-          whileInView="show"
-          viewport={{ once: true, amount: 0.2 }}
-        >
-          <motion.h2
-            variants={fadeUpVariants}
-            className="mb-6 text-center text-2xl font-semibold text-foreground md:text-3xl"
-          >
-            {landingTranslations("features.highlightsHeading")}
-          </motion.h2>
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {highlightFeatureConfig.map((featureItem, featureIndex) => {
-              const accentClass =
-                highlightAccentClasses[
-                  featureIndex % highlightAccentClasses.length
-                ];
-              return (
-              <motion.article
-                key={featureItem.key}
-                variants={fadeUpVariants}
-                className={cn(
-                  "rounded-2xl border p-5 shadow-sm transition-transform duration-200 hover:-translate-y-1 hover:shadow-lg",
-                  accentClass.card,
-                )}
-              >
-                <featureItem.icon
-                  className={cn(
-                    "mb-3 h-9 w-9 rounded-lg p-2",
-                    accentClass.icon,
-                  )}
-                  aria-hidden
-                />
-                <h3 className="text-base font-semibold text-foreground">
-                  {landingTranslations(
-                    `features.highlights.${featureItem.key}.title`,
-                  )}
-                </h3>
-                <p className="mt-1 text-sm text-muted-foreground">
-                  {landingTranslations(
-                    `features.highlights.${featureItem.key}.description`,
-                  )}
-                </p>
-              </motion.article>
-              );
-            })}
-          </div>
-        </motion.section>
-
-        <motion.section
-          className="mx-auto w-full max-w-6xl px-4 pb-16 md:pb-20"
-          variants={containerVariants}
-          initial="hidden"
-          whileInView="show"
-          viewport={{ once: true, amount: 0.2 }}
-        >
-          <motion.h2
-            variants={fadeUpVariants}
-            className="mb-6 text-center text-2xl font-semibold text-foreground md:text-3xl"
-          >
-            {landingTranslations("features.heading")}
-          </motion.h2>
-          <div className="grid gap-4 md:grid-cols-2">
-            {coreFeatureConfig.map((featureItem, featureIndex) => {
-              const accentClass =
-                coreAccentClasses[featureIndex % coreAccentClasses.length];
-              return (
-              <motion.article
-                key={featureItem.key}
-                variants={fadeUpVariants}
-                className={cn(
-                  "rounded-2xl border p-5 shadow-sm transition-transform duration-200 hover:-translate-y-1 hover:shadow-lg",
-                  accentClass.card,
-                )}
-              >
-                <featureItem.icon
-                  className={cn(
-                    "mb-3 h-9 w-9 rounded-lg p-2",
-                    accentClass.icon,
-                  )}
-                  aria-hidden
-                />
-                <h3 className="text-base font-semibold text-foreground">
-                  {landingTranslations(`features.${featureItem.key}.title`)}
-                </h3>
-                <p className="mt-1 text-sm text-muted-foreground">
-                  {landingTranslations(
-                    `features.${featureItem.key}.description`,
-                  )}
-                </p>
-              </motion.article>
-              );
-            })}
-          </div>
-        </motion.section>
-
-        <motion.section
-          className="mx-auto w-full max-w-6xl px-4 pb-16 md:pb-20"
-          variants={containerVariants}
-          initial="hidden"
-          whileInView="show"
-          viewport={{ once: true, amount: 0.2 }}
-        >
-          <motion.div variants={fadeUpVariants} className="mb-8 text-center">
-            <h2 className="text-2xl font-semibold text-foreground md:text-3xl">
-              {landingTranslations("pricing.heading")}
-            </h2>
-            <p className="mx-auto mt-2 max-w-2xl text-sm text-muted-foreground md:text-base">
-              {landingTranslations("pricing.subheading")}
-            </p>
-          </motion.div>
-          <div className="grid gap-6 md:grid-cols-2 md:items-stretch">
-            <motion.article
-              variants={fadeUpVariants}
-              className="flex flex-col rounded-2xl border border-border bg-card p-6 shadow-sm"
-            >
-              <div className="mb-4 flex flex-wrap items-center gap-2">
-                <span className="rounded-full bg-muted px-2.5 py-0.5 text-xs font-medium text-muted-foreground">
-                  {landingTranslations("pricing.free.badge")}
-                </span>
-                <h3 className="text-xl font-semibold text-foreground">
-                  {landingTranslations("pricing.free.title")}
-                </h3>
-              </div>
-              <ul className="flex flex-1 flex-col gap-3 text-sm text-muted-foreground">
-                {(["bullet1", "bullet2", "bullet3", "bullet4"] as const).map(
-                  (bulletKey) => (
-                    <li key={bulletKey} className="flex gap-2">
-                      <Check
-                        className="mt-0.5 h-4 w-4 shrink-0 text-primary"
-                        aria-hidden
-                      />
-                      <span>
-                        {landingTranslations(`pricing.free.${bulletKey}`)}
-                      </span>
-                    </li>
-                  ),
-                )}
-              </ul>
-            </motion.article>
-            <motion.article
-              variants={fadeUpVariants}
-              className="flex flex-col rounded-2xl border border-primary/25 bg-primary/5 p-6 shadow-md ring-1 ring-primary/15"
-            >
-              <div className="mb-4 flex flex-wrap items-center gap-2">
-                <span className="rounded-full bg-primary/15 px-2.5 py-0.5 text-xs font-medium text-primary">
-                  {landingTranslations("pricing.pro.badge")}
-                </span>
-                <h3 className="text-xl font-semibold text-foreground">
-                  {landingTranslations("pricing.pro.title")}
-                </h3>
-              </div>
-              <ul className="flex flex-1 flex-col gap-3 text-sm text-muted-foreground">
-                {(["bullet1", "bullet2", "bullet3", "bullet4"] as const).map(
-                  (bulletKey) => (
-                    <li key={bulletKey} className="flex gap-2">
-                      <Check
-                        className="mt-0.5 h-4 w-4 shrink-0 text-primary"
-                        aria-hidden
-                      />
-                      <span>
-                        {landingTranslations(`pricing.pro.${bulletKey}`)}
-                      </span>
-                    </li>
-                  ),
-                )}
-              </ul>
-              <p className="mt-5 text-center text-xs text-muted-foreground">
-                {landingTranslations("pricing.pro.priceNote")}
-              </p>
-            </motion.article>
-          </div>
-        </motion.section>
-
-        <motion.section
-          className="mx-auto w-full max-w-4xl px-4 pb-20"
-          variants={containerVariants}
-          initial="hidden"
-          whileInView="show"
-          viewport={{ once: true, amount: 0.3 }}
-        >
-          <motion.div
-            variants={fadeUpVariants}
-            className="rounded-2xl border border-primary/20 bg-primary/5 px-6 py-8 text-center"
-          >
-            <h2 className="text-2xl font-semibold text-foreground">
-              {landingTranslations("cta.title")}
-            </h2>
-            <p className="mx-auto mt-2 max-w-2xl text-sm text-muted-foreground">
-              {landingTranslations("cta.description")}
-            </p>
-            <Link
-              href="/login"
-              className={cn(
-                buttonVariants({ size: "lg" }),
-                "mt-5 inline-flex min-h-[44px] shadow-sm transition-transform duration-200 hover:-translate-y-0.5 hover:shadow-lg",
-              )}
-            >
-              {landingTranslations("cta.button")}
+    <div className="min-h-screen bg-lp-navy text-lp-text">
+      <header className="sticky top-0 z-30 border-b border-white/10 bg-lp-navy/40 backdrop-blur-md">
+        <div className="mx-auto flex h-20 w-full max-w-6xl items-center justify-between px-4 md:px-6">
+          <Link href="/" className="text-2xl font-bold tracking-tight md:text-3xl">
+            <span className="text-lp-mint">Spli</span>
+            <span className="text-lp-coral">Trip</span>
+          </Link>
+          <nav className="hidden items-center gap-12 text-sm text-slate-200 md:flex">
+            <a href="#features" className="transition hover:text-lp-mint">{t("nav.features")}</a>
+            <a href="#pricing" className="transition hover:text-lp-mint">{t("nav.pricing")}</a>
+            <a href="#about" className="transition hover:text-lp-mint">{t("nav.about")}</a>
+          </nav>
+          <div className="flex items-center gap-3">
+            <Link href="/login" className="text-sm text-slate-100 transition hover:text-lp-mint">
+              {t("actions.login")}
             </Link>
-          </motion.div>
-        </motion.section>
+            <span className="rounded-xl bg-lp-mint px-3 py-1 text-[10px] font-bold tracking-widest text-lp-navy uppercase">
+              BETA
+            </span>
+            <div className="hidden md:block">
+              <LanguageSwitcher />
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <main className="mx-auto flex w-full max-w-6xl flex-col px-4 pb-24 md:px-6">
+        <section className="flex flex-col items-center py-24 text-center md:py-32">
+          <p className="mb-8 text-xs font-semibold tracking-widest text-lp-mint uppercase">
+            {t("hero.kicker")}
+          </p>
+          <h1 className="max-w-5xl text-5xl font-bold tracking-tight leading-tight md:text-7xl md:leading-none">
+            <span className="text-lp-mint">{t("hero.titleLead")}</span>{" "}
+            <span className="text-lp-coral">
+              <Typewriter
+                onInit={(typewriter) => {
+                  for (const phrase of typewriterPhrases) {
+                    typewriter.typeString(phrase).pauseFor(1300).deleteAll(18);
+                  }
+                  typewriter.start();
+                }}
+                options={{
+                  loop: typewriterPhrases.length > 1,
+                  cursor: "_",
+                  delay: 38,
+                  deleteSpeed: 18,
+                  skipAddStyles: true,
+                  wrapperClassName: "inline",
+                  cursorClassName: "ml-1 animate-pulse",
+                }}
+              />
+            </span>
+          </h1>
+          <p className="mt-10 max-w-3xl text-base leading-relaxed text-lp-muted md:text-lg">
+            {t("hero.description")}
+          </p>
+          <Link
+            href="/login"
+            className={cn(
+              buttonVariants({ size: "lg" }),
+              "mt-12 rounded-full border border-white/10 bg-lp-mint px-10 py-6 text-sm font-bold tracking-wide text-lp-navy shadow-[0_8px_30px_rgba(0,0,0,0.04)] transition-all hover:-translate-y-0.5 hover:shadow-[0_20px_40px_rgba(0,0,0,0.08)]",
+            )}
+          >
+            {t("hero.cta")}
+          </Link>
+        </section>
+
+        <section id="features" className="relative mt-6 flex justify-center py-24 md:py-32">
+          <div className="pointer-events-none absolute -top-2 z-20 rounded-full border border-white/10 bg-lp-mint px-8 py-2 text-[10px] font-bold tracking-widest text-lp-navy uppercase shadow-[0_8px_30px_rgba(0,0,0,0.04)]">
+            {t("mock.betaBanner")}
+          </div>
+
+          <div className="relative z-10 h-[560px] w-[290px] rounded-[2.8rem] border border-white/10 bg-slate-800/70 p-3 shadow-[0_20px_40px_rgba(0,0,0,0.08)]">
+            <div className="h-full rounded-[2.2rem] border border-white/10 bg-gradient-to-b from-slate-800 to-slate-900 p-5">
+              <div className="mb-6 h-2 w-20 rounded-full bg-white/20" />
+              <div className="space-y-3">
+                <div className="h-16 rounded-2xl bg-white/10" />
+                <div className="h-20 rounded-2xl bg-lp-mint/20" />
+                <div className="h-24 rounded-2xl bg-lp-coral/20" />
+                <div className="h-16 rounded-2xl bg-white/10" />
+              </div>
+            </div>
+          </div>
+
+          <article className="absolute -left-1 top-16 z-20 w-56 rounded-2xl border border-white/10 bg-white/90 p-4 text-slate-900 shadow-[0_8px_30px_rgba(0,0,0,0.04)] backdrop-blur md:-left-12">
+            <div className="mb-2 flex items-center gap-2">
+              <Receipt className="h-4 w-4 text-lp-coral" />
+              <p className="text-sm font-semibold">{t("cards.receipt.title")}</p>
+            </div>
+            <p className="text-xs text-slate-600">{t("cards.receipt.body")}</p>
+          </article>
+
+          <article className="absolute -right-1 top-44 z-20 w-56 rounded-2xl border border-white/10 bg-white/90 p-4 text-slate-900 shadow-[0_8px_30px_rgba(0,0,0,0.04)] backdrop-blur md:-right-12">
+            <div className="mb-2 flex items-center gap-2">
+              <Split className="h-4 w-4 text-lp-mint" />
+              <p className="text-sm font-semibold">{t("cards.split.title")}</p>
+            </div>
+            <p className="text-xs text-slate-600">{t("cards.split.body")}</p>
+          </article>
+
+          <article className="absolute bottom-4 z-20 w-60 rounded-2xl border border-white/10 bg-white/90 p-4 text-slate-900 shadow-[0_8px_30px_rgba(0,0,0,0.04)] backdrop-blur">
+            <div className="mb-2 flex items-center gap-2">
+              <ArrowRightLeft className="h-4 w-4 text-lp-coral" />
+              <p className="text-sm font-semibold">{t("cards.debts.title")}</p>
+            </div>
+            <p className="text-xs text-slate-600">{t("cards.debts.body")}</p>
+          </article>
+        </section>
+
+        <section id="pricing" className="py-24 text-center md:py-32">
+          <h2 className="text-4xl font-semibold tracking-tight leading-tight text-lp-text md:text-5xl">{t("pricing.title")}</h2>
+          <p className="mx-auto mt-5 max-w-2xl text-sm leading-relaxed text-lp-muted">
+            {t("pricing.body")}
+          </p>
+        </section>
+
+        <section id="about" className="py-24 text-center md:py-32">
+          <h2 className="text-4xl font-semibold tracking-tight leading-tight text-lp-text md:text-5xl">{t("about.title")}</h2>
+          <p className="mx-auto mt-5 max-w-2xl text-sm leading-relaxed text-lp-muted">
+            {t("about.body")}
+          </p>
+        </section>
       </main>
     </div>
   );

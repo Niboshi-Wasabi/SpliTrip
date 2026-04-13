@@ -14,6 +14,15 @@ const config = {
   darkMode: "class",
   theme: {
     extend: {
+      colors: {
+        lp: {
+          navy: "#1A202C",
+          mint: "#34D399",
+          coral: "#FB923C",
+          text: "#F8FAFC",
+          muted: "#CBD5E1",
+        },
+      },
       fontFamily: {
         /**
          * 明朝ベースの本文スタック。実体は `globals.css` の `--font-serif`（`data-ui-sans` ごと）。

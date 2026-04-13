@@ -1,0 +1,14 @@
+---
+description: LP/画面デザインでテンプレ感を避けるためのUI原則
+alwaysApply: true
+---
+
+# UI/UX Design Principles (No Template Feel)
+
+- Whitespace: avoid cramped defaults like `p-4`/`gap-4` for primary sections; use generous spacing such as `py-24` to `py-32` and breathable internal rhythm.
+- Typography baseline: keep body in `font-serif`; make H1/H2 large with `tracking-tight` and `leading-none` or `leading-tight` to create strong typographic blocks.
+- Label contrast: small labels and badges should be `uppercase` with `tracking-widest` to create deliberate contrast against large serif headings.
+- Border/Shadow subtlety: avoid heavy default shadows (`shadow-md`) and obvious gray borders; prefer soft custom shadows like `shadow-[0_8px_30px_rgba(0,0,0,0.04)]` or `shadow-[0_20px_40px_rgba(0,0,0,0.08)]`.
+- Glass-like edges: for cards/badges on dark backgrounds, use subtle translucent borders such as `border-white/10` and light blur where helpful.
+- Color direction: for LP-style hero pages, prefer deep navy base with mint/coral accents and low-noise text contrast (`text-slate-100` / `text-slate-300`).
+
