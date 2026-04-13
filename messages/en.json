@@ -639,7 +639,8 @@
     },
     "hero": {
       "kicker": "OPEN BETA",
-      "title": "Make travel expense splitting and settlement radically smoother.",
+      "titleLine1": "Make travel expense splitting and settlement",
+      "titleLine2": "radically smoother.",
       "description": "Speed up input with AI receipt scanning. Use flexible split logic across equal, exact amount, ratio, percentage, and itemized modes. Then minimize transfer hops with an optimized settlement algorithm.",
       "cta": "JOIN THE OPEN BETA",
       "note": "* No credit card required. Free to start."

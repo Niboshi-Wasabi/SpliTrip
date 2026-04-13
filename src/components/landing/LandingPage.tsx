@@ -58,7 +58,8 @@ export function LandingPage() {
             {t("hero.kicker")}
           </Badge>
           <h1 className="max-w-5xl text-5xl tracking-tight md:text-7xl md:leading-none">
-            {t("hero.title")}
+            <span className="block">{t("hero.titleLine1")}</span>
+            <span className="block">{t("hero.titleLine2")}</span>
           </h1>
           <p className="mt-8 max-w-3xl text-base leading-relaxed text-zinc-400 md:text-lg">
             {t("hero.description")}

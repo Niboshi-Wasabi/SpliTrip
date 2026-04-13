@@ -7,7 +7,7 @@
 /* Enables `print:*` utilities (e.g. `print:hidden`) for the export / print flow. */
 @custom-variant print (@media print);
 
-/* Primary UI: Source Serif 4 + locale companions (e.g. Noto Serif JP for ja). */
+/* Primary UI: Source Serif 4 + locale companions (e.g. Noto Sans JP for ja). */
 
 @theme inline {
   --color-background: var(--background);
@@ -150,7 +150,7 @@
   }
 
   html[data-ui-sans="ja"] {
-    --font-serif: var(--font-source-serif), var(--font-noto-serif-jp),
+    --font-serif: var(--font-source-serif), var(--font-noto-sans-jp),
       "Yu Mincho", "Hiragino Mincho ProN", "Hiragino Mincho Pro", "MS PMincho", serif;
     --font-heading: var(--font-serif);
     --ui-button-sm-font-size: 0.86rem;
