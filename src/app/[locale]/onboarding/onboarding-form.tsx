@@ -1,9 +1,10 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
-import { Loader2, Plane } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -66,8 +67,15 @@ export function OnboardingForm({ suggestedName, nextPath }: Props) {
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="w-full max-w-md space-y-8">
         <div className="text-center">
-          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-xl bg-blue-600 text-white">
-            <Plane className="h-7 w-7" />
+          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-xl shadow-md ring-1 ring-border">
+            <Image
+              src="/icons/source-app-icon.svg"
+              alt=""
+              width={56}
+              height={56}
+              className="h-14 w-14 object-contain"
+              priority
+            />
           </div>
           <h1 className="text-2xl font-bold text-foreground">
             {translations("title")}
