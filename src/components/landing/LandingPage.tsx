@@ -9,6 +9,7 @@ import {
   Banknote,
   Bot,
   Check,
+  FileDown,
   Languages,
   Link2,
   QrCode,
@@ -181,6 +182,63 @@ export function LandingPage() {
                   <ul className="mt-4 space-y-2 text-sm text-zinc-400">
                     <li className="list-disc pl-1 marker:text-zinc-500">{t("bento.optimize.point1")}</li>
                     <li className="list-disc pl-1 marker:text-zinc-500">{t("bento.optimize.point2")}</li>
+                  </ul>
+                </CardContent>
+              </Card>
+            </motion.div>
+            <motion.div variants={fadeUp}>
+              <Card className={`border-zinc-800 bg-zinc-900/50 ${cardHoverClass}`}>
+                <CardContent className="p-6">
+                  <div className="mb-4 flex items-center gap-2">
+                    <QrCode className="h-5 w-5 shrink-0 text-zinc-300" />
+                    <p className="text-base font-semibold tracking-tight text-zinc-100">
+                      {t("bento.invite.title")}
+                    </p>
+                  </div>
+                  <p className="text-sm leading-relaxed font-normal text-zinc-400">
+                    {t("bento.invite.body")}
+                  </p>
+                  <ul className="mt-4 space-y-2 text-sm text-zinc-400">
+                    <li className="list-disc pl-1 marker:text-zinc-500">{t("bento.invite.point1")}</li>
+                    <li className="list-disc pl-1 marker:text-zinc-500">{t("bento.invite.point2")}</li>
+                  </ul>
+                </CardContent>
+              </Card>
+            </motion.div>
+            <motion.div variants={fadeUp}>
+              <Card className={`border-zinc-800 bg-zinc-900/50 ${cardHoverClass}`}>
+                <CardContent className="p-6">
+                  <div className="mb-4 flex items-center gap-2">
+                    <Link2 className="h-5 w-5 shrink-0 text-zinc-300" />
+                    <p className="text-base font-semibold tracking-tight text-zinc-100">
+                      {t("bento.payout.title")}
+                    </p>
+                  </div>
+                  <p className="text-sm leading-relaxed font-normal text-zinc-400">
+                    {t("bento.payout.body")}
+                  </p>
+                  <ul className="mt-4 space-y-2 text-sm text-zinc-400">
+                    <li className="list-disc pl-1 marker:text-zinc-500">{t("bento.payout.point1")}</li>
+                    <li className="list-disc pl-1 marker:text-zinc-500">{t("bento.payout.point2")}</li>
+                  </ul>
+                </CardContent>
+              </Card>
+            </motion.div>
+            <motion.div variants={fadeUp}>
+              <Card className={`border-zinc-800 bg-zinc-900/50 ${cardHoverClass}`}>
+                <CardContent className="p-6">
+                  <div className="mb-4 flex items-center gap-2">
+                    <FileDown className="h-5 w-5 shrink-0 text-zinc-300" />
+                    <p className="text-base font-semibold tracking-tight text-zinc-100">
+                      {t("bento.export.title")}
+                    </p>
+                  </div>
+                  <p className="text-sm leading-relaxed font-normal text-zinc-400">
+                    {t("bento.export.body")}
+                  </p>
+                  <ul className="mt-4 space-y-2 text-sm text-zinc-400">
+                    <li className="list-disc pl-1 marker:text-zinc-500">{t("bento.export.point1")}</li>
+                    <li className="list-disc pl-1 marker:text-zinc-500">{t("bento.export.point2")}</li>
                   </ul>
                 </CardContent>
               </Card>
