@@ -7,7 +7,7 @@
 ## プロダクト概要
 
 - **用途:** グループ旅行などの **割り勘・出費記録・送金回数を減らした精算プラン** を扱う **Web アプリ（PWA 想定）**。
-- **マーケ LP:** 未ログインのトップ（`/`、`LandingPage`）に AI 訴求のヒーロー、差別化ポイント 6 件＋主要機能 4 件、フリーミアム料金（Free / PRO）、CTA。文言は `messages/*.json` の `Landing` 名前空間。
+- **マーケ LP:** トップ（`/`、`LandingPage`）に AI 訴求のヒーロー、差別化ポイント 6 件＋主要機能 4 件、フリーミアム料金（Free / PRO）、CTA。**ログイン済みセッションをLP上でも保持**し、ヘッダー導線をログイン→アカウントアイコン＋ダッシュボード導線へ切り替える。One Tap 成功時は LP をリロードして同一ページ上で導線を更新。文言は `messages/*.json` の `Landing` / `LandingV2` 名前空間。
 - **主な技術:** Next.js App Router、React、TypeScript、Tailwind CSS、Supabase（DB・認証・ストレージ）、`next-intl`（**日本語 / 英語**）。
 - **ビジネスモデル（フリーミアム）:** `user_profiles.premium_access` が **PRO**（付与根拠は `premium_access_source`: `none` / `stripe` / `manual`）。無料ユーザーは Gemini レシート OCR を **成功回数で上限（アプリ側で 3 回）**、CSV / PDF レポート出力はロック。プロモ枠は PRO で非表示。Stripe Checkout / Webhook で `stripe` を付与。運営による個別付与は **Supabase SQL Editor** で `manual` に更新（手順は下記「PRO 手動付与」）。
 - **本番の想定オリジン（カスタムドメイン）:** `https://splitrip.net`（Cloudflare で DNS 管理）。アプリ内の OAuth `redirectTo` 等は `getPublicSiteOrigin()`（`src/utils/public-site-url.ts`）が **`NEXT_PUBLIC_SITE_URL`** を優先するため、**本番・staging の Vercel（等）環境変数に必ず設定**すること。未設定のサーバー環境ではオリジンが空になりログイン周りが壊れ得る。

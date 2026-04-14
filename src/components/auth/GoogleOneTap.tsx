@@ -38,9 +38,13 @@ declare global {
 
 type Props = {
   skipPrompt?: boolean;
+  redirectOnSuccess?: boolean;
 };
 
-export function GoogleOneTap({ skipPrompt = false }: Props) {
+export function GoogleOneTap({
+  skipPrompt = false,
+  redirectOnSuccess = false,
+}: Props) {
   const locale = useLocale();
   const router = useRouter();
   const loginTranslations = useTranslations("Login");
@@ -117,7 +121,9 @@ export function GoogleOneTap({ skipPrompt = false }: Props) {
 
           googleId.cancel();
           setErrorMessage(null);
-          router.push(dashboardPath);
+          if (redirectOnSuccess) {
+            router.push(dashboardPath);
+          }
           router.refresh();
         },
       });
@@ -131,7 +137,7 @@ export function GoogleOneTap({ skipPrompt = false }: Props) {
       isActive = false;
       window.google?.accounts?.id.cancel();
     };
-  }, [locale, loginTranslations, router, scriptLoaded, skipPrompt]);
+  }, [locale, loginTranslations, redirectOnSuccess, router, scriptLoaded, skipPrompt]);
 
   if (skipPrompt) {
     return null;

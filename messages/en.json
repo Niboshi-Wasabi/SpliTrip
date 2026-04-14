@@ -652,7 +652,9 @@
       "about": "About"
     },
     "actions": {
-      "login": "Log In"
+      "login": "Log In",
+      "dashboard": "Dashboard",
+      "accountAria": "Account"
     },
     "hero": {
       "kicker": "OPEN BETA",
@@ -660,6 +662,7 @@
       "titleLine2": "with less effort.",
       "description": "Use AI receipt scan, flexible split rules, and optimized settlement in one flow.",
       "cta": "JOIN THE OPEN BETA",
+      "ctaDashboard": "GO TO DASHBOARD",
       "note": "* No credit card required. Free to start."
     },
     "bento": {

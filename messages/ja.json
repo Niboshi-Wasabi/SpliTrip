@@ -652,7 +652,9 @@
       "about": "SpliTripについて"
     },
     "actions": {
-      "login": "ログイン"
+      "login": "ログイン",
+      "dashboard": "ダッシュボードへ",
+      "accountAria": "アカウント"
     },
     "hero": {
       "kicker": "OPEN BETA",
@@ -660,6 +662,7 @@
       "titleLine2": "もっとスムーズに。",
       "description": "AIレシート読取、柔軟な割り勘、送金回数を抑える精算に対応。旅行の会計をすばやく終えられます。",
       "cta": "オープンベータに参加",
+      "ctaDashboard": "ダッシュボードへ",
       "note": "※ クレジットカード不要・基本無料"
     },
     "bento": {

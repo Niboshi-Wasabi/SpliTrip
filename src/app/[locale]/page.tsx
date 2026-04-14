@@ -1,6 +1,9 @@
-import { redirect } from "@/i18n/navigation";
 import { LandingPage } from "@/components/landing/LandingPage";
 import { GoogleOneTap } from "@/components/auth/GoogleOneTap";
+import {
+  extractAvatarUrl,
+  extractDisplayName,
+} from "@/lib/user-profile";
 import { createClient } from "@/utils/supabase/server";
 
 export const dynamic = "force-dynamic";
@@ -8,20 +11,29 @@ export const dynamic = "force-dynamic";
 type PageProps = { params: Promise<{ locale: string }> };
 
 export default async function LandingTopPage({ params }: PageProps) {
-  const { locale } = await params;
+  await params;
   const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
-  if (user) {
-    redirect({ href: "/dashboard", locale });
-    return;
-  }
-
   return (
     <>
-      <LandingPage />
+      <LandingPage
+        initialSession={
+          user
+            ? {
+                isAuthenticated: true,
+                displayName: extractDisplayName(user),
+                avatarUrl: extractAvatarUrl(user),
+              }
+            : {
+                isAuthenticated: false,
+                displayName: null,
+                avatarUrl: null,
+              }
+        }
+      />
       <GoogleOneTap skipPrompt={user !== null} />
     </>
   );

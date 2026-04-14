@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { motion } from "framer-motion";
 import { Link } from "@/i18n/navigation";
@@ -24,9 +25,76 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { LogoMark } from "@/components/logo-mark";
+import { UserAvatar } from "@/components/user-avatar";
+import {
+  extractAvatarUrl,
+  extractDisplayName,
+} from "@/lib/user-profile";
+import { createClient } from "@/utils/supabase/client";
 
-export function LandingPage() {
+type LandingSessionState = {
+  isAuthenticated: boolean;
+  displayName: string | null;
+  avatarUrl: string | null;
+};
+
+type LandingPageProps = {
+  initialSession: LandingSessionState;
+};
+
+export function LandingPage({ initialSession }: LandingPageProps) {
   const t = useTranslations("LandingV2");
+  const [sessionState, setSessionState] = useState<LandingSessionState>(
+    initialSession,
+  );
+
+  useEffect(() => {
+    const supabase = createClient();
+    let isActive = true;
+
+    const applySession = (nextSession: Awaited<
+      ReturnType<typeof supabase.auth.getSession>
+    >["data"]["session"]) => {
+      if (!nextSession?.user) {
+        setSessionState({
+          isAuthenticated: false,
+          displayName: null,
+          avatarUrl: null,
+        });
+        return;
+      }
+      setSessionState({
+        isAuthenticated: true,
+        displayName: extractDisplayName(nextSession.user),
+        avatarUrl: extractAvatarUrl(nextSession.user),
+      });
+    };
+
+    void supabase.auth.getSession().then(({ data }) => {
+      if (!isActive) {
+        return;
+      }
+      applySession(data.session);
+    });
+
+    const { data: authListener } = supabase.auth.onAuthStateChange(
+      (_event, nextSession) => {
+        applySession(nextSession);
+      },
+    );
+
+    return () => {
+      isActive = false;
+      authListener.subscription.unsubscribe();
+    };
+  }, []);
+
+  const isAuthenticated = sessionState.isAuthenticated;
+  const primaryCtaHref = isAuthenticated ? "/dashboard" : "/login";
+  const primaryCtaLabel = isAuthenticated
+    ? t("hero.ctaDashboard")
+    : t("hero.cta");
+
   const fadeUp = {
     hidden: { opacity: 0, y: 20 },
     visible: {
@@ -68,11 +136,32 @@ export function LandingPage() {
             <a href="#pricing" className="transition hover:text-zinc-100">{t("nav.pricing")}</a>
           </nav>
           <div className="flex items-center gap-3">
-            <Link href="/login">
-              <Button variant="ghost" className="text-zinc-200 hover:bg-zinc-900 hover:text-zinc-50">
-                {t("actions.login")}
-              </Button>
-            </Link>
+            {isAuthenticated ? (
+              <>
+                <Link href="/dashboard">
+                  <Button
+                    variant="ghost"
+                    className="text-zinc-200 hover:bg-zinc-900 hover:text-zinc-50"
+                  >
+                    {t("actions.dashboard")}
+                  </Button>
+                </Link>
+                <Link href="/dashboard" aria-label={t("actions.accountAria")}>
+                  <UserAvatar
+                    displayName={sessionState.displayName ?? "User"}
+                    avatarUrl={sessionState.avatarUrl}
+                    size="sm"
+                    className="ring-1 ring-zinc-700"
+                  />
+                </Link>
+              </>
+            ) : (
+              <Link href="/login">
+                <Button variant="ghost" className="text-zinc-200 hover:bg-zinc-900 hover:text-zinc-50">
+                  {t("actions.login")}
+                </Button>
+              </Link>
+            )}
             <Badge variant="secondary" className="border border-zinc-700 bg-zinc-900 text-[10px] tracking-widest uppercase text-zinc-200">
               BETA
             </Badge>
@@ -115,12 +204,12 @@ export function LandingPage() {
             variants={fadeUp}
             transition={{ duration: 0.65, delay: 0.32, ease: "easeOut" }}
           >
-            <Link href="/login">
+            <Link href={primaryCtaHref}>
               <Button
                 size="lg"
                 className="mt-12 rounded-full bg-zinc-50 px-10 text-zinc-900 hover:bg-zinc-200"
               >
-                {t("hero.cta")}
+                {primaryCtaLabel}
               </Button>
             </Link>
           </motion.div>
