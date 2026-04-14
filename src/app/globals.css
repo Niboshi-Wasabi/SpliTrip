@@ -149,8 +149,10 @@
   }
 
   html[data-ui-sans="ja"] {
-    --font-serif: var(--font-noto-serif-jp), "Hiragino Mincho ProN", "Yu Mincho",
-      "YuMincho", ui-serif, serif;
+    --font-serif: var(--font-noto-serif-jp), "Noto Serif JP", "Hiragino Mincho ProN",
+      ui-serif, serif;
+    --font-sans: var(--font-noto-serif-jp), "Noto Serif JP", "Hiragino Mincho ProN",
+      ui-serif, serif;
     --font-heading: var(--font-serif);
     --ui-button-sm-font-size: 0.86rem;
   }
