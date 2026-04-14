@@ -126,8 +126,7 @@ export default async function SettingsPage({ params }: PageProps) {
         </Card>
         <Card>
           <CardHeader>
-            <CardTitle>{t("languageTitle")}</CardTitle>
-            <CardDescription>{t("languageDescription")}</CardDescription>
+            <CardTitle>{t("languageTitleBilingual")}</CardTitle>
           </CardHeader>
           <CardContent>
             <LanguagePreferenceForm initialLanguage={initialLanguage} />
@@ -135,11 +134,8 @@ export default async function SettingsPage({ params }: PageProps) {
         </Card>
         <Card>
           <CardHeader>
-            <CardTitle>送金先の登録</CardTitle>
-            <CardDescription>
-              グループ精算で「あなたが支払う」相手に、PayPal.me や Cash App
-              で送金しやすいようリンクを表示するために使います。他のメンバーに公開されます。
-            </CardDescription>
+            <CardTitle>{t("paymentTitleBilingual")}</CardTitle>
+            <CardDescription>{t("paymentDescription")}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             {paymentColumnsMissing ? (

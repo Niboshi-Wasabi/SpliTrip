@@ -10,7 +10,6 @@ import { useLocale, useTranslations } from "next-intl";
 import { Loader2 } from "lucide-react";
 import { updatePreferredLanguageAction } from "@/app/actions/update-preferred-language";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
 import { LOCALE_DISPLAY_OPTIONS } from "@/lib/i18n/locale-display-options";
 import { withLocalePrefix } from "@/lib/i18n/localized-paths";
 import { markLocaleChosenByUser } from "@/lib/i18n/device-locale-bootstrap-storage";
@@ -52,8 +51,6 @@ export function LanguagePreferenceForm({ initialLanguage }: Props) {
   return (
     <form onSubmit={onSubmit} className="space-y-4">
       <div className="space-y-2">
-        <Label>{translations("languageTitle")}</Label>
-        <p className="text-sm text-muted-foreground">{translations("languageDescription")}</p>
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
           {LOCALE_DISPLAY_OPTIONS.map((localeOption) => (
             <label

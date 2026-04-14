@@ -52,13 +52,9 @@ export function PaymentSettingsForm({
     if (!res.ok) {
       const errorPayload = body as { error?: string };
       if (errorPayload.error === "invalid_paypal_me_id") {
-        setError(
-          "PayPal.me ID の形式が正しくありません（英数字とハイフンのみ、URL は自動で除去されます）。",
-        );
+        setError(translations("paymentPaypalInvalid"));
       } else if (errorPayload.error === "invalid_cash_app_cashtag") {
-        setError(
-          "Cash App の $Cashtag の形式が正しくありません（英数字とアンダースコア、先頭は英字）。",
-        );
+        setError(translations("paymentCashInvalid"));
       } else if (errorPayload.error === "schema_missing") {
         setError(translations("paymentSchemaSaveError"));
       } else {
@@ -74,7 +70,7 @@ export function PaymentSettingsForm({
     };
     setPaypalMeId(saved.paypal_me_id ?? "");
     setCashAppCashtag(saved.cash_app_cashtag ?? "");
-    setMessage("保存しました。");
+    setMessage(translations("saved"));
     setSaving(false);
   }
 
@@ -90,41 +86,36 @@ export function PaymentSettingsForm({
           name="paypal_me_id"
           type="text"
           autoComplete="off"
-          placeholder="例: myname（paypal.me/ の後ろだけ）"
+          placeholder={translations("paymentPaypalPlaceholder")}
           value={paypalMeId}
           disabled={paymentSaveDisabled}
           onChange={(changeEvent) => setPaypalMeId(changeEvent.target.value)}
         />
         <p className="text-xs text-muted-foreground">
-          精算画面から送金リンクを開くときに使われます。{" "}
+          {translations("paymentPaypalHintLead")}{" "}
           <span className="whitespace-nowrap">
             https://www.paypal.com/paypalme/
-            <strong>あなたのID</strong>
-            /金額
+            <strong>{translations("paymentPaypalHintId")}</strong>
+            /{translations("paymentAmountPath")}
           </span>
         </p>
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="cash_app_cashtag">Cash App（$Cashtag）</Label>
+        <Label htmlFor="cash_app_cashtag">{translations("paymentCashLabel")}</Label>
         <Input
           id="cash_app_cashtag"
           name="cash_app_cashtag"
           type="text"
           autoComplete="off"
-          placeholder="例: MyTag（$ は省略可）"
+          placeholder={translations("paymentCashPlaceholder")}
           value={cashAppCashtag}
           disabled={paymentSaveDisabled}
           onChange={(changeEvent) =>
             setCashAppCashtag(changeEvent.target.value)
           }
         />
-        <p className="text-xs text-muted-foreground">
-          <span className="whitespace-nowrap">
-            https://cash.app/$<strong>Cashtag</strong>/金額
-          </span>{" "}
-          の形式で開きます。
-        </p>
+        <p className="text-xs text-muted-foreground">{translations("paymentCashHint")}</p>
       </div>
 
       {error ? (
@@ -146,10 +137,10 @@ export function PaymentSettingsForm({
         {saving ? (
           <>
             <Loader2 className="size-4 shrink-0 animate-spin" />
-            保存中…
+            {translations("saving")}
           </>
         ) : (
-          "保存する"
+          translations("paymentSave")
         )}
       </Button>
     </form>
