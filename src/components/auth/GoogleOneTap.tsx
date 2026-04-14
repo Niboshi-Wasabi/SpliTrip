@@ -12,19 +12,13 @@ type GoogleCredentialResponse = {
   credential?: string;
 };
 
-type GooglePromptMomentNotification = {
-  isDismissedMoment: () => boolean;
-};
-
 type GoogleAccountId = {
   initialize: (options: {
     client_id: string;
     callback: (response: GoogleCredentialResponse) => void;
     cancel_on_tap_outside?: boolean;
   }) => void;
-  prompt: (
-    listener?: (notification: GooglePromptMomentNotification) => void,
-  ) => void;
+  prompt: () => void;
   cancel: () => void;
 };
 
@@ -41,8 +35,6 @@ declare global {
 type Props = {
   skipPrompt?: boolean;
 };
-
-const ONE_TAP_DISMISS_NOTICE_SESSION_KEY = "splitrip_one_tap_dismiss_notice_shown";
 
 export function GoogleOneTap({ skipPrompt = false }: Props) {
   const locale = useLocale();
@@ -122,22 +114,7 @@ export function GoogleOneTap({ skipPrompt = false }: Props) {
         },
       });
 
-      googleId.prompt((notification) => {
-        if (notification.isDismissedMoment()) {
-          const alreadyShown =
-            typeof window !== "undefined" &&
-            window.sessionStorage.getItem(ONE_TAP_DISMISS_NOTICE_SESSION_KEY) ===
-              "1";
-          if (alreadyShown) {
-            return;
-          }
-          window.sessionStorage.setItem(
-            ONE_TAP_DISMISS_NOTICE_SESSION_KEY,
-            "1",
-          );
-          setErrorMessage(loginTranslations("oneTapDismissed"));
-        }
-      });
+      googleId.prompt();
     }
 
     void initializeOneTap();
