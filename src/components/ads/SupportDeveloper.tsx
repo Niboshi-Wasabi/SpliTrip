@@ -71,6 +71,12 @@ export function SupportDeveloper({ variant = "default" }: Props) {
         </a>
       );
     }
+    /*
+     * Hide compact fallback chip on responsive/mobile for now.
+     * レスポンシブ（モバイル）での compact フォールバック表示は一時的に非表示にする。
+     */
+    return null;
+    /*
     return (
       <span
         className={cn(baseClassName, "cursor-default opacity-90")}
@@ -81,6 +87,7 @@ export function SupportDeveloper({ variant = "default" }: Props) {
         <span className="truncate">{label}</span>
       </span>
     );
+    */
   }
 
   if (hasUrl) {
