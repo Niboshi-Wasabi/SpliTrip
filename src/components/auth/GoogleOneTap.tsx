@@ -17,6 +17,10 @@ type GoogleAccountId = {
     client_id: string;
     callback: (response: GoogleCredentialResponse) => void;
     cancel_on_tap_outside?: boolean;
+    use_fedcm_for_prompt?: boolean;
+    itp_support?: boolean;
+    context?: "signin" | "signup" | "use";
+    color_scheme?: "default" | "filled_blue" | "filled_black";
   }) => void;
   prompt: () => void;
   cancel: () => void;
@@ -89,6 +93,10 @@ export function GoogleOneTap({ skipPrompt = false }: Props) {
       googleId.initialize({
         client_id: clientId,
         cancel_on_tap_outside: false,
+        use_fedcm_for_prompt: true,
+        itp_support: true,
+        context: "signin",
+        color_scheme: "filled_black",
         callback: async (response) => {
           const token = response.credential;
           if (!token) {
