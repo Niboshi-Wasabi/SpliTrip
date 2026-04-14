@@ -125,6 +125,7 @@ export function LandingPage() {
           <motion.div className="mb-8" variants={fadeUp}>
             <h2 className="text-2xl font-bold tracking-tight text-zinc-100 md:text-3xl">{t("bento.title")}</h2>
             <p className="mt-2 text-sm font-normal text-zinc-400">{t("bento.subtitle")}</p>
+            <p className="mt-3 max-w-3xl text-sm leading-relaxed font-normal text-zinc-500">{t("bento.summary")}</p>
           </motion.div>
           <motion.div className="grid gap-5 md:grid-cols-3" variants={staggerContainer}>
             <motion.div variants={fadeUp} className="md:col-span-2 md:row-span-2">
@@ -139,6 +140,10 @@ export function LandingPage() {
                   <p className="text-sm leading-relaxed font-normal text-zinc-400">
                     {t("bento.ai.body")}
                   </p>
+                  <ul className="mt-4 space-y-2 text-sm text-zinc-400">
+                    <li className="list-disc pl-1 marker:text-zinc-500">{t("bento.ai.point1")}</li>
+                    <li className="list-disc pl-1 marker:text-zinc-500">{t("bento.ai.point2")}</li>
+                  </ul>
                 </CardContent>
               </Card>
             </motion.div>
@@ -154,6 +159,10 @@ export function LandingPage() {
                   <p className="text-sm leading-relaxed font-normal text-zinc-400">
                     {t("bento.split.body")}
                   </p>
+                  <ul className="mt-4 space-y-2 text-sm text-zinc-400">
+                    <li className="list-disc pl-1 marker:text-zinc-500">{t("bento.split.point1")}</li>
+                    <li className="list-disc pl-1 marker:text-zinc-500">{t("bento.split.point2")}</li>
+                  </ul>
                 </CardContent>
               </Card>
             </motion.div>
@@ -169,6 +178,10 @@ export function LandingPage() {
                   <p className="text-sm leading-relaxed font-normal text-zinc-400">
                     {t("bento.optimize.body")}
                   </p>
+                  <ul className="mt-4 space-y-2 text-sm text-zinc-400">
+                    <li className="list-disc pl-1 marker:text-zinc-500">{t("bento.optimize.point1")}</li>
+                    <li className="list-disc pl-1 marker:text-zinc-500">{t("bento.optimize.point2")}</li>
+                  </ul>
                 </CardContent>
               </Card>
             </motion.div>
