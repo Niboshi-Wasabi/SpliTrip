@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { cn } from "@/lib/utils";
 
 type LogoMarkProps = {
@@ -6,8 +7,20 @@ type LogoMarkProps = {
 
 export function LogoMark({ className }: LogoMarkProps) {
   return (
-    <span className={cn("text-2xl font-bold tracking-tight md:text-3xl", className)}>
-      SpliTrip
+    <span
+      className={cn(
+        "inline-flex items-center text-2xl md:text-3xl",
+        className,
+      )}
+    >
+      <Image
+        src="/icons/splitrip-logo.svg"
+        alt="SpliTrip"
+        width={563}
+        height={194}
+        className="h-[1em] w-auto"
+        priority
+      />
     </span>
   );
 }
