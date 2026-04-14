@@ -24,6 +24,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { LogoMark } from "@/components/logo-mark";
+import { cn } from "@/lib/utils";
 
 export function LandingPage() {
   const t = useTranslations("LandingV2");
@@ -142,23 +143,54 @@ export function LandingPage() {
             className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3"
             variants={staggerContainer}
           >
-            {bentoCards.map(({ id, Icon }) => (
-              <motion.div key={id} variants={fadeUp} className="h-full">
-                <Card className={`h-full min-h-0 border-zinc-800 bg-zinc-900/50 ${cardHoverClass}`}>
-                  <CardContent className="flex h-full min-h-0 flex-col p-6">
-                    <div className="mb-4 flex min-h-12 items-start gap-2">
-                      <Icon className="mt-0.5 h-5 w-5 shrink-0 text-zinc-300" aria-hidden />
-                      <p className="line-clamp-2 text-base font-semibold tracking-tight text-zinc-100">
-                        {t(`bento.items.${id}.title`)}
+            {bentoCards.map(({ id, Icon }) => {
+              const isReadOnlyPrep = id === "publicReadOnlyShare";
+              return (
+                <motion.div key={id} variants={fadeUp} className="h-full">
+                  <Card
+                    className={cn(
+                      "h-full min-h-0 border-zinc-800 bg-zinc-900/50",
+                      isReadOnlyPrep && "relative overflow-hidden",
+                      !isReadOnlyPrep && cardHoverClass
+                    )}
+                  >
+                    {isReadOnlyPrep ? (
+                      <div
+                        className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-2 bg-zinc-950/82 px-3 py-4 text-center ring-1 ring-inset ring-zinc-600/40 backdrop-blur-sm"
+                        role="status"
+                        aria-live="polite"
+                      >
+                        <span className="rounded-full border border-zinc-600 bg-zinc-900/90 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-zinc-300">
+                          {t("bento.items.publicReadOnlyShare.overlayBadge")}
+                        </span>
+                        <p className="max-w-[16rem] text-sm font-medium text-zinc-100">
+                          {t("bento.items.publicReadOnlyShare.overlayLead")}
+                        </p>
+                        <p className="max-w-[17rem] text-xs leading-relaxed text-zinc-400">
+                          {t("bento.items.publicReadOnlyShare.overlayNote")}
+                        </p>
+                      </div>
+                    ) : null}
+                    <CardContent
+                      className={cn(
+                        "flex h-full min-h-0 flex-col p-6",
+                        isReadOnlyPrep && "opacity-35 saturate-0"
+                      )}
+                    >
+                      <div className="mb-4 flex min-h-12 items-start gap-2">
+                        <Icon className="mt-0.5 h-5 w-5 shrink-0 text-zinc-300" aria-hidden />
+                        <p className="line-clamp-2 text-base font-semibold tracking-tight text-zinc-100">
+                          {t(`bento.items.${id}.title`)}
+                        </p>
+                      </div>
+                      <p className="flex-1 text-pretty text-sm leading-relaxed font-normal text-zinc-400">
+                        {t(`bento.items.${id}.body`)}
                       </p>
-                    </div>
-                    <p className="flex-1 text-pretty text-sm leading-relaxed font-normal text-zinc-400">
-                      {t(`bento.items.${id}.body`)}
-                    </p>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              );
+            })}
           </motion.div>
         </motion.section>
 
