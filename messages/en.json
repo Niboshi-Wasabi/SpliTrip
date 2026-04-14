@@ -666,6 +666,24 @@
         "body": "Shows who should pay whom while reducing transfer count.",
         "point1": "Compress complex balances into fewer transfers",
         "point2": "Open payout links directly from settlement rows"
+      },
+      "invite": {
+        "title": "Join by invite",
+        "body": "Share a QR code or invite link. No separate app install required.",
+        "point1": "Sign in with Google or LINE",
+        "point2": "Add members with a tokenized invite URL"
+      },
+      "payout": {
+        "title": "Payout links",
+        "body": "Save payout URLs (for example, PayPay) on your profile and open them from settlement.",
+        "point1": "Per-member payout methods",
+        "point2": "Fewer steps after settlement is calculated"
+      },
+      "export": {
+        "title": "Exports and history",
+        "body": "Export trip accounting to CSV, PDF, or print. Track changes with an audit trail.",
+        "point1": "Formats you can share or archive",
+        "point2": "See who changed what and when"
       }
     },
     "detailed": {
