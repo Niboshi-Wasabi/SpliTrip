@@ -256,39 +256,45 @@ export default async function DashboardPage({ params }: PageProps) {
 
       {/* pb-20: ボトムナビの高さ分のクリアランス / Bottom nav clearance on mobile */}
       <main className="mx-auto max-w-6xl px-4 py-6 pb-24 md:pb-6">
-        <div className="mb-6 grid gap-4 sm:grid-cols-3">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">
-                {dashboardPageTranslations("statTotalSpend")}
-              </CardTitle>
-              <Receipt className="h-4 w-4 text-muted-foreground" />
+        <div className="mb-6 grid items-stretch gap-4 sm:grid-cols-3">
+          <Card className="flex h-full min-h-0 flex-col">
+            <CardHeader className="shrink-0 pb-2">
+              <div className="flex flex-row items-center justify-between">
+                <CardTitle className="text-sm font-medium text-muted-foreground">
+                  {dashboardPageTranslations("statTotalSpend")}
+                </CardTitle>
+                <Receipt className="h-4 w-4 shrink-0 text-muted-foreground" />
+              </div>
             </CardHeader>
-            <CardContent>
+            <CardContent className="flex flex-1 flex-col justify-end pt-0">
               <p className="text-2xl font-bold">{formatYen(totalExpense)}</p>
             </CardContent>
           </Card>
 
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">
-                {dashboardPageTranslations("statGroupCount")}
-              </CardTitle>
-              <FolderOpen className="h-4 w-4 text-muted-foreground" />
+          <Card className="flex h-full min-h-0 flex-col">
+            <CardHeader className="shrink-0 pb-2">
+              <div className="flex flex-row items-center justify-between">
+                <CardTitle className="text-sm font-medium text-muted-foreground">
+                  {dashboardPageTranslations("statGroupCount")}
+                </CardTitle>
+                <FolderOpen className="h-4 w-4 shrink-0 text-muted-foreground" />
+              </div>
             </CardHeader>
-            <CardContent>
+            <CardContent className="flex flex-1 flex-col justify-end pt-0">
               <p className="text-2xl font-bold">{groupCount}</p>
             </CardContent>
           </Card>
 
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">
-                {dashboardPageTranslations("statAvgPerGroup")}
-              </CardTitle>
-              <TrendingUp className="h-4 w-4 text-muted-foreground" />
+          <Card className="flex h-full min-h-0 flex-col">
+            <CardHeader className="shrink-0 pb-2">
+              <div className="flex flex-row items-center justify-between">
+                <CardTitle className="text-sm font-medium text-muted-foreground">
+                  {dashboardPageTranslations("statAvgPerGroup")}
+                </CardTitle>
+                <TrendingUp className="h-4 w-4 shrink-0 text-muted-foreground" />
+              </div>
             </CardHeader>
-            <CardContent>
+            <CardContent className="flex flex-1 flex-col justify-end pt-0">
               <p className="text-2xl font-bold">{formatYen(avgPerGroup)}</p>
             </CardContent>
           </Card>

@@ -29,13 +29,13 @@ export default function DashboardLoading() {
       </header>
 
       <main className="mx-auto max-w-6xl px-4 py-6">
-        <div className="mb-6 grid gap-4 sm:grid-cols-3">
+        <div className="mb-6 grid items-stretch gap-4 sm:grid-cols-3">
           {[...Array(STAT_CARD_COUNT)].map((_, cardIndex) => (
-            <Card key={cardIndex}>
-              <CardHeader className="pb-2">
+            <Card key={cardIndex} className="flex h-full min-h-0 flex-col">
+              <CardHeader className="shrink-0 pb-2">
                 <Skeleton className="h-4 w-16" />
               </CardHeader>
-              <CardContent>
+              <CardContent className="flex flex-1 flex-col justify-end pt-0">
                 <Skeleton className="h-8 w-28" />
               </CardContent>
             </Card>

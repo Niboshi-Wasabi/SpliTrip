@@ -139,7 +139,7 @@ export function LandingPage() {
             <p className="mt-2 text-sm font-normal text-zinc-400">{t("bento.subtitle")}</p>
           </motion.div>
           <motion.div
-            className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3"
+            className="grid items-stretch gap-5 sm:grid-cols-2 lg:grid-cols-3"
             variants={staggerContainer}
           >
             {bentoCards.map(({ id, Icon }) => (
@@ -173,48 +173,56 @@ export function LandingPage() {
           <motion.h2 className="text-2xl font-bold tracking-tight text-zinc-100 md:text-3xl" variants={fadeUp}>
             {t("detailed.title")}
           </motion.h2>
-          <motion.div className="mt-8 grid gap-4 md:grid-cols-2" variants={staggerContainer}>
-            <motion.div variants={fadeUp}>
-              <Card className={`border-zinc-800 bg-zinc-900/40 ${cardHoverClass}`}>
-                <CardContent className="p-5">
-                  <div className="mb-2 flex items-center gap-2 text-zinc-100">
-                    <Languages className="h-4 w-4 text-zinc-300" />
-                    <p className="font-medium tracking-tight">{t("detailed.items.global.title")}</p>
+          <motion.div className="mt-8 grid items-stretch gap-4 md:grid-cols-2" variants={staggerContainer}>
+            <motion.div variants={fadeUp} className="h-full">
+              <Card className={`h-full min-h-0 border-zinc-800 bg-zinc-900/40 ${cardHoverClass}`}>
+                <CardContent className="flex h-full min-h-0 flex-col p-5">
+                  <div className="mb-3 flex min-h-10 shrink-0 items-start gap-2 text-zinc-100">
+                    <Languages className="mt-0.5 h-4 w-4 shrink-0 text-zinc-300" />
+                    <p className="line-clamp-2 font-medium tracking-tight">{t("detailed.items.global.title")}</p>
                   </div>
-                  <p className="text-sm leading-relaxed font-normal text-zinc-400">{t("detailed.items.global.body")}</p>
+                  <p className="flex-1 text-pretty text-sm leading-relaxed font-normal text-zinc-400">
+                    {t("detailed.items.global.body")}
+                  </p>
                 </CardContent>
               </Card>
             </motion.div>
-            <motion.div variants={fadeUp}>
-              <Card className={`border-zinc-800 bg-zinc-900/40 ${cardHoverClass}`}>
-                <CardContent className="p-5">
-                  <div className="mb-2 flex items-center gap-2 text-zinc-100">
-                    <QrCode className="h-4 w-4 text-zinc-300" />
-                    <p className="font-medium tracking-tight">{t("detailed.items.join.title")}</p>
+            <motion.div variants={fadeUp} className="h-full">
+              <Card className={`h-full min-h-0 border-zinc-800 bg-zinc-900/40 ${cardHoverClass}`}>
+                <CardContent className="flex h-full min-h-0 flex-col p-5">
+                  <div className="mb-3 flex min-h-10 shrink-0 items-start gap-2 text-zinc-100">
+                    <QrCode className="mt-0.5 h-4 w-4 shrink-0 text-zinc-300" />
+                    <p className="line-clamp-2 font-medium tracking-tight">{t("detailed.items.join.title")}</p>
                   </div>
-                  <p className="text-sm leading-relaxed font-normal text-zinc-400">{t("detailed.items.join.body")}</p>
+                  <p className="flex-1 text-pretty text-sm leading-relaxed font-normal text-zinc-400">
+                    {t("detailed.items.join.body")}
+                  </p>
                 </CardContent>
               </Card>
             </motion.div>
-            <motion.div variants={fadeUp}>
-              <Card className={`border-zinc-800 bg-zinc-900/40 ${cardHoverClass}`}>
-                <CardContent className="p-5">
-                  <div className="mb-2 flex items-center gap-2 text-zinc-100">
-                    <Link2 className="h-4 w-4 text-zinc-300" />
-                    <p className="font-medium tracking-tight">{t("detailed.items.payment.title")}</p>
+            <motion.div variants={fadeUp} className="h-full">
+              <Card className={`h-full min-h-0 border-zinc-800 bg-zinc-900/40 ${cardHoverClass}`}>
+                <CardContent className="flex h-full min-h-0 flex-col p-5">
+                  <div className="mb-3 flex min-h-10 shrink-0 items-start gap-2 text-zinc-100">
+                    <Link2 className="mt-0.5 h-4 w-4 shrink-0 text-zinc-300" />
+                    <p className="line-clamp-2 font-medium tracking-tight">{t("detailed.items.payment.title")}</p>
                   </div>
-                  <p className="text-sm leading-relaxed font-normal text-zinc-400">{t("detailed.items.payment.body")}</p>
+                  <p className="flex-1 text-pretty text-sm leading-relaxed font-normal text-zinc-400">
+                    {t("detailed.items.payment.body")}
+                  </p>
                 </CardContent>
               </Card>
             </motion.div>
-            <motion.div variants={fadeUp}>
-              <Card className={`border-zinc-800 bg-zinc-900/40 ${cardHoverClass}`}>
-                <CardContent className="p-5">
-                  <div className="mb-2 flex items-center gap-2 text-zinc-100">
-                    <ShieldCheck className="h-4 w-4 text-zinc-300" />
-                    <p className="font-medium tracking-tight">{t("detailed.items.audit.title")}</p>
+            <motion.div variants={fadeUp} className="h-full">
+              <Card className={`h-full min-h-0 border-zinc-800 bg-zinc-900/40 ${cardHoverClass}`}>
+                <CardContent className="flex h-full min-h-0 flex-col p-5">
+                  <div className="mb-3 flex min-h-10 shrink-0 items-start gap-2 text-zinc-100">
+                    <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-zinc-300" />
+                    <p className="line-clamp-2 font-medium tracking-tight">{t("detailed.items.audit.title")}</p>
                   </div>
-                  <p className="text-sm leading-relaxed font-normal text-zinc-400">{t("detailed.items.audit.body")}</p>
+                  <p className="flex-1 text-pretty text-sm leading-relaxed font-normal text-zinc-400">
+                    {t("detailed.items.audit.body")}
+                  </p>
                 </CardContent>
               </Card>
             </motion.div>
@@ -235,33 +243,33 @@ export function LandingPage() {
           <motion.p className="mt-2 text-sm font-normal text-zinc-400" variants={fadeUp}>
             {t("pricing.subtitle")}
           </motion.p>
-          <motion.div className="mt-8 grid gap-5 md:grid-cols-2" variants={staggerContainer}>
-            <motion.div variants={fadeUp}>
-              <Card className={`border-zinc-800 bg-zinc-900/50 ${cardHoverClass}`}>
-                <CardContent className="p-6">
-                  <div className="mb-4 flex items-center justify-between">
+          <motion.div className="mt-8 grid items-stretch gap-5 md:grid-cols-2" variants={staggerContainer}>
+            <motion.div variants={fadeUp} className="h-full min-h-0">
+              <Card className={`h-full min-h-0 border-zinc-800 bg-zinc-900/50 ${cardHoverClass}`}>
+                <CardContent className="flex h-full min-h-0 flex-col p-6">
+                  <div className="mb-4 flex shrink-0 items-center justify-between">
                     <p className="text-xl font-semibold tracking-tight">{t("pricing.free.title")}</p>
                     <Badge variant="outline" className="border-zinc-700 bg-zinc-900 text-zinc-300">{t("pricing.free.badge")}</Badge>
                   </div>
-                  <ul className="space-y-3 text-sm font-normal text-zinc-300">
-                    <li className="flex items-start gap-2"><Check className="mt-0.5 h-4 w-4 text-zinc-400" />{t("pricing.free.items.receipt")}</li>
-                    <li className="flex items-start gap-2"><Check className="mt-0.5 h-4 w-4 text-zinc-400" />{t("pricing.free.items.groups")}</li>
-                    <li className="flex items-start gap-2"><Check className="mt-0.5 h-4 w-4 text-zinc-400" />{t("pricing.free.items.split")}</li>
+                  <ul className="min-h-0 flex-1 space-y-3 text-sm font-normal text-zinc-300">
+                    <li className="flex items-start gap-2"><Check className="mt-0.5 h-4 w-4 shrink-0 text-zinc-400" />{t("pricing.free.items.receipt")}</li>
+                    <li className="flex items-start gap-2"><Check className="mt-0.5 h-4 w-4 shrink-0 text-zinc-400" />{t("pricing.free.items.groups")}</li>
+                    <li className="flex items-start gap-2"><Check className="mt-0.5 h-4 w-4 shrink-0 text-zinc-400" />{t("pricing.free.items.split")}</li>
                   </ul>
                 </CardContent>
               </Card>
             </motion.div>
-            <motion.div variants={fadeUp} className="relative">
-              <Card className="pointer-events-none select-none border-zinc-700 bg-zinc-900/70 opacity-45 saturate-50">
-                <CardContent className="space-y-3 p-6">
-                  <p className="text-center text-xs leading-relaxed text-zinc-500">
+            <motion.div variants={fadeUp} className="relative h-full min-h-0">
+              <Card className="h-full min-h-0 pointer-events-none select-none border-zinc-700 bg-zinc-900/70 opacity-45 saturate-50">
+                <CardContent className="flex h-full min-h-0 flex-col space-y-3 p-6">
+                  <p className="shrink-0 text-center text-xs leading-relaxed text-zinc-500">
                     {t("pricing.pro.disclaimer")}
                   </p>
-                  <div className="mb-2 flex items-center justify-between">
+                  <div className="flex shrink-0 items-center justify-between">
                     <p className="text-xl font-semibold tracking-tight text-zinc-200">{t("pricing.pro.title")}</p>
                     <Badge className="bg-zinc-50 text-zinc-900">{t("pricing.pro.badge")}</Badge>
                   </div>
-                  <ul className="space-y-3 text-sm font-normal text-zinc-300">
+                  <ul className="min-h-0 flex-1 space-y-3 text-sm font-normal text-zinc-300">
                     <li className="flex items-start gap-2"><Bot className="mt-0.5 h-4 w-4 shrink-0 text-zinc-500" />{t("pricing.pro.items.receipt")}</li>
                     <li className="flex items-start gap-2"><Receipt className="mt-0.5 h-4 w-4 shrink-0 text-zinc-500" />{t("pricing.pro.items.export")}</li>
                     <li className="flex items-start gap-2"><Banknote className="mt-0.5 h-4 w-4 shrink-0 text-zinc-500" />{t("pricing.pro.items.advanced")}</li>
