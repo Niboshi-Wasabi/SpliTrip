@@ -7,13 +7,13 @@
 /* Enables `print:*` utilities (e.g. `print:hidden`) for the export / print flow. */
 @custom-variant print (@media print);
 
-/* Primary UI: Source Serif 4 + locale companions (e.g. Noto Sans JP for ja). */
+/* Primary UI: Source Serif 4 + locale companions (e.g. Noto Serif JP for ja). */
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   /* Body stack: set per `data-ui-sans` below; `--font-source-serif` comes from `[locale]/layout`. */
-  --font-serif: var(--font-noto-sans-jp), "Noto Sans JP", var(--font-source-serif), sans-serif;
+  --font-serif: var(--font-source-serif), "Times New Roman", ui-serif, serif;
   --font-sans: var(--font-sans);
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
     "Liberation Mono", "Courier New", monospace;
@@ -148,7 +148,8 @@
   }
 
   html[data-ui-sans="ja"] {
-    --font-serif: var(--font-noto-sans-jp), "Noto Sans JP", sans-serif;
+    --font-serif: var(--font-noto-serif-jp), "Hiragino Mincho ProN", "Yu Mincho",
+      "YuMincho", ui-serif, serif;
     --font-heading: var(--font-serif);
     --ui-button-sm-font-size: 0.86rem;
   }

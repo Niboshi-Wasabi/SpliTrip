@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import {
   Fira_Code,
-  Noto_Sans_JP,
+  Noto_Serif_JP,
   Source_Serif_4,
 } from "next/font/google";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
@@ -32,8 +32,8 @@ const sourceSerif4 = Source_Serif_4({
   preload: false,
 });
 
-const notoSansJp = Noto_Sans_JP({
-  variable: "--font-noto-sans-jp",
+const notoSerifJp = Noto_Serif_JP({
+  variable: "--font-noto-serif-jp",
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
   display: "swap",
@@ -41,7 +41,7 @@ const notoSansJp = Noto_Sans_JP({
 });
 
 const googleSansByKey = {
-  notoJp: notoSansJp,
+  notoJp: notoSerifJp,
 } as const;
 
 export function generateStaticParams() {
