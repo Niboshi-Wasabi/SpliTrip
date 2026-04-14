@@ -143,6 +143,7 @@
    */
   html[data-ui-sans="latin"] {
     --font-serif: var(--font-source-serif), "Times New Roman", ui-serif, serif;
+    --font-sans: var(--font-source-serif), "Times New Roman", ui-serif, serif;
     --font-heading: var(--font-serif);
     --ui-button-sm-font-size: 0.8rem;
   }
