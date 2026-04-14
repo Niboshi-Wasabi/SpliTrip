@@ -671,7 +671,10 @@
         },
         "publicReadOnlyShare": {
           "title": "Read-only link",
-          "body": "Optional URL: name and currency only. No signup."
+          "body": "Optional URL: name and currency only. No signup.",
+          "overlayBadge": "In preparation",
+          "overlayLead": "Paid plans are not broadly available yet.",
+          "overlayNote": "Read-only sharing is in preparation. No launch date yet."
         }
       }
     },
