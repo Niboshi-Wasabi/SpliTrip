@@ -670,8 +670,8 @@
           "body": "See total spend and counts across groups at a glance. Check each trip’s status quickly."
         },
         "publicReadOnlyShare": {
-          "title": "Read-only share link",
-          "body": "A dedicated share URL shows a minimal summary—name and currency—without joining the group."
+          "title": "Read-only link",
+          "body": "Optional URL: name and currency only. No signup."
         }
       }
     },
