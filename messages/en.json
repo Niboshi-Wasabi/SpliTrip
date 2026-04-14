@@ -671,10 +671,7 @@
         },
         "publicReadOnlyShare": {
           "title": "Read-only link",
-          "body": "Optional URL: name and currency only. No signup.",
-          "overlayBadge": "In preparation",
-          "overlayLead": "Paid plans are not broadly available yet.",
-          "overlayNote": "Read-only sharing is in preparation. No launch date yet."
+          "body": "Optional URL: name and currency only. No signup."
         }
       }
     },
@@ -701,7 +698,7 @@
     },
     "pricing": {
       "title": "Pricing",
-      "subtitle": "Start with Free, upgrade to PRO when needed.",
+      "subtitle": "Free is available today. Paid (PRO) is still in preparation.",
       "free": {
         "title": "Free",
         "badge": "Free",
@@ -714,11 +711,17 @@
       "pro": {
         "title": "PRO",
         "badge": "PRO",
+        "disclaimer": "Paid plans are not available yet. This is a preview of planned benefits.",
         "items": {
           "receipt": "Unlimited AI receipt scanning",
           "export": "Advanced CSV/PDF report export",
           "advanced": "Advanced tools for larger groups"
         }
+      },
+      "proOverlay": {
+        "badge": "Coming soon",
+        "title": "Paid plans are not live yet",
+        "body": "We have not launched billing or PRO. Timing and pricing will be announced when ready. You can use the free tier now."
       }
     }
   }
