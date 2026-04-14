@@ -648,17 +648,24 @@
     "bento": {
       "title": "Feature highlights",
       "subtitle": "A quick look at what SpliTrip can do.",
+      "summary": "Built to keep expense input, splitting, and settlement in one smooth flow.",
       "ai": {
         "title": "AI Receipt Parsing",
-        "body": "Gemini AI reads receipt images and auto-fills items and amounts."
+        "body": "Gemini AI reads receipt images and auto-fills items and amounts.",
+        "point1": "Fill amount, date, and description automatically",
+        "point2": "Reduce manual input errors and time"
       },
       "split": {
         "title": "Flexible Splits",
-        "body": "Use equal split, exact amounts, ratios, percentages, or itemized allocation."
+        "body": "Use equal split, exact amounts, ratios, percentages, or itemized allocation.",
+        "point1": "Works for both small and large groups",
+        "point2": "Handle rounding differences with clear rules"
       },
       "optimize": {
         "title": "Settlement Algorithm",
-        "body": "Shows who should pay whom while reducing transfer count."
+        "body": "Shows who should pay whom while reducing transfer count.",
+        "point1": "Compress complex balances into fewer transfers",
+        "point2": "Open payout links directly from settlement rows"
       }
     },
     "detailed": {
