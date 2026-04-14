@@ -12,7 +12,10 @@
     "termsPrivacyLead": "ログインすることで、",
     "termsPrivacyJoin": "と",
     "termsPrivacyTrail": "に同意したことになります。",
-    "commerce": "特定商取引法に基づく表記"
+    "commerce": "特定商取引法に基づく表記",
+    "oneTapAuthFailed": "Google One Tap ログインに失敗しました。しばらくしてからもう一度お試しください。",
+    "oneTapMissingCredential": "Google One Tap の認証情報を取得できませんでした。",
+    "oneTapDismissed": "Google One Tap プロンプトを閉じました。必要に応じて通常のログインボタンをご利用ください。"
   },
   "LanguageSwitcher": {
     "ariaLabel": "表示言語を切り替える",

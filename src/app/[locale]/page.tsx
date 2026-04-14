@@ -1,5 +1,6 @@
 import { redirect } from "@/i18n/navigation";
 import { LandingPage } from "@/components/landing/LandingPage";
+import { GoogleOneTap } from "@/components/auth/GoogleOneTap";
 import { createClient } from "@/utils/supabase/server";
 
 export const dynamic = "force-dynamic";
@@ -18,5 +19,10 @@ export default async function LandingTopPage({ params }: PageProps) {
     return;
   }
 
-  return <LandingPage />;
+  return (
+    <>
+      <LandingPage />
+      <GoogleOneTap skipPrompt={user !== null} />
+    </>
+  );
 }

@@ -45,6 +45,7 @@
 | 機能 | 内容 |
 |------|------|
 | **Google ログイン** | OAuth（PKCE）。`/auth/callback` でコード交換・セッション確立。 |
+| **Google One Tap** | 未ログイン LP（`/[locale]`）で `https://accounts.google.com/gsi/client` を読み込み、右上プロンプトからワンタップ認証。`response.credential` を `supabase.auth.signInWithIdToken({ provider: 'google', token })` に渡してセッション化し、成功時は `/{locale}/dashboard` へ遷移。`NEXT_PUBLIC_GOOGLE_CLIENT_ID` が必須。 |
 | **LINE ログイン** | `/api/auth/line` → LINE → `/api/auth/callback/line` → サービスロール＋`verifyOtp` 相当でセッション確立。 |
 | **セッション維持** | ミドルウェアで Supabase セッション更新。`/dashboard`・`/settings` は未ログイン時にガード。 |
 | **オンボーディング** | 初回表示名など（`/onboarding`）。表示名は **最大 50 文字**（`DISPLAY_NAME_MAX_LENGTH`、フォーム `maxLength` と `PATCH /api/profile/display-name` の共通検証）。 |

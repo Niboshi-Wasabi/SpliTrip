@@ -12,7 +12,10 @@
     "termsPrivacyLead": "By signing in, you agree to the ",
     "termsPrivacyJoin": " and ",
     "termsPrivacyTrail": ".",
-    "commerce": "Commercial Disclosure"
+    "commerce": "Commercial Disclosure",
+    "oneTapAuthFailed": "Google One Tap sign-in failed. Please try again in a moment.",
+    "oneTapMissingCredential": "Google One Tap did not return a credential.",
+    "oneTapDismissed": "Google One Tap prompt was dismissed. You can continue with the regular sign-in buttons."
   },
   "LanguageSwitcher": {
     "ariaLabel": "Switch display language",
