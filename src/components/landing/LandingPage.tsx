@@ -129,12 +129,14 @@ export function LandingPage() {
           <motion.div className="grid gap-5 md:grid-cols-3" variants={staggerContainer}>
             <motion.div variants={fadeUp} className="md:col-span-2 md:row-span-2">
               <Card className={`border-zinc-800 bg-zinc-900/50 ${cardHoverClass}`}>
-                <CardContent className="p-7">
-                  <div className="mb-5 flex items-center gap-2">
-                    <ScanText className="h-5 w-5 text-zinc-300" />
-                    <p className="text-lg font-semibold tracking-tight">{t("bento.ai.title")}</p>
+                <CardContent className="p-6">
+                  <div className="mb-4 flex items-center gap-2">
+                    <ScanText className="h-5 w-5 shrink-0 text-zinc-300" />
+                    <p className="text-base font-semibold tracking-tight text-zinc-100">
+                      {t("bento.ai.title")}
+                    </p>
                   </div>
-                  <p className="text-sm leading-7 font-normal text-zinc-300 md:text-base">
+                  <p className="text-sm leading-relaxed font-normal text-zinc-400">
                     {t("bento.ai.body")}
                   </p>
                 </CardContent>
@@ -143,9 +145,11 @@ export function LandingPage() {
             <motion.div variants={fadeUp}>
               <Card className={`border-zinc-800 bg-zinc-900/50 ${cardHoverClass}`}>
                 <CardContent className="p-6">
-                  <div className="mb-3 flex items-center gap-2">
-                    <Split className="h-4 w-4 text-zinc-300" />
-                    <p className="text-base font-medium tracking-tight">{t("bento.split.title")}</p>
+                  <div className="mb-4 flex items-center gap-2">
+                    <Split className="h-5 w-5 shrink-0 text-zinc-300" />
+                    <p className="text-base font-semibold tracking-tight text-zinc-100">
+                      {t("bento.split.title")}
+                    </p>
                   </div>
                   <p className="text-sm leading-relaxed font-normal text-zinc-400">
                     {t("bento.split.body")}
@@ -156,9 +160,11 @@ export function LandingPage() {
             <motion.div variants={fadeUp}>
               <Card className={`border-zinc-800 bg-zinc-900/50 ${cardHoverClass}`}>
                 <CardContent className="p-6">
-                  <div className="mb-3 flex items-center gap-2">
-                    <ArrowRightLeft className="h-4 w-4 text-zinc-300" />
-                    <p className="text-base font-medium tracking-tight">{t("bento.optimize.title")}</p>
+                  <div className="mb-4 flex items-center gap-2">
+                    <ArrowRightLeft className="h-5 w-5 shrink-0 text-zinc-300" />
+                    <p className="text-base font-semibold tracking-tight text-zinc-100">
+                      {t("bento.optimize.title")}
+                    </p>
                   </div>
                   <p className="text-sm leading-relaxed font-normal text-zinc-400">
                     {t("bento.optimize.body")}
