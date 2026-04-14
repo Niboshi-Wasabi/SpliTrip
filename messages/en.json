@@ -647,43 +647,32 @@
     },
     "bento": {
       "title": "Feature highlights",
-      "subtitle": "A quick look at what SpliTrip can do.",
-      "summary": "Built to keep expense input, splitting, and settlement in one smooth flow.",
-      "ai": {
-        "title": "AI Receipt Parsing",
-        "body": "Gemini AI reads receipt images and auto-fills items and amounts.",
-        "point1": "Fill amount, date, and description automatically",
-        "point2": "Reduce manual input errors and time"
-      },
-      "split": {
-        "title": "Flexible Splits",
-        "body": "Use equal split, exact amounts, ratios, percentages, or itemized allocation.",
-        "point1": "Works for both small and large groups",
-        "point2": "Handle rounding differences with clear rules"
-      },
-      "optimize": {
-        "title": "Settlement Algorithm",
-        "body": "Shows who should pay whom while reducing transfer count.",
-        "point1": "Compress complex balances into fewer transfers",
-        "point2": "Open payout links directly from settlement rows"
-      },
-      "invite": {
-        "title": "Join by invite",
-        "body": "Share a QR code or invite link. No separate app install required.",
-        "point1": "Sign in with Google or LINE",
-        "point2": "Add members with a tokenized invite URL"
-      },
-      "payout": {
-        "title": "Payout links",
-        "body": "Save payout URLs (for example, PayPay) on your profile and open them from settlement.",
-        "point1": "Per-member payout methods",
-        "point2": "Fewer steps after settlement is calculated"
-      },
-      "export": {
-        "title": "Exports and history",
-        "body": "Export trip accounting to CSV, PDF, or print. Track changes with an audit trail.",
-        "point1": "Formats you can share or archive",
-        "point2": "See who changed what and when"
+      "subtitle": "Operational extras already in the product.",
+      "items": {
+        "receiptStorage": {
+          "title": "Receipt files on record",
+          "body": "Uploaded receipts open from expense details anytime. Stored in the cloud for the group."
+        },
+        "realtime": {
+          "title": "Update notices",
+          "body": "When someone edits data, you get a heads-up. Stay on the page and follow the latest totals."
+        },
+        "nextPayerHint": {
+          "title": "Who pays next (hint)",
+          "body": "From past advances, see who paying at the register next tends to rebalance things."
+        },
+        "roundingPolicies": {
+          "title": "Leftover cents",
+          "body": "When splits don’t divide evenly, pick a policy—fair distribution, payer absorbs, and more."
+        },
+        "dashboardSummary": {
+          "title": "Dashboard overview",
+          "body": "See total spend and counts across groups at a glance. Check each trip’s status quickly."
+        },
+        "publicReadOnlyShare": {
+          "title": "Read-only share link",
+          "body": "A dedicated share URL shows a minimal summary—name and currency—without joining the group."
+        }
       }
     },
     "detailed": {
