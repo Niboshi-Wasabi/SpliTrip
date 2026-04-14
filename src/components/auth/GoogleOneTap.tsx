@@ -13,12 +13,7 @@ type GoogleCredentialResponse = {
 };
 
 type GooglePromptMomentNotification = {
-  isNotDisplayed: () => boolean;
-  isSkippedMoment: () => boolean;
   isDismissedMoment: () => boolean;
-  getNotDisplayedReason?: () => string;
-  getSkippedReason?: () => string;
-  getDismissedReason?: () => string;
 };
 
 type GoogleAccountId = {
@@ -128,27 +123,7 @@ export function GoogleOneTap({ skipPrompt = false }: Props) {
       });
 
       googleId.prompt((notification) => {
-        if (notification.isNotDisplayed()) {
-          console.info(
-            "[Google One Tap not displayed]:",
-            notification.getNotDisplayedReason?.() ?? "unknown",
-          );
-          setErrorMessage(loginTranslations("oneTapUnavailable"));
-          return;
-        }
-        if (notification.isSkippedMoment()) {
-          console.info(
-            "[Google One Tap skipped]:",
-            notification.getSkippedReason?.() ?? "unknown",
-          );
-          setErrorMessage(loginTranslations("oneTapUnavailable"));
-          return;
-        }
         if (notification.isDismissedMoment()) {
-          console.info(
-            "[Google One Tap dismissed]:",
-            notification.getDismissedReason?.() ?? "unknown",
-          );
           const alreadyShown =
             typeof window !== "undefined" &&
             window.sessionStorage.getItem(ONE_TAP_DISMISS_NOTICE_SESSION_KEY) ===

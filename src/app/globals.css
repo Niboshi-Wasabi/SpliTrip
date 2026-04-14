@@ -13,7 +13,7 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   /* Body stack: set per `data-ui-sans` below; `--font-source-serif` comes from `[locale]/layout`. */
-  --font-serif: var(--font-source-serif), "Hiragino Mincho ProN", ui-serif, serif;
+  --font-serif: var(--font-source-serif), "Times New Roman", ui-serif, serif;
   --font-sans: var(--font-sans);
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
     "Liberation Mono", "Courier New", monospace;
