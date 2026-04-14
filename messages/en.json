@@ -654,6 +654,8 @@
     "actions": {
       "login": "Log In",
       "dashboard": "Dashboard",
+      "settings": "Settings",
+      "logout": "Log out",
       "accountAria": "Account"
     },
     "hero": {

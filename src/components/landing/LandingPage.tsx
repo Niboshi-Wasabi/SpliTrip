@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { motion } from "framer-motion";
-import { Link } from "@/i18n/navigation";
+import { Link, useRouter } from "@/i18n/navigation";
 import { LanguageSwitcher } from "@/components/ui/LanguageSwitcher";
 import {
   Banknote,
@@ -20,10 +20,18 @@ import {
   Scale,
   Share2,
   ShieldCheck,
+  Settings,
+  LogOut,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { LogoMark } from "@/components/logo-mark";
 import { UserAvatar } from "@/components/user-avatar";
 import {
@@ -44,6 +52,7 @@ type LandingPageProps = {
 
 export function LandingPage({ initialSession }: LandingPageProps) {
   const t = useTranslations("LandingV2");
+  const router = useRouter();
   const [sessionState, setSessionState] = useState<LandingSessionState>(
     initialSession,
   );
@@ -94,6 +103,15 @@ export function LandingPage({ initialSession }: LandingPageProps) {
   const primaryCtaLabel = isAuthenticated
     ? t("hero.ctaDashboard")
     : t("hero.cta");
+
+  async function handleLogout() {
+    const supabase = createClient();
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      return;
+    }
+    router.refresh();
+  }
 
   const fadeUp = {
     hidden: { opacity: 0, y: 20 },
@@ -146,14 +164,44 @@ export function LandingPage({ initialSession }: LandingPageProps) {
                     {t("actions.dashboard")}
                   </Button>
                 </Link>
-                <Link href="/dashboard" aria-label={t("actions.accountAria")}>
-                  <UserAvatar
-                    displayName={sessionState.displayName ?? "User"}
-                    avatarUrl={sessionState.avatarUrl}
-                    size="sm"
-                    className="ring-1 ring-zinc-700"
-                  />
-                </Link>
+                <DropdownMenu>
+                  <DropdownMenuTrigger
+                    aria-label={t("actions.accountAria")}
+                    className="rounded-full p-0.5 ring-1 ring-zinc-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400"
+                  >
+                    <UserAvatar
+                      displayName={sessionState.displayName ?? "User"}
+                      avatarUrl={sessionState.avatarUrl}
+                      size="sm"
+                    />
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent
+                    align="end"
+                    className="w-44 border-zinc-800 bg-zinc-950 text-zinc-100"
+                  >
+                    <DropdownMenuItem
+                      className="min-h-[44px]"
+                      onClick={() => router.push("/dashboard")}
+                    >
+                      {t("actions.dashboard")}
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      className="min-h-[44px]"
+                      onClick={() => router.push("/settings")}
+                    >
+                      <Settings className="h-4 w-4" />
+                      {t("actions.settings")}
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      variant="destructive"
+                      className="min-h-[44px]"
+                      onClick={() => void handleLogout()}
+                    >
+                      <LogOut className="h-4 w-4" />
+                      {t("actions.logout")}
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </>
             ) : (
               <Link href="/login">
