@@ -262,9 +262,6 @@ export function LandingPage() {
             <motion.div variants={fadeUp} className="relative h-full min-h-0">
               <Card className="h-full min-h-0 pointer-events-none select-none border-zinc-700 bg-zinc-900/70 opacity-45 saturate-50">
                 <CardContent className="flex h-full min-h-0 flex-col space-y-3 p-6">
-                  <p className="shrink-0 text-center text-xs leading-relaxed text-zinc-500">
-                    {t("pricing.pro.disclaimer")}
-                  </p>
                   <div className="flex shrink-0 items-center justify-between">
                     <p className="text-xl font-semibold tracking-tight text-zinc-200">{t("pricing.pro.title")}</p>
                     <Badge className="bg-zinc-50 text-zinc-900">{t("pricing.pro.badge")}</Badge>
