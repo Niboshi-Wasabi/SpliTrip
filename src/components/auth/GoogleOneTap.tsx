@@ -16,6 +16,9 @@ type GooglePromptMomentNotification = {
   isNotDisplayed: () => boolean;
   isSkippedMoment: () => boolean;
   isDismissedMoment: () => boolean;
+  getNotDisplayedReason?: () => string;
+  getSkippedReason?: () => string;
+  getDismissedReason?: () => string;
 };
 
 type GoogleAccountId = {
@@ -23,7 +26,6 @@ type GoogleAccountId = {
     client_id: string;
     callback: (response: GoogleCredentialResponse) => void;
     cancel_on_tap_outside?: boolean;
-    prompt_parent_id?: string;
   }) => void;
   prompt: (
     listener?: (notification: GooglePromptMomentNotification) => void,
@@ -45,7 +47,6 @@ type Props = {
   skipPrompt?: boolean;
 };
 
-const PROMPT_PARENT_ID = "google-one-tap-anchor";
 const ONE_TAP_DISMISS_NOTICE_SESSION_KEY = "splitrip_one_tap_dismiss_notice_shown";
 
 export function GoogleOneTap({ skipPrompt = false }: Props) {
@@ -101,7 +102,6 @@ export function GoogleOneTap({ skipPrompt = false }: Props) {
       googleId.initialize({
         client_id: clientId,
         cancel_on_tap_outside: false,
-        prompt_parent_id: PROMPT_PARENT_ID,
         callback: async (response) => {
           const token = response.credential;
           if (!token) {
@@ -128,7 +128,27 @@ export function GoogleOneTap({ skipPrompt = false }: Props) {
       });
 
       googleId.prompt((notification) => {
+        if (notification.isNotDisplayed()) {
+          console.info(
+            "[Google One Tap not displayed]:",
+            notification.getNotDisplayedReason?.() ?? "unknown",
+          );
+          setErrorMessage(loginTranslations("oneTapUnavailable"));
+          return;
+        }
+        if (notification.isSkippedMoment()) {
+          console.info(
+            "[Google One Tap skipped]:",
+            notification.getSkippedReason?.() ?? "unknown",
+          );
+          setErrorMessage(loginTranslations("oneTapUnavailable"));
+          return;
+        }
         if (notification.isDismissedMoment()) {
+          console.info(
+            "[Google One Tap dismissed]:",
+            notification.getDismissedReason?.() ?? "unknown",
+          );
           const alreadyShown =
             typeof window !== "undefined" &&
             window.sessionStorage.getItem(ONE_TAP_DISMISS_NOTICE_SESSION_KEY) ===
@@ -164,10 +184,6 @@ export function GoogleOneTap({ skipPrompt = false }: Props) {
         src="https://accounts.google.com/gsi/client"
         strategy="afterInteractive"
         onLoad={() => setScriptLoaded(true)}
-      />
-      <div
-        id={PROMPT_PARENT_ID}
-        className="pointer-events-none fixed right-3 top-3 z-[70] min-h-[44px] min-w-[44px] md:right-5 md:top-5"
       />
       {errorMessage ? (
         <div

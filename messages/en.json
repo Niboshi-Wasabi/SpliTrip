@@ -15,6 +15,7 @@
     "commerce": "Commercial Disclosure",
     "oneTapAuthFailed": "Google One Tap sign-in failed. Please try again in a moment.",
     "oneTapMissingCredential": "Google One Tap did not return a credential.",
+    "oneTapUnavailable": "Google One Tap could not be shown. Please continue with the regular sign-in buttons.",
     "oneTapDismissed": "Google One Tap prompt was dismissed. You can continue with the regular sign-in buttons."
   },
   "LanguageSwitcher": {
