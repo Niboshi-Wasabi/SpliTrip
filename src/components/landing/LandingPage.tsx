@@ -8,7 +8,6 @@ import {
   Banknote,
   Bot,
   Check,
-  Eye,
   HandCoins,
   ImageUp,
   Languages,
@@ -18,6 +17,7 @@ import {
   Radio,
   Receipt,
   Scale,
+  Share2,
   ShieldCheck,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -52,7 +52,7 @@ export function LandingPage() {
     { id: "nextPayerHint" as const, Icon: HandCoins },
     { id: "roundingPolicies" as const, Icon: Scale },
     { id: "dashboardSummary" as const, Icon: LayoutDashboard },
-    { id: "publicReadOnlyShare" as const, Icon: Eye },
+    { id: "publicReadOnlyShare" as const, Icon: Share2 },
   ];
 
   return (
@@ -143,16 +143,16 @@ export function LandingPage() {
             variants={staggerContainer}
           >
             {bentoCards.map(({ id, Icon }) => (
-              <motion.div key={id} variants={fadeUp}>
-                <Card className={`border-zinc-800 bg-zinc-900/50 ${cardHoverClass}`}>
-                  <CardContent className="p-6">
-                    <div className="mb-4 flex items-center gap-2">
-                      <Icon className="h-5 w-5 shrink-0 text-zinc-300" aria-hidden />
-                      <p className="text-base font-semibold tracking-tight text-zinc-100">
+              <motion.div key={id} variants={fadeUp} className="h-full">
+                <Card className={`h-full min-h-0 border-zinc-800 bg-zinc-900/50 ${cardHoverClass}`}>
+                  <CardContent className="flex h-full min-h-0 flex-col p-6">
+                    <div className="mb-4 flex min-h-12 items-start gap-2">
+                      <Icon className="mt-0.5 h-5 w-5 shrink-0 text-zinc-300" aria-hidden />
+                      <p className="line-clamp-2 text-base font-semibold tracking-tight text-zinc-100">
                         {t(`bento.items.${id}.title`)}
                       </p>
                     </div>
-                    <p className="text-sm leading-relaxed font-normal text-zinc-400">
+                    <p className="flex-1 text-pretty text-sm leading-relaxed font-normal text-zinc-400">
                       {t(`bento.items.${id}.body`)}
                     </p>
                   </CardContent>
