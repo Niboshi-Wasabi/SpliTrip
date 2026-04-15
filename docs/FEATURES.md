@@ -189,7 +189,7 @@ where id = '<ユーザーUUID>';
 | コメント | `…/expenses/[expenseId]/comments`（GET/POST） |
 | 監査 | `…/expenses/[expenseId]/audit` |
 | プロフィール | `display-name`、`payment-methods`、`pitch-deck-seen` |
-| 決済 Webhook | `POST /api/webhook/stripe` — `checkout.session.completed` を検証し `user_profiles.premium_access=true` と `premium_access_source='stripe'` を反映 |
+| 決済 Webhook | `POST /api/webhook/stripe` — 署名検証後に `checkout.session.completed` / `customer.subscription.updated` / `customer.subscription.deleted` を処理。`stripe_webhook_events` で **event.id の重複処理を防止**し、`stripe_customer_user_links` で customer と user を紐付けて `premium_access` / `premium_access_source` を更新（`display_name` は上書きしない）。 |
 | ヘルス | `GET /api/health` — `{ ok: true }`（メンテ中も利用可・`proxy` 対象外） |
 | 通知（枠） | `POST /api/notifications/web-push` — **未実装のプレースホルダー（例: 501）** |
 
@@ -199,7 +199,7 @@ where id = '<ユーザーUUID>';
 
 | 項目 | 内容 |
 |------|------|
-| **共通の実装** | `POST /api/webhook/stripe` が `checkout.session.completed` を検証し、`user_profiles.premium_access=true` と `premium_access_source='stripe'` を反映。`client_reference_id` / `metadata.user_id` が利用される想定。 |
+| **共通の実装** | `POST /api/webhook/stripe` が `checkout.session.completed` で PRO 付与、`customer.subscription.updated/deleted` で状態同期を行う。`stripe_webhook_events` に `event_id` を記録して冪等化し、`stripe_customer_user_links` で customer→user 紐付けを維持。 |
 | **必須環境変数（全環境）** | `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `NEXT_PUBLIC_STRIPE_PAYMENT_LINK`（PRO 購入の Payment Link URL）, `STRIPE_CUSTOMER_PORTAL_URL`（設定画面の Portal リンクを使う場合）。 |
 | **local 再現** | `stripe listen --forward-to localhost:3000/api/webhook/stripe` で表示される `whsec_...` を `.env.local` の `STRIPE_WEBHOOK_SECRET` に設定し、`npm run dev` を再起動。 |
 | **staging / master 再現** | Stripe Dashboard で各環境 URL の Webhook endpoint を作成し、環境ごとに発行された `whsec_...` をデプロイ環境変数へ設定（同じ secret の使い回しはしない）。 |
