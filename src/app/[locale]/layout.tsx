@@ -6,7 +6,7 @@ import {
   Source_Serif_4,
 } from "next/font/google";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
-import { getMessages, setRequestLocale } from "next-intl/server";
+import { getMessages, getTranslations, setRequestLocale } from "next-intl/server";
 import { routing, type AppLocale } from "@/i18n/routing";
 import { AppProviders } from "@/app/providers";
 import { BottomNav } from "@/components/bottom-nav";
@@ -52,19 +52,31 @@ export function generateStaticParams() {
  * PWA として認識させるために appleWebApp / themeColor を設定する。
  * Set appleWebApp & themeColor so iOS / Android treat the app as installable PWA.
  */
-export const metadata: Metadata = {
-  title: "SpliTrip（スプリトリップ）- グループ旅行の精算アプリ",
-  description:
-    "グループ旅行中の立替をリアルタイムに記録し、精算を自動計算するWebアプリ",
-  appleWebApp: {
-    capable: true,
-    statusBarStyle: "default",
-    title: "SpliTrip",
-  },
-  other: {
-    "mobile-web-app-capable": "yes",
-  },
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const safeLocale = hasLocale(routing.locales, locale) ? locale : routing.defaultLocale;
+  const metadataTranslations = await getTranslations({
+    locale: safeLocale,
+    namespace: "AppMetadata",
+  });
+
+  return {
+    title: metadataTranslations("title"),
+    description: metadataTranslations("description"),
+    appleWebApp: {
+      capable: true,
+      statusBarStyle: "default",
+      title: "SpliTrip",
+    },
+    other: {
+      "mobile-web-app-capable": "yes",
+    },
+  };
+}
 
 type LayoutProps = {
   children: React.ReactNode;

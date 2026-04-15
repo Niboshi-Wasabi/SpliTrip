@@ -9,6 +9,8 @@ import {
 } from "@/lib/user-profile";
 import { OnboardingForm } from "./onboarding-form";
 
+const DEFAULT_DISPLAY_NAMES = new Set(["ユーザー", "User"]);
+
 type PageProps = {
   params: Promise<{ locale: string }>;
   searchParams: Promise<{ next?: string }>;
@@ -50,7 +52,7 @@ export default async function OnboardingPage({
 
   const suggestedName = extractDisplayName(user);
   const isOAuthUser =
-    suggestedName !== "ユーザー" && suggestedName.length > 0;
+    suggestedName.length > 0 && !DEFAULT_DISPLAY_NAMES.has(suggestedName);
 
   return (
     <OnboardingForm

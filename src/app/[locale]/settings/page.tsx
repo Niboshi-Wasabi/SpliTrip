@@ -56,9 +56,9 @@ export default async function SettingsPage({ params }: PageProps) {
     return (
       <div className="min-h-screen bg-background px-4 py-10">
         <p className="mx-auto max-w-lg text-sm text-destructive">
-          プロフィールを読み込めませんでした。Supabase のマイグレーション（
+          {t("profileLoadErrorLead")}（
           <code className="rounded bg-muted px-1">user_profiles</code> の
-          カラム追加）を確認してください。
+          {t("profileLoadErrorTrail")}
         </p>
       </div>
     );
@@ -110,7 +110,7 @@ export default async function SettingsPage({ params }: PageProps) {
           <CardHeader>
             <div className="flex items-center gap-3">
               <UserAvatar
-                displayName={initialDisplayName || "ユーザー"}
+                displayName={initialDisplayName || t("defaultDisplayName")}
                 avatarUrl={initialAvatarUrl}
                 size="lg"
               />

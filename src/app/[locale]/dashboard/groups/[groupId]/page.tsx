@@ -92,7 +92,8 @@ export default async function GroupDetailPage({ params }: PageProps) {
   const currentMember = members.find(
     (member) => member.user_id === user.id,
   );
-  const currentDisplayName = currentMember?.display_name ?? "ユーザー";
+  const currentDisplayName =
+    currentMember?.display_name ?? (locale === "ja" ? "ユーザー" : "User");
   const totalGroupExpense = expenses.reduce(
     (sum, expense) => sum + Number(expense.amount),
     0,

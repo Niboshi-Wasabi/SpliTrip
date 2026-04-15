@@ -49,7 +49,7 @@ export function GroupInviteButton({ invitePath, groupName }: Props) {
       setCopied(true);
       window.setTimeout(() => setCopied(false), 2500);
     } catch {
-      setMessage("クリップボードにコピーできませんでした。");
+      setMessage(inviteTranslations("copyFailed"));
     } finally {
       setBusy(false);
     }
@@ -64,14 +64,14 @@ export function GroupInviteButton({ invitePath, groupName }: Props) {
     try {
       await navigator.share({
         title: `${groupName} — SpliTrip`,
-        text: `「${groupName}」の割り勘グループに参加してください`,
+        text: inviteTranslations("shareText", { groupName }),
         url: inviteUrl,
       });
     } catch (shareError) {
       const errorName =
         shareError instanceof Error ? shareError.name : "";
       if (errorName !== "AbortError") {
-        setMessage("共有を開始できませんでした。");
+        setMessage(inviteTranslations("shareFailed"));
       }
     } finally {
       setBusy(false);
@@ -97,7 +97,9 @@ export function GroupInviteButton({ invitePath, groupName }: Props) {
         ) : (
           <UserPlus className="size-3.5" aria-hidden />
         )}
-        {copied ? "コピーしました" : "メンバーを招待（リンクをコピー）"}
+        {copied
+          ? inviteTranslations("copied")
+          : inviteTranslations("copyInviteButton")}
       </Button>
       {canShare ? (
         <Button
@@ -109,7 +111,7 @@ export function GroupInviteButton({ invitePath, groupName }: Props) {
           className="min-h-[44px] gap-1.5 md:min-h-0"
         >
           <Share2 className="size-3.5" aria-hidden />
-          共有で送る
+          {inviteTranslations("shareButton")}
         </Button>
       ) : null}
       <Button

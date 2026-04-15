@@ -188,7 +188,17 @@
     "subscriptionTitle": "支払い管理",
     "subscriptionDescription": "SpliTrip PRO の契約内容や支払い情報を Stripe で管理できます。",
     "subscriptionManageCta": "サブスクリプションを管理",
-    "subscriptionPortalMissing": "管理ポータルのURLが未設定です。運営者にお問い合わせください。"
+    "subscriptionPortalMissing": "管理ポータルのURLが未設定です。運営者にお問い合わせください。",
+    "profileLoadErrorLead": "プロフィールを読み込めませんでした。Supabase のマイグレーション",
+    "profileLoadErrorTrail": "カラム追加）を確認してください。",
+    "defaultDisplayName": "ユーザー"
+  },
+  "DashboardError": {
+    "title": "データの読み込みに失敗しました",
+    "description": "ネットワーク接続を確認して、もう一度お試しください。",
+    "detailsLabel": "エラー詳細",
+    "unknownError": "不明なエラー",
+    "retry": "再読み込み"
   },
   "DisplayName": {
     "title": "表示名を設定しましょう",
@@ -426,6 +436,12 @@
     "saveError": "保存に失敗しました。もう一度お試しください。"
   },
   "Invite": {
+    "copyInviteButton": "メンバーを招待（リンクをコピー）",
+    "copied": "コピーしました",
+    "shareButton": "共有で送る",
+    "copyFailed": "クリップボードにコピーできませんでした。",
+    "shareFailed": "共有を開始できませんでした。",
+    "shareText": "「{groupName}」の割り勘グループに参加してください",
     "qrToggle": "QRコードを表示",
     "qrHint": "スマホでスキャンして参加できます"
   },
@@ -480,6 +496,10 @@
     "hint": "レシートやスクショから金額・内容・日付を自動入力",
     "aiScanRemaining": "AI読み取り（残り{count}回）",
     "ocrLimitReached": "無料のAI読み取り回数の上限に達しました。PROにアップグレードすると続けて使えます。"
+  },
+  "AppMetadata": {
+    "title": "SpliTrip（スプリトリップ）- グループ旅行の精算アプリ",
+    "description": "グループ旅行中の立替をリアルタイムに記録し、精算を自動計算するWebアプリ"
   },
   "Terms": {
     "pageTitle": "利用規約",

@@ -188,7 +188,17 @@
     "subscriptionTitle": "Billing",
     "subscriptionDescription": "Manage your SpliTrip PRO subscription and payment details in Stripe.",
     "subscriptionManageCta": "Manage subscription",
-    "subscriptionPortalMissing": "Customer portal URL is not configured. Please contact support."
+    "subscriptionPortalMissing": "Customer portal URL is not configured. Please contact support.",
+    "profileLoadErrorLead": "Could not load profile. Please verify the Supabase migration",
+    "profileLoadErrorTrail": "column addition) has been applied.",
+    "defaultDisplayName": "User"
+  },
+  "DashboardError": {
+    "title": "Failed to load data",
+    "description": "Check your network connection and try again.",
+    "detailsLabel": "Error details",
+    "unknownError": "Unknown error",
+    "retry": "Retry"
   },
   "DisplayName": {
     "title": "Set your display name",
@@ -426,6 +436,12 @@
     "saveError": "Could not save. Please try again."
   },
   "Invite": {
+    "copyInviteButton": "Invite members (copy link)",
+    "copied": "Copied",
+    "shareButton": "Share",
+    "copyFailed": "Could not copy to clipboard.",
+    "shareFailed": "Could not start sharing.",
+    "shareText": "Please join the expense group \"{groupName}\"",
     "qrToggle": "Show QR Code",
     "qrHint": "Scan with your phone to join"
   },
@@ -480,6 +496,10 @@
     "hint": "Auto-fill amount, description, and date from a receipt or screenshot",
     "aiScanRemaining": "AI scan ({count} left)",
     "ocrLimitReached": "You’ve used all free AI scans. Upgrade to PRO to keep going."
+  },
+  "AppMetadata": {
+    "title": "SpliTrip - Group Travel Expense Split App",
+    "description": "A web app that records shared travel expenses in real time and automatically calculates settlements."
   },
   "Terms": {
     "pageTitle": "Terms of Service",
