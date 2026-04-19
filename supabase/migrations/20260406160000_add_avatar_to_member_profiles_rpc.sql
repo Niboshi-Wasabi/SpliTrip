@@ -1,5 +1,10 @@
 -- get_group_member_profiles に avatar_url を追加する。
 -- Add avatar_url to get_group_member_profiles RPC return type.
+--
+-- Return type (OUT columns) が変わるため create or replace だけでは更新できない。
+-- 先行マイグレーション 06150000 の定義を drop してから作り直す。
+
+drop function if exists public.get_group_member_profiles(uuid);
 
 create or replace function public.get_group_member_profiles(p_group_id uuid)
 returns table (
