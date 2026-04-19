@@ -13,7 +13,11 @@
     "vercel:env:push": "node scripts/vercel-env-push-from-local.mjs",
     "vercel:env:preview-staging": "node scripts/vercel-env-push-preview-staging.mjs",
     "github:push": "git push -u origin master",
-    "vercel:git:connect": "vercel git connect https://github.com/Niboshi-Wasabi/SpliTrip.git --yes"
+    "vercel:git:connect": "vercel git connect https://github.com/Niboshi-Wasabi/SpliTrip.git --yes",
+    "db:login": "supabase login",
+    "db:link": "supabase link",
+    "db:push": "supabase db push",
+    "db:migration:list": "supabase migration list"
   },
   "dependencies": {
     "@base-ui/react": "^1.4.0",
@@ -53,6 +57,7 @@
     "jest-environment-jsdom": "^30.3.0",
     "png-to-ico": "^3.0.1",
     "sharp": "^0.34.5",
+    "supabase": "^2.92.1",
     "tailwindcss": "^4",
     "ts-node": "^10.9.2",
     "typescript": "^5"

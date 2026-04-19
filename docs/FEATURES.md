@@ -225,6 +225,20 @@ where id = '<ユーザーUUID>';
 |------|------|
 | **テスト** | Jest（ユニット・コンポーネントテストが存在）。 |
 | **DB** | `supabase/migrations` にスキーマ・RLS・RPC の定義（本番は Supabase へ適用が前提）。 |
+| **Supabase CLI** | リポジトリに `supabase`（CLI）を `devDependencies` 登録。`npm run db:login` → `npm run db:link -- --project-ref <ref>` → `npm run db:push` でリモート DB にマイグレーションを適用。適用状況の確認は `npm run db:migration:list`。 |
+
+### Supabase CLI でリモートにマイグレーションを当てる
+
+1. **Project ref**  
+   `NEXT_PUBLIC_SUPABASE_URL` が `https://<ref>.supabase.co` なら `<ref>` が ref（例: `fdfwnoaqdlfiywtggsfi`）。
+2. **DB パスワード**  
+   Supabase Dashboard → **Project Settings → Database** の **Database password**（リンク時に CLI が要求する。リポジトリにコミットしない）。
+3. **コマンド例（リポジトリルート）**
+   - `npm run db:login`（初回のみ）
+   - `npm run db:link -- --project-ref <ref>`（パスワードを聞かれたら上記を入力）
+   - `npm run db:push`
+4. **staging / 本番で DB を分ける場合**  
+   プロジェクトごとに ref が異なる。**リンク先を切り替えるたびに** `db:link` をやり直し、その ref に対して `db:push` する（同じ `supabase/migrations` を両方に適用する運用）。
 
 ---
 
