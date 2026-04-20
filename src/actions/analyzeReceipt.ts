@@ -37,6 +37,7 @@ const UNEXPECTED_SERVER_ERROR_MESSAGE =
   "サーバーで予期せぬエラーが発生しました。";
 const ANALYZE_RECEIPT_FAILED_MESSAGE =
   "画像の読み取りに失敗しました。";
+const DEFAULT_GEMINI_MODEL = "gemini-2.0-flash";
 
 function parseProfileJson(
   raw: unknown,
@@ -96,7 +97,15 @@ export async function analyzeReceipt(
   }
 
   const apiKey = process.env.GEMINI_API_KEY;
+  const modelName = (process.env.GEMINI_MODEL ?? DEFAULT_GEMINI_MODEL).trim();
   if (!apiKey) {
+    return {
+      data: null,
+      error: "現在この機能は利用できません。",
+      code: "GEMINI_CONFIG",
+    };
+  }
+  if (!modelName) {
     return {
       data: null,
       error: "現在この機能は利用できません。",
@@ -119,7 +128,7 @@ export async function analyzeReceipt(
 
   try {
     const response = await ai.models.generateContent({
-      model: "gemini-1.5-flash",
+      model: modelName,
       contents: [
         {
           role: "user",

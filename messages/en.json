@@ -624,8 +624,8 @@
     "featureSettlementBody": "We add up what everyone paid and owed, match people who owe with people who are owed, and shrink the number of transfers.",
     "featureSplitsTitle": "Splits that fit real trips",
     "featureSplitsBody": "Equal splits, exact amounts, share weights, percentages, and line items—with fair handling of leftover cents in each currency.",
-    "featureReceiptTitle": "AI receipt scan & secure receipts",
-    "featureReceiptBody": "Gemini reads amount, merchant, and date from a photo or file to pre-fill the form; receipts can live in Storage for later review in the detail dialog.",
+    "featureReceiptTitle": "Stored receipt attachments",
+    "featureReceiptBody": "Receipt images can be stored in Supabase Storage and reviewed later from the expense detail dialog.",
     "featureExportAuditTitle": "Exports you can file—and an audit trail",
     "featureExportAuditBody": "Export trips to CSV, print, or PDF reports (PRO). Per-expense audit entries show who changed what and when.",
     "featureAccessTitle": "Google, LINE & invite links",
@@ -650,12 +650,12 @@
       "body": "Equal splits, exact amounts, share weights, percentages, and line items—with fair handling of leftover cents in each currency."
     },
     "slide3": {
-      "title": "AI receipt scan & secure receipts",
-      "body": "Gemini reads amount, merchant, and date from a photo or file to pre-fill the form; receipts can live in Storage for later review in the detail dialog."
-    },
-    "slide4": {
       "title": "Exports you can file—and an audit trail",
       "body": "Export trips to CSV, print, or PDF reports (PRO). Per-expense audit entries show who changed what and when."
+    },
+    "slide4": {
+      "title": "Google, LINE & invite links",
+      "body": "Social sign-in keeps onboarding simple; share a tokenized invite URL to add members to a group."
     },
     "slide5": {
       "title": "Google, LINE & invite links",
@@ -684,7 +684,7 @@
       "kicker": "OPEN BETA",
       "titleLine1": "Split and settle travel expenses",
       "titleLine2": "with less effort.",
-      "description": "Use AI receipt scan, flexible split rules, and optimized settlement in one flow.",
+      "description": "Use flexible split rules and optimized settlement in one flow.",
       "cta": "JOIN THE OPEN BETA",
       "ctaDashboard": "GO TO DASHBOARD",
       "note": "* No credit card required. Free to start."

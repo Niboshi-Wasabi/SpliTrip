@@ -624,8 +624,8 @@
     "featureSettlementBody": "メンバー全員の支払いと負担を集計し、「お金をもらう人」と「払う人」を突き合わせて、送金の回数を減らします。",
     "featureSplitsTitle": "旅行に合わせた割り方",
     "featureSplitsBody": "均等・金額指定・シェア比率・パーセント・品目ごとの負担まで対応。端数は通貨の最小単位に合わせて、きれいに配分します。",
-    "featureReceiptTitle": "レシート AI と領収書の保管",
-    "featureReceiptBody": "撮影や画像から Gemini で金額・日付・店名を読み取り、フォームへ反映。領収書は Supabase Storage に保存し、あとから詳細画面で確認できます。",
+    "featureReceiptTitle": "領収書の保管",
+    "featureReceiptBody": "領収書は Supabase Storage に保存し、あとから詳細画面で確認できます。",
     "featureExportAuditTitle": "CSV・PDF と変更履歴",
     "featureExportAuditBody": "旅行の記録を CSV・PDF・印刷で書き出し（PRO）。各出費には監査ログがあり、追加・更新・削除を誰がいつ行ったか追跡できます。",
     "featureAccessTitle": "Google / LINE と招待リンク",
@@ -650,12 +650,12 @@
       "body": "均等・金額指定・シェア比率・パーセント・品目ごとの負担まで対応。端数は通貨の最小単位に合わせて、きれいに配分します。"
     },
     "slide3": {
-      "title": "レシート AI と領収書の保管",
-      "body": "撮影や画像から Gemini で金額・日付・店名を読み取り、フォームへ反映。領収書は Supabase Storage に保存し、あとから詳細画面で確認できます。"
-    },
-    "slide4": {
       "title": "CSV・PDF と変更履歴",
       "body": "旅行の記録を CSV・PDF・印刷で書き出し（PRO）。各出費には監査ログがあり、追加・更新・削除を誰がいつ行ったか追跡できます。"
+    },
+    "slide4": {
+      "title": "Google / LINE と招待リンク",
+      "body": "ソーシャルログインで参加しやすくし、トークン付きの招待 URL でメンバーをグループに招けます。"
     },
     "slide5": {
       "title": "Google / LINE と招待リンク",
@@ -684,7 +684,7 @@
       "kicker": "OPEN BETA",
       "titleLine1": "旅行の割り勘と精算を、",
       "titleLine2": "もっとスムーズに。",
-      "description": "AIレシート読取、柔軟な割り勘、送金回数を抑える精算に対応。旅行の会計をすばやく終えられます。",
+      "description": "柔軟な割り勘、送金回数を抑える精算に対応。旅行の会計をすばやく終えられます。",
       "cta": "オープンベータに参加",
       "ctaDashboard": "ダッシュボードへ",
       "note": "※ クレジットカード不要・基本無料"

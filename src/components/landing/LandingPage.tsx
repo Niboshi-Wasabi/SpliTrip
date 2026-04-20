@@ -7,7 +7,6 @@ import { Link, useRouter } from "@/i18n/navigation";
 import { LanguageSwitcher } from "@/components/ui/LanguageSwitcher";
 import {
   Banknote,
-  Bot,
   Check,
   HandCoins,
   ImageUp,
@@ -389,7 +388,6 @@ export function LandingPage({ initialSession }: LandingPageProps) {
                     <Badge variant="outline" className="border-zinc-700 bg-zinc-900 text-zinc-300">{t("pricing.free.badge")}</Badge>
                   </div>
                   <ul className="min-h-0 flex-1 space-y-3 text-sm font-normal text-zinc-300">
-                    <li className="flex items-start gap-2"><Check className="mt-0.5 h-4 w-4 shrink-0 text-zinc-400" />{t("pricing.free.items.receipt")}</li>
                     <li className="flex items-start gap-2"><Check className="mt-0.5 h-4 w-4 shrink-0 text-zinc-400" />{t("pricing.free.items.groups")}</li>
                     <li className="flex items-start gap-2"><Check className="mt-0.5 h-4 w-4 shrink-0 text-zinc-400" />{t("pricing.free.items.split")}</li>
                   </ul>
@@ -404,7 +402,6 @@ export function LandingPage({ initialSession }: LandingPageProps) {
                     <Badge className="bg-zinc-50 text-zinc-900">{t("pricing.pro.badge")}</Badge>
                   </div>
                   <ul className="min-h-0 flex-1 space-y-3 text-sm font-normal text-zinc-300">
-                    <li className="flex items-start gap-2"><Bot className="mt-0.5 h-4 w-4 shrink-0 text-zinc-500" />{t("pricing.pro.items.receipt")}</li>
                     <li className="flex items-start gap-2"><Receipt className="mt-0.5 h-4 w-4 shrink-0 text-zinc-500" />{t("pricing.pro.items.export")}</li>
                     <li className="flex items-start gap-2"><Banknote className="mt-0.5 h-4 w-4 shrink-0 text-zinc-500" />{t("pricing.pro.items.advanced")}</li>
                   </ul>

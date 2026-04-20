@@ -8,8 +8,8 @@
  *   Settlement minimization: greedy debtor/creditor matching to reduce transfer count.
  * - 多様な割り方: `src/utils/settlement.ts` + `group-expense-panel.tsx`（equal / percent / shares / itemized 等・端数ポリシー）
  *   Rich split math: multiple modes with minor-unit remainder handling.
- * - AI レシート + Storage: `src/actions/analyzeReceipt.ts`（Gemini）+ 領収書 API / `group-expense-panel`
- *   Receipt scan via server action + stored attachments for review.
+ * - 領収書の保管: 領収書 API / `group-expense-panel`
+ *   Receipt attachments are stored and shown in the detail dialog.
  * - 書き出し・監査: `group-export-toolbar.tsx`（CSV / PDF / print・PRO）+ 出費詳細の audit API
  *   Exports and per-expense audit timeline for accountability.
  * - 認証・招待: Google / LINE + `create-group-with-invite` / join フロー（トークン招待）
@@ -32,7 +32,6 @@ import {
   Link as LinkIcon,
   Loader2,
   PieChart,
-  ScanLine,
   Sparkles,
   UserPlus,
 } from "lucide-react";
@@ -128,25 +127,19 @@ export function PitchDeck({
       iconClassName: "text-emerald-400/90",
     },
     {
-      icon: ScanLine,
+      icon: FileStack,
       title: pitchDeckTranslations("slide3.title"),
       body: pitchDeckTranslations("slide3.body"),
-      iconClassName: "text-amber-300/90",
-    },
-    {
-      icon: FileStack,
-      title: pitchDeckTranslations("slide4.title"),
-      body: pitchDeckTranslations("slide4.body"),
       iconClassName: "text-violet-300/90",
     },
     {
       icon: UserPlus,
-      title: pitchDeckTranslations("slide5.title"),
-      body: pitchDeckTranslations("slide5.body"),
+      title: pitchDeckTranslations("slide4.title"),
+      body: pitchDeckTranslations("slide4.body"),
       iconClassName: "text-rose-300/90",
     },
   ];
-  const finalSlide = slideDefinitions[4];
+  const finalSlide = slideDefinitions[3];
 
   async function finishPitch() {
     if (isFinishing) {
@@ -220,7 +213,7 @@ export function PitchDeck({
           </p>
         </PitchSlideSection>
 
-        {slideDefinitions.slice(0, 4).map((slideDefinition) => (
+        {slideDefinitions.slice(0, 3).map((slideDefinition) => (
           <PitchSlideSection key={slideDefinition.title}>
             <div className="mb-10 flex justify-center md:justify-start">
               <slideDefinition.icon
