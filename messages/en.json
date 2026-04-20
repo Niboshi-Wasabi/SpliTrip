@@ -493,6 +493,8 @@
     "scanning": "Analyzing image…",
     "success": "Scan complete. Please review the details.",
     "error": "Failed to read the image",
+    "authRequired": "Please check your sign-in status and try again.",
+    "temporarilyUnavailable": "AI scan is temporarily unavailable. Please try again later.",
     "hint": "Auto-fill amount, description, and date from a receipt or screenshot",
     "aiScanRemaining": "AI scan ({count} left)",
     "ocrLimitReached": "You’ve used all free AI scans. Upgrade to PRO to keep going."

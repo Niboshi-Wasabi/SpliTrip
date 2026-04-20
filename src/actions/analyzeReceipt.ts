@@ -35,6 +35,8 @@ type AnalyzeReceiptResult =
 
 const UNEXPECTED_SERVER_ERROR_MESSAGE =
   "サーバーで予期せぬエラーが発生しました。";
+const ANALYZE_RECEIPT_FAILED_MESSAGE =
+  "画像の読み取りに失敗しました。";
 
 function parseProfileJson(
   raw: unknown,
@@ -69,7 +71,7 @@ export async function analyzeReceipt(
   if (!user) {
     return {
       data: null,
-      error: "Authentication required",
+      error: "ログインが必要です。",
       code: "AUTH",
     };
   }
@@ -97,7 +99,7 @@ export async function analyzeReceipt(
   if (!apiKey) {
     return {
       data: null,
-      error: "GEMINI_API_KEY is not configured",
+      error: "現在この機能は利用できません。",
       code: "GEMINI_CONFIG",
     };
   }
@@ -106,7 +108,7 @@ export async function analyzeReceipt(
   if (base64Image.length > MAX_BASE64_LENGTH) {
     return {
       data: null,
-      error: "Image too large (max ~3MB)",
+      error: ANALYZE_RECEIPT_FAILED_MESSAGE,
       code: "GEMINI",
     };
   }
@@ -155,7 +157,7 @@ export async function analyzeReceipt(
     if (!rawText.trim()) {
       return {
         data: null,
-        error: "Empty response from Gemini",
+        error: ANALYZE_RECEIPT_FAILED_MESSAGE,
         code: "GEMINI",
       };
     }
@@ -164,7 +166,7 @@ export async function analyzeReceipt(
     if (typeof parsed !== "object" || parsed === null) {
       return {
         data: null,
-        error: "Unexpected response format",
+        error: ANALYZE_RECEIPT_FAILED_MESSAGE,
         code: "GEMINI",
       };
     }

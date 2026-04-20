@@ -64,14 +64,18 @@ function normalizeStripeCustomerId(
 }
 
 async function resolveUserIdFromCustomerLink(
-  supabaseAdmin: ReturnType<typeof createClient>,
+  supabaseAdmin: any,
   customerId: string,
 ): Promise<string | null> {
-  const { data, error } = await supabaseAdmin
+  const admin = supabaseAdmin as any;
+  const { data, error } = (await admin
     .from("stripe_customer_user_links")
     .select("user_id")
     .eq("customer_id", customerId)
-    .maybeSingle();
+    .maybeSingle()) as {
+    data: { user_id: string | null } | null;
+    error: { code?: string; message?: string } | null;
+  };
 
   if (error) {
     console.error(
@@ -87,13 +91,12 @@ async function resolveUserIdFromCustomerLink(
 }
 
 async function persistCustomerUserLink(
-  supabaseAdmin: ReturnType<typeof createClient>,
+  supabaseAdmin: any,
   customerId: string,
   userId: string,
 ): Promise<boolean> {
-  const { error } = await supabaseAdmin
-    .from("stripe_customer_user_links")
-    .upsert(
+  const admin = supabaseAdmin as any;
+  const { error } = await admin.from("stripe_customer_user_links").upsert(
       {
         customer_id: customerId,
         user_id: userId,
@@ -114,11 +117,12 @@ async function persistCustomerUserLink(
 }
 
 async function grantStripePremiumAccess(
-  supabaseAdmin: ReturnType<typeof createClient>,
+  supabaseAdmin: any,
   userId: string,
 ): Promise<boolean> {
+  const admin = supabaseAdmin as any;
   // Avoid overwriting user-entered profile fields such as display_name.
-  const { error } = await supabaseAdmin
+  const { error } = await admin
     .from("user_profiles")
     .upsert(
       {
@@ -142,10 +146,11 @@ async function grantStripePremiumAccess(
 }
 
 async function revokeStripePremiumAccess(
-  supabaseAdmin: ReturnType<typeof createClient>,
+  supabaseAdmin: any,
   userId: string,
 ): Promise<boolean> {
-  const { error } = await supabaseAdmin
+  const admin = supabaseAdmin as any;
+  const { error } = await admin
     .from("user_profiles")
     .update({
       premium_access: false,
@@ -167,10 +172,11 @@ async function revokeStripePremiumAccess(
 }
 
 async function hasWebhookEventBeenProcessed(
-  supabaseAdmin: ReturnType<typeof createClient>,
+  supabaseAdmin: any,
   eventId: string,
 ): Promise<boolean> {
-  const { data, error } = await supabaseAdmin
+  const admin = supabaseAdmin as any;
+  const { data, error } = await admin
     .from("stripe_webhook_events")
     .select("event_id")
     .eq("event_id", eventId)
@@ -189,10 +195,11 @@ async function hasWebhookEventBeenProcessed(
 }
 
 async function markWebhookEventAsProcessed(
-  supabaseAdmin: ReturnType<typeof createClient>,
+  supabaseAdmin: any,
   event: Stripe.Event,
 ): Promise<boolean> {
-  const { error } = await supabaseAdmin.from("stripe_webhook_events").insert({
+  const admin = supabaseAdmin as any;
+  const { error } = await admin.from("stripe_webhook_events").insert({
     event_id: event.id,
     event_type: event.type,
   });
@@ -258,7 +265,10 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: true, ignored: true });
   }
 
-  const supabaseAdmin = createClient(env.supabaseUrl, env.supabaseServiceRoleKey);
+  const supabaseAdmin = createClient(
+    env.supabaseUrl,
+    env.supabaseServiceRoleKey,
+  );
 
   const alreadyProcessed = await hasWebhookEventBeenProcessed(supabaseAdmin, event.id);
   if (alreadyProcessed) {

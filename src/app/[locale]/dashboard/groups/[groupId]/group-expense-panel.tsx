@@ -242,10 +242,24 @@ export function GroupExpensePanel({
             tone: "error",
             text: receiptTranslations("ocrLimitReached"),
           });
-        } else {
+        } else if (errorCode === "AUTH") {
           setScanMessage({
             tone: "error",
-            text: `${receiptTranslations("error")} (${result.error})`,
+            text: receiptTranslations("authRequired"),
+          });
+        } else if (errorCode === "GEMINI_CONFIG") {
+          setScanMessage({
+            tone: "error",
+            text: receiptTranslations("temporarilyUnavailable"),
+          });
+        } else {
+          console.error(
+            "[UI Error - handleReceiptScan analyzeReceipt]:",
+            result,
+          );
+          setScanMessage({
+            tone: "error",
+            text: receiptTranslations("error"),
           });
         }
         setScanning(false);
@@ -276,11 +290,10 @@ export function GroupExpensePanel({
       });
       router.refresh();
     } catch (caughtError) {
-      const errorText =
-        caughtError instanceof Error ? caughtError.message : "Unknown error";
+      console.error("[UI Error - handleReceiptScan unexpected]:", caughtError);
       setScanMessage({
         tone: "error",
-        text: `${receiptTranslations("error")} (${errorText})`,
+        text: receiptTranslations("error"),
       });
     } finally {
       setScanning(false);
