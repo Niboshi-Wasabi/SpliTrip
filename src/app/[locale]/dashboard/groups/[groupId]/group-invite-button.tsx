@@ -11,9 +11,16 @@
 
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
-import { Check, ChevronDown, ChevronUp, Loader2, Share2, UserPlus } from "lucide-react";
+import { Check, Loader2, Share2, UserPlus } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 type Props = {
   /** Path beginning with `/`, e.g. `/join/<uuid>`. */
@@ -28,7 +35,7 @@ export function GroupInviteButton({ invitePath, groupName }: Props) {
   const [message, setMessage] = useState<string | null>(null);
   const [canShare, setCanShare] = useState(false);
   const [inviteUrl, setInviteUrl] = useState("");
-  const [showQr, setShowQr] = useState(false);
+  const [isQrOpen, setIsQrOpen] = useState(false);
 
   useEffect(() => {
     setCanShare(typeof navigator !== "undefined" && !!navigator.share);
@@ -81,14 +88,15 @@ export function GroupInviteButton({ invitePath, groupName }: Props) {
   const urlReady = inviteUrl.startsWith("http");
 
   return (
-    <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
+    <div className="space-y-2">
+      <div className="flex items-center gap-2">
       <Button
         type="button"
         variant="outline"
         size="sm"
         disabled={busy || !urlReady}
         onClick={() => void copyInviteUrl()}
-        className="min-h-[44px] gap-1.5 md:min-h-0"
+        className="min-h-[44px] flex-1 gap-1.5 md:min-h-0"
       >
         {busy ? (
           <Loader2 className="size-3.5 animate-spin" aria-hidden />
@@ -97,9 +105,11 @@ export function GroupInviteButton({ invitePath, groupName }: Props) {
         ) : (
           <UserPlus className="size-3.5" aria-hidden />
         )}
-        {copied
-          ? inviteTranslations("copied")
-          : inviteTranslations("copyInviteButton")}
+        <span className="truncate">
+          {copied
+            ? inviteTranslations("copied")
+            : inviteTranslations("copyInviteButton")}
+        </span>
       </Button>
       {canShare ? (
         <Button
@@ -108,47 +118,39 @@ export function GroupInviteButton({ invitePath, groupName }: Props) {
           size="sm"
           disabled={busy || !urlReady}
           onClick={() => void shareInviteUrl()}
-          className="min-h-[44px] gap-1.5 md:min-h-0"
+          className="min-h-[44px] flex-1 gap-1.5 md:min-h-0"
         >
           <Share2 className="size-3.5" aria-hidden />
-          {inviteTranslations("shareButton")}
+          <span className="truncate">{inviteTranslations("shareButton")}</span>
         </Button>
       ) : null}
       <Button
         type="button"
-        variant="ghost"
+        variant="outline"
         size="sm"
         disabled={!urlReady}
-        onClick={() => setShowQr((previous) => !previous)}
-        className="min-h-[44px] gap-1.5 md:min-h-0"
+        onClick={() => setIsQrOpen(true)}
+        className="min-h-[44px] flex-1 gap-1.5 md:min-h-0"
       >
-        {showQr ? (
-          <ChevronUp className="size-3.5" aria-hidden />
-        ) : (
-          <ChevronDown className="size-3.5" aria-hidden />
-        )}
-        {inviteTranslations("qrToggle")}
+        <span className="truncate">{inviteTranslations("qrToggle")}</span>
       </Button>
+      </div>
       {message ? (
         <p className="text-xs text-destructive" role="alert">
           {message}
         </p>
       ) : null}
-
-      {/* QR コード: 対面での招待に便利 / QR code for in-person invitations */}
-      {showQr && urlReady ? (
-        <div className="mt-2 flex flex-col items-center gap-2 rounded-lg border border-border bg-white p-4 dark:bg-white">
-          <QRCodeSVG
-            value={inviteUrl}
-            size={200}
-            marginSize={2}
-            level="M"
-          />
-          <p className="text-center text-xs text-gray-600">
-            {inviteTranslations("qrHint")}
-          </p>
-        </div>
-      ) : null}
+      <Dialog open={isQrOpen} onOpenChange={setIsQrOpen}>
+        <DialogContent className="max-w-[92vw] sm:max-w-sm">
+          <DialogHeader>
+            <DialogTitle>{inviteTranslations("qrToggle")}</DialogTitle>
+            <DialogDescription>{inviteTranslations("qrHint")}</DialogDescription>
+          </DialogHeader>
+          <div className="flex flex-col items-center gap-2 rounded-lg bg-white p-4">
+            <QRCodeSVG value={inviteUrl} size={220} marginSize={2} level="M" />
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

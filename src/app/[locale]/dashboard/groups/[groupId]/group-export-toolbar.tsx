@@ -33,6 +33,7 @@ type Props = {
   expenses: CsvExpenseInput[];
   settlements: CsvSettlementInput[];
   totalExpenseAmount: number;
+  printedAtLabel: string;
 };
 
 function useGroupExportCsvLabels(): GroupExportCsvLabels {
@@ -63,6 +64,7 @@ export function GroupExportToolbar({
   expenses,
   settlements,
   totalExpenseAmount,
+  printedAtLabel,
 }: Props) {
   const translations = useTranslations("GroupExport");
   const categoryTranslations = useTranslations("ExpenseCategory");
@@ -151,11 +153,6 @@ export function GroupExportToolbar({
   function onPdfClick(): void {
     void handleExportPdfReport();
   }
-
-  const printedAtLabel = new Intl.DateTimeFormat(locale, {
-    dateStyle: "long",
-    timeStyle: "short",
-  }).format(new Date());
 
   return (
     <>

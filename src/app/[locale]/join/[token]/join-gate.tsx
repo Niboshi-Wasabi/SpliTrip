@@ -2,8 +2,6 @@
 
 /**
  * 未ログイン向け招待: Google / LINE OAuth のみ（ゲスト匿名は廃止）。
- *
- * No CAPTCHA gate: same UX rationale as the main login screen (smooth mobile + desktop).
  */
 
 import { useState, type FC } from "react";
@@ -23,6 +21,9 @@ import { localizedJoinPath } from "@/lib/i18n/localized-paths";
 import { createClient } from "@/utils/supabase/client";
 import { isSupabaseConfigured } from "@/utils/supabase/env";
 import { getPublicSiteOrigin } from "@/utils/public-site-url";
+import { TurnstileWidget } from "@/components/auth/TurnstileWidget";
+import { getTurnstileSiteKey } from "@/utils/turnstile/env";
+import { verifyTurnstileTokenOnServer } from "@/lib/turnstile/verify-client";
 
 type LoginProvider = "google" | "line";
 
@@ -95,8 +96,10 @@ export function JoinGate({ token }: Props) {
   const tLogin = useTranslations("Login");
   const [loadingAction, setLoadingAction] = useState<LoginProvider | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
 
   const supabaseReady = isSupabaseConfigured();
+  const isTurnstileEnabled = getTurnstileSiteKey().length > 0;
   const joinPath = localizedJoinPath(locale, token);
 
   async function handleOAuthLogin(provider: LoginProvider) {
@@ -108,9 +111,26 @@ export function JoinGate({ token }: Props) {
     setLoadingAction(provider);
     setError(null);
 
+    if (isTurnstileEnabled) {
+      if (!turnstileToken) {
+        setError(tLogin("captchaRequired"));
+        setLoadingAction(null);
+        return;
+      }
+      const isCaptchaValid = await verifyTurnstileTokenOnServer(turnstileToken);
+      if (!isCaptchaValid) {
+        setError(tLogin("captchaFailed"));
+        setLoadingAction(null);
+        return;
+      }
+    }
+
     if (provider === "line") {
       const next = encodeURIComponent(joinPath);
-      window.location.assign(`/api/auth/line?next=${next}`);
+      const tokenQuery = isTurnstileEnabled
+        ? `&cf_turnstile_token=${encodeURIComponent(turnstileToken ?? "")}`
+        : "";
+      window.location.assign(`/api/auth/line?next=${next}${tokenQuery}`);
       return;
     }
 
@@ -143,6 +163,9 @@ export function JoinGate({ token }: Props) {
             <p className="text-sm text-destructive" role="alert">
               {error}
             </p>
+          ) : null}
+          {isTurnstileEnabled ? (
+            <TurnstileWidget onTokenChange={setTurnstileToken} />
           ) : null}
 
           {PROVIDER_CONFIG.map(

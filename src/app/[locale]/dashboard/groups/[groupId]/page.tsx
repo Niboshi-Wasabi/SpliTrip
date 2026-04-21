@@ -215,32 +215,53 @@ export default async function GroupDetailPage({ params }: PageProps) {
   return (
     <div className="min-h-screen bg-background">
       <header className="border-b border-border bg-card shadow-sm print:hidden">
-        <div className="mx-auto flex max-w-6xl items-start gap-3 px-4 py-3">
-          <Link
-            href="/dashboard"
-            className={cn(buttonVariants({ variant: "ghost", size: "sm" }), "min-h-[44px] md:min-h-0")}
-          >
-            <ArrowLeft className="mr-1 h-4 w-4" />
-            {groupDetailTranslations("backDashboard")}
-          </Link>
-          <div className="min-w-0 flex-1">
+        <div className="mx-auto max-w-6xl px-4 py-3">
+          <div className="mb-3 flex items-center justify-between gap-2 md:mb-0 md:hidden">
+            <Link
+              href="/dashboard"
+              className={cn(
+                buttonVariants({ variant: "ghost", size: "sm" }),
+                "min-h-[44px] md:min-h-0",
+              )}
+            >
+              <ArrowLeft className="mr-1 h-4 w-4" />
+              {groupDetailTranslations("backDashboard")}
+            </Link>
+            <ThemeToggle />
+          </div>
+
+          <div className="flex flex-col gap-3 md:flex-row md:items-start">
+            <Link
+              href="/dashboard"
+              className={cn(
+                buttonVariants({ variant: "ghost", size: "sm" }),
+                "hidden min-h-[44px] shrink-0 md:inline-flex md:min-h-0",
+              )}
+            >
+              <ArrowLeft className="mr-1 h-4 w-4" />
+              {groupDetailTranslations("backDashboard")}
+            </Link>
+
+            <div className="min-w-0 flex-1">
             <h1 className="text-lg font-bold text-foreground">{group.name}</h1>
-            <p className="text-xs text-muted-foreground">
-              {groupDetailTranslations("memberLine", {
-                currency: group.currency_code,
-                count: members.length,
-              })}
-            </p>
-            <div className="mt-1.5 flex -space-x-1.5">
-              {members.map((memberRow) => (
-                <UserAvatar
-                  key={memberRow.user_id}
-                  displayName={memberRow.display_name}
-                  avatarUrl={memberRow.avatar_url}
-                  size="sm"
-                  className="ring-2 ring-card"
-                />
-              ))}
+            <div className="mt-1.5 flex items-center gap-2">
+              <p className="text-xs text-muted-foreground">
+                {groupDetailTranslations("memberLine", {
+                  currency: group.currency_code,
+                  count: members.length,
+                })}
+              </p>
+              <div className="flex -space-x-1.5">
+                {members.map((memberRow) => (
+                  <UserAvatar
+                    key={memberRow.user_id}
+                    displayName={memberRow.display_name}
+                    avatarUrl={memberRow.avatar_url}
+                    size="sm"
+                    className="ring-2 ring-card"
+                  />
+                ))}
+              </div>
             </div>
             <div className="mt-3">
               <GroupInviteButton
@@ -248,8 +269,11 @@ export default async function GroupDetailPage({ params }: PageProps) {
                 groupName={group.name}
               />
             </div>
+            </div>
+            <div className="hidden md:block">
+              <ThemeToggle />
+            </div>
           </div>
-          <ThemeToggle />
         </div>
       </header>
 
@@ -268,6 +292,7 @@ export default async function GroupDetailPage({ params }: PageProps) {
           <GroupExportToolbar
             groupName={group.name}
             currencyCode={group.currency_code}
+            printedAtLabel={snapshotPrintedAt}
             members={members.map((memberRow) => ({
               user_id: memberRow.user_id,
               display_name: memberRow.display_name,
