@@ -9,6 +9,7 @@
     "lint": "eslint",
     "test": "jest",
     "test:watch": "jest --watch",
+    "security:scan": "node scripts/security-scan.mjs",
     "icons:build": "node scripts/process-app-icon.mjs",
     "vercel:env:push": "node scripts/vercel-env-push-from-local.mjs",
     "vercel:env:preview-staging": "node scripts/vercel-env-push-preview-staging.mjs",

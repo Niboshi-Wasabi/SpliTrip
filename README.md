@@ -71,8 +71,21 @@ npm run build    # 本番ビルド
 npm run start    # 本番サーバー
 npm run lint     # ESLint
 npm run test     # Jest
+npm run security:scan # 5観点のセキュリティパターンスキャン
 npm run icons:build  # PWA アイコン等の生成（`scripts/process-app-icon.mjs`）
 ```
+
+### セキュリティスキャン（5観点）
+
+`npm run security:scan` は、`node_modules` などを除外した上で以下のパターンを機械検出します。
+
+1. 存在しない（`package.json` 未宣言の）外部パッケージ import
+2. f-string 等での SQL 組み立て（主に Python パターン）
+3. `except: pass` / `except Exception: pass`
+4. ハードコードされたシークレット候補
+5. ユーザー入力とファイルパス結合の危険候補
+
+GitHub Actions でも `master` / `staging` への push と Pull Request で同じスキャンを自動実行します（`.github/workflows/security-scan.yml`）。
 
 ---
 
