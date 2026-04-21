@@ -47,6 +47,37 @@ function realtimeEqUuidFilter(columnName: string, uuidValue: string): string {
   return `${columnName}=eq."${uuidValue}"`;
 }
 
+/**
+ * Realtime が返す error payload は環境により undefined / string / object が混在する。
+ * Supabase Realtime error payload can vary by environment (undefined/string/object).
+ */
+function describeRealtimeError(error: unknown): string {
+  if (!error) {
+    return "No error payload was provided by Supabase Realtime.";
+  }
+
+  if (typeof error === "string") {
+    return error;
+  }
+
+  if (error instanceof Error) {
+    return error.message;
+  }
+
+  if (typeof error === "object" && "message" in error) {
+    const maybeMessage = (error as { message?: unknown }).message;
+    if (typeof maybeMessage === "string" && maybeMessage.length > 0) {
+      return maybeMessage;
+    }
+  }
+
+  try {
+    return JSON.stringify(error);
+  } catch {
+    return String(error);
+  }
+}
+
 export function useRealtimeSync({
   groupId,
   currentUserId,
@@ -156,10 +187,16 @@ export function useRealtimeSync({
       .on("broadcast", { event: "data-changed" }, handleBroadcastRefresh)
       .subscribe((status, error) => {
         if (status === "CHANNEL_ERROR") {
-          console.warn("[useRealtimeSync] Realtime channel error:", error?.message ?? error);
+          const errorDescription = describeRealtimeError(error);
+          console.warn(
+            `[useRealtimeSync] Realtime channel error (groupId=${groupId}): ${errorDescription}`,
+          );
         }
         if (status === "TIMED_OUT") {
-          console.warn("[useRealtimeSync] Realtime subscription timed out");
+          const errorDescription = describeRealtimeError(error);
+          console.warn(
+            `[useRealtimeSync] Realtime subscription timed out (groupId=${groupId}): ${errorDescription}`,
+          );
         }
       });
 

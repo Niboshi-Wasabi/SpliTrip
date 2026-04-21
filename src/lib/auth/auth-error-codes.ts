@@ -5,6 +5,7 @@ export const AUTH_ERROR = {
   AUTH: "auth",
   LINE_AUTH: "line_auth",
   LINE_CONFIG: "line_config",
+  CAPTCHA: "captcha",
 } as const;
 
 export type AuthErrorCode = (typeof AUTH_ERROR)[keyof typeof AUTH_ERROR];

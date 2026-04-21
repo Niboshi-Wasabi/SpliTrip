@@ -2,10 +2,6 @@
 
 /**
  * OAuth ログイン。文言は next-intl の `Login` 名前空間で管理する。
- *
- * Intentionally no third-party CAPTCHA (e.g. Cloudflare Turnstile): we removed it
- * so sign-in stays frictionless on mobile and desktop (better UX).
- * サードパーティ CAPTCHA（Turnstile 等）は置かない。モバイル含め認証の摩擦を減らすため撤去済み。
  */
 
 import { useState, useEffect, useMemo } from "react";
@@ -30,6 +26,9 @@ import { loginErrorMessageFromQueryParam } from "@/lib/auth/login-error-messages
 import { formatOAuthLoginError } from "@/lib/oauth-errors";
 import { getPublicSiteOrigin } from "@/utils/public-site-url";
 import type { Provider } from "@supabase/supabase-js";
+import { TurnstileWidget } from "@/components/auth/TurnstileWidget";
+import { getTurnstileSiteKey } from "@/utils/turnstile/env";
+import { verifyTurnstileTokenOnServer } from "@/lib/turnstile/verify-client";
 
 type LoginProvider = "google" | "line";
 type LoadingAction = LoginProvider;
@@ -100,7 +99,9 @@ export function LoginForm() {
     null,
   );
   const [error, setError] = useState<string | null>(null);
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
   const supabaseReady = isSupabaseConfigured();
+  const isTurnstileEnabled = getTurnstileSiteKey().length > 0;
 
   const urlErrorMessage = useMemo(
     () => loginErrorMessageFromQueryParam(searchParams.get("error")),
@@ -122,8 +123,25 @@ export function LoginForm() {
     setLoadingAction(provider);
     setError(urlErrorMessage);
 
+    if (isTurnstileEnabled) {
+      if (!turnstileToken) {
+        setError(translations("captchaRequired"));
+        setLoadingAction(null);
+        return;
+      }
+      const isCaptchaValid = await verifyTurnstileTokenOnServer(turnstileToken);
+      if (!isCaptchaValid) {
+        setError(translations("captchaFailed"));
+        setLoadingAction(null);
+        return;
+      }
+    }
+
     if (provider === "line") {
-      window.location.assign("/api/auth/line");
+      const lineAuthPath = isTurnstileEnabled
+        ? `/api/auth/line?cf_turnstile_token=${encodeURIComponent(turnstileToken ?? "")}`
+        : "/api/auth/line";
+      window.location.assign(lineAuthPath);
       return;
     }
 
@@ -173,6 +191,9 @@ export function LoginForm() {
               {error}
             </div>
           )}
+          {isTurnstileEnabled ? (
+            <TurnstileWidget onTokenChange={setTurnstileToken} />
+          ) : null}
 
           {PROVIDER_CONFIG.map(
             ({ id, labelKey, icon: Icon, buttonClassName }) => {

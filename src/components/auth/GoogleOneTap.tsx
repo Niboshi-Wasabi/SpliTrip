@@ -41,6 +41,29 @@ type Props = {
   redirectOnSuccess?: boolean;
 };
 
+function isLocalhostHost(hostname: string): boolean {
+  return hostname === "localhost" || hostname === "127.0.0.1";
+}
+
+function shouldEnableGoogleOneTap(clientId: string): boolean {
+  if (clientId.length === 0 || typeof window === "undefined") {
+    return false;
+  }
+
+  const forceEnableOnLocalhost =
+    (process.env.NEXT_PUBLIC_GOOGLE_ONE_TAP_ON_LOCALHOST ?? "").trim() === "true";
+
+  if (
+    process.env.NODE_ENV !== "production" &&
+    isLocalhostHost(window.location.hostname) &&
+    !forceEnableOnLocalhost
+  ) {
+    return false;
+  }
+
+  return true;
+}
+
 export function GoogleOneTap({
   skipPrompt = false,
   redirectOnSuccess = false,
@@ -49,25 +72,22 @@ export function GoogleOneTap({
   const router = useRouter();
   const loginTranslations = useTranslations("Login");
   const hasInitializedRef = useRef(false);
-  const [scriptLoaded, setScriptLoaded] = useState(false);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
-
-  useEffect(() => {
+  const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID?.trim() ?? "";
+  const oneTapEnabled = shouldEnableGoogleOneTap(clientId);
+  const [scriptLoaded, setScriptLoaded] = useState(() => {
     if (typeof window === "undefined") {
-      return;
+      return false;
     }
-    if (window.google?.accounts?.id) {
-      setScriptLoaded(true);
-    }
-  }, []);
+    return oneTapEnabled && Boolean(window.google?.accounts?.id);
+  });
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   useEffect(() => {
     if (skipPrompt || hasInitializedRef.current || !scriptLoaded) {
       return;
     }
 
-    const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID?.trim() ?? "";
-    if (clientId.length === 0) {
+    if (!oneTapEnabled) {
       return;
     }
     if (!isSupabaseConfigured()) {
@@ -137,9 +157,18 @@ export function GoogleOneTap({
       isActive = false;
       window.google?.accounts?.id.cancel();
     };
-  }, [locale, loginTranslations, redirectOnSuccess, router, scriptLoaded, skipPrompt]);
+  }, [
+    clientId,
+    locale,
+    loginTranslations,
+    oneTapEnabled,
+    redirectOnSuccess,
+    router,
+    scriptLoaded,
+    skipPrompt,
+  ]);
 
-  if (skipPrompt) {
+  if (skipPrompt || !oneTapEnabled) {
     return null;
   }
 

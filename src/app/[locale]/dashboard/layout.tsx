@@ -1,5 +1,4 @@
 import { OpenBetaBanner } from "@/components/beta/open-beta-banner";
-import { WhatsNewModal } from "@/components/ui/WhatsNewModal";
 
 type DashboardLayoutProps = {
   children: React.ReactNode;
@@ -10,7 +9,6 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     <>
       <OpenBetaBanner />
       {children}
-      <WhatsNewModal />
     </>
   );
 }

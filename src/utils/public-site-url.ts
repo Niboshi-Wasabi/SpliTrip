@@ -4,6 +4,10 @@
  * Supabase の許可 URL と一致させやすく、localhost に飛ぶ問題を防げます。
  */
 export function getPublicSiteOrigin(): string {
+  if (typeof window !== "undefined" && process.env.NODE_ENV !== "production") {
+    return window.location.origin;
+  }
+
   const raw = (process.env.NEXT_PUBLIC_SITE_URL ?? "").trim();
   if (raw) {
     try {

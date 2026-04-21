@@ -16,7 +16,9 @@
     "oneTapAuthFailed": "Google One Tap ログインに失敗しました。しばらくしてからもう一度お試しください。",
     "oneTapMissingCredential": "Google One Tap の認証情報を取得できませんでした。",
     "oneTapUnavailable": "Google One Tap を表示できませんでした。通常のログインボタンをご利用ください。",
-    "oneTapDismissed": "Google One Tap プロンプトを閉じました。必要に応じて通常のログインボタンをご利用ください。"
+    "oneTapDismissed": "Google One Tap プロンプトを閉じました。必要に応じて通常のログインボタンをご利用ください。",
+    "captchaRequired": "ログイン前にセキュリティ確認を完了してください。",
+    "captchaFailed": "セキュリティ確認に失敗しました。もう一度お試しください。"
   },
   "LanguageSwitcher": {
     "ariaLabel": "表示言語を切り替える",
@@ -436,7 +438,7 @@
     "saveError": "保存に失敗しました。もう一度お試しください。"
   },
   "Invite": {
-    "copyInviteButton": "メンバーを招待（リンクをコピー）",
+    "copyInviteButton": "メンバー招待",
     "copied": "コピーしました",
     "shareButton": "共有で送る",
     "copyFailed": "クリップボードにコピーできませんでした。",

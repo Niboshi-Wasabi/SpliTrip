@@ -12,19 +12,33 @@ import {
   lineOAuthPendingCookieOptions,
 } from "@/lib/line-oauth-cookies";
 import { getLineOAuthEnv } from "@/utils/line-oauth-env";
+import { verifyTurnstileToken } from "@/lib/turnstile/verify";
+import { isTurnstileConfigured } from "@/utils/turnstile/env";
 
 const LINE_AUTHORIZE_BASE = "https://access.line.me/oauth2/v2.1/authorize";
 
 /**
- * Start LINE OAuth (no CAPTCHA pre-check — removed for smoother UX on all devices).
- * CAPTCHA 事前チェックは行わない（全デバイスで摩擦を減らすため撤去済み）。
+ * Start LINE OAuth with optional Turnstile verification.
+ * Turnstile が設定されている場合は LINE OAuth 開始前に検証する。
  */
 export async function GET(request: NextRequest) {
   const origin = new URL(request.url).origin;
   const lineEnv = getLineOAuthEnv();
+  const turnstileToken = (
+    request.nextUrl.searchParams.get("cf_turnstile_token") ?? ""
+  ).trim();
 
   if (!lineEnv) {
     return redirectToLoginError(origin, AUTH_ERROR.LINE_CONFIG);
+  }
+
+  if (isTurnstileConfigured()) {
+    const forwardedFor = request.headers.get("x-forwarded-for");
+    const remoteIp = forwardedFor?.split(",")[0]?.trim();
+    const isTokenValid = await verifyTurnstileToken(turnstileToken, remoteIp);
+    if (!isTokenValid) {
+      return redirectToLoginError(origin, AUTH_ERROR.CAPTCHA);
+    }
   }
 
   const state = randomUUID();

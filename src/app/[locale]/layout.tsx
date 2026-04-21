@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import Script from "next/script";
 import {
   Fira_Code,
   Noto_Serif_JP,
@@ -131,7 +132,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
       <head>
         {/* PWA: テーマカラーをブラウザ UI に反映 / Reflect brand color in browser chrome */}
         <meta name="theme-color" content="#0f766e" />
-        <script defer src="/theme-bootstrap.js" />
+        <Script src="/theme-bootstrap.js" strategy="beforeInteractive" />
       </head>
       <body
         className="font-serif flex min-h-full flex-col bg-background text-foreground antialiased transition-colors"
