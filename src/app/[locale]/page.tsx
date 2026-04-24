@@ -17,6 +17,17 @@ export default async function LandingTopPage({ params }: PageProps) {
     data: { user },
   } = await supabase.auth.getUser();
 
+  const isAdmin =
+    user === null
+      ? false
+      : ((
+          await supabase
+            .from("user_profiles")
+            .select("is_admin")
+            .eq("id", user.id)
+            .maybeSingle()
+        ).data?.is_admin === true);
+
   return (
     <>
       <LandingPage
@@ -26,11 +37,13 @@ export default async function LandingTopPage({ params }: PageProps) {
                 isAuthenticated: true,
                 displayName: extractDisplayName(user),
                 avatarUrl: extractAvatarUrl(user),
+                isAdmin,
               }
             : {
                 isAuthenticated: false,
                 displayName: null,
                 avatarUrl: null,
+                isAdmin: false,
               }
         }
       />

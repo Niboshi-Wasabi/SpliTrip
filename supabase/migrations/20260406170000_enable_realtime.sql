@@ -6,6 +6,44 @@
 -- Adding tables to the supabase_realtime publication allows clients
 -- to subscribe to INSERT/UPDATE/DELETE via postgres_changes channels.
 
-alter publication supabase_realtime add table public.group_expenses;
-alter publication supabase_realtime add table public.groups;
-alter publication supabase_realtime add table public.group_members;
+do $$
+begin
+  if not exists (
+    select 1
+    from pg_publication_tables
+    where pubname = 'supabase_realtime'
+      and schemaname = 'public'
+      and tablename = 'group_expenses'
+  ) then
+    alter publication supabase_realtime add table public.group_expenses;
+  end if;
+end
+$$;
+
+do $$
+begin
+  if not exists (
+    select 1
+    from pg_publication_tables
+    where pubname = 'supabase_realtime'
+      and schemaname = 'public'
+      and tablename = 'groups'
+  ) then
+    alter publication supabase_realtime add table public.groups;
+  end if;
+end
+$$;
+
+do $$
+begin
+  if not exists (
+    select 1
+    from pg_publication_tables
+    where pubname = 'supabase_realtime'
+      and schemaname = 'public'
+      and tablename = 'group_members'
+  ) then
+    alter publication supabase_realtime add table public.group_members;
+  end if;
+end
+$$;

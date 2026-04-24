@@ -1,11 +1,11 @@
 import { getTranslations } from "next-intl/server";
-import { getMaintenanceAnnouncementText } from "@/lib/maintenance";
+import { getMaintenanceAnnouncementTextAsync } from "@/lib/maintenance";
 
 /**
- * メンテ前の告知。`NEXT_PUBLIC_MAINTENANCE_ANNOUNCEMENT` が空なら何も描画しない。
+ * メンテ前の告知。`NEXT_PUBLIC_MAINTENANCE_ANNOUNCEMENT` または `system_settings.maintenance_announcement`。
  */
 export async function MaintenanceAnnouncementBanner() {
-  const announcementText = getMaintenanceAnnouncementText();
+  const announcementText = await getMaintenanceAnnouncementTextAsync();
   if (!announcementText) {
     return null;
   }

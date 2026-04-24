@@ -5,6 +5,7 @@ import { sanitizeRedirectPath } from "@/lib/auth/sanitize-redirect-path";
 import { localizedDashboardPathFromRequest } from "@/lib/i18n/locale-from-request";
 import { upsertUserProfileFromAuth } from "@/lib/user-profile";
 import { createRouteHandlerSupabaseClient } from "@/utils/supabase/route-handler";
+import { clearTwoFactorVerifiedCookie } from "@/lib/auth/two-factor";
 
 export async function GET(request: NextRequest) {
   const url = new URL(request.url);
@@ -19,6 +20,7 @@ export async function GET(request: NextRequest) {
   }
 
   const response = NextResponse.redirect(`${origin}${redirectPath}`);
+  clearTwoFactorVerifiedCookie(response);
   const supabase = createRouteHandlerSupabaseClient(request, response);
 
   if (!supabase) {

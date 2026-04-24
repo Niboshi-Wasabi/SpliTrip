@@ -9,9 +9,23 @@
 alter table public.group_expenses
   add column if not exists category text not null default 'other';
 
-alter table public.group_expenses
-  add constraint group_expenses_category_check
-  check (category in ('food', 'transport', 'lodging', 'sightseeing', 'other'));
+do $$
+begin
+  if not exists (
+    select 1
+    from pg_constraint c
+    join pg_class t on t.oid = c.conrelid
+    join pg_namespace n on n.oid = t.relnamespace
+    where c.conname = 'group_expenses_category_check'
+      and n.nspname = 'public'
+      and t.relname = 'group_expenses'
+  ) then
+    alter table public.group_expenses
+      add constraint group_expenses_category_check
+      check (category in ('food', 'transport', 'lodging', 'sightseeing', 'other'));
+  end if;
+end
+$$;
 
 alter table public.group_expenses
   add column if not exists receipt_url text;

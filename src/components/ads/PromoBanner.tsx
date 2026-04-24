@@ -1,21 +1,51 @@
-"use client";
-
-/**
- * Non-intrusive promo placeholder for future affiliate / partner links.
- * Keeps layout ready without looking like a display ad (card tone, no flashy colors).
- * 将来のアフィリエイト・提携用プレースホルダー。広告っぽさを抑えたカードトーンで配置のみ。
- */
+import { getPromoBannerConfigFromDatabase } from "@/lib/system-settings";
 
 type Props = {
-  /** When true (PRO), hide the promo slot entirely. */
   hidden?: boolean;
+  /** `ja` | `en` など。ラベル表示に使う。 */
+  locale: string;
 };
 
-export function PromoBanner({ hidden = false }: Props) {
+/**
+ * 管理画面 `promo_banner_config`（system_settings）があれば表示（再デプロイ不要）。
+ * When empty, renders nothing.
+ */
+export async function PromoBanner({ hidden = false, locale }: Props) {
   if (hidden) {
     return null;
   }
+  const config = await getPromoBannerConfigFromDatabase();
+  const href = (config?.href ?? "").trim();
+  if (!href) {
+    return null;
+  }
+  const label =
+    (locale === "en" ? config?.labelEn : config?.labelJa) ||
+    (locale === "en" ? "Partner link" : "提携・プロモ");
+  const imageUrl = (config?.imageUrl ?? "").trim();
 
-  // Temporarily hide the promo slot as requested (commented-out implementation kept in git history).
-  return null;
+  return (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="block overflow-hidden rounded-lg border border-border bg-card text-left shadow-sm transition hover:bg-muted/40"
+    >
+      <div className="flex flex-col gap-2 p-3 sm:flex-row sm:items-center">
+        {imageUrl ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={imageUrl}
+            alt=""
+            className="h-20 w-full rounded object-cover sm:h-16 sm:w-28"
+          />
+        ) : null}
+        <div className="min-w-0 flex-1">
+          <p className="text-sm font-medium text-foreground">{label}</p>
+          <p className="mt-0.5 truncate text-xs text-muted-foreground">{href}</p>
+        </div>
+        <span className="shrink-0 text-xs text-primary underline">↗</span>
+      </div>
+    </a>
+  );
 }

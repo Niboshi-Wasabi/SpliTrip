@@ -31,7 +31,7 @@ import {
   getMandatoryPitchHref,
 } from "@/lib/user-profile";
 import { redirect } from "@/i18n/navigation";
-import { UserAvatar } from "@/components/user-avatar";
+import { UserAvatarMenu } from "@/components/user-avatar-menu";
 import { LogoMark } from "@/components/logo-mark";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { PromoBanner } from "@/components/ads/PromoBanner";
@@ -71,15 +71,19 @@ export default async function DashboardPage({ params }: PageProps) {
     return;
   }
 
-  const { data: ownProfileRaw } = await supabase.rpc("get_own_profile");
+  const [ownProfileResponse, roleResponse] = await Promise.all([
+    supabase.rpc("get_own_profile"),
+    supabase.from("user_profiles").select("is_admin").eq("id", user.id).maybeSingle(),
+  ]);
   const ownProfile =
-    typeof ownProfileRaw === "object" && ownProfileRaw !== null
-      ? (ownProfileRaw as {
+    typeof ownProfileResponse.data === "object" && ownProfileResponse.data !== null
+      ? (ownProfileResponse.data as {
           display_name?: string;
           avatar_url?: string | null;
           premium_access?: boolean;
         })
       : null;
+  const isAdmin = roleResponse.data?.is_admin === true;
   const dashboardHasPremium = ownProfile?.premium_access === true;
   const currentDisplayName =
     ownProfile?.display_name ?? extractDisplayName(user);
@@ -245,10 +249,11 @@ export default async function DashboardPage({ params }: PageProps) {
             <div className="hidden md:block">
               <LogoutButton />
             </div>
-            <UserAvatar
+            <UserAvatarMenu
               displayName={currentDisplayName}
               avatarUrl={currentAvatarUrl}
-              size="md"
+              isAdmin={isAdmin}
+              accountAriaLabel={bottomNavTranslations("accountMenu")}
             />
           </div>
         </div>
@@ -363,7 +368,7 @@ export default async function DashboardPage({ params }: PageProps) {
                 </Link>
               </div>
               <div className="mt-4">
-                <PromoBanner hidden={dashboardHasPremium} />
+                <PromoBanner hidden={dashboardHasPremium} locale={locale} />
               </div>
             </CardContent>
           </Card>

@@ -12,6 +12,12 @@ alwaysApply: true
 - **機能一覧:** `docs/FEATURES.md` にユーザー向け機能・API・基盤の一覧をまとめている。
 - **DB 表定義:** `docs/DATABASE_TABLES.md` に `public` スキーマのテーブル・列・参照の一覧（マイグレーション準拠）。
 
+## Supabase マイグレーション（本番 2 プロジェクト）
+
+- **反映コマンド:** リポジトリには **`npm run db:push:all`** があり、`supabase/migrations` の内容を [fdfwnoaqdlfiywtggsfi](https://supabase.com/dashboard/project/fdfwnoaqdlfiywtggsfi) → [qolteiqmcidmfzprkotq](https://supabase.com/dashboard/project/qolteiqmcidmfzprkotq) の順に `link` して `db push --yes` する。順序を変えたい場合は `SUPABASE_DB_PUSH_REFS`（カンマ区切り）を使う。詳細は `README.md`。
+- **エージェント（Composer）の役割:** マイグレーションを追加・変更するタスクでは、**可能な限り** ワークスペースのターミナルで `npm run db:login`（未ログイン時）および **`npm run db:push:all`** を**自ら実行を試みる**こと。成功・失敗の要約（どの ref まで通ったか・CLI のエラー）をユーザーに返す。
+- **エージェントだけでは保証できないこと:** 初回の `supabase login` に伴う**ブラウザ対話**、ネットワーク不可、Supabase CLI 未インストール、組織ポリシーで CLI が使えない場合など。失敗したら、ユーザーにログイン手順（`npm run db:login`）の実施を依頼し、**SQL の内容**と **当て先ファイル**は応答に明示する（既存の「SQL の明示」ルールに従う）。
+
 コード変更は既存の命名・パターンに合わせ、依頼範囲外のリファクタや無関係ファイルの編集は避けること。
 
 ## 作業完了時のワークフロー（エージェント）

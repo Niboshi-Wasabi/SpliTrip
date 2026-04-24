@@ -5,7 +5,7 @@
 
 import { getTranslations } from "next-intl/server";
 import { Link, redirect } from "@/i18n/navigation";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Shield } from "lucide-react";
 import { buttonVariants } from "@/components/ui/button-variants";
 import { cn } from "@/lib/utils";
 import {
@@ -15,6 +15,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { UserAvatar } from "@/components/user-avatar";
 import { createClient } from "@/utils/supabase/server";
@@ -25,6 +26,7 @@ import { PaymentSettingsForm } from "./payment-settings-form";
 import { SupportDeveloper } from "@/components/ads/SupportDeveloper";
 import { LanguageSwitcher } from "@/components/ui/LanguageSwitcher";
 import { isAppLocale } from "@/lib/i18n/next-intl-locale";
+import { TwoFactorSettingsForm } from "@/components/auth/two-factor-settings-form";
 
 export const dynamic = "force-dynamic";
 
@@ -33,6 +35,7 @@ type PageProps = { params: Promise<{ locale: string }> };
 export default async function SettingsPage({ params }: PageProps) {
   const { locale } = await params;
   const t = await getTranslations("Settings");
+  const tAdmin = await getTranslations("Admin");
   const supabase = await createClient();
   const {
     data: { user },
@@ -49,7 +52,13 @@ export default async function SettingsPage({ params }: PageProps) {
     return;
   }
 
-  const { data: profileJson, error } = await supabase.rpc("get_own_profile");
+  const [profileRes, roleRes] = await Promise.all([
+    supabase.rpc("get_own_profile"),
+    supabase.from("user_profiles").select("is_admin").eq("id", user.id).maybeSingle(),
+  ]);
+  const profileJson = profileRes.data;
+  const error = profileRes.error;
+  const isAdmin = roleRes.data?.is_admin === true;
 
   if (error) {
     console.error("[API/Action Error - settings get_own_profile]:", error);
@@ -134,6 +143,15 @@ export default async function SettingsPage({ params }: PageProps) {
         </Card>
         <Card>
           <CardHeader>
+            <CardTitle>{t("twoFactorTitle")}</CardTitle>
+            <CardDescription>{t("twoFactorDescription")}</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <TwoFactorSettingsForm />
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
             <CardTitle>{t("paymentTitleBilingual")}</CardTitle>
             <CardDescription>{t("paymentDescription")}</CardDescription>
           </CardHeader>
@@ -153,6 +171,38 @@ export default async function SettingsPage({ params }: PageProps) {
             />
           </CardContent>
         </Card>
+        {isAdmin ? (
+          <Card className="border-violet-500/25 bg-violet-500/5">
+            <CardHeader>
+              <div className="flex flex-wrap items-center gap-2">
+                <Shield
+                  className="h-5 w-5 text-violet-600 dark:text-violet-400"
+                  strokeWidth={1.75}
+                  aria-hidden
+                />
+                <CardTitle className="text-base">{tAdmin("systemAdministration")}</CardTitle>
+                <Badge
+                  variant="secondary"
+                  className="shrink-0 border-violet-500/30 bg-violet-500/15 text-[10px] font-medium text-violet-800 dark:text-violet-200"
+                >
+                  {tAdmin("adminOnlyBadge")}
+                </Badge>
+              </div>
+              <CardDescription>{tAdmin("systemAdminDescription")}</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Link
+                href="/admin"
+                className={cn(
+                  buttonVariants(),
+                  "inline-flex min-h-[44px] w-full items-center justify-center sm:w-auto md:min-h-0",
+                )}
+              >
+                {tAdmin("goToAdminPanel")}
+              </Link>
+            </CardContent>
+          </Card>
+        ) : null}
         {/* Temporarily hidden while Stripe account review is pending. / Stripe審査対応待ちのため一時的に非表示にしています。 */}
         <div className="rounded-lg border border-dashed border-border/60 bg-muted/10 p-4">
           <SupportDeveloper />

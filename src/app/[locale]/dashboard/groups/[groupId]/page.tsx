@@ -410,7 +410,7 @@ export default async function GroupDetailPage({ params }: PageProps) {
               />
             )}
             <div className="mt-4 print:hidden">
-              <PromoBanner hidden={hasPremiumAccess} />
+              <PromoBanner hidden={hasPremiumAccess} locale={locale} />
             </div>
           </CardContent>
         </Card>

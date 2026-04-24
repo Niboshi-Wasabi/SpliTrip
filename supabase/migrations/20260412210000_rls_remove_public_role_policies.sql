@@ -20,6 +20,10 @@ begin
   end if;
 
   drop policy if exists "Members can manage expenses" on public.expenses;
+  drop policy if exists "expenses_select_members" on public.expenses;
+  drop policy if exists "expenses_insert_members" on public.expenses;
+  drop policy if exists "expenses_update_members" on public.expenses;
+  drop policy if exists "expenses_delete_members" on public.expenses;
 
   create policy "expenses_select_members"
   on public.expenses
