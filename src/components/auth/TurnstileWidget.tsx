@@ -135,9 +135,13 @@ export function TurnstileWidget({ onTokenChange }: Props) {
           setScriptLoaded(true);
         }}
       />
+      {/*
+        Cloudflare 埋め込みは既定で左に寄ることがある。フル幅の flex で子（iframe 等）を
+        中央にし、ログインカード内の全幅ボタンと同じ揃えにする。
+      */}
       <div
         ref={containerElementRef}
-        className="mx-auto min-h-[65px] w-full"
+        className="flex min-h-[65px] w-full items-center justify-center text-center [&_iframe]:mx-auto"
         data-turnstile-container={instanceId}
       />
     </>
