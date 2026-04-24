@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createRouteHandlerSupabaseClient } from "@/utils/supabase/route-handler";
 import { isTwoFactorVerified } from "@/lib/auth/two-factor";
+import { forwardSetCookieHeaders } from "@/lib/http/forward-set-cookie-headers";
 
 export async function GET(request: NextRequest) {
   const response = NextResponse.json({ ok: false }, { status: 500 });
@@ -34,11 +35,13 @@ export async function GET(request: NextRequest) {
         .is("used_at", null),
     ]);
 
-  return NextResponse.json({
+  const out = NextResponse.json({
     ok: true,
     enabled: profile?.two_factor_enabled === true,
     credentialCount: credentialCount ?? 0,
     remainingBackupCodes: backupCount ?? 0,
     verified: isTwoFactorVerified(request, user.id),
   });
+  forwardSetCookieHeaders(response, out);
+  return out;
 }

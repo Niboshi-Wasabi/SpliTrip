@@ -39,17 +39,24 @@ export function TwoFactorGate({ nextPath }: Props) {
     [status],
   );
 
-  const loadStatus = useCallback(async () => {
-    const response = await fetch("/api/auth/2fa/status", { cache: "no-store" });
-    if (!response.ok) {
-      throw new Error("status fetch failed");
-    }
-    const payload = (await response.json()) as StatusPayload;
-    setStatus(payload);
-    if (payload.verified) {
-      router.replace(nextPath);
-    }
-  }, [nextPath, router]);
+  const loadStatus = useCallback(
+    async (options?: { skipNavigation?: boolean }) => {
+      const response = await fetch("/api/auth/2fa/status", {
+        cache: "no-store",
+        credentials: "include",
+      });
+      if (!response.ok) {
+        throw new Error("status fetch failed");
+      }
+      const payload = (await response.json()) as StatusPayload;
+      setStatus(payload);
+      if (payload.verified && !options?.skipNavigation) {
+        router.replace(nextPath);
+        router.refresh();
+      }
+    },
+    [nextPath, router],
+  );
 
   useEffect(() => {
     void loadStatus();
@@ -62,6 +69,7 @@ export function TwoFactorGate({ nextPath }: Props) {
     try {
       const optionsResponse = await fetch("/api/auth/2fa/webauthn/register/options", {
         method: "POST",
+        credentials: "include",
       });
       if (!optionsResponse.ok) {
         throw new Error("register options failed");
@@ -78,14 +86,20 @@ export function TwoFactorGate({ nextPath }: Props) {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ response: registrationResult }),
+        credentials: "include",
       });
       const verifyPayload = (await verifyResponse.json()) as RegisterVerifyPayload;
       if (!verifyResponse.ok || !verifyPayload.ok) {
         throw new Error(verifyPayload.message ?? "register verify failed");
       }
       setNewBackupCodes(verifyPayload.backupCodes ?? []);
-      await loadStatus();
+      try {
+        await loadStatus({ skipNavigation: true });
+      } catch (statusError) {
+        console.error("[TwoFactor] status after register:", statusError);
+      }
       router.replace(nextPath);
+      router.refresh();
     } catch {
       setError(t("registerFailed"));
     } finally {
@@ -101,6 +115,7 @@ export function TwoFactorGate({ nextPath }: Props) {
         "/api/auth/2fa/webauthn/authenticate/options",
         {
           method: "POST",
+          credentials: "include",
         },
       );
       if (!optionsResponse.ok) {
@@ -127,8 +142,13 @@ export function TwoFactorGate({ nextPath }: Props) {
         throw new Error("auth verify failed");
       }
 
-      await loadStatus();
+      try {
+        await loadStatus({ skipNavigation: true });
+      } catch (statusError) {
+        console.error("[TwoFactor] status after authenticate:", statusError);
+      }
       router.replace(nextPath);
+      router.refresh();
     } catch {
       setError(t("authFailed"));
     } finally {
@@ -148,12 +168,18 @@ export function TwoFactorGate({ nextPath }: Props) {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ code: backupCode.trim() }),
+        credentials: "include",
       });
       if (!response.ok) {
         throw new Error("backup verify failed");
       }
-      await loadStatus();
+      try {
+        await loadStatus({ skipNavigation: true });
+      } catch (statusError) {
+        console.error("[TwoFactor] status after backup:", statusError);
+      }
       router.replace(nextPath);
+      router.refresh();
     } catch {
       setError(t("backupCodeInvalid"));
     } finally {

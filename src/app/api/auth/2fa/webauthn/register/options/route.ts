@@ -9,6 +9,7 @@ import {
   getWebAuthnRpId,
   writeTwoFactorChallengeCookie,
 } from "@/lib/auth/two-factor";
+import { forwardSetCookieHeaders } from "@/lib/http/forward-set-cookie-headers";
 
 export async function POST(request: NextRequest) {
   const response = NextResponse.json({ ok: false }, { status: 500 });
@@ -59,5 +60,6 @@ export async function POST(request: NextRequest) {
     userId: user.id,
     challenge: options.challenge,
   });
+  forwardSetCookieHeaders(response, out);
   return out;
 }
