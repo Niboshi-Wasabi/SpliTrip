@@ -6,6 +6,7 @@ import {
   getRequestIpAddress,
   logTwoFactorSecurityEvent,
 } from "@/lib/auth/two-factor-security";
+import { forwardSetCookieHeaders } from "@/lib/http/forward-set-cookie-headers";
 
 type BackupVerifyRequestBody = {
   code?: string;
@@ -105,5 +106,6 @@ export async function POST(request: NextRequest) {
   });
   const out = NextResponse.json({ ok: true });
   writeTwoFactorVerifiedCookie(out, user.id);
+  forwardSetCookieHeaders(response, out);
   return out;
 }

@@ -1,6 +1,8 @@
 import { getTranslations } from "next-intl/server";
 import { redirect } from "@/i18n/navigation";
-import { sanitizeRedirectPath } from "@/lib/auth/sanitize-redirect-path";
+import {
+  toIntlRouterPathFromMiddlewareNext,
+} from "@/lib/auth/sanitize-redirect-path";
 import { createClient } from "@/utils/supabase/server";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { TwoFactorGate } from "@/components/auth/two-factor-gate";
@@ -24,7 +26,8 @@ export default async function TwoFactorPage({ params, searchParams }: PageProps)
     return;
   }
 
-  const sanitizedNextPath = sanitizeRedirectPath(query.next) ?? "/dashboard";
+  const sanitizedNextPath =
+    toIntlRouterPathFromMiddlewareNext(query.next) ?? "/dashboard";
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4 py-8">
