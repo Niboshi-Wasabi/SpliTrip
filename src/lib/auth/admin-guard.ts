@@ -5,8 +5,8 @@ import { createClient } from "@/utils/supabase/server";
  */
 export async function isCurrentUserAdmin(): Promise<boolean> {
   try {
-    const supabase = createClient();
-    
+    const supabase = await createClient();
+
     const { data: { user }, error: authError } = await supabase.auth.getUser();
     if (authError || !user) {
       return false;
@@ -33,8 +33,8 @@ export async function isCurrentUserAdmin(): Promise<boolean> {
  * 管理者権限が必要なAPIエンドポイント用のガード関数
  */
 export async function requireAdminAuth() {
-  const supabase = createClient();
-  
+  const supabase = await createClient();
+
   const { data: { user }, error: authError } = await supabase.auth.getUser();
   if (authError || !user) {
     throw new Error("認証が必要です");

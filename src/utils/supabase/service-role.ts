@@ -1,5 +1,4 @@
 import { createClient } from "@supabase/supabase-js";
-import type { Database } from "@/types/supabase";
 
 /**
  * Service Role キーを使用したSupabaseクライアントを作成
@@ -19,7 +18,7 @@ export function createServiceRoleClient() {
     );
   }
 
-  return createClient<Database>(supabaseUrl, supabaseServiceRoleKey, {
+  return createClient(supabaseUrl, supabaseServiceRoleKey, {
     auth: {
       autoRefreshToken: false,
       persistSession: false,

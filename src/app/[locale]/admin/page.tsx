@@ -1,6 +1,5 @@
 import { Suspense } from "react";
-import { getTranslations } from "next-intl/server";
-import { unstable_setRequestLocale } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import { redirect } from "next/navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -11,7 +10,7 @@ import { listAdminUsers } from "@/lib/admin/list-admin-users";
 import { UsersTable } from "./UsersTable";
 
 type AdminPageProps = {
-  params: { locale: string };
+  params: Promise<{ locale: string }>;
 };
 
 async function AdminUsersContent() {
@@ -83,8 +82,9 @@ async function AdminOverview() {
   }
 }
 
-export default async function AdminPage({ params: { locale } }: AdminPageProps) {
-  unstable_setRequestLocale(locale);
+export default async function AdminPage({ params }: AdminPageProps) {
+  const { locale } = await params;
+  setRequestLocale(locale);
   
   // 管理者権限チェック
   const isAdmin = await isCurrentUserAdmin();
