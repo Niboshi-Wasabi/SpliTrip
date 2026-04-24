@@ -2,15 +2,14 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/utils/supabase/server";
 import { createServiceRoleClient } from "@/utils/supabase/service-role";
 
-export async function POST(
-  request: NextRequest,
-  { params }: { params: { userId: string } }
-) {
+type RouteContext = { params: Promise<{ userId: string }> };
+
+export async function POST(request: NextRequest, { params }: RouteContext) {
   try {
-    const { userId: targetUserId } = params;
+    const { userId: targetUserId } = await params;
 
     // 1. 呼び出し元のセッション検証
-    const supabase = createClient();
+    const supabase = await createClient();
     const { data: { user }, error: authError } = await supabase.auth.getUser();
     
     if (authError || !user) {
