@@ -117,11 +117,14 @@ export function JoinGate({ token }: Props) {
         setLoadingAction(null);
         return;
       }
-      const isCaptchaValid = await verifyTurnstileTokenOnServer(turnstileToken);
-      if (!isCaptchaValid) {
-        setError(tLogin("captchaFailed"));
-        setLoadingAction(null);
-        return;
+      // `login-form` と同様: Turnstile は 1 回限り。LINE は `/api/auth/line` 側で検証する（二重にすると 2 回目が常に失敗する）。
+      if (provider !== "line") {
+        const isCaptchaValid = await verifyTurnstileTokenOnServer(turnstileToken);
+        if (!isCaptchaValid) {
+          setError(tLogin("captchaFailed"));
+          setLoadingAction(null);
+          return;
+        }
       }
     }
 

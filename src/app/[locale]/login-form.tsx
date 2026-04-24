@@ -129,11 +129,15 @@ export function LoginForm() {
         setLoadingAction(null);
         return;
       }
-      const isCaptchaValid = await verifyTurnstileTokenOnServer(turnstileToken);
-      if (!isCaptchaValid) {
-        setError(translations("captchaFailed"));
-        setLoadingAction(null);
-        return;
+      // Turnstile の siteverify はトークンを 1 回しか有効化しない。LINE は `/api/auth/line` でも検証するため
+      // ここで先に verify すると同じトークンが 2 回目で必ず失敗し `?error=captcha` になる。Google だけ先に検証する。
+      if (provider !== "line") {
+        const isCaptchaValid = await verifyTurnstileTokenOnServer(turnstileToken);
+        if (!isCaptchaValid) {
+          setError(translations("captchaFailed"));
+          setLoadingAction(null);
+          return;
+        }
       }
     }
 
