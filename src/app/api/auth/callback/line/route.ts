@@ -18,6 +18,7 @@ import { upsertUserProfileFromAuth } from "@/lib/user-profile";
 import { getLineOAuthEnv } from "@/utils/line-oauth-env";
 import { getSupabaseEnv } from "@/utils/supabase/env";
 import { createRouteHandlerSupabaseClient } from "@/utils/supabase/route-handler";
+import { clearTwoFactorVerifiedCookie } from "@/lib/auth/two-factor";
 
 export async function GET(request: NextRequest) {
   const url = new URL(request.url);
@@ -71,6 +72,7 @@ export async function GET(request: NextRequest) {
   }
 
   const response = NextResponse.redirect(`${origin}${postAuthPath}`);
+  clearTwoFactorVerifiedCookie(response);
   clearLineOAuthCookies(response);
 
   const supabase = createRouteHandlerSupabaseClient(request, response);

@@ -55,6 +55,11 @@ $$;
 
 -- RPC to fetch profiles of all members in a group (bypasses RLS).
 -- グループメンバー全員のプロフィールを取得する RPC（RLS バイパス）。
+--
+-- RETURNS TABLE の列構成を変える場合は create or replace 不可（42P13）。
+-- 手動で先行版が入っている DB 向けに drop してから作り直す（06160000 も同様）。
+
+drop function if exists public.get_group_member_profiles(uuid);
 
 create or replace function public.get_group_member_profiles(p_group_id uuid)
 returns table (

@@ -61,7 +61,33 @@ npm install
 | Stripe 利用時 | `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `NEXT_PUBLIC_STRIPE_PAYMENT_LINK` 等 |
 | Gemini OCR 利用時 | `GEMINI_API_KEY` |
 
+**本番と DB を分けたい**場合は、上記の **「ローカル Supabase」** を使うか、クラウド上で**別プロジェクト**を開発用に用意し、`.env.local` だけを開発用にする方法があります。
+
 DB スキーマは **`supabase/migrations`** の SQL を Supabase に適用してください。
+
+**リモートが 2 プロジェクトある場合**（本番 / staging など）では、同じリポジトリのマイグレーションを **両方** に反映します。
+
+```bash
+npm run db:login   # 初回・トークン切れのとき
+npm run db:push:all
+```
+
+- デフォルトで次の project ref の順に `link` → `db push --yes` します。  
+  [fdfwnoaqdlfiywtggsfi](https://supabase.com/dashboard/project/fdfwnoaqdlfiywtggsfi) → [qolteiqmcidmfzprkotq](https://supabase.com/dashboard/project/qolteiqmcidmfzprkotq)  
+- 上書き: 環境変数 `SUPABASE_DB_PUSH_REFS=ref1,ref2`（カンマ区切り）  
+- **`supabase db push` が `already exists` で失敗する**ときは、リモートの **マイグレーション履歴テーブル**（CLI の `supabase_migrations`）と実スキーマが食い違っている可能性があります。`npx supabase migration list` で「Remote」列を確認し、既に適用済みのスキーマに対応する分は `npx supabase migration repair <バージョン> --status applied` で履歴だけ整えたうえで、未反映の分だけ `db push` してください（詳細は [Supabase: Migration repair](https://supabase.com/docs/reference/cli/supabase-migration-repair)）。
+
+### ローカル Supabase（本番と DB を分けたいとき）
+
+[Docker Desktop](https://www.docker.com/products/docker-desktop/) など **Docker** が動く前提で、PC 上に Postgres ＋ Auth ＋ API などのスタックを起動します。**本番クラウドとは完全に別**なので、管理画面の PRO 変更の誤操作も本番に届きません（`.env.local` をローカル用に差し替えた場合）。
+
+1. 初回: `npm run db:local:start`（または `npx supabase start`）  
+2. ターミナルに出る **API URL・anon key・service_role** を `.env.local` の `NEXT_PUBLIC_SUPABASE_URL` / `NEXT_PUBLIC_SUPABASE_ANON_KEY` / `SUPABASE_SERVICE_ROLE_KEY` に設定する。`npm run db:local:status` でも再表示できます。  
+3. `npm run dev` でアプリを起動。  
+4. ローカル DB は **空の Auth** なので、サインアップし直すか、必要なら SQL / Studio でダミーデータを入れる。  
+5. 停止: `npm run db:local:stop`
+
+マイグレーションは起動時にローカルへ適用されます。手元で掃除して作り直すときは `npx supabase db reset`（**データ全消去**。`supabase/seed.sql` があれば再実行時に流れます）。OAuth（Google / LINE）はローカル用に Supabase **ローカル**の Auth リダイレクト URL（例: `http://localhost:3000/**`）を [ダッシュボードの該当設定](https://supabase.com/docs/guides/local-development) に合わせる必要があります。
 
 ### コマンド
 

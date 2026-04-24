@@ -47,7 +47,10 @@
 | **Google ログイン** | OAuth（PKCE）。`/auth/callback` でコード交換・セッション確立。 |
 | **Google One Tap** | 未ログイン LP（`/[locale]`）で `https://accounts.google.com/gsi/client` を読み込み、右上プロンプトからワンタップ認証。`response.credential` を `supabase.auth.signInWithIdToken({ provider: 'google', token })` に渡してセッション化し、成功時は `/{locale}/dashboard` へ遷移。`NEXT_PUBLIC_GOOGLE_CLIENT_ID` が必須。 |
 | **LINE ログイン** | `/api/auth/line` → LINE → `/api/auth/callback/line` → サービスロール＋`verifyOtp` 相当でセッション確立。 |
-| **セッション維持** | ミドルウェアで Supabase セッション更新。`/dashboard`・`/settings` は未ログイン時にガード。 |
+| **二段階認証（WebAuthn）** | **全ユーザー必須**。1段目（Google / LINE）成功後、`/{locale}/auth/2fa` で **パスキー（生体認証 / セキュリティキー）** または **バックアップコード** による2段目認証を実施。 |
+| **2FA 復旧** | 初回登録時にバックアップコードを発行。設定画面で再発行可能。コードはハッシュ化して保存し、使用時に `used_at` を記録（再利用不可）。 |
+| **Turnstile（Cloudflare CAPTCHA）** | ログイン画面・招待ゲートで有効化可能。`NEXT_PUBLIC_CLOUDFLARE_TURNSTILE_SITE_KEY` / `CLOUDFLARE_TURNSTILE_SECRET_KEY` が揃うと有効化され、LINE開始前にはサーバー側でも検証。 |
+| **セッション維持とガード** | ミドルウェアで Supabase セッション更新。`/dashboard`・`/settings` は未ログイン時にガード。加えて、ログイン済みでも 2FA 未完了時は `/{locale}/auth/2fa` へリダイレクト。 |
 | **オンボーディング** | 初回表示名など（`/onboarding`）。表示名は **最大 50 文字**（`DISPLAY_NAME_MAX_LENGTH`、フォーム `maxLength` と `PATCH /api/profile/display-name` の共通検証）。 |
 | **アバター（頭文字）** | プロフィール画像がない場合、`UserAvatar` が表示名から `stringToColor` で **決定論的なパステル背景**と **コントラストの前景色**（相対輝度に基づく）を適用。 |
 | **ピッチデッキ** | `/pitch` のスライド紹介。初回は `needs_pitch_deck` RPC 等で **閲覧必須ルート**になり得る。閲覧完了は `mark_pitch_deck_seen` / `POST /api/profile/pitch-deck-seen`。 |
@@ -66,7 +69,7 @@
 | **テーマ** | ライト / ダーク / システム（クライアント側プロバイダ）。 |
 | **モバイル** | ボトムナビ、タッチ向け `min-h-[44px]` などの UI 方針。 |
 | **PWA** | `manifest.webmanifest`、テーマカラー等（レイアウト・メタと連動）。アイコン類は `public/icons/icon.svg` を元に `npm run icons:build` で `public/icons/*` と `src/app/icon.png`・`apple-icon.png`・`favicon.ico` を生成。 |
-| **What's New モーダル** | `localStorage.lastSeenUpdateVersion` と `src/config/changelog.ts` のバージョンを比較し、新機能がある初回アクセス時のみダッシュボード配下で表示。 |
+| **What's New モーダル** | 実装は存在（`src/components/ui/WhatsNewModal.tsx`）するが、現在はダッシュボードレイアウトから外しており**表示停止中**。 |
 
 ---
 
@@ -78,7 +81,7 @@
 | **グループ一覧** | ダッシュボードでグループ別支出サマリーへリンク。 |
 | **グループ詳細** | `/dashboard/groups/[groupId]`：メンバー・アバター、通貨、招待、出費・グラフ・精算・エクスポートを一画面に集約。 |
 | **公開 URL エイリアス** | `/groups/[id]` → 認証済みダッシュボードの同グループへリダイレクト（招待メール用など）。 |
-| **招待** | `invite_token` ベースの `/join/[token]`。リンクコピー・共有・**QR 表示**。 |
+| **招待** | `invite_token` ベースの `/join/[token]`。リンクコピー・共有・**QR 表示（モーダル / 背景ブラー）**。 |
 | **参加** | ログイン済みは RPC で参加。未ログインは **Google / LINE**（`JoinGate`）。 |
 | **メンバー** | 表示名・アバター。 |
 | **閲覧専用共有** | `/groups/[id]/shared?t=…` — ログイン不要。**`public_share_token` と一致する `t`** で RPC 経由のサマリー表示。 |
@@ -141,10 +144,13 @@
 | **送金先** | `payment_links` 等を API 経由で更新（マイグレーション未適用時はエラーメッセージ）。 |
 | **PRO / OCR** | `premium_access`（PRO）、`premium_access_source`（`stripe`＝課金、`manual`＝運営付与）、`ocr_usage_count`（無料の OCR 累計）。認証ユーザーが自分の PRO フラグだけを書き換えることは DB トリガーで拒否。`increment_ocr_usage_if_not_premium` で成功後に加算。 |
 | **支払い管理（PRO）** | Stripe 審査対応が完了するまで UI は一時的に **準備中（Coming Soon）**。課金基盤（Webhook / `premium_access` 判定）は将来再開に備えて保持。 |
+| **管理画面（Admin Control Panel Suite）** | `user_profiles.is_admin = true` のユーザーのみ `/{locale}/admin` にアクセス可能。`proxy.ts` で非管理者はダッシュボードへリダイレクト。**Step-Up認証**: 管理画面アクセス時に15分有効のパスキー再認証必須（`/{locale}/admin/verify`）、`admin_stepup_verified` Cookie で状態管理。**基盤**: `admin_audit_logs`、`app_announcements`（アイコン種別・優先度付き）、`system_settings` テーブル。**管理スイート**: タブ形式UI (`AdminAppShell`) で統合管理 - ユーザー管理（PRO付与・解除・Stripe同期）、お知らせ管理（アイコン・優先度・多言語対応）、システム設定（メンテナンス・プロモ設定）、監査ログ閲覧、サポートツール（グループ閲覧）。**API**: `/api/admin/users/*/grant-pro|revoke-pro|sync-stripe`、`/api/admin/announcements`、`/api/admin/system-settings`、`/api/admin/support/groups/*`、WebAuthn再認証。**セキュリティ**: Service Role バイパス、全操作の監査ログ記録、Step-Up認証 (`two_factor_security_events`)。 |
 
-### PRO 手動付与（Supabase SQL）
+### PRO 手動付与
 
-個別アカウントに PRO を付与・解除するには、**Supabase Dashboard → SQL → New query** で次を実行する（**`auth.users` の UUID** と `user_profiles.id` は同一）。認証ユーザーによるクライアントからの自己昇格は DB トリガーで拒否される。
+**方法 A（アプリ）:** 管理者は **`/{locale}/admin`** を開き、**「PRO を付与」/「PRO を解除」**（解除は確認ダイアログ）が可能。履歴は **`/{locale}/admin/audit-logs`**。
+
+**方法 B（Supabase SQL）:** **Supabase Dashboard → SQL → New query** で次を実行する（**`auth.users` の UUID** と `user_profiles.id` は同一）。認証ユーザーによるクライアントからの自己昇格は DB トリガーで拒否される。
 
 **付与:**
 
@@ -183,6 +189,8 @@ where id = '<ユーザーUUID>';
 
 | 領域 | エンドポイント例 |
 |------|------------------|
+| 2FA（WebAuthn / Backup） | `GET /api/auth/2fa/status`、`POST /api/auth/2fa/webauthn/register/options`、`POST /api/auth/2fa/webauthn/register/verify`、`POST /api/auth/2fa/webauthn/authenticate/options`、`POST /api/auth/2fa/webauthn/authenticate/verify`、`POST /api/auth/2fa/backup/verify`、`POST /api/auth/2fa/backup/regenerate` |
+| 管理（PRO 手動付与/解除） | `POST /api/admin/users/[userId]/grant-pro` / `POST /api/admin/users/[userId]/revoke-pro` — 管理者セッション必須。Service Role で `user_profiles` 更新。 |
 | グループ | `POST /api/groups`、`GET/PATCH …/api/groups/[groupId]` |
 | 出費 | `POST/GET …/expenses`、`GET/PATCH/DELETE …/expenses/[expenseId]` |
 | 領収書 | `…/expenses/[expenseId]/receipt` |
@@ -226,6 +234,16 @@ where id = '<ユーザーUUID>';
 | **テスト** | Jest（ユニット・コンポーネントテストが存在）。 |
 | **DB** | `supabase/migrations` にスキーマ・RLS・RPC の定義（本番は Supabase へ適用が前提）。 |
 | **Supabase CLI** | リポジトリに `supabase`（CLI）を `devDependencies` 登録。`npm run db:login` → `npm run db:link -- --project-ref <ref>` → `npm run db:push` でリモート DB にマイグレーションを適用。適用状況の確認は `npm run db:migration:list`。 |
+| **セキュリティスキャン（CI）** | `npm run security:scan` で 5観点（未知import / f-string SQL / `except: pass` / ハードコード秘密 / 入力パス結合）を機械検出。GitHub Actions（`.github/workflows/security-scan.yml`）で `master` / `staging` push と PR 時に自動実行。 |
+
+### 2FA 関連の DB 追加（2026-04）
+
+- `user_profiles.two_factor_enabled`（boolean）、`user_profiles.is_admin`（管理者フラグ）
+- `user_webauthn_credentials`（WebAuthn 資格情報）
+- `user_backup_codes`（バックアップコードのハッシュ管理）
+- `two_factor_security_events`（2FA 成功/失敗監査イベント）
+- `admin_audit_logs`（管理者操作の監査ログ、管理者のみRLS SELECT可）
+- 2FA verify API には **IP + user 単位の簡易レート制限**（失敗回数ベース）を適用
 
 ### Supabase CLI でリモートにマイグレーションを当てる
 

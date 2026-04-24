@@ -7,6 +7,7 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import { routing, type AppLocale } from "@/i18n/routing";
 import { getSupabaseEnv } from "./env";
+import { isTwoFactorVerified } from "@/lib/auth/two-factor";
 
 /**
  * Removes optional `/{locale}` prefix (any app locale) so auth rules match localized URLs.
@@ -27,6 +28,14 @@ export function stripLocaleFromPathname(pathname: string): string {
 function isProtectedPath(pathname: string): boolean {
   const p = stripLocaleFromPathname(pathname);
   return p.startsWith("/dashboard") || p.startsWith("/settings");
+}
+
+function resolveLocaleFromPathname(pathname: string): AppLocale {
+  const segment = pathname.split("/").filter(Boolean)[0];
+  if (segment && routing.locales.includes(segment as AppLocale)) {
+    return segment as AppLocale;
+  }
+  return routing.defaultLocale;
 }
 
 /**
@@ -69,6 +78,19 @@ export async function finalizeSupabaseSession(
     const url = request.nextUrl.clone();
     url.pathname = "/";
     return NextResponse.redirect(url);
+  }
+
+  if (user && isProtectedPath(request.nextUrl.pathname)) {
+    const isVerified = isTwoFactorVerified(request, user.id);
+    if (!isVerified) {
+      const locale = resolveLocaleFromPathname(request.nextUrl.pathname);
+      const nextPath = `${request.nextUrl.pathname}${request.nextUrl.search}`;
+      const redirectUrl = request.nextUrl.clone();
+      redirectUrl.pathname = `/${locale}/auth/2fa`;
+      redirectUrl.search = "";
+      redirectUrl.searchParams.set("next", nextPath);
+      return NextResponse.redirect(redirectUrl);
+    }
   }
 
   return response;
