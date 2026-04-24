@@ -162,7 +162,12 @@ export async function proxy(request: NextRequest) {
     !isAdminStepUpVerified(request, adminUserId)
   ) {
     const locale = localeFromPathname(pathname);
-    return NextResponse.redirect(new URL(`/${locale}/admin/verify`, request.url));
+    const verifyUrl = new URL(`/${locale}/admin/verify`, request.url);
+    verifyUrl.searchParams.set(
+      "next",
+      request.nextUrl.pathname + request.nextUrl.search,
+    );
+    return NextResponse.redirect(verifyUrl);
   }
 
   if (

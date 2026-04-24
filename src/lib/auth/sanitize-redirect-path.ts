@@ -47,3 +47,17 @@ export function toIntlRouterPathFromMiddlewareNext(
   }
   return url.pathname + url.search + afterHash;
 }
+
+/**
+ * 管理画面 Step-Up 直後の遷移先。`?next=` はミドルウェア付与または手入力のため、
+ * `/admin` 配下に限定する（オープンリダイレクト抑止）。next-intl 用のロケールなしパス。
+ */
+export function toAdminPostStepUpPath(
+  rawNext: string | null | undefined,
+): string {
+  const candidate = toIntlRouterPathFromMiddlewareNext(rawNext) ?? "/admin";
+  if (candidate === "/admin" || candidate.startsWith("/admin/")) {
+    return candidate;
+  }
+  return "/admin";
+}

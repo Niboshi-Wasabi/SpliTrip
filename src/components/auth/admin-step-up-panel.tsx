@@ -1,15 +1,20 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
+import { useRouter } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Shield, Loader2, AlertCircle } from "lucide-react";
 import { LogoMark } from "@/components/logo-mark";
 
-export function AdminStepUpPanel() {
+type AdminStepUpPanelProps = {
+  /** next-intl 用: ロケール接頭辞なし（例: `/admin`, `/admin/system`） */
+  nextPath?: string;
+};
+
+export function AdminStepUpPanel({ nextPath = "/admin" }: AdminStepUpPanelProps) {
   const [isAuthenticating, setIsAuthenticating] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
@@ -28,6 +33,7 @@ export function AdminStepUpPanel() {
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: "include",
       });
 
       if (!optionsResponse.ok) {
@@ -110,9 +116,11 @@ export function AdminStepUpPanel() {
         }
       }
 
-      // 4. 成功時は管理画面へリダイレクト
-      router.push("/admin");
-      
+      // 4. 成功: next-intl のルータ + refresh で Step-Up Cookie をサーバー側表示に反映
+      // （TwoFactorGate と同様。`next/navigation` の push だとロケール・RSC 状態と食い違いやすい）
+      router.replace(nextPath);
+      router.refresh();
+
     } catch (error) {
       console.error("[AdminStepUp] 認証エラー:", error);
       
