@@ -202,9 +202,21 @@ export async function POST(request: NextRequest) {
     metadata: { context: "admin_step_up" },
   });
 
-  const out = NextResponse.json({ ok: true });
+  const out = NextResponse.json({ 
+    ok: true,
+    message: "Authentication successful",
+    userId: user.id,
+    timestamp: new Date().toISOString()
+  });
   forwardSetCookieHeaders(response, out);
   clearAdminStepUpChallengeCookie(out);
   writeAdminStepUpVerifiedCookie(out, user.id);
+  
+  // デバッグ用ログ
+  console.log("[AdminWebAuthnVerify] 認証成功:", {
+    userId: user.id,
+    nextUrl: request.nextUrl.pathname
+  });
+  
   return out;
 }

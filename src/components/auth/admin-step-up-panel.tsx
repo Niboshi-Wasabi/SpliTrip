@@ -125,13 +125,18 @@ export function AdminStepUpPanel({ nextPath = "/admin" }: AdminStepUpPanelProps)
         }
       }
 
-      // 4. 成功: next-intl のルータ + refresh で Step-Up Cookie をサーバー側表示に反映
-      // （TwoFactorGate と同様。`next/navigation` の push だとロケール・RSC 状態と食い違いやすい）
-      // 短い遅延を挟んでCookieが確実に設定されてからリダイレクト
+      // 4. 成功: Cookieの設定を待ってから確実にリダイレクト
+      console.log("[AdminStepUp] 認証成功、遷移先:", nextPath);
+      
+      // レスポンスからSet-Cookieヘッダーを確認
+      const setCookieHeader = verifyResponse.headers.get('set-cookie');
+      console.log("[AdminStepUp] Set-Cookie:", setCookieHeader);
+      
+      // より確実な遷移のため、少し待ってからリダイレクト
       setTimeout(() => {
-        router.replace(nextPath);
-        router.refresh();
-      }, 100);
+        console.log("[AdminStepUp] リダイレクト実行");
+        window.location.replace(nextPath);
+      }, 200);
 
     } catch (error) {
       console.error("[AdminStepUp] 認証エラー:", error);
