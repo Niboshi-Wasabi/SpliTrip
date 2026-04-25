@@ -59,8 +59,13 @@ export function TwoFactorGate({ nextPath }: Props) {
   // ステータス変更時の自動遷移を分離（初回ロード時の確実な遷移のため）
   useEffect(() => {
     if (status?.verified) {
-      router.replace(nextPath);
-      router.refresh();
+      console.log("[TwoFactorGate] 認証済み状態確認 - リダイレクト先:", nextPath);
+      // 短い遅延を挟んでCookieが確実に設定されてからリダイレクト
+      setTimeout(() => {
+        console.log("[TwoFactorGate] リダイレクト実行");
+        router.replace(nextPath);
+        router.refresh();
+      }, 100);
     }
   }, [status?.verified, nextPath, router]);
 
@@ -95,12 +100,11 @@ export function TwoFactorGate({ nextPath }: Props) {
         throw new Error(verifyPayload.message ?? "register verify failed");
       }
       setNewBackupCodes(verifyPayload.backupCodes ?? []);
-      // 登録成功後は確実に認証済み状態になるため、状態を直接更新して遷移
+      // 登録成功後は確実に認証済み状態になるため、状態を直接更新
+      // 遷移はuseEffectで自動的に行われる
       setStatus((currentStatus) => 
         currentStatus ? { ...currentStatus, verified: true } : null
       );
-      router.replace(nextPath);
-      router.refresh();
     } catch {
       setError(t("registerFailed"));
     } finally {
@@ -143,12 +147,11 @@ export function TwoFactorGate({ nextPath }: Props) {
         throw new Error("auth verify failed");
       }
 
-      // 認証成功後は確実に認証済み状態になるため、状態を直接更新して遷移
+      // 認証成功後は確実に認証済み状態になるため、状態を直接更新
+      // 遷移はuseEffectで自動的に行われる
       setStatus((currentStatus) => 
         currentStatus ? { ...currentStatus, verified: true } : null
       );
-      router.replace(nextPath);
-      router.refresh();
     } catch {
       setError(t("authFailed"));
     } finally {
@@ -173,12 +176,11 @@ export function TwoFactorGate({ nextPath }: Props) {
       if (!response.ok) {
         throw new Error("backup verify failed");
       }
-      // バックアップコード認証成功後は確実に認証済み状態になるため、状態を直接更新して遷移
+      // バックアップコード認証成功後は確実に認証済み状態になるため、状態を直接更新
+      // 遷移はuseEffectで自動的に行われる
       setStatus((currentStatus) => 
         currentStatus ? { ...currentStatus, verified: true } : null
       );
-      router.replace(nextPath);
-      router.refresh();
     } catch {
       setError(t("backupCodeInvalid"));
     } finally {
