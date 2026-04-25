@@ -35,7 +35,7 @@ export function TwoFactorGate({ nextPath }: Props) {
   const [newBackupCodes, setNewBackupCodes] = useState<string[] | null>(null);
 
   const needsSetup = useMemo(
-    () => status !== null && status.credentialCount === 0,
+    () => status !== null && status.credentialCount === 0 && !status.verified,
     [status],
   );
 
@@ -48,6 +48,7 @@ export function TwoFactorGate({ nextPath }: Props) {
       throw new Error("status fetch failed");
     }
     const payload = (await response.json()) as StatusPayload;
+    console.log("[2FA] ステータス取得:", payload);
     setStatus(payload);
     
     // 既に認証済みなら即座にリダイレクト
@@ -270,24 +271,26 @@ export function TwoFactorGate({ nextPath }: Props) {
         </Button>
       )}
 
-      <div className="space-y-2 rounded-md border border-border p-3">
-        <p className="text-sm font-medium">{t("backupCodeSectionTitle")}</p>
-        <Input
-          value={backupCode}
-          onChange={(event) => setBackupCode(event.target.value)}
-          placeholder={t("backupCodePlaceholder")}
-          autoComplete="one-time-code"
-        />
-        <Button
-          type="button"
-          variant="outline"
-          className="w-full min-h-[44px]"
-          disabled={busy}
-          onClick={() => void handleBackupVerify()}
-        >
-          {t("backupCodeVerifyButton")}
-        </Button>
-      </div>
+      {!needsSetup && (
+        <div className="space-y-2 rounded-md border border-border p-3">
+          <p className="text-sm font-medium">{t("backupCodeSectionTitle")}</p>
+          <Input
+            value={backupCode}
+            onChange={(event) => setBackupCode(event.target.value)}
+            placeholder={t("backupCodePlaceholder")}
+            autoComplete="one-time-code"
+          />
+          <Button
+            type="button"
+            variant="outline"
+            className="w-full min-h-[44px]"
+            disabled={busy}
+            onClick={() => void handleBackupVerify()}
+          >
+            {t("backupCodeVerifyButton")}
+          </Button>
+        </div>
+      )}
 
       {error && !needsSetup ? (
         <p className="text-sm text-destructive">{error}</p>
