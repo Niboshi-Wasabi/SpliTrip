@@ -16,7 +16,10 @@ export type AdminUserListItem = {
  * 管理者用：全ユーザーの一覧を取得
  * Service Role を使用してauth.users から直接情報を取得
  */
-export async function listAdminUsers(): Promise<AdminUserListItem[]> {
+export async function listAdminUsers(): Promise<{
+  items: AdminUserListItem[];
+  totalCount: number;
+}> {
   const serviceSupabase = createServiceRoleClient();
 
   // auth.admin.listUsers() を使用してユーザー情報を取得
@@ -68,5 +71,8 @@ export async function listAdminUsers(): Promise<AdminUserListItem[]> {
   // 作成日時の降順でソート（新しいユーザーを上に）
   result.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
 
-  return result;
+  return {
+    items: result,
+    totalCount: result.length,
+  };
 }
