@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
+import { useSearchParams } from "next/navigation";
 
 type StatusPayload = {
   ok: boolean;
@@ -14,10 +15,15 @@ type StatusPayload = {
 
 export function TwoFactorSettingsForm() {
   const t = useTranslations("TwoFactor");
+  const searchParams = useSearchParams();
   const [status, setStatus] = useState<StatusPayload | null>(null);
   const [backupCodes, setBackupCodes] = useState<string[] | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  
+  // 2FAセットアップ後のリダイレクト処理
+  const isSetupMode = searchParams.get('setup') === '2fa';
+  const returnTo = searchParams.get('returnTo');
 
   async function reloadStatus() {
     const response = await fetch("/api/auth/2fa/status", { 
@@ -34,6 +40,18 @@ export function TwoFactorSettingsForm() {
   useEffect(() => {
     void reloadStatus();
   }, []);
+
+  // 2FAが正常に設定された場合のリダイレクト処理
+  useEffect(() => {
+    if (isSetupMode && status?.credentialCount && status.credentialCount > 0 && returnTo) {
+      // 2FAが設定完了したら元のページにリダイレクト
+      const redirectTimer = setTimeout(() => {
+        window.location.href = returnTo;
+      }, 2000); // 2秒待ってから遷移
+
+      return () => clearTimeout(redirectTimer);
+    }
+  }, [isSetupMode, status?.credentialCount, returnTo]);
 
   async function handleRegenerateBackupCodes() {
     setBusy(true);
@@ -66,6 +84,18 @@ export function TwoFactorSettingsForm() {
 
   return (
     <div className="space-y-3">
+      {isSetupMode && status.credentialCount === 0 && (
+        <div className="rounded-md border border-blue-200 bg-blue-50 p-3 text-sm text-blue-900 dark:border-blue-900/60 dark:bg-blue-950/35 dark:text-blue-100">
+          <p className="font-medium mb-1">2段階認証の設定が必要です</p>
+          <p className="text-xs">アカウントのセキュリティを向上させるため、生体認証（パスキー）の登録をお願いします。設定完了後、自動的に元のページに戻ります。</p>
+        </div>
+      )}
+      {isSetupMode && status.credentialCount > 0 && returnTo && (
+        <div className="rounded-md border border-green-200 bg-green-50 p-3 text-sm text-green-900 dark:border-green-900/60 dark:bg-green-950/35 dark:text-green-100">
+          <p className="font-medium mb-1">設定完了！</p>
+          <p className="text-xs">2段階認証が正常に設定されました。2秒後に元のページに戻ります...</p>
+        </div>
+      )}
       <p className="text-sm text-muted-foreground">
         {status.enabled ? t("enabledState") : t("disabledState")}
       </p>

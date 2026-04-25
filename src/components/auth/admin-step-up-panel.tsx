@@ -45,8 +45,11 @@ export function AdminStepUpPanel({ nextPath = "/admin" }: AdminStepUpPanelProps)
         if (optionsResponse.status === 403) {
           throw new Error("管理者権限がありません。");
         } else if (optionsData.code === "NO_PASSKEY") {
-          setError("使用可能なパスキーがありません。");
-          setNoPasskeyError(true);
+          // 管理画面でも設定画面へ自動リダイレクト
+          const setupUrl = new URL('/settings', window.location.origin);
+          setupUrl.searchParams.set('setup', '2fa');
+          setupUrl.searchParams.set('returnTo', nextPath);
+          window.location.href = setupUrl.toString();
           return;
         } else {
           throw new Error("認証オプションの取得に失敗しました。");

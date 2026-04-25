@@ -75,7 +75,20 @@ export function TwoFactorGate({ nextPath }: Props) {
 
       return () => clearTimeout(redirectTimer);
     }
-  }, [status?.verified, nextPath, router]);
+    
+    // 初回アクセス時（パスキー未登録）は自動的に設定画面へリダイレクト
+    if (status !== null && status.credentialCount === 0 && !status.verified) {
+      const setupRedirectTimer = setTimeout(() => {
+        // クエリパラメータで元の遷移先を保持
+        const setupUrl = new URL('/settings', window.location.origin);
+        setupUrl.searchParams.set('setup', '2fa');
+        setupUrl.searchParams.set('returnTo', nextPath);
+        window.location.href = setupUrl.toString();
+      }, 1000); // 1秒待ってからリダイレクト（ユーザーが状況を把握できるよう）
+
+      return () => clearTimeout(setupRedirectTimer);
+    }
+  }, [status?.verified, status?.credentialCount, nextPath, router]);
 
   async function handleRegister() {
     setBusy(true);
@@ -230,6 +243,12 @@ export function TwoFactorGate({ nextPath }: Props) {
 
   return (
     <div className="space-y-4">
+      {needsSetup && (
+        <div className="rounded-md border border-blue-200 bg-blue-50 p-3 text-sm text-blue-900 dark:border-blue-900/60 dark:bg-blue-950/35 dark:text-blue-100">
+          <p className="font-medium mb-1">初回アクセスのセキュリティ設定</p>
+          <p className="text-xs">アカウントのセキュリティを向上させるため、まず2段階認証の設定を行います。設定画面に移動しています...</p>
+        </div>
+      )}
       <p className="text-sm text-muted-foreground">
         {needsSetup ? t("setupDescription") : t("verifyDescription")}
       </p>
