@@ -191,7 +191,22 @@ export function getWebAuthnOrigin(request: NextRequest): string {
 }
 
 export function getWebAuthnRpId(origin: string): string {
-  return new URL(origin).hostname;
+  const explicitRpId = (process.env.WEBAUTHN_RP_ID ?? "").trim();
+  if (explicitRpId.length > 0) {
+    return explicitRpId;
+  }
+
+  const hostname = new URL(origin).hostname;
+  if (hostname === "localhost" || hostname === "127.0.0.1") {
+    return hostname;
+  }
+
+  // Production fallback: prefer apex domain so passkeys remain valid across subdomains.
+  if (hostname.startsWith("www.")) {
+    return hostname.slice(4);
+  }
+
+  return hostname;
 }
 
 // ---------------------------------------------------------------------------

@@ -45,7 +45,12 @@ export function AppPerformanceEnhancer() {
       "serviceWorker" in navigator &&
       process.env.NODE_ENV === "production"
     ) {
-      navigator.serviceWorker.register("/sw.js").catch(() => {
+      // 旧登録パス (/sw.js) が残っていると404を発生させるため先に解除する
+      navigator.serviceWorker.getRegistration("/sw.js").then((registration) => {
+        void registration?.unregister();
+      });
+
+      navigator.serviceWorker.register("/service-worker.js").catch(() => {
         // Service Worker登録失敗は無視
       });
     }

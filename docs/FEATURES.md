@@ -47,7 +47,7 @@
 | **Google ログイン** | OAuth（PKCE）。`/auth/callback` でコード交換・セッション確立。 |
 | **Google One Tap** | 未ログイン LP（`/[locale]`）で `https://accounts.google.com/gsi/client` を読み込み、右上プロンプトからワンタップ認証。`response.credential` を `supabase.auth.signInWithIdToken({ provider: 'google', token })` に渡してセッション化し、成功時は `/{locale}/dashboard` へ遷移。`NEXT_PUBLIC_GOOGLE_CLIENT_ID` が必須。 |
 | **LINE ログイン** | `/api/auth/line` → LINE → `/api/auth/callback/line` → サービスロール＋`verifyOtp` 相当でセッション確立。 |
-| **二段階認証（WebAuthn）** | **全ユーザー必須**。1段目（Google / LINE）成功後、`/{locale}/auth/2fa` で **パスキー（生体認証 / セキュリティキー）** または **バックアップコード** による2段目認証を実施。 |
+| **二段階認証（WebAuthn）** | **全ユーザー必須**。1段目（Google / LINE）成功後、`/{locale}/auth/2fa` で **パスキー（生体認証 / セキュリティキー）** または **バックアップコード** による2段目認証を実施。サーバーは `WEBAUTHN_RP_ID`（未設定時はリクエストホストから導出し、`www.` 接頭の場合は apex に正規化）で `rpId` を決定する。本番 Vercel では `WEBAUTHN_RP_ID=splitrip.net` を推奨。PWA: `AppPerformanceEnhancer` が `public/service-worker.js` を `'/service-worker.js'` で登録（旧 `'/sw.js'` 参照は失効時に解除）。 |
 | **2FA 復旧** | 初回登録時にバックアップコードを発行。設定画面で再発行可能。コードはハッシュ化して保存し、使用時に `used_at` を記録（再利用不可）。 |
 | **Turnstile（Cloudflare CAPTCHA）** | ログイン画面・招待ゲートで有効化可能。`NEXT_PUBLIC_CLOUDFLARE_TURNSTILE_SITE_KEY` / `CLOUDFLARE_TURNSTILE_SECRET_KEY` が揃うと有効化され、LINE開始前にはサーバー側でも検証。 |
 | **セッション維持とガード** | ミドルウェアで Supabase セッション更新。`/dashboard`・`/settings` は未ログイン時にガード。加えて、ログイン済みでも 2FA 未完了時は `/{locale}/auth/2fa` へリダイレクト。 |
