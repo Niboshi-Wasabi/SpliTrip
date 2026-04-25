@@ -24,9 +24,12 @@ import {
   Palette,
   Shield,
   Wrench,
+  RefreshCw,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import { useAnnouncements } from "@/components/admin/admin-data-provider";
+import { mutate } from "swr";
 
 type Row = {
   id: string;
@@ -118,8 +121,15 @@ export function AnnouncementsManager() {
   const t = useTranslations("Admin");
   const locale = useLocale();
   const router = useRouter();
-  const [rows, setRows] = useState<Row[]>([]);
-  const [loadError, setLoadError] = useState<string | null>(null);
+  
+  // SWRを使用してお知らせデータを取得
+  const { 
+    data: announcementsResponse, 
+    error: loadError, 
+    isLoading,
+    mutate: refreshAnnouncements 
+  } = useAnnouncements();
+  
   const [actionError, setActionError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [deletingAnnouncementId, setDeletingAnnouncementId] = useState<string | null>(null);
@@ -142,28 +152,22 @@ export function AnnouncementsManager() {
   const activeTopicConfig = iconTypeMap.get(activeTopicTab);
   const ActiveTopicIcon = activeTopicConfig?.icon ?? Megaphone;
   const currentTopicForm = topicForms[activeTopicTab];
-
-  const load = useCallback(async () => {
-    setLoadError(null);
-    setActionError(null);
-    const res = await fetch("/api/admin/announcements", { cache: "no-store" });
-    const jsonResponse = (await res.json().catch(() => null)) as
-      | { ok?: boolean; items?: Row[]; message?: string }
-      | null;
-    if (!res.ok || !jsonResponse?.ok) {
-      if (jsonResponse?.message === "step_up_required") {
-        setLoadError(t("stepUpRequiredError"));
-        return;
-      }
-      setLoadError(t("announcementLoadError"));
-      return;
+  
+  // SWRレスポンスからrowsを取得
+  const rows = useMemo(() => {
+    if (announcementsResponse?.ok && announcementsResponse?.items) {
+      return announcementsResponse.items as Row[];
     }
-    setRows((jsonResponse.items ?? []) as Row[]);
-  }, [t]);
-
-  useEffect(() => {
-    void load();
-  }, [load]);
+    return [];
+  }, [announcementsResponse]);
+  
+  // エラーハンドリング
+  const displayError = useMemo(() => {
+    if (loadError) {
+      return t("announcementLoadError");
+    }
+    return null;
+  }, [loadError, t]);
 
   const updateTopicForm = useCallback(
     (topicType: AnnouncementIconType, updates: Partial<TopicFormData>) => {
@@ -196,6 +200,7 @@ export function AnnouncementsManager() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
+        credentials: "include",
       });
 
       if (!res.ok) {
@@ -206,7 +211,10 @@ export function AnnouncementsManager() {
       }
 
       resetTopicForm(topicType);
-      await load();
+      // SWRキャッシュを更新（即座にUIに反映）
+      await refreshAnnouncements();
+      // グローバルキャッシュも更新
+      mutate("/api/admin/announcements");
       router.refresh();
     } finally {
       setBusy(false);
@@ -222,7 +230,8 @@ export function AnnouncementsManager() {
     setDeletingAnnouncementId(announcementId);
     try {
       const res = await fetch(`/api/admin/announcements/${announcementId}`, { 
-        method: "DELETE" 
+        method: "DELETE",
+        credentials: "include",
       });
       if (!res.ok) {
         const payload = (await res.json().catch(() => null)) as
@@ -241,7 +250,10 @@ export function AnnouncementsManager() {
         }
         return;
       }
-      await load();
+      // SWRキャッシュを更新（即座にUIに反映）
+      await refreshAnnouncements();
+      // グローバルキャッシュも更新
+      mutate("/api/admin/announcements");
       router.refresh();
     } finally {
       setDeletingAnnouncementId(null);
@@ -546,17 +558,34 @@ export function AnnouncementsManager() {
 
   return (
     <div className="space-y-6">
-      {loadError ? (
-        <p className="text-sm text-destructive" role="alert">
-          {loadError}
-        </p>
-      ) : null}
-      
-      {actionError ? (
-        <p className="text-sm text-destructive" role="alert">
-          {actionError}
-        </p>
-      ) : null}
+      {/* 手動リフレッシュボタンとエラー表示 */}
+      <div className="flex items-center justify-between">
+        <div className="space-y-1">
+          {displayError ? (
+            <p className="text-sm text-destructive" role="alert">
+              {displayError}
+            </p>
+          ) : null}
+          
+          {actionError ? (
+            <p className="text-sm text-destructive" role="alert">
+              {actionError}
+            </p>
+          ) : null}
+        </div>
+        
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          onClick={() => refreshAnnouncements()}
+          disabled={isLoading}
+          className="gap-1.5"
+        >
+          <RefreshCw className={cn("h-3 w-3", isLoading && "animate-spin")} />
+          更新
+        </Button>
+      </div>
 
       {/* トピック別ナビゲーション */}
       <div className="space-y-6">

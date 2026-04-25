@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { Link, usePathname } from "@/i18n/navigation";
+import { Link, usePathname, useRouter } from "@/i18n/navigation";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { buttonVariants } from "@/components/ui/button-variants";
 import { cn } from "@/lib/utils";
@@ -13,6 +13,8 @@ import {
   LifeBuoy,
   Settings2,
 } from "lucide-react";
+import { AdminDataProvider, preloadAdminResources } from "@/components/admin/admin-data-provider";
+import { useEffect, useCallback } from "react";
 
 const NAV = [
   {
@@ -50,9 +52,20 @@ const NAV = [
 
 type Props = { children: React.ReactNode };
 
-export function AdminAppShell({ children }: Props) {
+function AdminAppShellContent({ children }: Props) {
   const pathname = usePathname();
+  const router = useRouter();
   const t = useTranslations("Admin");
+
+  // 管理画面初期化時に全リソースをプリロード
+  useEffect(() => {
+    preloadAdminResources();
+  }, []);
+
+  // タブホバー時のプリフェッチ
+  const handleTabHover = useCallback((href: string) => {
+    router.prefetch(href);
+  }, [router]);
 
   return (
     <div className="min-h-svh bg-background text-foreground">
@@ -66,6 +79,7 @@ export function AdminAppShell({ children }: Props) {
                 "shrink-0",
               )}
               aria-label={t("backDashboard")}
+              prefetch={true}
             >
               <ArrowLeft className="h-4 w-4" />
             </Link>
@@ -89,10 +103,12 @@ export function AdminAppShell({ children }: Props) {
               <Link
                 key={href}
                 href={href}
+                prefetch={true} // 事前読み込み有効化
+                onMouseEnter={() => handleTabHover(href)} // ホバー時のプリフェッチ
                 className={cn(
-                  "inline-flex items-center gap-1.5 rounded-t-md border border-b-0 px-3 py-2 text-sm font-medium transition-colors",
+                  "inline-flex items-center gap-1.5 rounded-t-md border border-b-0 px-3 py-2 text-sm font-medium transition-colors hover:scale-[1.02]", // 微細なホバー効果
                   active
-                    ? "border-border bg-card text-foreground"
+                    ? "border-border bg-card text-foreground shadow-sm"
                     : "border-transparent text-muted-foreground hover:bg-muted/50 hover:text-foreground",
                 )}
               >
@@ -103,8 +119,16 @@ export function AdminAppShell({ children }: Props) {
           })}
         </nav>
 
-        <div className="min-h-[40vh]">{children}</div>
+        <div className="min-h-[40vh] transition-opacity duration-200">{children}</div>
       </div>
     </div>
+  );
+}
+
+export function AdminAppShell({ children }: Props) {
+  return (
+    <AdminDataProvider>
+      <AdminAppShellContent>{children}</AdminAppShellContent>
+    </AdminDataProvider>
   );
 }

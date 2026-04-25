@@ -38,7 +38,10 @@ export async function GET(request: NextRequest) {
     console.error("[admin announcements list]:", error);
     return NextResponse.json({ ok: false, message: "query_error" }, { status: 500 });
   }
-  return NextResponse.json({ ok: true, items: data ?? [] });
+  const successResponse = NextResponse.json({ ok: true, items: data ?? [] });
+  // 管理画面では短いキャッシュで最新性を保つ
+  successResponse.headers.set('Cache-Control', 'private, max-age=30, s-maxage=30');
+  return successResponse;
 }
 
 export async function POST(request: NextRequest) {
