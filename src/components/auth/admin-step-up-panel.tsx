@@ -63,7 +63,7 @@ export function AdminStepUpPanel({ nextPath = "/admin" }: AdminStepUpPanelProps)
               .split("")
               .map((c: string) => c.charCodeAt(0))
           ),
-          allowCredentials: options.allowCredentials?.map((cred: any) => ({
+          allowCredentials: options.allowCredentials?.map((cred: { id: string; type: string }) => ({
             ...cred,
             id: new Uint8Array(
               atob(cred.id.replace(/-/g, "+").replace(/_/g, "/"))
