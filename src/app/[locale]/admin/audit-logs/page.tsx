@@ -1,10 +1,8 @@
 import { Suspense } from "react";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { redirect } from "next/navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { History } from "lucide-react";
-import { isCurrentUserAdmin } from "@/lib/auth/admin-guard";
 import { listAdminAuditLogs } from "@/lib/admin/list-admin-audit-logs";
 import { AuditLogsTable } from "./AuditLogsTable";
 
@@ -15,10 +13,12 @@ type AuditLogsPageProps = {
 };
 
 async function AuditLogsContent() {
-  try {
-    const logs = await listAdminAuditLogs(100);
-    return <AuditLogsTable logs={logs} />;
-  } catch (error) {
+  const logsResult = await listAdminAuditLogs(100)
+    .then((logs) => ({ logs, fetchError: null as null | unknown }))
+    .catch((fetchError) => ({ logs: null as null, fetchError }));
+
+  if (logsResult.fetchError || !logsResult.logs) {
+    const error = logsResult.fetchError;
     console.error("[AuditLogsPage] 監査ログ取得エラー:", error);
     return (
       <div className="rounded-md bg-red-50 p-4 text-center text-sm text-red-600 dark:bg-red-950/40 dark:text-red-300">
@@ -26,17 +26,13 @@ async function AuditLogsContent() {
       </div>
     );
   }
+
+  return <AuditLogsTable logs={logsResult.logs} />;
 }
 
 export default async function AuditLogsPage({ params }: AuditLogsPageProps) {
   const { locale } = await params;
   setRequestLocale(locale);
-
-  const isAdmin = await isCurrentUserAdmin();
-  if (!isAdmin) {
-    redirect(`/${locale}/dashboard`);
-  }
-
   const t = await getTranslations("Admin");
 
   return (

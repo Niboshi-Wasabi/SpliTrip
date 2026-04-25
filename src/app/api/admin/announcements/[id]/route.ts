@@ -106,10 +106,17 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
   if (!isUuid(id)) {
     return NextResponse.json({ ok: false, message: "invalid_id" }, { status: 400 });
   }
-  const { error } = await supabase.from("app_announcements").delete().eq("id", id);
+  const { data: deletedRows, error } = await supabase
+    .from("app_announcements")
+    .delete()
+    .eq("id", id)
+    .select("id");
   if (error) {
     console.error("[admin announcement delete]:", error);
     return NextResponse.json({ ok: false, message: "delete_error" }, { status: 500 });
+  }
+  if (!deletedRows || deletedRows.length === 0) {
+    return NextResponse.json({ ok: false, message: "not_found" }, { status: 404 });
   }
   return NextResponse.json({ ok: true });
 }

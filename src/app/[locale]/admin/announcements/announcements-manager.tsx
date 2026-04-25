@@ -1,8 +1,8 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "@/i18n/navigation";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -14,7 +14,17 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Pencil, Plus, Trash2, Star, Bug, Megaphone, Palette, Shield, Wrench } from "lucide-react";
+import {
+  Pencil,
+  Plus,
+  Trash2,
+  Star,
+  Bug,
+  Megaphone,
+  Palette,
+  Shield,
+  Wrench,
+} from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 type Row = {
@@ -31,43 +41,98 @@ type Row = {
 };
 
 const ICON_TYPES = [
-  { value: 'announcement', label: 'お知らせ', icon: Megaphone, color: 'text-blue-600' },
-  { value: 'feature', label: '新機能', icon: Star, color: 'text-green-600' },
-  { value: 'bugfix', label: 'バグ修正', icon: Bug, color: 'text-orange-600' },
-  { value: 'design', label: 'デザイン', icon: Palette, color: 'text-purple-600' },
-  { value: 'security', label: 'セキュリティ', icon: Shield, color: 'text-red-600' },
-  { value: 'maintenance', label: 'メンテナンス', icon: Wrench, color: 'text-gray-600' },
-];
+  {
+    value: "announcement",
+    labelJa: "お知らせ",
+    labelEn: "Announcement",
+    icon: Megaphone,
+    color: "text-blue-600 dark:text-blue-400",
+  },
+  {
+    value: "feature",
+    labelJa: "新機能",
+    labelEn: "Feature",
+    icon: Star,
+    color: "text-emerald-600 dark:text-emerald-400",
+  },
+  {
+    value: "bugfix",
+    labelJa: "バグ修正",
+    labelEn: "Bugfix",
+    icon: Bug,
+    color: "text-orange-600 dark:text-orange-400",
+  },
+  {
+    value: "design",
+    labelJa: "デザイン",
+    labelEn: "Design",
+    icon: Palette,
+    color: "text-violet-600 dark:text-violet-400",
+  },
+  {
+    value: "security",
+    labelJa: "セキュリティ",
+    labelEn: "Security",
+    icon: Shield,
+    color: "text-red-600 dark:text-red-400",
+  },
+  {
+    value: "maintenance",
+    labelJa: "メンテナンス",
+    labelEn: "Maintenance",
+    icon: Wrench,
+    color: "text-zinc-600 dark:text-zinc-400",
+  },
+] as const;
+
+type AnnouncementIconType = (typeof ICON_TYPES)[number]["value"];
+const DEFAULT_ANNOUNCEMENT_ICON_TYPE: AnnouncementIconType = "announcement";
+
+function normalizeAnnouncementIconType(iconType: string): AnnouncementIconType {
+  if (ICON_TYPES.some((iconTypeItem) => iconTypeItem.value === iconType)) {
+    return iconType as AnnouncementIconType;
+  }
+  return DEFAULT_ANNOUNCEMENT_ICON_TYPE;
+}
 
 export function AnnouncementsManager() {
   const t = useTranslations("Admin");
+  const locale = useLocale();
   const router = useRouter();
   const [rows, setRows] = useState<Row[]>([]);
   const [loadError, setLoadError] = useState<string | null>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [deletingAnnouncementId, setDeletingAnnouncementId] = useState<string | null>(
+    null,
+  );
   const [editing, setEditing] = useState<Row | "new" | null>(null);
   const [draft, setDraft] = useState({
     title_ja: "",
     title_en: "",
     content_ja: "",
     content_en: "",
-    icon_type: "announcement",
+    icon_type: DEFAULT_ANNOUNCEMENT_ICON_TYPE,
     priority: 0,
     is_published: false,
   });
 
-  const getIconComponent = (iconType: string) => {
-    const iconConfig = ICON_TYPES.find(type => type.value === iconType);
-    return iconConfig ? iconConfig.icon : Megaphone;
-  };
+  const iconTypeMap = useMemo(
+    () =>
+      new Map(
+        ICON_TYPES.map((iconTypeItem) => [iconTypeItem.value, iconTypeItem]),
+      ),
+    [],
+  );
 
-  const getIconColor = (iconType: string) => {
-    const iconConfig = ICON_TYPES.find(type => type.value === iconType);
-    return iconConfig ? iconConfig.color : 'text-blue-600';
-  };
+  const selectedIconType =
+    iconTypeMap.get(draft.icon_type) ??
+    iconTypeMap.get(DEFAULT_ANNOUNCEMENT_ICON_TYPE);
+  const PreviewIcon = selectedIconType?.icon ?? Megaphone;
 
   const load = useCallback(async () => {
     setLoadError(null);
+    setActionError(null);
     const res = await fetch("/api/admin/announcements", { cache: "no-store" });
     const j = (await res.json().catch(() => null)) as
       | { ok?: boolean; items?: Row[]; message?: string }
@@ -88,32 +153,35 @@ export function AnnouncementsManager() {
   }, [load]);
 
   function openNew() {
+    setActionError(null);
     setEditing("new");
     setDraft({
       title_ja: "",
       title_en: "",
       content_ja: "",
       content_en: "",
-      icon_type: "announcement",
+      icon_type: DEFAULT_ANNOUNCEMENT_ICON_TYPE,
       priority: 0,
       is_published: false,
     });
   }
 
   function openEdit(row: Row) {
+    setActionError(null);
     setEditing(row);
     setDraft({
       title_ja: row.title_ja,
       title_en: row.title_en,
       content_ja: row.content_ja ?? "",
       content_en: row.content_en ?? "",
-      icon_type: row.icon_type ?? "announcement",
+      icon_type: normalizeAnnouncementIconType(row.icon_type),
       priority: row.priority ?? 0,
       is_published: row.is_published,
     });
   }
 
   async function save() {
+    setActionError(null);
     setBusy(true);
     try {
       if (editing === "new") {
@@ -122,11 +190,15 @@ export function AnnouncementsManager() {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(draft),
         });
-        if (res.ok) {
-          setEditing(null);
-          void load();
-          router.refresh();
+        if (!res.ok) {
+          setActionError(
+            locale === "en" ? "Failed to save announcement." : "保存に失敗しました。",
+          );
+          return;
         }
+        setEditing(null);
+        await load();
+        router.refresh();
         return;
       }
       if (editing && typeof editing === "object") {
@@ -135,11 +207,15 @@ export function AnnouncementsManager() {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(draft),
         });
-        if (res.ok) {
-          setEditing(null);
-          void load();
-          router.refresh();
+        if (!res.ok) {
+          setActionError(
+            locale === "en" ? "Failed to update announcement." : "更新に失敗しました。",
+          );
+          return;
         }
+        setEditing(null);
+        await load();
+        router.refresh();
       }
     } finally {
       setBusy(false);
@@ -150,14 +226,32 @@ export function AnnouncementsManager() {
     if (!window.confirm(t("announcementDeleteConfirm"))) {
       return;
     }
+    setActionError(null);
     setBusy(true);
+    setDeletingAnnouncementId(id);
     try {
       const res = await fetch(`/api/admin/announcements/${id}`, { method: "DELETE" });
-      if (res.ok) {
-        void load();
-        router.refresh();
+      if (!res.ok) {
+        const payload = (await res.json().catch(() => null)) as
+          | { message?: string }
+          | null;
+        if (payload?.message === "not_found") {
+          setActionError(
+            locale === "en"
+              ? "This announcement no longer exists."
+              : "対象のお知らせが見つかりませんでした。",
+          );
+        } else {
+          setActionError(
+            locale === "en" ? "Failed to delete announcement." : "削除に失敗しました。",
+          );
+        }
+        return;
       }
+      await load();
+      router.refresh();
     } finally {
+      setDeletingAnnouncementId(null);
       setBusy(false);
     }
   }
@@ -169,6 +263,11 @@ export function AnnouncementsManager() {
           {loadError}
         </p>
       ) : null}
+      {actionError ? (
+        <p className="text-sm text-destructive" role="alert">
+          {actionError}
+        </p>
+      ) : null}
       <div className="flex justify-end">
         <Button type="button" onClick={openNew} className="gap-1.5" disabled={busy}>
           <Plus className="h-4 w-4" />
@@ -176,114 +275,175 @@ export function AnnouncementsManager() {
         </Button>
       </div>
       {editing ? (
-        <div className="rounded-lg border border-border bg-card p-4 space-y-3">
-          <h2 className="text-sm font-medium">
-            {editing === "new" ? t("announcementNew") : t("announcementEdit")}
-          </h2>
-          <div className="grid gap-2 sm:grid-cols-2">
+        <div className="grid gap-4 lg:grid-cols-2">
+          <div className="rounded-lg border border-border bg-card p-4 space-y-3">
+            <h2 className="text-sm font-medium">編集</h2>
+            <div className="grid gap-2 sm:grid-cols-2">
+              <div>
+                <Label htmlFor="tja">{t("announcementTitleJa")}</Label>
+                <Input
+                  id="tja"
+                  value={draft.title_ja}
+                  onChange={(event) =>
+                    setDraft((currentDraft) => ({
+                      ...currentDraft,
+                      title_ja: event.target.value,
+                    }))
+                  }
+                />
+              </div>
+              <div>
+                <Label htmlFor="ten">{t("announcementTitleEn")}</Label>
+                <Input
+                  id="ten"
+                  value={draft.title_en}
+                  onChange={(event) =>
+                    setDraft((currentDraft) => ({
+                      ...currentDraft,
+                      title_en: event.target.value,
+                    }))
+                  }
+                />
+              </div>
+            </div>
             <div>
-              <Label htmlFor="tja">{t("announcementTitleJa")}</Label>
-              <Input
-                id="tja"
-                value={draft.title_ja}
-                onChange={(e) =>
-                  setDraft((d) => ({ ...d, title_ja: e.target.value }))
+              <Label htmlFor="cja">{t("announcementContentJa")}</Label>
+              <textarea
+                id="cja"
+                rows={5}
+                className="border-input bg-background ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring flex min-h-[120px] w-full rounded-md border px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
+                value={draft.content_ja}
+                onChange={(event) =>
+                  setDraft((currentDraft) => ({
+                    ...currentDraft,
+                    content_ja: event.target.value,
+                  }))
                 }
               />
             </div>
             <div>
-              <Label htmlFor="ten">{t("announcementTitleEn")}</Label>
-              <Input
-                id="ten"
-                value={draft.title_en}
-                onChange={(e) =>
-                  setDraft((d) => ({ ...d, title_en: e.target.value }))
+              <Label htmlFor="cen">{t("announcementContentEn")}</Label>
+              <textarea
+                id="cen"
+                rows={5}
+                className="border-input bg-background ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring flex min-h-[120px] w-full rounded-md border px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
+                value={draft.content_en}
+                onChange={(event) =>
+                  setDraft((currentDraft) => ({
+                    ...currentDraft,
+                    content_en: event.target.value,
+                  }))
                 }
               />
             </div>
-          </div>
-          <div>
-            <Label htmlFor="cja">{t("announcementContentJa")}</Label>
-            <textarea
-              id="cja"
-              rows={5}
-              className="border-input bg-background ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring flex min-h-[120px] w-full rounded-md border px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
-              value={draft.content_ja}
-              onChange={(e) =>
-                setDraft((d) => ({ ...d, content_ja: e.target.value }))
-              }
-            />
-          </div>
-          <div>
-            <Label htmlFor="cen">{t("announcementContentEn")}</Label>
-            <textarea
-              id="cen"
-              rows={5}
-              className="border-input bg-background ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring flex min-h-[120px] w-full rounded-md border px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
-              value={draft.content_en}
-              onChange={(e) =>
-                setDraft((d) => ({ ...d, content_en: e.target.value }))
-              }
-            />
-          </div>
-          <div className="grid gap-2 sm:grid-cols-2">
-            <div>
-              <Label htmlFor="iconType">アイコンタイプ</Label>
-              <select
-                id="iconType"
-                value={draft.icon_type}
-                onChange={(e) =>
-                  setDraft((d) => ({ ...d, icon_type: e.target.value }))
-                }
-                className="border-input bg-background ring-offset-background focus-visible:ring-ring flex h-10 w-full rounded-md border px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
-              >
-                {ICON_TYPES.map((iconType) => (
-                  <option key={iconType.value} value={iconType.value}>
-                    {iconType.label}
-                  </option>
-                ))}
-              </select>
+            <div className="grid gap-2 sm:grid-cols-2">
+              <div>
+                <Label htmlFor="iconType">アイコンタイプ</Label>
+                <select
+                  id="iconType"
+                  value={draft.icon_type}
+                  onChange={(event) =>
+                    setDraft((currentDraft) => ({
+                      ...currentDraft,
+                      icon_type: event.target.value as AnnouncementIconType,
+                    }))
+                  }
+                  className="border-input bg-background ring-offset-background focus-visible:ring-ring flex h-10 w-full rounded-md border px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
+                >
+                  {ICON_TYPES.map((iconTypeItem) => (
+                    <option key={iconTypeItem.value} value={iconTypeItem.value}>
+                      {locale === "en" ? iconTypeItem.labelEn : iconTypeItem.labelJa}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <Label htmlFor="priority">優先度</Label>
+                <select
+                  id="priority"
+                  value={draft.priority}
+                  onChange={(event) =>
+                    setDraft((currentDraft) => ({
+                      ...currentDraft,
+                      priority: parseInt(event.target.value, 10),
+                    }))
+                  }
+                  className="border-input bg-background ring-offset-background focus-visible:ring-ring flex h-10 w-full rounded-md border px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
+                >
+                  <option value={0}>通常</option>
+                  <option value={1}>高</option>
+                  <option value={2}>緊急</option>
+                </select>
+              </div>
             </div>
-            <div>
-              <Label htmlFor="priority">優先度</Label>
-              <select
-                id="priority"
-                value={draft.priority}
-                onChange={(e) =>
-                  setDraft((d) => ({ ...d, priority: parseInt(e.target.value) }))
+            <div className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                id="pub"
+                className="h-4 w-4 rounded border-border"
+                checked={draft.is_published}
+                onChange={(event) =>
+                  setDraft((currentDraft) => ({
+                    ...currentDraft,
+                    is_published: event.target.checked,
+                  }))
                 }
-                className="border-input bg-background ring-offset-background focus-visible:ring-ring flex h-10 w-full rounded-md border px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
+              />
+              <Label htmlFor="pub">{t("announcementPublished")}</Label>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              <Button type="button" onClick={() => void save()} disabled={busy}>
+                {t("save")}
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setEditing(null)}
+                disabled={busy}
               >
-                <option value={0}>通常</option>
-                <option value={1}>高</option>
-                <option value={2}>緊急</option>
-              </select>
+                {t("cancel")}
+              </Button>
             </div>
           </div>
-          <div className="flex items-center gap-2">
-            <input
-              type="checkbox"
-              id="pub"
-              className="h-4 w-4 rounded border-border"
-              checked={draft.is_published}
-              onChange={(e) =>
-                setDraft((d) => ({ ...d, is_published: e.target.checked }))
-              }
-            />
-            <Label htmlFor="pub">{t("announcementPublished")}</Label>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            <Button type="button" onClick={() => void save()} disabled={busy}>
-              {t("save")}
-            </Button>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => setEditing(null)}
-              disabled={busy}
-            >
-              {t("cancel")}
-            </Button>
+
+          <div className="rounded-lg border border-border bg-card p-4 space-y-3">
+            <h2 className="text-sm font-medium">
+              {locale === "en" ? "Preview" : "プレビュー"}
+            </h2>
+            <div className="rounded-lg border border-border bg-background/70 p-4 space-y-3">
+              <div className="flex items-start gap-3">
+                <PreviewIcon className={`mt-0.5 h-5 w-5 ${selectedIconType?.color ?? ""}`} />
+                <div className="min-w-0 flex-1 space-y-1">
+                  <div className="flex items-center gap-2">
+                    <p className="font-medium leading-tight">
+                      {(draft.title_ja || "").trim() || "（タイトル未入力）"}
+                    </p>
+                    {draft.priority > 0 ? (
+                      <Badge
+                        variant={draft.priority === 2 ? "destructive" : "default"}
+                        className="text-[10px] px-1.5 py-0.5"
+                      >
+                        {draft.priority === 2 ? "緊急" : "高"}
+                      </Badge>
+                    ) : null}
+                    <Badge variant={draft.is_published ? "default" : "secondary"}>
+                      {draft.is_published
+                        ? t("announcementPublishedBadge")
+                        : t("announcementDraftBadge")}
+                    </Badge>
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    {(draft.title_en || "").trim() || "No English title"}
+                  </p>
+                  <p className="whitespace-pre-wrap break-words text-sm text-foreground">
+                    {(draft.content_ja || "").trim() || "（本文未入力）"}
+                  </p>
+                  <p className="whitespace-pre-wrap break-words text-xs text-muted-foreground">
+                    {(draft.content_en || "").trim() || "No English content"}
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       ) : null}
@@ -310,10 +470,13 @@ export function AnnouncementsManager() {
                     <div className="flex items-start gap-3">
                       <div className="mt-1">
                         {(() => {
-                          const IconComponent = getIconComponent(r.icon_type);
+                          const rowIconType = iconTypeMap.get(
+                            r.icon_type as AnnouncementIconType,
+                          );
+                          const RowIcon = rowIconType?.icon ?? Megaphone;
                           return (
-                            <IconComponent 
-                              className={`h-4 w-4 ${getIconColor(r.icon_type)}`} 
+                            <RowIcon
+                              className={`h-4 w-4 ${rowIconType?.color ?? "text-blue-600 dark:text-blue-400"}`}
                             />
                           );
                         })()}
@@ -366,7 +529,7 @@ export function AnnouncementsManager() {
                         className="text-destructive"
                         aria-label={t("announcementDelete")}
                         onClick={() => void remove(r.id)}
-                        disabled={busy}
+                        disabled={busy || deletingAnnouncementId === r.id}
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>
