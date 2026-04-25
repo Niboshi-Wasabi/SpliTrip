@@ -15,12 +15,38 @@ import {
 } from "lucide-react";
 
 const NAV = [
-  { href: "/admin" as const, key: "navUsers" as const, icon: LayoutGrid },
-  { href: "/admin/announcements" as const, key: "navAnnouncements" as const, icon: FileText },
-  { href: "/admin/system" as const, key: "navSystem" as const, icon: Settings2 },
-  { href: "/admin/audit-logs" as const, key: "navAudit" as const, icon: History },
-  { href: "/admin/support" as const, key: "navSupport" as const, icon: LifeBuoy },
-];
+  {
+    href: "/admin" as const,
+    key: "navUsers" as const,
+    icon: LayoutGrid,
+    iconClass:
+      "text-zinc-600 dark:text-zinc-400",
+  },
+  {
+    href: "/admin/announcements" as const,
+    key: "navAnnouncements" as const,
+    icon: FileText,
+    iconClass: "text-blue-600 dark:text-blue-400",
+  },
+  {
+    href: "/admin/system" as const,
+    key: "navSystem" as const,
+    icon: Settings2,
+    iconClass: "text-emerald-600 dark:text-emerald-400",
+  },
+  {
+    href: "/admin/audit-logs" as const,
+    key: "navAudit" as const,
+    icon: History,
+    iconClass: "text-violet-600 dark:text-violet-400",
+  },
+  {
+    href: "/admin/support" as const,
+    key: "navSupport" as const,
+    icon: LifeBuoy,
+    iconClass: "text-orange-600 dark:text-orange-400",
+  },
+] as const;
 
 type Props = { children: React.ReactNode };
 
@@ -54,7 +80,7 @@ export function AdminAppShell({ children }: Props) {
           className="flex flex-wrap gap-1 border-b border-border pb-0.5"
           aria-label={t("adminNavAria")}
         >
-          {NAV.map(({ href, key, icon: Icon }) => {
+          {NAV.map(({ href, key, icon: Icon, iconClass }) => {
             const active =
               href === "/admin"
                 ? pathname === "/admin" || pathname === "/admin/"
@@ -70,7 +96,7 @@ export function AdminAppShell({ children }: Props) {
                     : "border-transparent text-muted-foreground hover:bg-muted/50 hover:text-foreground",
                 )}
               >
-                <Icon className="h-4 w-4 shrink-0" aria-hidden />
+                <Icon className={cn("h-4 w-4 shrink-0", iconClass)} aria-hidden />
                 {t(key)}
               </Link>
             );

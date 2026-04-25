@@ -1,15 +1,14 @@
 import { Suspense } from "react";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { redirect } from "next/navigation";
-import { buttonVariants } from "@/components/ui/button-variants";
-import { cn } from "@/lib/utils";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Link } from "@/i18n/navigation";
-import { ChevronLeft, FileText, Shield } from "lucide-react";
+import { History } from "lucide-react";
 import { isCurrentUserAdmin } from "@/lib/auth/admin-guard";
 import { listAdminAuditLogs } from "@/lib/admin/list-admin-audit-logs";
 import { AuditLogsTable } from "./AuditLogsTable";
+
+export const dynamic = "force-dynamic";
 
 type AuditLogsPageProps = {
   params: Promise<{ locale: string }>;
@@ -17,7 +16,7 @@ type AuditLogsPageProps = {
 
 async function AuditLogsContent() {
   try {
-    const logs = await listAdminAuditLogs(100); // 最新100件
+    const logs = await listAdminAuditLogs(100);
     return <AuditLogsTable logs={logs} />;
   } catch (error) {
     console.error("[AuditLogsPage] 監査ログ取得エラー:", error);
@@ -33,7 +32,6 @@ export default async function AuditLogsPage({ params }: AuditLogsPageProps) {
   const { locale } = await params;
   setRequestLocale(locale);
 
-  // 管理者権限チェック
   const isAdmin = await isCurrentUserAdmin();
   if (!isAdmin) {
     redirect(`/${locale}/dashboard`);
@@ -42,54 +40,30 @@ export default async function AuditLogsPage({ params }: AuditLogsPageProps) {
   const t = await getTranslations("Admin");
 
   return (
-    <div className="container mx-auto max-w-6xl space-y-6 py-8">
-      {/* ヘッダー */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <Link
-            href="/admin"
-            className={cn(
-              buttonVariants({ variant: "ghost", size: "sm" }),
-              "inline-flex text-muted-foreground",
-            )}
-          >
-            <ChevronLeft className="h-4 w-4" />
-            {t("backToUserList")}
-          </Link>
-          <div>
-            <div className="flex items-center gap-2">
-              <FileText className="h-6 w-6 text-primary" />
-              <h1 className="text-3xl font-bold tracking-tight">{t("auditLogsTitle")}</h1>
-              <Badge variant="outline" className="ml-2">
-                {t("adminOnlyBadge")}
-              </Badge>
-            </div>
-            <p className="text-muted-foreground">{t("auditLogsDescription")}</p>
-          </div>
-        </div>
-      </div>
-
-      {/* 監査ログ一覧 */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Shield className="h-5 w-5" />
-            管理操作の履歴
+    <Card>
+      <CardHeader>
+        <div className="flex flex-wrap items-center gap-2">
+          <History className="h-5 w-5 text-violet-600 dark:text-violet-400" />
+          <CardTitle className="flex flex-wrap items-center gap-2">
+            {t("auditLogsTitle")}
+            <Badge variant="outline" className="ml-0">
+              {t("adminOnlyBadge")}
+            </Badge>
           </CardTitle>
-          <CardDescription>
-            PRO権限の付与・解除などの管理者操作を新しい順に表示します
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Suspense fallback={
+        </div>
+        <CardDescription>{t("auditLogsDescription")}</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <Suspense
+          fallback={
             <div className="flex items-center justify-center p-8">
-              <div className="text-sm text-muted-foreground">読み込み中...</div>
+              <p className="text-sm text-muted-foreground">読み込み中...</p>
             </div>
-          }>
-            <AuditLogsContent />
-          </Suspense>
-        </CardContent>
-      </Card>
-    </div>
+          }
+        >
+          <AuditLogsContent />
+        </Suspense>
+      </CardContent>
+    </Card>
   );
 }
