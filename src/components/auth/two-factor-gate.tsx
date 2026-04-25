@@ -248,7 +248,21 @@ export function TwoFactorGate({ nextPath }: Props) {
         if (error.name === "NotAllowedError") {
           const ua = navigator.userAgent.toLowerCase();
           const browserName = ua.includes('chrome/') ? 'Chrome' : ua.includes('firefox/') ? 'Firefox' : ua.includes('safari/') ? 'Safari' : 'このブラウザ';
-          setError(`${browserName}でパスキー認証がブロックされました。RP ID不整合の可能性があります。設定画面でパスキーを再登録するか、他のブラウザでお試しください。`);
+          
+          // Auto-redirect to passkey re-registration for RP ID mismatch
+          console.log("[2FA] NotAllowedError detected - likely RP ID mismatch, redirecting to setup");
+          const setupUrl = new URL('/settings', window.location.origin);
+          setupUrl.searchParams.set('setup', '2fa');
+          setupUrl.searchParams.set('reason', 'rp_id_mismatch');
+          setupUrl.searchParams.set('returnTo', nextPath);
+          setupUrl.searchParams.set('browser', browserName);
+          
+          setError(`${browserName}でドメイン変更によりパスキーが無効になりました。自動的に再設定画面に移動します...`);
+          
+          // Redirect after showing the message
+          setTimeout(() => {
+            window.location.href = setupUrl.toString();
+          }, 2000);
         } else if (error.name === "InvalidStateError") {
           // パスキーが削除されているか、無効な状態
           setError("登録されたパスキーが見つかりません。設定画面で再登録してください。");

@@ -196,13 +196,8 @@ export function getWebAuthnRpId(origin: string): string {
     return hostname;
   }
 
-  // CROSS-BROWSER COMPATIBILITY: Use apex domain for both www and non-www access
-  // This ensures existing passkeys work across all subdomains and browsers.
-  // Chrome/Edge require exact match, Firefox is more flexible.
-  if (hostname === "www.splitrip.net" || hostname === "splitrip.net") {
-    return "splitrip.net"; // Use apex domain for maximum compatibility
-  }
-
+  // DYNAMIC RP ID: Use the actual hostname to avoid cross-browser conflicts
+  // This ensures compatibility with current domain setup without redirects
   return hostname;
 }
 
