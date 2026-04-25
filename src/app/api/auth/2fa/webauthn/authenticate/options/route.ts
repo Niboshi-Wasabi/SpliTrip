@@ -31,7 +31,11 @@ export async function POST(request: NextRequest) {
     .eq("user_id", user.id);
 
   if (!credentials || credentials.length === 0) {
-    return NextResponse.json({ ok: false, message: "No registered authenticator" }, { status: 400 });
+    return NextResponse.json({ 
+      ok: false, 
+      message: "no_registered_authenticator",
+      code: "NO_PASSKEY" 
+    }, { status: 400 });
   }
 
   const origin = getWebAuthnOrigin(request);

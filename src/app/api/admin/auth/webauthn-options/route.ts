@@ -55,7 +55,7 @@ export async function POST(request: NextRequest) {
 
   if (!credentials || credentials.length === 0) {
     return NextResponse.json(
-      { ok: false, message: "no_authenticator" },
+      { ok: false, message: "no_registered_authenticator", code: "NO_PASSKEY" },
       { status: 400 },
     );
   }

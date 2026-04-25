@@ -6,8 +6,9 @@ import { useRouter } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Shield, Loader2, AlertCircle } from "lucide-react";
+import { Shield, Loader2, AlertCircle, Settings } from "lucide-react";
 import { LogoMark } from "@/components/logo-mark";
+import { Link } from "@/i18n/navigation";
 
 type AdminStepUpPanelProps = {
   /** next-intl 用: ロケール接頭辞なし（例: `/admin`, `/admin/system`） */
@@ -17,6 +18,7 @@ type AdminStepUpPanelProps = {
 export function AdminStepUpPanel({ nextPath = "/admin" }: AdminStepUpPanelProps) {
   const [isAuthenticating, setIsAuthenticating] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [noPasskeyError, setNoPasskeyError] = useState<boolean>(false);
   const router = useRouter();
   const t = useTranslations("Admin");
 
@@ -25,6 +27,7 @@ export function AdminStepUpPanel({ nextPath = "/admin" }: AdminStepUpPanelProps)
 
     setIsAuthenticating(true);
     setError(null);
+    setNoPasskeyError(false);
 
     try {
       // 1. 認証オプションを取得
@@ -37,12 +40,14 @@ export function AdminStepUpPanel({ nextPath = "/admin" }: AdminStepUpPanelProps)
       });
 
       if (!optionsResponse.ok) {
-        const optionsData = await optionsResponse.json().catch(() => ({}));
+        const optionsData = await optionsResponse.json().catch(() => ({})) as { code?: string; message?: string };
         
         if (optionsResponse.status === 403) {
           throw new Error("管理者権限がありません。");
-        } else if (optionsData.message === "no_authenticator") {
-          throw new Error("登録済みの認証器がありません。設定画面で生体認証を登録してください。");
+        } else if (optionsData.code === "NO_PASSKEY") {
+          setError("使用可能なパスキーがありません。");
+          setNoPasskeyError(true);
+          return;
         } else {
           throw new Error("認証オプションの取得に失敗しました。");
         }
@@ -170,10 +175,19 @@ export function AdminStepUpPanel({ nextPath = "/admin" }: AdminStepUpPanelProps)
         <CardContent className="space-y-4">
           {error && (
             <div className="rounded-md bg-red-50 p-3 text-center text-sm text-red-600 dark:bg-red-950/40 dark:text-red-300">
-              <div className="flex items-center justify-center gap-2">
+              <div className="flex items-center justify-center gap-2 mb-2">
                 <AlertCircle className="h-4 w-4" />
                 {error}
               </div>
+              {noPasskeyError && (
+                <Link
+                  href="/settings"
+                  className="inline-flex items-center gap-1 text-xs underline hover:no-underline"
+                >
+                  <Settings className="h-3 w-3" />
+                  設定画面で生体認証を登録
+                </Link>
+              )}
             </div>
           )}
 

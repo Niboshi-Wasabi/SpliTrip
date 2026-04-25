@@ -6,6 +6,8 @@ import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Link } from "@/i18n/navigation";
+import { Settings } from "lucide-react";
 
 type StatusPayload = {
   ok: boolean;
@@ -32,6 +34,7 @@ export function TwoFactorGate({ nextPath }: Props) {
   const [busy, setBusy] = useState(false);
   const [backupCode, setBackupCode] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [noPasskeyError, setNoPasskeyError] = useState<boolean>(false);
   const [newBackupCodes, setNewBackupCodes] = useState<string[] | null>(null);
 
   const needsSetup = useMemo(
@@ -126,6 +129,7 @@ export function TwoFactorGate({ nextPath }: Props) {
   async function handleAuthenticate() {
     setBusy(true);
     setError(null);
+    setNoPasskeyError(false);
     try {
       const optionsResponse = await fetch(
         "/api/auth/2fa/webauthn/authenticate/options",
@@ -135,6 +139,17 @@ export function TwoFactorGate({ nextPath }: Props) {
         },
       );
       if (!optionsResponse.ok) {
+        // サーバーからのエラーレスポンスを解析
+        try {
+          const errorPayload = await optionsResponse.json() as { code?: string; message?: string };
+          if (errorPayload.code === "NO_PASSKEY") {
+            setError("使用可能なパスキーがありません。");
+            setNoPasskeyError(true);
+            return;
+          }
+        } catch {
+          // JSON解析失敗時は一般エラー
+        }
         throw new Error("auth options failed");
       }
       const optionsPayload = (await optionsResponse.json()) as {
@@ -184,6 +199,7 @@ export function TwoFactorGate({ nextPath }: Props) {
     }
     setBusy(true);
     setError(null);
+    setNoPasskeyError(false);
     try {
       const response = await fetch("/api/auth/2fa/backup/verify", {
         method: "POST",
@@ -259,7 +275,22 @@ export function TwoFactorGate({ nextPath }: Props) {
         </Button>
       </div>
 
-      {error ? <p className="text-sm text-destructive">{error}</p> : null}
+      {error ? (
+        <div className="space-y-2">
+          <p className="text-sm text-destructive">{error}</p>
+          {noPasskeyError && (
+            <div className="flex items-center gap-2">
+              <Link
+                href="/settings"
+                className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground underline"
+              >
+                <Settings className="h-3 w-3" />
+                設定画面で生体認証を登録
+              </Link>
+            </div>
+          )}
+        </div>
+      ) : null}
     </div>
   );
 }
