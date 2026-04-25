@@ -15,16 +15,18 @@ export function AppPerformanceEnhancer() {
   const pathname = usePathname();
 
   useEffect(() => {
-    // アイドル時間を利用してメインページをプリロード
+    // アイドル時間を利用した制限的プリロード（必要最小限）
     preloadOnIdle(() => {
-      preloadMainPages();
+      // 主要ページのプリロードは必要時のみ実行
+      if (pathname === "/dashboard" || pathname === "/login") {
+        preloadMainPages();
+      }
     });
 
-    // 現在のページに応じて関連ページをプリフェッチ
+    // 現在のページに応じて関連ページをプリフェッチ（必要最小限）
     if (pathname === "/dashboard") {
-      // ダッシュボードにいる場合は設定ページとグループページをプリフェッチ
+      // ダッシュボードにいる場合は設定ページのみプリフェッチ
       router.prefetch("/settings");
-      router.prefetch("/dashboard/groups/new");
     } else if (pathname === "/settings") {
       // 設定ページにいる場合はダッシュボードをプリフェッチ
       router.prefetch("/dashboard");

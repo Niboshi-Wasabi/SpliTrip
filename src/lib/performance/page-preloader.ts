@@ -8,7 +8,7 @@ export const preloadMainPages = () => {
     const mainPages = [
       "/dashboard",
       "/settings",
-      "/groups",
+      "/dashboard/groups",
     ];
     
     // Next.jsルーターによるプリフェッチ
