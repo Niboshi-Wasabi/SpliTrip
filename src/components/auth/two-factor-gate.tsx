@@ -39,28 +39,30 @@ export function TwoFactorGate({ nextPath }: Props) {
     [status],
   );
 
-  const loadStatus = useCallback(
-    async (options?: { skipNavigation?: boolean }) => {
-      const response = await fetch("/api/auth/2fa/status", {
-        cache: "no-store",
-        credentials: "include",
-      });
-      if (!response.ok) {
-        throw new Error("status fetch failed");
-      }
-      const payload = (await response.json()) as StatusPayload;
-      setStatus(payload);
-      if (payload.verified && !options?.skipNavigation) {
-        router.replace(nextPath);
-        router.refresh();
-      }
-    },
-    [nextPath, router],
-  );
+  const loadStatus = useCallback(async () => {
+    const response = await fetch("/api/auth/2fa/status", {
+      cache: "no-store",
+      credentials: "include",
+    });
+    if (!response.ok) {
+      throw new Error("status fetch failed");
+    }
+    const payload = (await response.json()) as StatusPayload;
+    setStatus(payload);
+    return payload;
+  }, []);
 
   useEffect(() => {
     void loadStatus();
   }, [loadStatus]);
+
+  // ステータス変更時の自動遷移を分離（初回ロード時の確実な遷移のため）
+  useEffect(() => {
+    if (status?.verified) {
+      router.replace(nextPath);
+      router.refresh();
+    }
+  }, [status?.verified, nextPath, router]);
 
   async function handleRegister() {
     setBusy(true);
@@ -93,11 +95,10 @@ export function TwoFactorGate({ nextPath }: Props) {
         throw new Error(verifyPayload.message ?? "register verify failed");
       }
       setNewBackupCodes(verifyPayload.backupCodes ?? []);
-      try {
-        await loadStatus({ skipNavigation: true });
-      } catch (statusError) {
-        console.error("[TwoFactor] status after register:", statusError);
-      }
+      // 登録成功後は確実に認証済み状態になるため、状態を直接更新して遷移
+      setStatus((currentStatus) => 
+        currentStatus ? { ...currentStatus, verified: true } : null
+      );
       router.replace(nextPath);
       router.refresh();
     } catch {
@@ -142,11 +143,10 @@ export function TwoFactorGate({ nextPath }: Props) {
         throw new Error("auth verify failed");
       }
 
-      try {
-        await loadStatus({ skipNavigation: true });
-      } catch (statusError) {
-        console.error("[TwoFactor] status after authenticate:", statusError);
-      }
+      // 認証成功後は確実に認証済み状態になるため、状態を直接更新して遷移
+      setStatus((currentStatus) => 
+        currentStatus ? { ...currentStatus, verified: true } : null
+      );
       router.replace(nextPath);
       router.refresh();
     } catch {
@@ -173,11 +173,10 @@ export function TwoFactorGate({ nextPath }: Props) {
       if (!response.ok) {
         throw new Error("backup verify failed");
       }
-      try {
-        await loadStatus({ skipNavigation: true });
-      } catch (statusError) {
-        console.error("[TwoFactor] status after backup:", statusError);
-      }
+      // バックアップコード認証成功後は確実に認証済み状態になるため、状態を直接更新して遷移
+      setStatus((currentStatus) => 
+        currentStatus ? { ...currentStatus, verified: true } : null
+      );
       router.replace(nextPath);
       router.refresh();
     } catch {

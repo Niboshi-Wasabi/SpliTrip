@@ -169,8 +169,9 @@ export async function POST(request: NextRequest) {
     ipAddress,
   });
   const out = NextResponse.json({ ok: true });
+  // Supabase セッション Cookie を先に転送してから 2FA Cookie を設定
+  forwardSetCookieHeaders(response, out);
   clearTwoFactorChallengeCookie(out);
   writeTwoFactorVerifiedCookie(out, user.id);
-  forwardSetCookieHeaders(response, out);
   return out;
 }
