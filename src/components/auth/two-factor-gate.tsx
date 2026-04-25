@@ -141,6 +141,7 @@ export function TwoFactorGate({ nextPath }: Props) {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ response: authenticationResult }),
+          credentials: "include",
         },
       );
       if (!verifyResponse.ok) {

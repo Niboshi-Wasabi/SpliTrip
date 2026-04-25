@@ -20,7 +20,10 @@ export function TwoFactorSettingsForm() {
   const [error, setError] = useState<string | null>(null);
 
   async function reloadStatus() {
-    const response = await fetch("/api/auth/2fa/status", { cache: "no-store" });
+    const response = await fetch("/api/auth/2fa/status", { 
+      cache: "no-store",
+      credentials: "include"
+    });
     if (!response.ok) {
       throw new Error("status fetch failed");
     }
@@ -39,6 +42,7 @@ export function TwoFactorSettingsForm() {
     try {
       const response = await fetch("/api/auth/2fa/backup/regenerate", {
         method: "POST",
+        credentials: "include",
       });
       const payload = (await response.json()) as {
         ok: boolean;

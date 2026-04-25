@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createRouteHandlerSupabaseClient } from "@/utils/supabase/route-handler";
-import { hashBackupCode, writeTwoFactorVerifiedCookie } from "@/lib/auth/two-factor";
+import { hashBackupCode, writeTwoFactorVerifiedCookie, clearTwoFactorChallengeCookie } from "@/lib/auth/two-factor";
 import {
   enforceTwoFactorRateLimit,
   getRequestIpAddress,
@@ -107,6 +107,7 @@ export async function POST(request: NextRequest) {
   const out = NextResponse.json({ ok: true });
   // Supabase セッション Cookie を先に転送してから 2FA Cookie を設定
   forwardSetCookieHeaders(response, out);
+  clearTwoFactorChallengeCookie(out);
   writeTwoFactorVerifiedCookie(out, user.id);
   return out;
 }
