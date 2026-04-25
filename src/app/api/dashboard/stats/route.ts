@@ -21,12 +21,12 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    // ユーザーが参加しているグループを取得
+    // ユーザーが参加しているグループを取得（必要フィールドのみ）
     const { data: userGroups, error: groupsError } = await supabase
       .from("group_members")
       .select(`
         group_id,
-        groups!inner(*)
+        groups!inner(id, name, currency, created_at)
       `)
       .eq("user_id", user.id);
 
@@ -76,8 +76,9 @@ export async function GET(request: NextRequest) {
     const uniqueMembers = new Set(allMembers?.map(m => m.user_id) || []);
     const totalMembers = uniqueMembers.size;
     
-    // 簡易的な未精算額計算（実際の精算ロジックに応じて調整）
-    const unsettledAmount = Math.floor(totalExpenses * 0.1); // 仮の値
+    // TODO: 実際の未精算額計算ロジックを実装
+    // 現在は仮実装（将来的にはsettlement_transactionsテーブルと照合）
+    const unsettledAmount = 0; // 正確な計算まで0を返す
 
     const successResponse = NextResponse.json({ 
       ok: true, 

@@ -5,13 +5,14 @@
  * リアルタイム同期とSWRの効率を測定
  */
 
-interface PerformanceMetrics {
-  pageLoadTime: number;
-  apiResponseTimes: Map<string, number[]>;
-  realtimeEventCounts: Map<string, number>;
-  cacheHitRates: Map<string, { hits: number; misses: number }>;
-  memoryUsage?: MemoryInfo;
-}
+import type { 
+  PerformanceMetrics, 
+  PerformanceSummary, 
+  ApiPerformanceData, 
+  CachePerformanceData, 
+  RealtimeActivityData,
+  MemoryInfo
+} from "@/types/performance";
 
 class PerformanceMonitor {
   private metrics: PerformanceMetrics = {
@@ -72,7 +73,8 @@ class PerformanceMonitor {
   private startMemoryMonitoring() {
     if (typeof window !== "undefined" && "performance" in window && "memory" in performance) {
       const updateMemoryUsage = () => {
-        this.metrics.memoryUsage = (performance as any).memory;
+        const perfMemory = (performance as any).memory as MemoryInfo;
+        this.metrics.memoryUsage = perfMemory;
       };
       
       // 30秒ごとにメモリ使用量を更新
@@ -128,8 +130,8 @@ class PerformanceMonitor {
   }
 
   // パフォーマンスサマリーの生成
-  getPerformanceSummary() {
-    const apiTimes = Array.from(this.metrics.apiResponseTimes.entries()).map(([endpoint, times]) => ({
+  getPerformanceSummary(): PerformanceSummary {
+    const apiTimes: ApiPerformanceData[] = Array.from(this.metrics.apiResponseTimes.entries()).map(([endpoint, times]) => ({
       endpoint,
       avgTime: times.reduce((a, b) => a + b, 0) / times.length,
       minTime: Math.min(...times),
@@ -137,13 +139,13 @@ class PerformanceMonitor {
       callCount: times.length,
     }));
 
-    const cacheStats = Array.from(this.metrics.cacheHitRates.entries()).map(([endpoint, stats]) => ({
+    const cacheStats: CachePerformanceData[] = Array.from(this.metrics.cacheHitRates.entries()).map(([endpoint, stats]) => ({
       endpoint,
       hitRate: stats.hits / (stats.hits + stats.misses),
       totalRequests: stats.hits + stats.misses,
     }));
 
-    const realtimeStats = Array.from(this.metrics.realtimeEventCounts.entries()).map(([eventType, count]) => ({
+    const realtimeStats: RealtimeActivityData[] = Array.from(this.metrics.realtimeEventCounts.entries()).map(([eventType, count]) => ({
       eventType,
       count,
     }));

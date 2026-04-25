@@ -33,8 +33,7 @@ export function AppPerformanceEnhancer() {
       router.prefetch("/dashboard");
     }
 
-    // ページビューのトラッキング（将来のアナリティクス用）
-    console.log(`[Performance] Page loaded: ${pathname}`);
+    // ページビューのトラッキング（将来のアナリティクス用にログ出力は削除）
   }, [pathname, router]);
 
   // Service Worker 登録（PWA対応）

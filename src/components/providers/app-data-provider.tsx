@@ -16,8 +16,8 @@ const appFetcher = async (url: string) => {
     });
     
     if (!response.ok) {
-      const error = new Error(`HTTP ${response.status}: ${response.statusText}`);
-      (error as any).status = response.status;
+      const error = new Error(`HTTP ${response.status}: ${response.statusText}`) as Error & { status: number };
+      error.status = response.status;
       performanceMonitor.endApiMeasure(url, startMark);
       performanceMonitor.recordCacheEvent(url, false);
       throw error;
@@ -57,15 +57,19 @@ const swrConfig = {
   errorRetryCount: 3, // エラー時のリトライ回数
   errorRetryInterval: 1000, // リトライ間隔
   refreshInterval: 0, // 自動更新無効（必要に応じて手動更新）
-  shouldRetryOnError: (err: any) => {
+  shouldRetryOnError: (err: Error & { status?: number }) => {
     // 401, 403, 404, 422 は再試行しない
-    return ![401, 403, 404, 422].includes(err.status);
+    return ![401, 403, 404, 422].includes(err.status || 0);
   },
-  onError: (err: any) => {
+  onError: (err: Error & { status?: number }) => {
     console.error("[AppDataProvider] SWR Error:", err);
     // 401エラーの場合は自動的にログイン画面に遷移
     if (err.status === 401) {
-      window.location.href = "/login";
+      // ロケール対応のリダイレクト（現在のロケールを維持）
+      const currentLocale = window.location.pathname.split('/')[1];
+      const locales = ['ja', 'en'];
+      const loginPath = locales.includes(currentLocale) ? `/${currentLocale}/login` : "/ja/login";
+      window.location.href = loginPath;
     }
   },
 };
@@ -134,30 +138,16 @@ export const useGroupDetails = (groupId: string | null) => {
   return useSWR(groupId ? `/api/groups/${groupId}` : null);
 };
 
-// グループのメンバー
-export const useGroupMembers = (groupId: string | null) => {
-  return useSWR(groupId ? `/api/groups/${groupId}/members` : null);
-};
-
-// グループの出費一覧
-export const useGroupExpenses = (groupId: string | null) => {
-  return useSWR(groupId ? `/api/groups/${groupId}/expenses` : null);
-};
-
 // 設定データ
 export const useSettings = () => {
   return useSWR("/api/settings");
 };
 
-// お知らせ（パブリック）
-export const usePublicAnnouncements = () => {
-  return useSWR("/api/announcements", publicFetcher);
-};
-
-// システム設定（パブリック）
-export const usePublicSystemSettings = () => {
-  return useSWR("/api/system-settings", publicFetcher);
-};
+// 注意: 以下のフックは対応するAPIエンドポイントが存在しないため削除
+// - useGroupMembers: /api/groups/[groupId]/members (存在しない)
+// - useGroupExpenses: /api/groups/[groupId]/expenses (GET未実装)
+// - usePublicAnnouncements: /api/announcements (パブリック版存在しない)
+// - usePublicSystemSettings: /api/system-settings (パブリック版存在しない)
 
 // ===== プリロード用ヘルパー =====
 
@@ -168,12 +158,11 @@ export const preloadDashboardResources = () => {
       "/api/profile",
       "/api/dashboard/stats",
       "/api/groups",
-      "/api/announcements",
+      // 注意: /api/announcements (パブリック版) は存在しないため除外
     ];
     
     resources.forEach(url => {
-      const fetcher = url.startsWith("/api/announcements") ? publicFetcher : appFetcher;
-      fetcher(url).catch(() => {
+      appFetcher(url).catch(() => {
         // プリロードエラーは無視
       });
     });
@@ -185,8 +174,7 @@ export const preloadGroupResources = (groupId: string) => {
   if (typeof window !== "undefined") {
     const resources = [
       `/api/groups/${groupId}`,
-      `/api/groups/${groupId}/members`,
-      `/api/groups/${groupId}/expenses`,
+      // 注意: members, expenses は個別エンドポイントが存在しないため除外
     ];
     
     resources.forEach(url => {

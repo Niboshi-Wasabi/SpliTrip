@@ -32,7 +32,7 @@ export async function GET(request: NextRequest) {
 
   const { data, error } = await supabase
     .from("app_announcements")
-    .select("*")
+    .select("id, title_ja, title_en, content_ja, content_en, icon_type, priority, is_published, created_at, updated_at")
     .order("created_at", { ascending: false });
   if (error) {
     console.error("[admin announcements list]:", error);

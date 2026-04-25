@@ -6,10 +6,11 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { usePerformanceTracking } from "@/lib/performance/performance-monitor";
 import { Activity, Clock, Database, Zap, RefreshCw, Wifi } from "lucide-react";
+import type { PerformanceSummary, ApiPerformanceData, CachePerformanceData } from "@/types/performance";
 
 export function PerformanceDashboard() {
   const { getMetrics, getSummary } = usePerformanceTracking();
-  const [performanceSummary, setPerformanceSummary] = useState<any>(null);
+  const [performanceSummary, setPerformanceSummary] = useState<PerformanceSummary | null>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
   const refreshMetrics = () => {
@@ -104,7 +105,7 @@ export function PerformanceDashboard() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {performanceSummary.realtimeActivity.reduce((sum: number, item: any) => sum + item.count, 0)}
+              {performanceSummary.realtimeActivity.reduce((totalCount: number, activityItem) => totalCount + activityItem.count, 0)}
             </div>
             <p className="text-xs text-muted-foreground">イベント数</p>
           </CardContent>
@@ -135,28 +136,28 @@ export function PerformanceDashboard() {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {performanceSummary.apiPerformance.map((api: any, index: number) => (
-              <div key={index} className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
+            {performanceSummary.apiPerformance.map((apiItem: ApiPerformanceData, itemIndex: number) => (
+              <div key={itemIndex} className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium truncate">{api.endpoint}</p>
+                  <p className="text-sm font-medium truncate">{apiItem.endpoint}</p>
                   <p className="text-xs text-muted-foreground">
-                    {api.callCount}回の呼び出し
+                    {apiItem.callCount}回の呼び出し
                   </p>
                 </div>
                 <div className="flex items-center gap-4 text-sm">
                   <div className="text-right">
-                    <div className="font-medium">{formatTime(api.avgTime)}</div>
+                    <div className="font-medium">{formatTime(apiItem.avgTime)}</div>
                     <div className="text-xs text-muted-foreground">平均</div>
                   </div>
                   <div className="text-right">
-                    <div className="text-green-600">{formatTime(api.minTime)}</div>
+                    <div className="text-green-600">{formatTime(apiItem.minTime)}</div>
                     <div className="text-xs text-muted-foreground">最小</div>
                   </div>
                   <div className="text-right">
-                    <div className="text-red-600">{formatTime(api.maxTime)}</div>
+                    <div className="text-red-600">{formatTime(apiItem.maxTime)}</div>
                     <div className="text-xs text-muted-foreground">最大</div>
                   </div>
-                  {getPerformanceBadge(api.avgTime)}
+                  {getPerformanceBadge(apiItem.avgTime)}
                 </div>
               </div>
             ))}
@@ -177,29 +178,29 @@ export function PerformanceDashboard() {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {performanceSummary.cachePerformance.map((cache: any, index: number) => (
-              <div key={index} className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
+            {performanceSummary.cachePerformance.map((cacheItem: CachePerformanceData, cacheIndex: number) => (
+              <div key={cacheIndex} className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium truncate">{cache.endpoint}</p>
+                  <p className="text-sm font-medium truncate">{cacheItem.endpoint}</p>
                   <p className="text-xs text-muted-foreground">
-                    {cache.totalRequests}回のリクエスト
+                    {cacheItem.totalRequests}回のリクエスト
                   </p>
                 </div>
                 <div className="flex items-center gap-4">
                   <div className="text-right">
                     <div className="text-lg font-bold">
-                      {Math.round(cache.hitRate * 100)}%
+                      {Math.round(cacheItem.hitRate * 100)}%
                     </div>
                     <div className="text-xs text-muted-foreground">ヒット率</div>
                   </div>
                   <Badge 
-                    variant={cache.hitRate > 0.8 ? "default" : cache.hitRate > 0.5 ? "secondary" : "destructive"}
+                    variant={cacheItem.hitRate > 0.8 ? "default" : cacheItem.hitRate > 0.5 ? "secondary" : "destructive"}
                     className={
-                      cache.hitRate > 0.8 ? "bg-green-100 text-green-800" : 
-                      cache.hitRate > 0.5 ? "" : ""
+                      cacheItem.hitRate > 0.8 ? "bg-green-100 text-green-800" : 
+                      cacheItem.hitRate > 0.5 ? "" : ""
                     }
                   >
-                    {cache.hitRate > 0.8 ? "良好" : cache.hitRate > 0.5 ? "普通" : "改善必要"}
+                    {cacheItem.hitRate > 0.8 ? "良好" : cacheItem.hitRate > 0.5 ? "普通" : "改善必要"}
                   </Badge>
                 </div>
               </div>
@@ -221,13 +222,13 @@ export function PerformanceDashboard() {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {performanceSummary.realtimeActivity.map((activity: any, index: number) => (
-              <div key={index} className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
+            {performanceSummary.realtimeActivity.map((realtimeItem, realtimeIndex: number) => (
+              <div key={realtimeIndex} className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium">{activity.eventType}</p>
+                  <p className="text-sm font-medium">{realtimeItem.eventType}</p>
                 </div>
                 <div className="text-right">
-                  <div className="text-lg font-bold">{activity.count}</div>
+                  <div className="text-lg font-bold">{realtimeItem.count}</div>
                   <div className="text-xs text-muted-foreground">イベント</div>
                 </div>
               </div>

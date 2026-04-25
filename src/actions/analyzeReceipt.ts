@@ -91,7 +91,7 @@ export async function analyzeReceipt(
   if (!hasPremiumAccess(profile) && isOcrBlockedForFreeTier(profile)) {
     return {
       data: null,
-      error: "OCR limit reached",
+      error: "OCR利用制限に達しました", // 日本語メッセージ（将来的にはi18n対応）
       code: "OCR_LIMIT",
     };
   }

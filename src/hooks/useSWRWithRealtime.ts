@@ -3,6 +3,7 @@
 import { useEffect, useCallback, useRef } from "react";
 import useSWR, { mutate } from "swr";
 import { createClient } from "@/utils/supabase/client";
+import type { RealtimeConfig, SWRRealtimeOptions } from "@/types/performance";
 
 /**
  * SWRとSupabase Realtimeを統合したカスタムフック
@@ -11,20 +12,10 @@ import { createClient } from "@/utils/supabase/client";
  * - 自動的なUI更新とトースト通知
  */
 
-type RealtimeConfig = {
-  table: string;
-  filter?: string;
-  event?: "INSERT" | "UPDATE" | "DELETE" | "*";
-};
-
-type SWRRealtimeOptions = {
-  realtimeConfig?: RealtimeConfig[];
-  currentUserId?: string;
-  onRemoteChange?: (payload: any) => void;
-  enableBroadcast?: boolean;
-  broadcastChannel?: string;
-  debounceMs?: number;
-};
+interface RealtimePayload {
+  new?: Record<string, unknown>;
+  old?: Record<string, unknown>;
+}
 
 export function useSWRWithRealtime<T = any>(
   key: string | null,
@@ -50,7 +41,7 @@ export function useSWRWithRealtime<T = any>(
   }, [onRemoteChange]);
 
   // リアルタイム同期の処理
-  const handleRealtimeChange = useCallback((payload: any) => {
+  const handleRealtimeChange = useCallback((payload: RealtimePayload) => {
     // デバウンス処理
     if (debounceTimer.current) {
       clearTimeout(debounceTimer.current);

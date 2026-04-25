@@ -119,11 +119,8 @@ export function AdminStepUpPanel({ nextPath = "/admin" }: AdminStepUpPanelProps)
 
       // 4. 成功: next-intl のルータ + refresh で Step-Up Cookie をサーバー側表示に反映
       // （TwoFactorGate と同様。`next/navigation` の push だとロケール・RSC 状態と食い違いやすい）
-      console.log("[AdminStepUp] 認証成功 - リダイレクト先:", nextPath);
-      
       // 短い遅延を挟んでCookieが確実に設定されてからリダイレクト
       setTimeout(() => {
-        console.log("[AdminStepUp] リダイレクト実行");
         router.replace(nextPath);
         router.refresh();
       }, 100);
@@ -140,7 +137,8 @@ export function AdminStepUpPanel({ nextPath = "/admin" }: AdminStepUpPanelProps)
         } else if (error.name === "NotSupportedError") {
           setError("この認証器は対応していません。");
         } else {
-          setError(error.message);
+          // セキュリティのため、具体的なエラーメッセージは表示しない
+          setError("認証に失敗しました。再度お試しください。");
         }
       } else {
         setError("予期しないエラーが発生しました。");

@@ -1,12 +1,38 @@
 "use client";
 
-import { motion, type Variants } from "framer-motion";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { buttonVariants } from "@/components/ui/button-variants";
 import { LanguageSwitcher } from "@/components/ui/LanguageSwitcher";
 import { LogoMark } from "@/components/logo-mark";
 import { cn } from "@/lib/utils";
+import dynamic from "next/dynamic";
+import { type Variants } from "framer-motion";
+
+// framer-motionを動的にインポート
+const MotionDiv = dynamic(
+  () => import("framer-motion").then(mod => ({ default: mod.motion.div })),
+  { 
+    ssr: false,
+    loading: () => <div />
+  }
+);
+
+const MotionP = dynamic(
+  () => import("framer-motion").then(mod => ({ default: mod.motion.p })),
+  { 
+    ssr: false,
+    loading: () => <p />
+  }
+);
+
+const MotionH1 = dynamic(
+  () => import("framer-motion").then(mod => ({ default: mod.motion.h1 })),
+  { 
+    ssr: false,
+    loading: () => <h1 />
+  }
+);
 
 const fadeUpVariants: Variants = {
   hidden: { opacity: 0, y: 24 },
@@ -64,31 +90,31 @@ export function HeroSection() {
   const landingTranslations = useTranslations("Landing");
 
   return (
-    <motion.section
+    <MotionDiv
       className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-4 py-14 text-center md:py-20"
       variants={containerVariants}
       initial="hidden"
       animate="show"
     >
-      <motion.p
+      <MotionP
         variants={fadeUpVariants}
         className="mx-auto rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-xs font-medium text-primary"
       >
         {landingTranslations("hero.badge")}
-      </motion.p>
-      <motion.h1
+      </MotionP>
+      <MotionH1
         variants={fadeUpVariants}
         className="mx-auto max-w-3xl text-balance text-3xl font-bold leading-tight text-foreground md:text-4xl lg:text-5xl"
       >
         {landingTranslations("hero.title")}
-      </motion.h1>
-      <motion.p
+      </MotionH1>
+      <MotionP
         variants={fadeUpVariants}
         className="mx-auto max-w-2xl text-pretty text-sm text-muted-foreground md:text-base"
       >
         {landingTranslations("hero.description")}
-      </motion.p>
-      <motion.div
+      </MotionP>
+      <MotionDiv
         variants={fadeUpVariants}
         className="flex flex-col items-center justify-center gap-3 sm:flex-row"
       >
@@ -110,7 +136,7 @@ export function HeroSection() {
         >
           {landingTranslations("hero.secondaryCta")}
         </Link>
-      </motion.div>
-    </motion.section>
+      </MotionDiv>
+    </MotionDiv>
   );
 }

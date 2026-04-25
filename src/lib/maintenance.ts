@@ -12,10 +12,8 @@ export function isMaintenanceModeEnabledByEnv(): boolean {
   return raw === "true" || raw === "1" || raw === "yes";
 }
 
-/** @deprecated 互換用: env のみ。Edge では `isMaintenanceModeEnabledForRequest` を使う。 */
-export function isMaintenanceModeEnabled(): boolean {
-  return isMaintenanceModeEnabledByEnv();
-}
+// 注意: isMaintenanceModeEnabled() は削除済み（非推奨関数）
+// 代替: isMaintenanceModeEnabledForRequest() を使用
 
 /** env が真、または DB の `maintenance_mode.enabled`。 */
 export async function isMaintenanceModeEnabledForRequest(): Promise<boolean> {

@@ -6,8 +6,13 @@
  * 理由: jsPDF 標準フォントは日本語が弱いため、ブラウザ字形を Canvas に載せる。
  */
 
-import { jsPDF } from "jspdf";
 import { formatMoneyByCurrency } from "@/lib/currency-payment-amount";
+
+// jsPDFの動的インポート
+async function getJsPDF() {
+  const { jsPDF } = await import("jspdf");
+  return jsPDF;
+}
 import { sanitizeGroupNameForFilename } from "@/utils/exportCsv";
 
 export type PdfSettlementLineInput = {
@@ -241,9 +246,12 @@ export async function downloadSimpleGroupPdf(
   options: BuildSimpleGroupPdfOptions,
   filename: string,
 ): Promise<void> {
+  // jsPDFを動的にロード
+  const jsPDFClass = await getJsPDF();
+  
   const canvas = buildReportCanvas(options);
   const imageDataUrl = canvas.toDataURL("image/jpeg", 0.92);
-  const pdfDocument = new jsPDF({
+  const pdfDocument = new jsPDFClass({
     orientation: "portrait",
     unit: "mm",
     format: "a4",

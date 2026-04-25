@@ -38,7 +38,8 @@ export const preloadApiEndpoints = (endpoints: string[]) => {
 // ブラウザアイドル時間を利用したプリロード
 export const preloadOnIdle = (callback: () => void) => {
   if (typeof window !== "undefined" && "requestIdleCallback" in window) {
-    (window as any).requestIdleCallback(callback);
+    const requestIdleCallback = (window as any).requestIdleCallback as (callback: () => void) => void;
+    requestIdleCallback(callback);
   } else {
     // フォールバック: 少し遅延してから実行
     setTimeout(callback, 100);

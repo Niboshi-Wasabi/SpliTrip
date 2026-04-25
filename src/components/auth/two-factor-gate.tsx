@@ -59,10 +59,8 @@ export function TwoFactorGate({ nextPath }: Props) {
   // ステータス変更時の自動遷移を分離（初回ロード時の確実な遷移のため）
   useEffect(() => {
     if (status?.verified) {
-      console.log("[TwoFactorGate] 認証済み状態確認 - リダイレクト先:", nextPath);
       // 短い遅延を挟んでCookieが確実に設定されてからリダイレクト
       setTimeout(() => {
-        console.log("[TwoFactorGate] リダイレクト実行");
         router.replace(nextPath);
         router.refresh();
       }, 100);

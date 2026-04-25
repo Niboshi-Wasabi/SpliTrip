@@ -190,7 +190,7 @@ export async function fetchGroupDetailForUser(
       groupId,
       userId,
       memberCount: membersList.length,
-      memberUserIds,
+      // メンバーIDは秘匿
     });
     return { ok: false, error: "forbidden" };
   }

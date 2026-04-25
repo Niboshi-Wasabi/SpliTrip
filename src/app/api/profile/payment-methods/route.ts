@@ -35,12 +35,12 @@ export async function PATCH(request: NextRequest) {
   } = await supabase.auth.getUser();
 
   if (!user) {
-    return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+    return NextResponse.json({ ok: false, message: "unauthorized" }, { status: 401 });
   }
 
   const parsed: unknown = await request.json().catch(() => null);
   if (parsed === null || typeof parsed !== "object" || parsed === null) {
-    return NextResponse.json({ error: "invalid_json" }, { status: 400 });
+    return NextResponse.json({ ok: false, message: "invalid_json" }, { status: 400 });
   }
 
   const body = parsed as {
@@ -62,10 +62,10 @@ export async function PATCH(request: NextRequest) {
     cashRaw.trim() === "" ? null : sanitizeCashAppCashtag(cashRaw);
 
   if (paypalRaw.trim() !== "" && paypal_me_id === null) {
-    return NextResponse.json({ error: "invalid_paypal_me_id" }, { status: 400 });
+    return NextResponse.json({ ok: false, message: "invalid_paypal_me_id" }, { status: 400 });
   }
   if (cashRaw.trim() !== "" && cash_app_cashtag === null) {
-    return NextResponse.json({ error: "invalid_cash_app_cashtag" }, { status: 400 });
+    return NextResponse.json({ ok: false, message: "invalid_cash_app_cashtag" }, { status: 400 });
   }
 
   const paymentLinksPayload = buildPaymentLinksJson(paypal_me_id, cash_app_cashtag);

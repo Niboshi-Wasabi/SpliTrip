@@ -26,7 +26,7 @@ export async function listAdminAuditLogs(
   // 監査ログを取得（新しい順）
   const { data: auditLogs, error: auditError } = await serviceSupabase
     .from("admin_audit_logs")
-    .select("*")
+    .select("id, action, target_type, target_id, details, admin_user_id, created_at")
     .order("created_at", { ascending: false })
     .range(offset, offset + limit - 1);
 

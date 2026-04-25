@@ -551,8 +551,8 @@ export function AnnouncementsManager() {
         is_published: announcementRow.is_published,
       });
       
-      // 編集中の既存IDを保持（更新時に使用）
-      // TODO: 編集機能の実装が必要な場合は、ここでeditingIdのstateを追加
+      // 編集機能は現在未実装
+      // 将来的には既存お知らせの編集機能を追加する可能性あり
     }
   };
 
