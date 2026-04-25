@@ -191,19 +191,14 @@ export function getWebAuthnOrigin(request: NextRequest): string {
 }
 
 export function getWebAuthnRpId(origin: string): string {
-  const explicitRpId = (process.env.WEBAUTHN_RP_ID ?? "").trim();
-  if (explicitRpId.length > 0) {
-    return explicitRpId;
-  }
-
   const hostname = new URL(origin).hostname;
   if (hostname === "localhost" || hostname === "127.0.0.1") {
     return hostname;
   }
 
-  // CRITICAL FIX: Use the actual hostname to avoid NotAllowedError.
-  // RP ID must be the same as or a parent domain of the origin's hostname.
-  // Using apex domain when accessed via www causes WebAuthn rejection.
+  // CRITICAL FIX: Always use the current hostname to ensure RP ID matches origin.
+  // WebAuthn requires RP ID to be the same as or a parent of origin's hostname.
+  // Environment variable override disabled to prevent origin/rpId mismatches.
   return hostname;
 }
 
