@@ -6,8 +6,6 @@ import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Link } from "@/i18n/navigation";
-import { Settings } from "lucide-react";
 
 type StatusPayload = {
   ok: boolean;
@@ -34,7 +32,6 @@ export function TwoFactorGate({ nextPath }: Props) {
   const [busy, setBusy] = useState(false);
   const [backupCode, setBackupCode] = useState("");
   const [error, setError] = useState<string | null>(null);
-  const [noPasskeyError, setNoPasskeyError] = useState<boolean>(false);
   const [newBackupCodes, setNewBackupCodes] = useState<string[] | null>(null);
 
   const needsSetup = useMemo(
@@ -76,13 +73,14 @@ export function TwoFactorGate({ nextPath }: Props) {
     
     // 初回アクセス時（パスキー未登録）は自動的に設定画面へリダイレクト
     if (status !== null && status.credentialCount === 0 && !status.verified) {
+      console.log("[2FA] 初回ユーザー検知、設定画面へ自動遷移");
       const setupRedirectTimer = setTimeout(() => {
-        // クエリパラメータで元の遷移先を保持
         const setupUrl = new URL('/settings', window.location.origin);
         setupUrl.searchParams.set('setup', '2fa');
         setupUrl.searchParams.set('returnTo', nextPath);
+        console.log("[2FA] 設定画面遷移:", setupUrl.toString());
         window.location.href = setupUrl.toString();
-      }, 1000); // 1秒待ってからリダイレクト（ユーザーが状況を把握できるよう）
+      }, 500); // 500ms待ってからリダイレクト（UIの表示確認のため短縮）
 
       return () => clearTimeout(setupRedirectTimer);
     }
@@ -140,7 +138,6 @@ export function TwoFactorGate({ nextPath }: Props) {
   async function handleAuthenticate() {
     setBusy(true);
     setError(null);
-    setNoPasskeyError(false);
     try {
       const optionsResponse = await fetch(
         "/api/auth/2fa/webauthn/authenticate/options",
@@ -154,8 +151,12 @@ export function TwoFactorGate({ nextPath }: Props) {
         try {
           const errorPayload = await optionsResponse.json() as { code?: string; message?: string };
           if (errorPayload.code === "NO_PASSKEY") {
-            setError("使用可能なパスキーがありません。");
-            setNoPasskeyError(true);
+            // エラーメッセージを表示せず、直接設定画面に遷移
+            console.log("[2FA] パスキー未登録、設定画面へ遷移");
+            const setupUrl = new URL('/settings', window.location.origin);
+            setupUrl.searchParams.set('setup', '2fa');
+            setupUrl.searchParams.set('returnTo', nextPath);
+            window.location.href = setupUrl.toString();
             return;
           }
         } catch {
@@ -207,7 +208,6 @@ export function TwoFactorGate({ nextPath }: Props) {
     }
     setBusy(true);
     setError(null);
-    setNoPasskeyError(false);
     try {
       const response = await fetch("/api/auth/2fa/backup/verify", {
         method: "POST",
@@ -258,9 +258,12 @@ export function TwoFactorGate({ nextPath }: Props) {
       ) : null}
 
       {needsSetup ? (
-        <Button type="button" className="w-full min-h-[44px]" disabled={busy} onClick={() => void handleRegister()}>
-          {busy ? t("processing") : t("registerButton")}
-        </Button>
+        <div className="text-center py-4">
+          <div className="inline-flex items-center gap-2 text-sm text-muted-foreground">
+            <div className="h-4 w-4 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
+            設定画面に移動中...
+          </div>
+        </div>
       ) : (
         <Button type="button" className="w-full min-h-[44px]" disabled={busy} onClick={() => void handleAuthenticate()}>
           {busy ? t("processing") : t("authenticateButton")}
@@ -286,21 +289,8 @@ export function TwoFactorGate({ nextPath }: Props) {
         </Button>
       </div>
 
-      {error ? (
-        <div className="space-y-2">
-          <p className="text-sm text-destructive">{error}</p>
-          {noPasskeyError && (
-            <div className="flex items-center gap-2">
-              <Link
-                href="/settings"
-                className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground underline"
-              >
-                <Settings className="h-3 w-3" />
-                設定画面で生体認証を登録
-              </Link>
-            </div>
-          )}
-        </div>
+      {error && !needsSetup ? (
+        <p className="text-sm text-destructive">{error}</p>
       ) : null}
     </div>
   );
