@@ -10,6 +10,7 @@
 import { SplitripThemeProvider } from "@/components/theme/splitrip-theme-provider";
 import { DeviceLocaleSync } from "@/components/i18n/device-locale-sync";
 import { GlobalLanguagePickerFab } from "@/components/ui/language-picker-modal";
+import { AppDataProvider } from "@/components/providers/app-data-provider";
 
 /**
  * Alias so call sites can keep the familiar `ThemeProvider` tag without importing a missing global.
@@ -29,9 +30,11 @@ export function AppProviders({ children }: Props) {
       enableSystem
       disableTransitionOnChange
     >
-      {children}
-      <DeviceLocaleSync />
-      <GlobalLanguagePickerFab />
+      <AppDataProvider>
+        {children}
+        <DeviceLocaleSync />
+        <GlobalLanguagePickerFab />
+      </AppDataProvider>
     </ThemeProvider>
   );
 }
