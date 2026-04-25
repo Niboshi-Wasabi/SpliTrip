@@ -12,7 +12,7 @@ import type { AppLocale } from "@/i18n/routing";
 const firaCode = Fira_Code({
   variable: "--font-fira-code",
   subsets: ["latin"],
-  preload: false,
+  preload: false, // 等幅フォントは必要時のみ読み込み
 });
 
 const sourceSerif4 = Source_Serif_4({
@@ -20,7 +20,7 @@ const sourceSerif4 = Source_Serif_4({
   subsets: ["latin", "latin-ext", "cyrillic", "cyrillic-ext"],
   weight: ["400", "500", "600", "700"],
   display: "swap",
-  preload: false,
+  preload: true, // メインフォントなのでプリロード有効
 });
 
 const notoSerifJp = Noto_Serif_JP({
@@ -28,7 +28,7 @@ const notoSerifJp = Noto_Serif_JP({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
   display: "swap",
-  preload: false,
+  preload: true, // 日本語メインフォントなのでプリロード有効
 });
 
 const googleSansByKey = {

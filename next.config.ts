@@ -17,6 +17,13 @@ const nextConfig: NextConfig = {
   compiler: {
     removeConsole: process.env.NODE_ENV === 'production',
   },
+  
+  // 開発時のパフォーマンス改善
+  onDemandEntries: {
+    // ページがメモリに保持される時間を短縮
+    maxInactiveAge: 25 * 1000,
+    pagesBufferLength: 2,
+  },
 };
 
 export default withNextIntl(nextConfig);
