@@ -138,6 +138,7 @@ export function TwoFactorGate({ nextPath }: Props) {
   }
 
   async function handleAuthenticate() {
+    console.log("[2FA] 認証ボタンクリック、現在のステータス:", status);
     setBusy(true);
     setError(null);
     try {
@@ -171,9 +172,11 @@ export function TwoFactorGate({ nextPath }: Props) {
         options: PublicKeyCredentialRequestOptions;
       };
 
+      console.log("[2FA] WebAuthn認証開始:", optionsPayload.options);
       const authenticationResult = await startAuthentication({
         optionsJSON: optionsPayload.options as never,
       });
+      console.log("[2FA] WebAuthn認証結果:", authenticationResult);
 
       const verifyResponse = await fetch(
         "/api/auth/2fa/webauthn/authenticate/verify",
@@ -196,8 +199,26 @@ export function TwoFactorGate({ nextPath }: Props) {
       // 即座に強制遷移（より確実な遷移処理）
       console.log("[2FA] 認証成功、遷移先:", nextPath);
       window.location.replace(nextPath);
-    } catch {
-      setError(t("authFailed"));
+    } catch (error) {
+      console.error("[2FA] 認証エラー詳細:", error);
+      
+      if (error instanceof Error) {
+        if (error.name === "NotAllowedError") {
+          setError("認証がキャンセルされました。");
+        } else if (error.message.includes("NO_PASSKEY")) {
+          // パスキーがない場合の処理
+          console.log("[2FA] パスキーなしエラー、設定画面へ遷移");
+          const setupUrl = new URL('/settings', window.location.origin);
+          setupUrl.searchParams.set('setup', '2fa');
+          setupUrl.searchParams.set('returnTo', nextPath);
+          window.location.href = setupUrl.toString();
+          return;
+        } else {
+          setError(`認証エラー: ${error.message}`);
+        }
+      } else {
+        setError(t("authFailed"));
+      }
     } finally {
       setBusy(false);
     }
