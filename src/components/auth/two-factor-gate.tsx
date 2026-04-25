@@ -173,10 +173,20 @@ export function TwoFactorGate({ nextPath }: Props) {
       };
 
       console.log("[2FA] WebAuthn認証開始:", optionsPayload.options);
+      console.log("[2FA] 利用可能な認証器:", optionsPayload.options.allowCredentials);
+      console.log("[2FA] RP ID:", optionsPayload.options.rpId);
+      console.log("[2FA] User Verification:", optionsPayload.options.userVerification);
+      
+      // ユーザーに認証が開始されることを明示
+      setError("生体認証を実行してください...");
+      
       const authenticationResult = await startAuthentication({
         optionsJSON: optionsPayload.options as never,
       });
       console.log("[2FA] WebAuthn認証結果:", authenticationResult);
+      
+      // 成功時はエラーメッセージをクリア
+      setError(null);
 
       const verifyResponse = await fetch(
         "/api/auth/2fa/webauthn/authenticate/verify",
@@ -323,12 +333,14 @@ export function TwoFactorGate({ nextPath }: Props) {
         <div className="rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-700 dark:border-red-900/60 dark:bg-red-950/35 dark:text-red-300">
           <p className="font-medium mb-2">認証エラー</p>
           <p>{error}</p>
-          {error.includes("キャンセル") || error.includes("タイムアウト") ? (
+          {error.includes("キャンセル") || error.includes("タイムアウト") || error.includes("生体認証を実行") ? (
             <div className="mt-3 text-xs">
-              <p>💡 <strong>ヒント:</strong></p>
+              <p>💡 <strong>対処法:</strong></p>
               <ul className="list-disc list-inside space-y-1 ml-4">
                 <li>生体認証のポップアップが表示されたら、指紋またはFace IDで認証してください</li>
-                <li>認証に失敗した場合は、下のバックアップコードも利用できます</li>
+                <li>ポップアップが表示されない場合は、ページを再読み込みしてください</li>
+                <li>認証に失敗する場合は、下のバックアップコードをご利用ください</li>
+                <li>問題が続く場合は、別のブラウザまたはデバイスでお試しください</li>
               </ul>
             </div>
           ) : null}
