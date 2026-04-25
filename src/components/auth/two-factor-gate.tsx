@@ -174,6 +174,12 @@ export function TwoFactorGate({ nextPath }: Props) {
 
       console.log("[2FA] WebAuthn認証開始:", optionsPayload.options);
       console.log("[2FA] 利用可能な認証器:", optionsPayload.options.allowCredentials);
+      console.log("[2FA] 登録済み認証器詳細:", optionsPayload.options.allowCredentials?.map(cred => ({
+        id: Array.from(new Uint8Array(cred.id as ArrayBuffer)).slice(0, 8).map(b => b.toString(16).padStart(2, '0')).join('') + '...',
+        type: cred.type,
+        transports: cred.transports,
+        idLength: (cred.id as ArrayBuffer).byteLength
+      })));
       console.log("[2FA] RP ID:", optionsPayload.options.rpId);
       console.log("[2FA] User Verification:", optionsPayload.options.userVerification);
       console.log("[2FA] ブラウザ情報:", {
@@ -181,7 +187,16 @@ export function TwoFactorGate({ nextPath }: Props) {
         platform: navigator.platform,
         webAuthnSupport: !!navigator.credentials?.create,
         isSecureContext: window.isSecureContext,
-        origin: window.location.origin
+        origin: window.location.origin,
+        browserType: (() => {
+          const ua = navigator.userAgent.toLowerCase();
+          if (ua.includes('edg/')) return 'Edge';
+          if (ua.includes('chrome/')) return 'Chrome';
+          if (ua.includes('firefox/')) return 'Firefox';
+          if (ua.includes('safari/') && !ua.includes('chrome/')) return 'Safari';
+          return 'Other';
+        })(),
+        cookieEnabled: navigator.cookieEnabled,
       });
       
       // ユーザーに認証が開始されることを明示
@@ -218,10 +233,22 @@ export function TwoFactorGate({ nextPath }: Props) {
       window.location.replace(nextPath);
     } catch (error) {
       console.error("[2FA] 認証エラー詳細:", error);
+      console.error("[2FA] エラータイプ:", error instanceof Error ? error.name : 'Unknown');
+      console.error("[2FA] エラーメッセージ:", error instanceof Error ? error.message : String(error));
+      console.error("[2FA] 現在のブラウザ:", (() => {
+        const ua = navigator.userAgent.toLowerCase();
+        if (ua.includes('edg/')) return 'Edge';
+        if (ua.includes('chrome/')) return 'Chrome';  
+        if (ua.includes('firefox/')) return 'Firefox';
+        if (ua.includes('safari/') && !ua.includes('chrome/')) return 'Safari';
+        return 'Other';
+      })());
       
       if (error instanceof Error) {
         if (error.name === "NotAllowedError") {
-          setError("認証がキャンセルされたか、タイムアウトしました。再度お試しください。");
+          const ua = navigator.userAgent.toLowerCase();
+          const browserName = ua.includes('chrome/') ? 'Chrome' : ua.includes('firefox/') ? 'Firefox' : ua.includes('safari/') ? 'Safari' : 'このブラウザ';
+          setError(`${browserName}でパスキー認証がブロックされました。RP ID不整合の可能性があります。設定画面でパスキーを再登録するか、他のブラウザでお試しください。`);
         } else if (error.name === "InvalidStateError") {
           // パスキーが削除されているか、無効な状態
           setError("登録されたパスキーが見つかりません。設定画面で再登録してください。");
