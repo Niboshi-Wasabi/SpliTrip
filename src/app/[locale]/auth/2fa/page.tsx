@@ -6,6 +6,7 @@ import {
 import { createClient } from "@/utils/supabase/server";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { TwoFactorGate } from "@/components/auth/two-factor-gate";
+import { isTwoFactorVerified } from "@/lib/auth/two-factor";
 
 type PageProps = {
   params: Promise<{ locale: string }>;
@@ -28,6 +29,9 @@ export default async function TwoFactorPage({ params, searchParams }: PageProps)
 
   const sanitizedNextPath =
     toIntlRouterPathFromMiddlewareNext(query.next) ?? "/dashboard";
+
+  // サーバー側では2FA認証状態をチェックしない
+  // （クライアント側のTwoFactorGateで高速チェック）
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4 py-8">

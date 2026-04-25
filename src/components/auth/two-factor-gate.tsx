@@ -49,8 +49,14 @@ export function TwoFactorGate({ nextPath }: Props) {
     }
     const payload = (await response.json()) as StatusPayload;
     setStatus(payload);
+    
+    // 既に認証済みなら即座にリダイレクト
+    if (payload.verified) {
+      window.location.href = nextPath;
+    }
+    
     return payload;
-  }, []);
+  }, [nextPath, router]);
 
   useEffect(() => {
     void loadStatus();
@@ -59,11 +65,12 @@ export function TwoFactorGate({ nextPath }: Props) {
   // ステータス変更時の自動遷移を分離（初回ロード時の確実な遷移のため）
   useEffect(() => {
     if (status?.verified) {
-      // 短い遅延を挟んでCookieが確実に設定されてからリダイレクト
-      setTimeout(() => {
-        router.replace(nextPath);
-        router.refresh();
-      }, 100);
+      // 即座に強制遷移
+      const redirectTimer = setTimeout(() => {
+        window.location.href = nextPath;
+      }, 50);
+
+      return () => clearTimeout(redirectTimer);
     }
   }, [status?.verified, nextPath, router]);
 
@@ -103,6 +110,12 @@ export function TwoFactorGate({ nextPath }: Props) {
       setStatus((currentStatus) => 
         currentStatus ? { ...currentStatus, verified: true } : null
       );
+
+      // 即座に強制遷移（ダブルセーフティ）
+      setTimeout(() => {
+        // 強制的にページ遷移
+        window.location.href = nextPath;
+      }, 100);
     } catch {
       setError(t("registerFailed"));
     } finally {
@@ -151,6 +164,12 @@ export function TwoFactorGate({ nextPath }: Props) {
       setStatus((currentStatus) => 
         currentStatus ? { ...currentStatus, verified: true } : null
       );
+
+      // 即座に強制遷移（ダブルセーフティ）
+      setTimeout(() => {
+        // 強制的にページ遷移
+        window.location.href = nextPath;
+      }, 100);
     } catch {
       setError(t("authFailed"));
     } finally {
@@ -180,6 +199,12 @@ export function TwoFactorGate({ nextPath }: Props) {
       setStatus((currentStatus) => 
         currentStatus ? { ...currentStatus, verified: true } : null
       );
+
+      // 即座に強制遷移（ダブルセーフティ）
+      setTimeout(() => {
+        // 強制的にページ遷移
+        window.location.href = nextPath;
+      }, 100);
     } catch {
       setError(t("backupCodeInvalid"));
     } finally {
