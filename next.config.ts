@@ -4,10 +4,7 @@ import createNextIntlPlugin from "next-intl/plugin";
 const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
 
 const nextConfig: NextConfig = {
-  // フォント最適化設定
-  optimizeFonts: true,
-  
-  // 不要なプリロードを避けるための設定
+  // パッケージインポート最適化（バンドルサイズ削減）
   experimental: {
     optimizePackageImports: [
       'lucide-react',
@@ -16,7 +13,7 @@ const nextConfig: NextConfig = {
     ],
   },
   
-  // フォントプリロードの制御
+  // プロダクション最適化
   compiler: {
     removeConsole: process.env.NODE_ENV === 'production',
   },
