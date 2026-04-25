@@ -13,8 +13,8 @@ type AuditLogsPageProps = {
 };
 
 async function AuditLogsContent() {
-  const logsResult = await listAdminAuditLogs(100)
-    .then((logs) => ({ logs, fetchError: null as null | unknown }))
+  const logsResult = await listAdminAuditLogs({ limit: 100 })
+    .then((data) => ({ logs: data.logs, fetchError: null as null | unknown }))
     .catch((fetchError) => ({ logs: null as null, fetchError }));
 
   if (logsResult.fetchError || !logsResult.logs) {

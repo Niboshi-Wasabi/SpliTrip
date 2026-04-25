@@ -17,11 +17,28 @@ export type AdminAuditLogItem = {
  * 管理者用：監査ログの一覧を取得
  * 管理者とターゲットユーザーの情報も含めて返す
  */
-export async function listAdminAuditLogs(
-  limit: number = 50,
-  offset: number = 0
-): Promise<AdminAuditLogItem[]> {
+export async function listAdminAuditLogs({
+  page = 1,
+  limit = 50,
+}: {
+  page?: number;
+  limit?: number;
+} = {}): Promise<{
+  logs: AdminAuditLogItem[];
+  totalCount: number;
+}> {
   const serviceSupabase = createServiceRoleClient();
+  const offset = (page - 1) * limit;
+
+  // 総数を取得
+  const { count: totalCount, error: countError } = await serviceSupabase
+    .from("admin_audit_logs")
+    .select("*", { count: "exact", head: true });
+
+  if (countError) {
+    console.error("[listAdminAuditLogs] 総数取得エラー:", countError);
+    throw countError;
+  }
 
   // 監査ログを取得（新しい順）
   const { data: auditLogs, error: auditError } = await serviceSupabase
@@ -109,5 +126,8 @@ export async function listAdminAuditLogs(
     };
   });
 
-  return result;
+  return {
+    logs: result,
+    totalCount: totalCount || 0,
+  };
 }
