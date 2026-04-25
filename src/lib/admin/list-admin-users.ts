@@ -31,7 +31,10 @@ export async function listAdminUsers(): Promise<{
   }
 
   if (!authUsers.users || authUsers.users.length === 0) {
-    return [];
+    return {
+      items: [],
+      totalCount: 0,
+    };
   }
 
   // user_profiles からプロフィール情報を取得

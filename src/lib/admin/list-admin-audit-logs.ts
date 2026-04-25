@@ -53,7 +53,10 @@ export async function listAdminAuditLogs({
   }
 
   if (!auditLogs || auditLogs.length === 0) {
-    return [];
+    return {
+      logs: [],
+      totalCount: totalCount || 0,
+    };
   }
 
   // 管理者とターゲットユーザーのIDを収集（重複を除く）
