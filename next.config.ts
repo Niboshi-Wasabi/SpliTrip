@@ -18,6 +18,13 @@ const nextConfig: NextConfig = {
     removeConsole: process.env.NODE_ENV === 'production',
   },
   
+  // アセット配信の改善
+  output: 'standalone',
+  
+  // 静的アセット最適化
+  generateEtags: false,
+  poweredByHeader: false,
+  
   // 開発時のパフォーマンス改善
   onDemandEntries: {
     // ページがメモリに保持される時間を短縮

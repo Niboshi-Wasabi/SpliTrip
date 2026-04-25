@@ -49,6 +49,7 @@ export function TwoFactorGate({ nextPath }: Props) {
     }
     const payload = (await response.json()) as StatusPayload;
     console.log("[2FA] ステータス取得:", payload);
+    console.log("[2FA] Build version:", process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA || "local");
     setStatus(payload);
     
     // 既に認証済みなら即座にリダイレクト

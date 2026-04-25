@@ -39,6 +39,12 @@ export async function generateMetadata({
       statusBarStyle: "default",
       title: "SpliTrip",
     },
+    other: {
+      // キャッシュバスティング用
+      'cache-control': 'no-cache, no-store, must-revalidate',
+      'pragma': 'no-cache',
+      'expires': '0',
+    },
   };
 }
 

@@ -1,0 +1,22 @@
+{
+  "framework": "nextjs",
+  "buildCommand": "next build",
+  "functions": {
+    "app/**/*": {
+      "maxDuration": 30
+    }
+  },
+  "crons": [
+  ],
+  "headers": [
+    {
+      "source": "/(.*).(js|css|woff|woff2|ttf|otf|eot|svg|png|jpg|jpeg|gif|webp|ico)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    }
+  ]
+}
