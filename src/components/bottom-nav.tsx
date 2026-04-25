@@ -9,12 +9,13 @@
  */
 
 import { useTranslations } from "next-intl";
-import { Link, usePathname } from "@/i18n/navigation";
+import { usePathname } from "@/i18n/navigation";
 import { SupportDeveloper } from "@/components/ads/SupportDeveloper";
 import { Home, Settings, LogOut } from "lucide-react";
 import { createClient } from "@/utils/supabase/client";
 import { isSupabaseConfigured } from "@/utils/supabase/env";
 import { useRouter } from "@/i18n/navigation";
+import { OptimizedLink } from "@/components/common/optimized-link";
 
 const HIDDEN_PATHS = [
   "/",
@@ -60,7 +61,7 @@ export function BottomNav() {
       aria-label={translations("ariaLabel")}
     >
       <div className="mx-auto flex max-w-lg items-stretch justify-around">
-        <Link
+        <OptimizedLink
           href="/dashboard"
           className={`flex min-h-[56px] flex-1 flex-col items-center justify-center gap-0.5 text-[11px] transition-colors ${
             isDashboard
@@ -70,9 +71,9 @@ export function BottomNav() {
         >
           <Home className="h-5 w-5" />
           {translations("home")}
-        </Link>
+        </OptimizedLink>
 
-        <Link
+        <OptimizedLink
           href="/settings"
           className={`flex min-h-[56px] flex-1 flex-col items-center justify-center gap-0.5 text-[11px] transition-colors ${
             isSettings
@@ -82,7 +83,7 @@ export function BottomNav() {
         >
           <Settings className="h-5 w-5" />
           {translations("settings")}
-        </Link>
+        </OptimizedLink>
 
         <button
           type="button"

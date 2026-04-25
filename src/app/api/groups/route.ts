@@ -86,5 +86,65 @@ export async function POST(request: NextRequest) {
     invite_token: string;
   };
 
-  return NextResponse.json({ group }, { status: 201 });
+  const response = NextResponse.json({ group }, { status: 201 });
+  // 新しく作成されたグループは短いキャッシュ
+  response.headers.set('Cache-Control', 'private, max-age=10, s-maxage=10');
+  return response;
+}
+
+/**
+ * ユーザーのグループ一覧を取得
+ */
+export async function GET(request: NextRequest) {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return NextResponse.json({ ok: false, message: "unauthorized" }, { status: 401 });
+  }
+
+  try {
+    // ユーザーが参加しているグループを取得
+    const { data: groupMembers, error: membersError } = await supabase
+      .from("group_members")
+      .select(`
+        group_id,
+        role,
+        groups!inner(
+          id,
+          name,
+          description,
+          currency_code,
+          created_at
+        )
+      `)
+      .eq("user_id", user.id);
+
+    if (membersError) {
+      console.error("[API Error - groups list]:", membersError);
+      return NextResponse.json({ ok: false, message: "groups_error" }, { status: 500 });
+    }
+
+    // グループデータを整形
+    const groups = groupMembers?.map(gm => ({
+      ...gm.groups,
+      role: gm.role
+    })) || [];
+
+    const response = NextResponse.json({ 
+      ok: true, 
+      groups 
+    });
+    
+    // グループ一覧は1分間キャッシュ
+    response.headers.set('Cache-Control', 'private, max-age=60, s-maxage=60');
+    return response;
+
+  } catch (error) {
+    console.error("[API Error - groups]:", error);
+    return NextResponse.json({ ok: false, message: "server_error" }, { status: 500 });
+  }
 }
