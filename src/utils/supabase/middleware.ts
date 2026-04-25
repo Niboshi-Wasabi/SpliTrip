@@ -83,18 +83,19 @@ export async function finalizeSupabaseSession(
     return NextResponse.redirect(url);
   }
 
-  if (user && isProtectedPath(request.nextUrl.pathname)) {
-    const isVerified = isTwoFactorVerified(request, user.id);
-    if (!isVerified) {
-      const locale = resolveLocaleFromPathname(request.nextUrl.pathname);
-      const nextPath = `${request.nextUrl.pathname}${request.nextUrl.search}`;
-      const redirectUrl = request.nextUrl.clone();
-      redirectUrl.pathname = `/${locale}/auth/2fa`;
-      redirectUrl.search = "";
-      redirectUrl.searchParams.set("next", nextPath);
-      return NextResponse.redirect(redirectUrl);
-    }
-  }
+  // 2FA認証チェックを無効化
+  // if (user && isProtectedPath(request.nextUrl.pathname)) {
+  //   const isVerified = isTwoFactorVerified(request, user.id);
+  //   if (!isVerified) {
+  //     const locale = resolveLocaleFromPathname(request.nextUrl.pathname);
+  //     const nextPath = `${request.nextUrl.pathname}${request.nextUrl.search}`;
+  //     const redirectUrl = request.nextUrl.clone();
+  //     redirectUrl.pathname = `/${locale}/auth/2fa`;
+  //     redirectUrl.search = "";
+  //     redirectUrl.searchParams.set("next", nextPath);
+  //     return NextResponse.redirect(redirectUrl);
+  //   }
+  // }
 
   return response;
 }

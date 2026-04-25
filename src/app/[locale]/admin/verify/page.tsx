@@ -39,9 +39,6 @@ export default async function AdminVerifyPage({
     redirect(`/${locale}/dashboard`);
   }
 
-  return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-blue-50 via-white to-emerald-50 px-4 dark:from-blue-950/50 dark:via-background dark:to-emerald-950/40">
-      <AdminStepUpPanel nextPath={afterStepUpPath} />
-    </div>
-  );
+  // 2FA廃止により、管理者再認証をスキップして直接リダイレクト
+  redirect(afterStepUpPath);
 }

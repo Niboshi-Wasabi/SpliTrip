@@ -26,7 +26,7 @@ import { PaymentSettingsForm } from "./payment-settings-form";
 import { SupportDeveloper } from "@/components/ads/SupportDeveloper";
 import { LanguageSwitcher } from "@/components/ui/LanguageSwitcher";
 import { isAppLocale } from "@/lib/i18n/next-intl-locale";
-import { TwoFactorSettingsForm } from "@/components/auth/two-factor-settings-form";
+// import { TwoFactorSettingsForm } from "@/components/auth/two-factor-settings-form"; // 2FA廃止
 
 export const dynamic = "force-dynamic";
 
@@ -147,7 +147,7 @@ export default async function SettingsPage({ params }: PageProps) {
             <CardDescription>{t("twoFactorDescription")}</CardDescription>
           </CardHeader>
           <CardContent>
-            <TwoFactorSettingsForm />
+            {/* <TwoFactorSettingsForm /> 2FA廃止により削除 */}
           </CardContent>
         </Card>
         <Card>

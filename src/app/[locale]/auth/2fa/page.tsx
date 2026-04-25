@@ -16,8 +16,10 @@ type PageProps = {
 export default async function TwoFactorPage({ params, searchParams }: PageProps) {
   const { locale } = await params;
   const query = await searchParams;
-  const t = await getTranslations("TwoFactor");
-  const supabase = await createClient();
+  
+  // 2FA廃止により、次のページに直接リダイレクト
+  const nextPath = toIntlRouterPathFromMiddlewareNext(query.next, locale);
+  redirect({ href: nextPath, locale });
   const {
     data: { user },
   } = await supabase.auth.getUser();
