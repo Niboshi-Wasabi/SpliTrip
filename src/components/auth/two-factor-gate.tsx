@@ -204,7 +204,12 @@ export function TwoFactorGate({ nextPath }: Props) {
       
       if (error instanceof Error) {
         if (error.name === "NotAllowedError") {
-          setError("認証がキャンセルされました。");
+          setError("認証がキャンセルされたか、タイムアウトしました。再度お試しください。");
+        } else if (error.name === "InvalidStateError") {
+          // パスキーが削除されているか、無効な状態
+          setError("登録されたパスキーが見つかりません。設定画面で再登録してください。");
+        } else if (error.name === "NotSupportedError") {
+          setError("お使いのブラウザまたはデバイスは生体認証に対応していません。バックアップコードをご利用ください。");
         } else if (error.message.includes("NO_PASSKEY")) {
           // パスキーがない場合の処理
           console.log("[2FA] パスキーなしエラー、設定画面へ遷移");
@@ -214,7 +219,7 @@ export function TwoFactorGate({ nextPath }: Props) {
           window.location.href = setupUrl.toString();
           return;
         } else {
-          setError(`認証エラー: ${error.message}`);
+          setError(`認証に失敗しました。しばらく経ってからお試しください。`);
         }
       } else {
         setError(t("authFailed"));
@@ -289,7 +294,7 @@ export function TwoFactorGate({ nextPath }: Props) {
         </div>
       ) : (
         <Button type="button" className="w-full min-h-[44px]" disabled={busy} onClick={() => void handleAuthenticate()}>
-          {busy ? t("processing") : t("authenticateButton")}
+          {busy ? t("processing") : error ? "再度認証する" : t("authenticateButton")}
         </Button>
       )}
 
@@ -315,7 +320,19 @@ export function TwoFactorGate({ nextPath }: Props) {
       )}
 
       {error && !needsSetup ? (
-        <p className="text-sm text-destructive">{error}</p>
+        <div className="rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-700 dark:border-red-900/60 dark:bg-red-950/35 dark:text-red-300">
+          <p className="font-medium mb-2">認証エラー</p>
+          <p>{error}</p>
+          {error.includes("キャンセル") || error.includes("タイムアウト") ? (
+            <div className="mt-3 text-xs">
+              <p>💡 <strong>ヒント:</strong></p>
+              <ul className="list-disc list-inside space-y-1 ml-4">
+                <li>生体認証のポップアップが表示されたら、指紋またはFace IDで認証してください</li>
+                <li>認証に失敗した場合は、下のバックアップコードも利用できます</li>
+              </ul>
+            </div>
+          ) : null}
+        </div>
       ) : null}
     </div>
   );
