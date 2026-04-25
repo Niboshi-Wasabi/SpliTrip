@@ -259,10 +259,12 @@ export function TwoFactorGate({ nextPath }: Props) {
           
           setError(`${browserName}でドメイン変更によりパスキーが無効になりました。自動的に再設定画面に移動します...`);
           
-          // Redirect after showing the message
+          // Redirect after showing the message  
+          console.log("[2FA] Redirecting to setup in 3 seconds:", setupUrl.toString());
           setTimeout(() => {
+            console.log("[2FA] Executing redirect now");
             window.location.href = setupUrl.toString();
-          }, 2000);
+          }, 3000);
         } else if (error.name === "InvalidStateError") {
           // パスキーが削除されているか、無効な状態
           setError("登録されたパスキーが見つかりません。設定画面で再登録してください。");
