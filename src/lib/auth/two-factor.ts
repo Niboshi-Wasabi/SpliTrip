@@ -201,11 +201,9 @@ export function getWebAuthnRpId(origin: string): string {
     return hostname;
   }
 
-  // Production fallback: prefer apex domain so passkeys remain valid across subdomains.
-  if (hostname.startsWith("www.")) {
-    return hostname.slice(4);
-  }
-
+  // CRITICAL FIX: Use the actual hostname to avoid NotAllowedError.
+  // RP ID must be the same as or a parent domain of the origin's hostname.
+  // Using apex domain when accessed via www causes WebAuthn rejection.
   return hostname;
 }
 
