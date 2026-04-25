@@ -196,9 +196,13 @@ export function getWebAuthnRpId(origin: string): string {
     return hostname;
   }
 
-  // CRITICAL FIX: Always use the current hostname to ensure RP ID matches origin.
-  // WebAuthn requires RP ID to be the same as or a parent of origin's hostname.
-  // Environment variable override disabled to prevent origin/rpId mismatches.
+  // CROSS-BROWSER COMPATIBILITY: Use apex domain for both www and non-www access
+  // This ensures existing passkeys work across all subdomains and browsers.
+  // Chrome/Edge require exact match, Firefox is more flexible.
+  if (hostname === "www.splitrip.net" || hostname === "splitrip.net") {
+    return "splitrip.net"; // Use apex domain for maximum compatibility
+  }
+
   return hostname;
 }
 

@@ -46,6 +46,14 @@ export async function finalizeSupabaseSession(
   request: NextRequest,
   response: NextResponse,
 ): Promise<NextResponse> {
+  // WEBAUTHN FIX: Redirect www.splitrip.net to splitrip.net for RP ID consistency
+  const url = new URL(request.url);
+  if (url.hostname === "www.splitrip.net" && process.env.NODE_ENV === "production") {
+    const apexUrl = new URL(url);
+    apexUrl.hostname = "splitrip.net";
+    return NextResponse.redirect(apexUrl, 301);
+  }
+
   const env = getSupabaseEnv();
 
   if (!env) {
