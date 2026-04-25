@@ -1,8 +1,8 @@
 import { setRequestLocale } from "next-intl/server";
 import { redirect } from "next/navigation";
 import { toAdminPostStepUpPath } from "@/lib/auth/sanitize-redirect-path";
-import { isCurrentUserAdmin } from "@/lib/auth/admin-guard";
 import { AdminStepUpPanel } from "@/components/auth/admin-step-up-panel";
+import { createClient } from "@/utils/supabase/server";
 
 type AdminVerifyPageProps = {
   params: Promise<{ locale: string }>;
@@ -19,8 +19,23 @@ export default async function AdminVerifyPage({
   const afterStepUpPath = toAdminPostStepUpPath(query.next);
 
   // 管理者権限チェック（管理者でない場合はダッシュボードへ）
-  const isAdmin = await isCurrentUserAdmin();
-  if (!isAdmin) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    redirect(`/${locale}/login`);
+  }
+
+  // プロフィールから管理者権限を確認
+  const { data: profile } = await supabase
+    .from("user_profiles")
+    .select("is_admin")
+    .eq("id", user.id)
+    .single();
+
+  if (!profile?.is_admin) {
     redirect(`/${locale}/dashboard`);
   }
 
