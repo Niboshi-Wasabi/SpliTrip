@@ -2,20 +2,37 @@
 
 import { createContext, useContext, type ReactNode } from "react";
 import useSWR, { SWRConfig } from "swr";
+import { performanceMonitor } from "@/lib/performance/performance-monitor";
 import { useRouter } from "@/i18n/navigation";
 
-// 全体用のfetcher（認証必須）
+// 全体用のfetcher（認証必須、パフォーマンス追跡付き）
 const appFetcher = async (url: string) => {
-  const response = await fetch(url, {
-    credentials: "include",
-    cache: "no-store",
-  });
-  if (!response.ok) {
-    const error = new Error(`HTTP ${response.status}: ${response.statusText}`);
-    (error as any).status = response.status;
+  const startMark = performanceMonitor.startApiMeasure(url);
+  
+  try {
+    const response = await fetch(url, {
+      credentials: "include",
+      cache: "no-store",
+    });
+    
+    if (!response.ok) {
+      const error = new Error(`HTTP ${response.status}: ${response.statusText}`);
+      (error as any).status = response.status;
+      performanceMonitor.endApiMeasure(url, startMark);
+      performanceMonitor.recordCacheEvent(url, false);
+      throw error;
+    }
+    
+    const data = await response.json();
+    performanceMonitor.endApiMeasure(url, startMark);
+    performanceMonitor.recordCacheEvent(url, false);
+    
+    return data;
+  } catch (error) {
+    performanceMonitor.endApiMeasure(url, startMark);
+    performanceMonitor.recordCacheEvent(url, false);
     throw error;
   }
-  return response.json();
 };
 
 // パブリックfetcher（認証不要）

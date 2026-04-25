@@ -1,7 +1,8 @@
 "use client";
 
-import { createContext, useContext, type ReactNode } from "react";
-import useSWR, { SWRConfig } from "swr";
+import React, { createContext, useContext, type ReactNode } from "react";
+import useSWR, { SWRConfig, mutate } from "swr";
+import { createClient } from "@/utils/supabase/client";
 
 // 管理画面共通のfetcher
 const adminFetcher = async (url: string) => {
@@ -66,13 +67,47 @@ export function AdminDataProvider({ children }: { children: ReactNode }) {
 
 export const useAdminData = () => useContext(AdminDataContext);
 
-// 各リソース用のカスタムフック
+// 各リソース用のカスタムフック（リアルタイム同期対応）
 export const useAdminUsers = () => {
-  return useSWR("/api/admin/users");
+  const swrResult = useSWR("/api/admin/users");
+  
+  // 管理画面では30秒ごとに自動更新
+  const { mutate } = swrResult;
+  
+  return {
+    ...swrResult,
+    refreshManually: () => mutate(),
+  };
 };
 
 export const useAnnouncements = () => {
-  return useSWR("/api/admin/announcements");
+  const swrResult = useSWR("/api/admin/announcements");
+  
+  // リアルタイム同期（app_announcementsテーブルの変更を監視）
+  React.useEffect(() => {
+    const supabase = createClient();
+    const channel = supabase
+      .channel("admin-announcements")
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "app_announcements",
+        },
+        () => {
+          // お知らせテーブルの変更時にSWRキャッシュを更新
+          mutate("/api/admin/announcements");
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
+  
+  return swrResult;
 };
 
 export const useSystemSettings = () => {
@@ -80,7 +115,33 @@ export const useSystemSettings = () => {
 };
 
 export const useAuditLogs = (page = 1, limit = 50) => {
-  return useSWR(`/api/admin/audit-logs?page=${page}&limit=${limit}`);
+  const swrResult = useSWR(`/api/admin/audit-logs?page=${page}&limit=${limit}`);
+  
+  // 監査ログの自動更新（新しいログエントリの検出）
+  React.useEffect(() => {
+    const supabase = createClient();
+    const channel = supabase
+      .channel("admin-audit-logs")
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "admin_audit_logs",
+        },
+        () => {
+          // 新しい監査ログが追加された時にキャッシュを更新
+          mutate(`/api/admin/audit-logs?page=${page}&limit=${limit}`);
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [page, limit]);
+  
+  return swrResult;
 };
 
 // リソースの事前キャッシュ化

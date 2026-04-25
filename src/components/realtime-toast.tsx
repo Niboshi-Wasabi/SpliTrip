@@ -19,11 +19,13 @@ type Props = {
   show: boolean;
   /** トーストが消えた後に呼ばれる / Called after toast auto-dismisses */
   onDismiss: () => void;
+  /** カスタムメッセージ（オプション）/ Custom message (optional) */
+  message?: string;
 };
 
 const DISPLAY_DURATION_MS = 3000;
 
-export function RealtimeToast({ show, onDismiss }: Props) {
+export function RealtimeToast({ show, onDismiss, message }: Props) {
   const translations = useTranslations("Realtime");
   const [visible, setVisible] = useState(false);
   const [exiting, setExiting] = useState(false);
@@ -72,7 +74,7 @@ export function RealtimeToast({ show, onDismiss }: Props) {
     >
       <span className="flex items-center gap-2 text-sm text-foreground">
         <RefreshCw className="h-3.5 w-3.5 animate-spin text-blue-500" />
-        {translations("updated")}
+        {message || translations("updated")}
       </span>
     </div>
   );

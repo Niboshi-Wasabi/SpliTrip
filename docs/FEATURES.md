@@ -264,3 +264,32 @@ where id = '<ユーザーUUID>';
 
 - **Web Push** は API に **基盤のプレースホルダー**があり、エンドユーザー向けの本番通知フローは **未完了** と見なすのが安全です。
 - 文言・ラベルは **`messages/ja.json` / `en.json`** を中心に管理されています。
+
+---
+
+## パフォーマンス最適化
+
+### リアルタイムデータ同期
+- **SWR + Realtime統合**: Supabase RealtimeとSWRの統合によるリアルタイムキャッシュ更新
+- **WebSocket管理**: 自動再接続、デバウンス処理、エラーハンドリング
+- **リアルタイム通知**: データ更新時のトースト通知システム
+- **オフライン対応**: ネットワーク状態監視とオフライン時の通知
+
+### キャッシュ戦略
+- **SWR**: クライアント側データキャッシュとstale-while-revalidate
+- **API Cache-Control**: 応答ヘッダーによるブラウザキャッシュ制御
+- **Prefetch**: ホバー時のページ先読み、アイドル時のリソース先読み
+- **Realtime Cache Sync**: リアルタイムイベントによる自動キャッシュ無効化
+
+### 読み込み最適化
+- **Loading Skeletons**: データ読み込み中のプレースホルダー表示
+- **Optimized Links**: 自動prefetch付きLinkコンポーネント
+- **Context-aware Prefetching**: 現在ページに基づく関連ページの先読み
+- **Performance Monitor**: API応答時間、キャッシュヒット率、メモリ使用量の監視
+
+### 実装ファイル
+- `src/hooks/useSWRWithRealtime.ts`: SWRとRealtime統合フック
+- `src/hooks/useGroupData.ts`: グループデータ管理フック
+- `src/components/realtime/realtime-sync-provider.tsx`: リアルタイム同期プロバイダー
+- `src/lib/performance/performance-monitor.ts`: パフォーマンス監視システム
+- `src/components/admin/performance-dashboard.tsx`: 管理画面パフォーマンス監視
