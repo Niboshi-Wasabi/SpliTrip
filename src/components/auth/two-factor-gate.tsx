@@ -68,12 +68,10 @@ export function TwoFactorGate({ nextPath }: Props) {
   // ステータス変更時の自動遷移を分離（初回ロード時の確実な遷移のため）
   useEffect(() => {
     if (status?.verified) {
-      // 即座に強制遷移
-      const redirectTimer = setTimeout(() => {
-        window.location.href = nextPath;
-      }, 50);
-
-      return () => clearTimeout(redirectTimer);
+      // 即座に強制遷移（より確実な方法）
+      console.log("[2FA] useEffect - 認証済み検知、遷移先:", nextPath);
+      window.location.replace(nextPath);
+      return;
     }
     
     // 初回アクセス時（パスキー未登録）は自動的に設定画面へリダイレクト
@@ -188,16 +186,13 @@ export function TwoFactorGate({ nextPath }: Props) {
       }
 
       // 認証成功後は確実に認証済み状態になるため、状態を直接更新
-      // 遷移はuseEffectで自動的に行われる
       setStatus((currentStatus) => 
         currentStatus ? { ...currentStatus, verified: true } : null
       );
 
-      // 即座に強制遷移（ダブルセーフティ）
-      setTimeout(() => {
-        // 強制的にページ遷移
-        window.location.href = nextPath;
-      }, 100);
+      // 即座に強制遷移（より確実な遷移処理）
+      console.log("[2FA] 認証成功、遷移先:", nextPath);
+      window.location.replace(nextPath);
     } catch {
       setError(t("authFailed"));
     } finally {
@@ -224,16 +219,13 @@ export function TwoFactorGate({ nextPath }: Props) {
         throw new Error("backup verify failed");
       }
       // バックアップコード認証成功後は確実に認証済み状態になるため、状態を直接更新
-      // 遷移はuseEffectで自動的に行われる
       setStatus((currentStatus) => 
         currentStatus ? { ...currentStatus, verified: true } : null
       );
 
-      // 即座に強制遷移（ダブルセーフティ）
-      setTimeout(() => {
-        // 強制的にページ遷移
-        window.location.href = nextPath;
-      }, 100);
+      // 即座に強制遷移（より確実な遷移処理）
+      console.log("[2FA] バックアップコード認証成功、遷移先:", nextPath);
+      window.location.replace(nextPath);
     } catch {
       setError(t("backupCodeInvalid"));
     } finally {

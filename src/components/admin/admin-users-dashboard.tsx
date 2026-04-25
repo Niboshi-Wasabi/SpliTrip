@@ -26,10 +26,26 @@ export function AdminUsersDashboard() {
 
   if (fetchError || !usersResponse?.ok) {
     console.error("[AdminUsersDashboard] データ取得エラー:", fetchError);
+    const isConfigError = fetchError?.status === 500 || fetchError?.message?.includes('service_role');
+    const isPermissionError = fetchError?.status === 403;
+    
     return (
       <div className="space-y-4">
         <div className="rounded-md bg-red-50 p-4 text-center text-sm text-red-600 dark:bg-red-950/40 dark:text-red-300">
-          ユーザー一覧の取得に失敗しました。SUPABASE_SERVICE_ROLE_KEY の設定を確認してください。
+          {isConfigError ? (
+            <>
+              <p className="font-semibold mb-2">サーバー設定エラー</p>
+              <p>SUPABASE_SERVICE_ROLE_KEY の設定を確認してください。</p>
+              <p className="mt-2 text-xs">現在の値: {process.env.SUPABASE_SERVICE_ROLE_KEY ? '設定済み' : '未設定'}</p>
+            </>
+          ) : isPermissionError ? (
+            <p>管理者権限が不足しています。管理者ログインを確認してください。</p>
+          ) : (
+            <>
+              <p>ユーザー一覧の取得に失敗しました。</p>
+              <p className="mt-1 text-xs">エラー: {fetchError?.message || 'Unknown error'}</p>
+            </>
+          )}
         </div>
         <div className="flex justify-center">
           <Button
