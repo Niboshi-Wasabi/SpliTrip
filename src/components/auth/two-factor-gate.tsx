@@ -176,6 +176,13 @@ export function TwoFactorGate({ nextPath }: Props) {
       console.log("[2FA] 利用可能な認証器:", optionsPayload.options.allowCredentials);
       console.log("[2FA] RP ID:", optionsPayload.options.rpId);
       console.log("[2FA] User Verification:", optionsPayload.options.userVerification);
+      console.log("[2FA] ブラウザ情報:", {
+        userAgent: navigator.userAgent,
+        platform: navigator.platform,
+        webAuthnSupport: !!navigator.credentials?.create,
+        isSecureContext: window.isSecureContext,
+        origin: window.location.origin
+      });
       
       // ユーザーに認証が開始されることを明示
       setError("生体認証を実行してください...");
@@ -337,10 +344,11 @@ export function TwoFactorGate({ nextPath }: Props) {
             <div className="mt-3 text-xs">
               <p>💡 <strong>対処法:</strong></p>
               <ul className="list-disc list-inside space-y-1 ml-4">
-                <li>生体認証のポップアップが表示されたら、指紋またはFace IDで認証してください</li>
-                <li>ポップアップが表示されない場合は、ページを再読み込みしてください</li>
-                <li>認証に失敗する場合は、下のバックアップコードをご利用ください</li>
-                <li>問題が続く場合は、別のブラウザまたはデバイスでお試しください</li>
+                <li><strong>認証ポップアップが表示される場合</strong>: 指紋センサーに触れるか、Face IDを実行してください</li>
+                <li><strong>ポップアップが表示されない場合</strong>: ブラウザがWebAuthnをブロックしている可能性があります</li>
+                <li><strong>認証が常に失敗する場合</strong>: 下のバックアップコードを使用することをお勧めします</li>
+                <li><strong>Windows Hello/Touch ID</strong>: システム設定で生体認証が有効になっているか確認してください</li>
+                <li><strong>その他</strong>: Chrome/Edge/Safari等の主要ブラウザでお試しください</li>
               </ul>
             </div>
           ) : null}
