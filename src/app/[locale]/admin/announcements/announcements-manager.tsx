@@ -26,6 +26,7 @@ import {
   Wrench,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
 
 type Row = {
   id: string;
@@ -47,6 +48,7 @@ const ICON_TYPES = [
     labelEn: "Announcement",
     icon: Megaphone,
     color: "text-blue-600 dark:text-blue-400",
+    description: "一般的なお知らせやアップデート情報",
   },
   {
     value: "feature",
@@ -54,6 +56,7 @@ const ICON_TYPES = [
     labelEn: "Feature",
     icon: Star,
     color: "text-emerald-600 dark:text-emerald-400",
+    description: "新機能の追加やサービス拡張のお知らせ",
   },
   {
     value: "bugfix",
@@ -61,6 +64,7 @@ const ICON_TYPES = [
     labelEn: "Bugfix",
     icon: Bug,
     color: "text-orange-600 dark:text-orange-400",
+    description: "バグ修正や不具合解消のお知らせ",
   },
   {
     value: "design",
@@ -68,6 +72,7 @@ const ICON_TYPES = [
     labelEn: "Design",
     icon: Palette,
     color: "text-violet-600 dark:text-violet-400",
+    description: "UI/UXの改善やデザイン変更のお知らせ",
   },
   {
     value: "security",
@@ -75,6 +80,7 @@ const ICON_TYPES = [
     labelEn: "Security",
     icon: Shield,
     color: "text-red-600 dark:text-red-400",
+    description: "セキュリティ強化や認証に関するお知らせ",
   },
   {
     value: "maintenance",
@@ -82,18 +88,31 @@ const ICON_TYPES = [
     labelEn: "Maintenance",
     icon: Wrench,
     color: "text-zinc-600 dark:text-zinc-400",
+    description: "システムメンテナンスや一時停止のお知らせ",
   },
 ] as const;
 
 type AnnouncementIconType = (typeof ICON_TYPES)[number]["value"];
-const DEFAULT_ANNOUNCEMENT_ICON_TYPE: AnnouncementIconType = "announcement";
 
-function normalizeAnnouncementIconType(iconType: string): AnnouncementIconType {
-  if (ICON_TYPES.some((iconTypeItem) => iconTypeItem.value === iconType)) {
-    return iconType as AnnouncementIconType;
-  }
-  return DEFAULT_ANNOUNCEMENT_ICON_TYPE;
-}
+type TopicFormData = {
+  title_ja: string;
+  title_en: string;
+  content_ja: string;
+  content_en: string;
+  priority: number;
+  is_published: boolean;
+};
+
+type TopicFormsState = Record<AnnouncementIconType, TopicFormData>;
+
+const createEmptyTopicForm = (): TopicFormData => ({
+  title_ja: "",
+  title_en: "",
+  content_ja: "",
+  content_en: "",
+  priority: 0,
+  is_published: false,
+});
 
 export function AnnouncementsManager() {
   const t = useTranslations("Admin");
@@ -103,134 +122,108 @@ export function AnnouncementsManager() {
   const [loadError, setLoadError] = useState<string | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
-  const [deletingAnnouncementId, setDeletingAnnouncementId] = useState<string | null>(
-    null,
-  );
-  const [editing, setEditing] = useState<Row | "new" | null>(null);
-  const [draft, setDraft] = useState({
-    title_ja: "",
-    title_en: "",
-    content_ja: "",
-    content_en: "",
-    icon_type: DEFAULT_ANNOUNCEMENT_ICON_TYPE,
-    priority: 0,
-    is_published: false,
+  const [deletingAnnouncementId, setDeletingAnnouncementId] = useState<string | null>(null);
+  const [activeTopicTab, setActiveTopicTab] = useState<AnnouncementIconType>("announcement");
+  
+  // 各トピック毎のフォームデータ
+  const [topicForms, setTopicForms] = useState<TopicFormsState>(() => {
+    const initialState = {} as TopicFormsState;
+    ICON_TYPES.forEach((iconTypeItem) => {
+      initialState[iconTypeItem.value] = createEmptyTopicForm();
+    });
+    return initialState;
   });
 
   const iconTypeMap = useMemo(
-    () =>
-      new Map(
-        ICON_TYPES.map((iconTypeItem) => [iconTypeItem.value, iconTypeItem]),
-      ),
+    () => new Map(ICON_TYPES.map((iconTypeItem) => [iconTypeItem.value, iconTypeItem])),
     [],
   );
 
-  const selectedIconType =
-    iconTypeMap.get(draft.icon_type) ??
-    iconTypeMap.get(DEFAULT_ANNOUNCEMENT_ICON_TYPE);
-  const PreviewIcon = selectedIconType?.icon ?? Megaphone;
+  const activeTopicConfig = iconTypeMap.get(activeTopicTab);
+  const ActiveTopicIcon = activeTopicConfig?.icon ?? Megaphone;
+  const currentTopicForm = topicForms[activeTopicTab];
 
   const load = useCallback(async () => {
     setLoadError(null);
     setActionError(null);
     const res = await fetch("/api/admin/announcements", { cache: "no-store" });
-    const j = (await res.json().catch(() => null)) as
+    const jsonResponse = (await res.json().catch(() => null)) as
       | { ok?: boolean; items?: Row[]; message?: string }
       | null;
-    if (!res.ok || !j?.ok) {
-      if (j?.message === "step_up_required") {
+    if (!res.ok || !jsonResponse?.ok) {
+      if (jsonResponse?.message === "step_up_required") {
         setLoadError(t("stepUpRequiredError"));
         return;
       }
       setLoadError(t("announcementLoadError"));
       return;
     }
-    setRows((j.items ?? []) as Row[]);
+    setRows((jsonResponse.items ?? []) as Row[]);
   }, [t]);
 
   useEffect(() => {
     void load();
   }, [load]);
 
-  function openNew() {
-    setActionError(null);
-    setEditing("new");
-    setDraft({
-      title_ja: "",
-      title_en: "",
-      content_ja: "",
-      content_en: "",
-      icon_type: DEFAULT_ANNOUNCEMENT_ICON_TYPE,
-      priority: 0,
-      is_published: false,
-    });
-  }
+  const updateTopicForm = useCallback(
+    (topicType: AnnouncementIconType, updates: Partial<TopicFormData>) => {
+      setTopicForms((currentForms) => ({
+        ...currentForms,
+        [topicType]: { ...currentForms[topicType], ...updates },
+      }));
+    },
+    [],
+  );
 
-  function openEdit(row: Row) {
-    setActionError(null);
-    setEditing(row);
-    setDraft({
-      title_ja: row.title_ja,
-      title_en: row.title_en,
-      content_ja: row.content_ja ?? "",
-      content_en: row.content_en ?? "",
-      icon_type: normalizeAnnouncementIconType(row.icon_type),
-      priority: row.priority ?? 0,
-      is_published: row.is_published,
-    });
-  }
+  const resetTopicForm = useCallback((topicType: AnnouncementIconType) => {
+    setTopicForms((currentForms) => ({
+      ...currentForms,
+      [topicType]: createEmptyTopicForm(),
+    }));
+  }, []);
 
-  async function save() {
+  async function saveTopicAnnouncement(topicType: AnnouncementIconType) {
     setActionError(null);
     setBusy(true);
     try {
-      if (editing === "new") {
-        const res = await fetch("/api/admin/announcements", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(draft),
-        });
-        if (!res.ok) {
-          setActionError(
-            locale === "en" ? "Failed to save announcement." : "保存に失敗しました。",
-          );
-          return;
-        }
-        setEditing(null);
-        await load();
-        router.refresh();
+      const formData = topicForms[topicType];
+      const payload = {
+        ...formData,
+        icon_type: topicType,
+      };
+
+      const res = await fetch("/api/admin/announcements", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      if (!res.ok) {
+        setActionError(
+          locale === "en" ? "Failed to save announcement." : "保存に失敗しました。",
+        );
         return;
       }
-      if (editing && typeof editing === "object") {
-        const res = await fetch(`/api/admin/announcements/${editing.id}`, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(draft),
-        });
-        if (!res.ok) {
-          setActionError(
-            locale === "en" ? "Failed to update announcement." : "更新に失敗しました。",
-          );
-          return;
-        }
-        setEditing(null);
-        await load();
-        router.refresh();
-      }
+
+      resetTopicForm(topicType);
+      await load();
+      router.refresh();
     } finally {
       setBusy(false);
     }
   }
 
-  async function remove(id: string) {
+  async function remove(announcementId: string) {
     if (!window.confirm(t("announcementDeleteConfirm"))) {
       return;
     }
     setActionError(null);
     setBusy(true);
-    setDeletingAnnouncementId(id);
+    setDeletingAnnouncementId(announcementId);
     try {
-      const res = await fetch(`/api/admin/announcements/${id}`, { method: "DELETE" });
+      const res = await fetch(`/api/admin/announcements/${announcementId}`, { 
+        method: "DELETE" 
+      });
       if (!res.ok) {
         const payload = (await res.json().catch(() => null)) as
           | { message?: string }
@@ -256,117 +249,104 @@ export function AnnouncementsManager() {
     }
   }
 
-  return (
-    <div className="space-y-6">
-      {loadError ? (
-        <p className="text-sm text-destructive" role="alert">
-          {loadError}
-        </p>
-      ) : null}
-      {actionError ? (
-        <p className="text-sm text-destructive" role="alert">
-          {actionError}
-        </p>
-      ) : null}
-      <div className="flex justify-end">
-        <Button type="button" onClick={openNew} className="gap-1.5" disabled={busy}>
-          <Plus className="h-4 w-4" />
-          {t("announcementNew")}
-        </Button>
-      </div>
-      {editing ? (
+  // トピック毎のお知らせをフィルタ
+  const getAnnouncementsByTopic = useCallback(
+    (topicType: AnnouncementIconType) => {
+      return rows.filter((row) => row.icon_type === topicType);
+    },
+    [rows],
+  );
+
+  const renderTopicForm = (topicType: AnnouncementIconType) => {
+    const topicConfig = iconTypeMap.get(topicType);
+    const formData = topicForms[topicType];
+    const TopicIcon = topicConfig?.icon ?? Megaphone;
+    const topicAnnouncements = getAnnouncementsByTopic(topicType);
+
+    return (
+      <div className="space-y-6">
+        {/* トピック説明 */}
+        <div className="rounded-lg border border-border bg-muted/30 p-4">
+          <div className="flex items-center gap-3 mb-2">
+            <TopicIcon className={`h-5 w-5 ${topicConfig?.color ?? ""}`} />
+            <h3 className="font-medium">
+              {locale === "en" ? topicConfig?.labelEn : topicConfig?.labelJa}
+            </h3>
+          </div>
+          <p className="text-sm text-muted-foreground">
+            {topicConfig?.description}
+          </p>
+        </div>
+
+        {/* 作成・プレビューセクション */}
         <div className="grid gap-4 lg:grid-cols-2">
+          {/* 編集フォーム */}
           <div className="rounded-lg border border-border bg-card p-4 space-y-3">
             <h2 className="text-sm font-medium">編集</h2>
+            
             <div className="grid gap-2 sm:grid-cols-2">
               <div>
-                <Label htmlFor="tja">{t("announcementTitleJa")}</Label>
+                <Label htmlFor={`tja_${topicType}`}>タイトル（日本語）</Label>
                 <Input
-                  id="tja"
-                  value={draft.title_ja}
+                  id={`tja_${topicType}`}
+                  value={formData.title_ja}
                   onChange={(event) =>
-                    setDraft((currentDraft) => ({
-                      ...currentDraft,
-                      title_ja: event.target.value,
-                    }))
+                    updateTopicForm(topicType, { title_ja: event.target.value })
                   }
+                  placeholder="日本語のタイトルを入力"
                 />
               </div>
               <div>
-                <Label htmlFor="ten">{t("announcementTitleEn")}</Label>
+                <Label htmlFor={`ten_${topicType}`}>タイトル（英語）</Label>
                 <Input
-                  id="ten"
-                  value={draft.title_en}
+                  id={`ten_${topicType}`}
+                  value={formData.title_en}
                   onChange={(event) =>
-                    setDraft((currentDraft) => ({
-                      ...currentDraft,
-                      title_en: event.target.value,
-                    }))
+                    updateTopicForm(topicType, { title_en: event.target.value })
                   }
+                  placeholder="English title"
                 />
               </div>
             </div>
+
             <div>
-              <Label htmlFor="cja">{t("announcementContentJa")}</Label>
+              <Label htmlFor={`cja_${topicType}`}>本文（日本語）</Label>
               <textarea
-                id="cja"
+                id={`cja_${topicType}`}
                 rows={5}
                 className="border-input bg-background ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring flex min-h-[120px] w-full rounded-md border px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
-                value={draft.content_ja}
+                value={formData.content_ja}
                 onChange={(event) =>
-                  setDraft((currentDraft) => ({
-                    ...currentDraft,
-                    content_ja: event.target.value,
-                  }))
+                  updateTopicForm(topicType, { content_ja: event.target.value })
                 }
+                placeholder="日本語の本文を入力"
               />
             </div>
+
             <div>
-              <Label htmlFor="cen">{t("announcementContentEn")}</Label>
+              <Label htmlFor={`cen_${topicType}`}>本文（英語）</Label>
               <textarea
-                id="cen"
+                id={`cen_${topicType}`}
                 rows={5}
                 className="border-input bg-background ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring flex min-h-[120px] w-full rounded-md border px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
-                value={draft.content_en}
+                value={formData.content_en}
                 onChange={(event) =>
-                  setDraft((currentDraft) => ({
-                    ...currentDraft,
-                    content_en: event.target.value,
-                  }))
+                  updateTopicForm(topicType, { content_en: event.target.value })
                 }
+                placeholder="English content"
               />
             </div>
+
             <div className="grid gap-2 sm:grid-cols-2">
               <div>
-                <Label htmlFor="iconType">アイコンタイプ</Label>
+                <Label htmlFor={`priority_${topicType}`}>優先度</Label>
                 <select
-                  id="iconType"
-                  value={draft.icon_type}
+                  id={`priority_${topicType}`}
+                  value={formData.priority}
                   onChange={(event) =>
-                    setDraft((currentDraft) => ({
-                      ...currentDraft,
-                      icon_type: event.target.value as AnnouncementIconType,
-                    }))
-                  }
-                  className="border-input bg-background ring-offset-background focus-visible:ring-ring flex h-10 w-full rounded-md border px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
-                >
-                  {ICON_TYPES.map((iconTypeItem) => (
-                    <option key={iconTypeItem.value} value={iconTypeItem.value}>
-                      {locale === "en" ? iconTypeItem.labelEn : iconTypeItem.labelJa}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div>
-                <Label htmlFor="priority">優先度</Label>
-                <select
-                  id="priority"
-                  value={draft.priority}
-                  onChange={(event) =>
-                    setDraft((currentDraft) => ({
-                      ...currentDraft,
+                    updateTopicForm(topicType, {
                       priority: parseInt(event.target.value, 10),
-                    }))
+                    })
                   }
                   className="border-input bg-background ring-offset-background focus-visible:ring-ring flex h-10 w-full rounded-md border px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
                 >
@@ -375,172 +355,344 @@ export function AnnouncementsManager() {
                   <option value={2}>緊急</option>
                 </select>
               </div>
+              <div className="flex items-end">
+                <div className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    id={`pub_${topicType}`}
+                    className="h-4 w-4 rounded border-border"
+                    checked={formData.is_published}
+                    onChange={(event) =>
+                      updateTopicForm(topicType, {
+                        is_published: event.target.checked,
+                      })
+                    }
+                  />
+                  <Label htmlFor={`pub_${topicType}`}>公開する</Label>
+                </div>
+              </div>
             </div>
-            <div className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                id="pub"
-                className="h-4 w-4 rounded border-border"
-                checked={draft.is_published}
-                onChange={(event) =>
-                  setDraft((currentDraft) => ({
-                    ...currentDraft,
-                    is_published: event.target.checked,
-                  }))
-                }
-              />
-              <Label htmlFor="pub">{t("announcementPublished")}</Label>
-            </div>
+
             <div className="flex flex-wrap gap-2">
-              <Button type="button" onClick={() => void save()} disabled={busy}>
-                {t("save")}
+              <Button
+                type="button"
+                onClick={() => void saveTopicAnnouncement(topicType)}
+                disabled={busy}
+                className="gap-1.5"
+              >
+                <Plus className="h-4 w-4" />
+                作成
               </Button>
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => setEditing(null)}
+                onClick={() => resetTopicForm(topicType)}
                 disabled={busy}
               >
-                {t("cancel")}
+                クリア
               </Button>
             </div>
           </div>
 
+          {/* プレビュー */}
           <div className="rounded-lg border border-border bg-card p-4 space-y-3">
             <h2 className="text-sm font-medium">
               {locale === "en" ? "Preview" : "プレビュー"}
             </h2>
             <div className="rounded-lg border border-border bg-background/70 p-4 space-y-3">
               <div className="flex items-start gap-3">
-                <PreviewIcon className={`mt-0.5 h-5 w-5 ${selectedIconType?.color ?? ""}`} />
+                <TopicIcon className={`mt-0.5 h-5 w-5 ${topicConfig?.color ?? ""}`} />
                 <div className="min-w-0 flex-1 space-y-1">
                   <div className="flex items-center gap-2">
                     <p className="font-medium leading-tight">
-                      {(draft.title_ja || "").trim() || "（タイトル未入力）"}
+                      {(formData.title_ja || "").trim() || "（タイトル未入力）"}
                     </p>
-                    {draft.priority > 0 ? (
+                    {formData.priority > 0 ? (
                       <Badge
-                        variant={draft.priority === 2 ? "destructive" : "default"}
+                        variant={formData.priority === 2 ? "destructive" : "default"}
                         className="text-[10px] px-1.5 py-0.5"
                       >
-                        {draft.priority === 2 ? "緊急" : "高"}
+                        {formData.priority === 2 ? "緊急" : "高"}
                       </Badge>
                     ) : null}
-                    <Badge variant={draft.is_published ? "default" : "secondary"}>
-                      {draft.is_published
+                    <Badge variant={formData.is_published ? "default" : "secondary"}>
+                      {formData.is_published
                         ? t("announcementPublishedBadge")
                         : t("announcementDraftBadge")}
                     </Badge>
                   </div>
                   <p className="text-xs text-muted-foreground">
-                    {(draft.title_en || "").trim() || "No English title"}
+                    {(formData.title_en || "").trim() || "No English title"}
                   </p>
                   <p className="whitespace-pre-wrap break-words text-sm text-foreground">
-                    {(draft.content_ja || "").trim() || "（本文未入力）"}
+                    {(formData.content_ja || "").trim() || "（本文未入力）"}
                   </p>
                   <p className="whitespace-pre-wrap break-words text-xs text-muted-foreground">
-                    {(draft.content_en || "").trim() || "No English content"}
+                    {(formData.content_en || "").trim() || "No English content"}
                   </p>
                 </div>
               </div>
             </div>
           </div>
         </div>
+
+        {/* このトピックの既存お知らせ一覧 */}
+        {topicAnnouncements.length > 0 && (
+          <div className="space-y-3">
+            <h3 className="flex items-center gap-2 text-sm font-medium">
+              <TopicIcon className={`h-4 w-4 ${topicConfig?.color ?? ""}`} />
+              既存の{locale === "en" ? topicConfig?.labelEn : topicConfig?.labelJa}
+              （{topicAnnouncements.length}件）
+            </h3>
+            <div className="max-h-[min(40vh,320px)] overflow-auto rounded-md border">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>タイトル</TableHead>
+                    <TableHead className="w-24">操作</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {topicAnnouncements.map((announcementRow) => (
+                    <TableRow key={announcementRow.id}>
+                      <TableCell>
+                        <div className="flex flex-col gap-1 min-w-0 flex-1">
+                          <div className="flex items-center gap-2">
+                            <span className="font-medium">
+                              {announcementRow.title_ja || "—"}
+                            </span>
+                            {announcementRow.priority > 0 && (
+                              <Badge
+                                variant={
+                                  announcementRow.priority === 2 ? "destructive" : "default"
+                                }
+                                className="text-[10px] px-1.5 py-0.5"
+                              >
+                                {announcementRow.priority === 2 ? "緊急" : "高"}
+                              </Badge>
+                            )}
+                          </div>
+                          <span className="text-xs text-muted-foreground">
+                            {announcementRow.title_en || "—"}
+                          </span>
+                          <div className="flex gap-1">
+                            {announcementRow.is_published ? (
+                              <Badge variant="default" className="w-fit text-[10px]">
+                                {t("announcementPublishedBadge")}
+                              </Badge>
+                            ) : (
+                              <Badge variant="secondary" className="w-fit text-[10px]">
+                                {t("announcementDraftBadge")}
+                              </Badge>
+                            )}
+                          </div>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex flex-wrap gap-1">
+                          <Button
+                            type="button"
+                            size="icon"
+                            variant="outline"
+                            aria-label={t("announcementEdit")}
+                            onClick={() => editExistingAnnouncement(announcementRow)}
+                            disabled={busy}
+                            className="h-8 w-8"
+                          >
+                            <Pencil className="h-3 w-3" />
+                          </Button>
+                          <Button
+                            type="button"
+                            size="icon"
+                            variant="outline"
+                            className="text-destructive h-8 w-8"
+                            aria-label={t("announcementDelete")}
+                            onClick={() => void remove(announcementRow.id)}
+                            disabled={busy || deletingAnnouncementId === announcementRow.id}
+                          >
+                            <Trash2 className="h-3 w-3" />
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  const editExistingAnnouncement = (announcementRow: Row) => {
+    const topicType = announcementRow.icon_type as AnnouncementIconType;
+    if (iconTypeMap.has(topicType)) {
+      // 該当トピックタブに切り替えてフォームに既存データを設定
+      setActiveTopicTab(topicType);
+      updateTopicForm(topicType, {
+        title_ja: announcementRow.title_ja,
+        title_en: announcementRow.title_en,
+        content_ja: announcementRow.content_ja ?? "",
+        content_en: announcementRow.content_en ?? "",
+        priority: announcementRow.priority ?? 0,
+        is_published: announcementRow.is_published,
+      });
+      
+      // 編集中の既存IDを保持（更新時に使用）
+      // TODO: 編集機能の実装が必要な場合は、ここでeditingIdのstateを追加
+    }
+  };
+
+  return (
+    <div className="space-y-6">
+      {loadError ? (
+        <p className="text-sm text-destructive" role="alert">
+          {loadError}
+        </p>
+      ) : null}
+      
+      {actionError ? (
+        <p className="text-sm text-destructive" role="alert">
+          {actionError}
+        </p>
       ) : null}
 
-      <div className="max-h-[min(60vh,520px)] overflow-auto rounded-md border">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>{t("announcementColTitle")}</TableHead>
-              <TableHead>{t("tableActions")}</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {rows.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={2} className="text-muted-foreground">
-                  {t("announcementEmpty")}
-                </TableCell>
-              </TableRow>
-            ) : (
-              rows.map((r) => (
-                <TableRow key={r.id}>
-                  <TableCell>
-                    <div className="flex items-start gap-3">
-                      <div className="mt-1">
-                        {(() => {
-                          const rowIconType = iconTypeMap.get(
-                            r.icon_type as AnnouncementIconType,
-                          );
-                          const RowIcon = rowIconType?.icon ?? Megaphone;
-                          return (
+      {/* トピック別ナビゲーション */}
+      <div className="space-y-6">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
+          {ICON_TYPES.map((iconTypeItem) => {
+            const Icon = iconTypeItem.icon;
+            const topicAnnouncements = getAnnouncementsByTopic(iconTypeItem.value);
+            const isActive = activeTopicTab === iconTypeItem.value;
+            return (
+              <Button
+                key={iconTypeItem.value}
+                type="button"
+                variant={isActive ? "default" : "outline"}
+                size="sm"
+                className={cn(
+                  "flex items-center gap-1.5 text-xs h-auto py-2 px-3 justify-start",
+                  isActive && "ring-2 ring-ring ring-offset-2"
+                )}
+                onClick={() => setActiveTopicTab(iconTypeItem.value as AnnouncementIconType)}
+              >
+                <Icon className={`h-3 w-3 ${iconTypeItem.color}`} />
+                <span className="hidden sm:inline truncate">
+                  {locale === "en" ? iconTypeItem.labelEn : iconTypeItem.labelJa}
+                </span>
+                {topicAnnouncements.length > 0 && (
+                  <Badge variant="secondary" className="ml-auto h-4 min-w-4 px-1 text-[10px]">
+                    {topicAnnouncements.length}
+                  </Badge>
+                )}
+              </Button>
+            );
+          })}
+        </div>
+
+        {/* アクティブトピックのフォーム */}
+        <div>
+          {renderTopicForm(activeTopicTab)}
+        </div>
+      </div>
+
+      {/* 全体の一覧（オプション - 必要に応じて表示/非表示） */}
+      {rows.length > 0 && (
+        <details className="space-y-3">
+          <summary className="cursor-pointer text-sm font-medium text-muted-foreground hover:text-foreground">
+            全お知らせ一覧を表示（{rows.length}件）
+          </summary>
+          <div className="max-h-[min(50vh,400px)] overflow-auto rounded-md border">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>タイトル</TableHead>
+                  <TableHead className="w-24">操作</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {rows.map((announcementRow) => {
+                  const rowIconType = iconTypeMap.get(
+                    announcementRow.icon_type as AnnouncementIconType,
+                  );
+                  const RowIcon = rowIconType?.icon ?? Megaphone;
+                  return (
+                    <TableRow key={announcementRow.id}>
+                      <TableCell>
+                        <div className="flex items-start gap-3">
+                          <div className="mt-1">
                             <RowIcon
                               className={`h-4 w-4 ${rowIconType?.color ?? "text-blue-600 dark:text-blue-400"}`}
                             />
-                          );
-                        })()}
-                      </div>
-                      <div className="flex flex-col gap-1 min-w-0 flex-1">
-                        <div className="flex items-center gap-2">
-                          <span className="font-medium">{r.title_ja || "—"}</span>
-                          {r.priority > 0 && (
-                            <Badge 
-                              variant={r.priority === 2 ? "destructive" : "default"}
-                              className="text-[10px] px-1.5 py-0.5"
-                            >
-                              {r.priority === 2 ? "緊急" : "高"}
-                            </Badge>
-                          )}
+                          </div>
+                          <div className="flex flex-col gap-1 min-w-0 flex-1">
+                            <div className="flex items-center gap-2">
+                              <span className="font-medium">
+                                {announcementRow.title_ja || "—"}
+                              </span>
+                              {announcementRow.priority > 0 && (
+                                <Badge
+                                  variant={
+                                    announcementRow.priority === 2 ? "destructive" : "default"
+                                  }
+                                  className="text-[10px] px-1.5 py-0.5"
+                                >
+                                  {announcementRow.priority === 2 ? "緊急" : "高"}
+                                </Badge>
+                              )}
+                            </div>
+                            <span className="text-xs text-muted-foreground">
+                              {announcementRow.title_en || "—"}
+                            </span>
+                            <div className="flex gap-1">
+                              {announcementRow.is_published ? (
+                                <Badge variant="default" className="w-fit text-[10px]">
+                                  {t("announcementPublishedBadge")}
+                                </Badge>
+                              ) : (
+                                <Badge variant="secondary" className="w-fit text-[10px]">
+                                  {t("announcementDraftBadge")}
+                                </Badge>
+                              )}
+                            </div>
+                          </div>
                         </div>
-                        <span className="text-xs text-muted-foreground">
-                          {r.title_en || "—"}
-                        </span>
-                        <div className="flex gap-1">
-                          {r.is_published ? (
-                            <Badge variant="default" className="w-fit text-[10px]">
-                              {t("announcementPublishedBadge")}
-                            </Badge>
-                          ) : (
-                            <Badge variant="secondary" className="w-fit text-[10px]">
-                              {t("announcementDraftBadge")}
-                            </Badge>
-                          )}
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex flex-wrap gap-1">
+                          <Button
+                            type="button"
+                            size="icon"
+                            variant="outline"
+                            aria-label={t("announcementEdit")}
+                            onClick={() => editExistingAnnouncement(announcementRow)}
+                            disabled={busy}
+                            className="h-8 w-8"
+                          >
+                            <Pencil className="h-3 w-3" />
+                          </Button>
+                          <Button
+                            type="button"
+                            size="icon"
+                            variant="outline"
+                            className="text-destructive h-8 w-8"
+                            aria-label={t("announcementDelete")}
+                            onClick={() => void remove(announcementRow.id)}
+                            disabled={busy || deletingAnnouncementId === announcementRow.id}
+                          >
+                            <Trash2 className="h-3 w-3" />
+                          </Button>
                         </div>
-                      </div>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex flex-wrap gap-1">
-                      <Button
-                        type="button"
-                        size="icon"
-                        variant="outline"
-                        aria-label={t("announcementEdit")}
-                        onClick={() => openEdit(r)}
-                        disabled={busy}
-                      >
-                        <Pencil className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        type="button"
-                        size="icon"
-                        variant="outline"
-                        className="text-destructive"
-                        aria-label={t("announcementDelete")}
-                        onClick={() => void remove(r.id)}
-                        disabled={busy || deletingAnnouncementId === r.id}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
-      </div>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+          </div>
+        </details>
+      )}
     </div>
   );
 }
