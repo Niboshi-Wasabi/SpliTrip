@@ -66,10 +66,10 @@
     },
     "hero": {
       "badge": "AI trip expense splits",
-      "description": "Scan receipts, split flexibly, and settle with fewer transfers.",
-      "primaryCta": "Get started free",
-      "secondaryCta": "View features",
-      "title": "Split costs and settle up, faster."
+      "description": "Even complex splits feel smooth—our settlement flow minimizes how many transfers you need.",
+      "primaryCta": "Start free now",
+      "secondaryCta": "Create a group for free",
+      "title": "Let the app handle the math. Enjoy your trip 100%."
     },
     "features": {
       "highlightsHeading": "Why SpliTrip",
@@ -814,7 +814,8 @@
   },
   "LandingV2": {
     "nav": {
-      "features": "Features",
+      "features": "Why it feels better",
+      "useCases": "Use cases",
       "details": "Details",
       "pricing": "Pricing",
       "about": "About"
@@ -828,16 +829,17 @@
     },
     "hero": {
       "kicker": "OPEN BETA",
-      "titleLine1": "Split and settle travel expenses",
-      "titleLine2": "with less effort.",
-      "description": "Use flexible split rules and optimized settlement in one flow.",
-      "cta": "JOIN THE OPEN BETA",
-      "ctaDashboard": "GO TO DASHBOARD",
-      "note": "* No credit card required. Free to start."
+      "titleLine1": "Let the app handle the math.",
+      "titleLine2": "Enjoy your trip 100%.",
+      "description": "Even complex splits feel smooth—our algorithm keeps transfers to a minimum.",
+      "cta": "Start free now",
+      "ctaSecondary": "Create a group for free",
+      "ctaDashboard": "Go to dashboard",
+      "note": "* No credit card required. Sign in and you’re ready."
     },
     "bento": {
-      "title": "Feature highlights",
-      "subtitle": "Operational extras already in the product.",
+      "title": "Less stress around travel money",
+      "subtitle": "Rounding, who pays next, and payouts—organized around how it feels to use.",
       "items": {
         "receiptStorage": {
           "title": "Receipt files on record",
@@ -848,22 +850,44 @@
           "body": "When someone edits data, you get a heads-up. Stay on the page and follow the latest totals."
         },
         "nextPayerHint": {
-          "title": "Who pays next (hint)",
-          "body": "From past advances, see who paying at the register next tends to rebalance things."
+          "title": "No more “who pays next?” debate",
+          "body": "AI nudges you toward a fair next payer so the line and the mood keep moving."
         },
         "roundingPolicies": {
-          "title": "Leftover cents",
-          "body": "When splits don’t divide evenly, pick a policy—fair distribution, payer absorbs, and more."
+          "title": "No awkward yen leftovers",
+          "body": "Flexible rounding rules when the split doesn’t land on whole yen—fair share, payer absorbs, and more."
+        },
+        "oneTapRemittance": {
+          "title": "One-tap to PayPay and more",
+          "body": "Skip the bank-account back-and-forth. Jump to saved payout links right from settlement."
         },
         "dashboardSummary": {
           "title": "Dashboard overview",
           "body": "See total spend and counts across groups at a glance. Check each trip’s status quickly."
-        },
-        "publicReadOnlyShare": {
-          "title": "Read-only link",
-          "body": "Optional URL: name and currency only. No signup."
         }
       }
+    },
+    "useCases": {
+      "title": "Made for messy real trips",
+      "subtitle": "Same flow—whether your costs are all over the place.",
+      "items": {
+        "winterCamp": {
+          "title": "🏂 Ski, golf, camp weekends",
+          "body": "Gas, lodging, lift tickets, gear—track who paid what in one group without losing the thread."
+        },
+        "abroad": {
+          "title": "✈️ Trips abroad",
+          "body": "Mix foreign currency and yen; use reference rates to settle in one pass with less mental load."
+        },
+        "largeParty": {
+          "title": "🍻 Big dinners and festivals",
+          "body": "Split drinkers and non-drinkers with ratios or line items—no need to force equal checks on everyone."
+        }
+      }
+    },
+    "closingCta": {
+      "title": "Create a free group and try it",
+      "body": "Sign in with Google or LINE and share an invite link in minutes."
     },
     "detailed": {
       "title": "Detailed Features",
@@ -877,8 +901,8 @@
           "body": "No app install. Join by QR code or invite link with Google or LINE."
         },
         "payment": {
-          "title": "Payment Link Integration",
-          "body": "Save payout URLs (such as PayPay) and open them from settlement rows."
+          "title": "One-tap payouts",
+          "body": "Save PayPay and other payout URLs and open them from each settlement row—fewer account-number messages."
         },
         "audit": {
           "title": "Clear team accounting",

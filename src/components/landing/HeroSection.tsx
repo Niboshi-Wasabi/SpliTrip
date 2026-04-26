@@ -1,85 +1,65 @@
 "use client";
 
 import { useTranslations } from "next-intl";
+import { motion, type Variants } from "framer-motion";
 import { Link } from "@/i18n/navigation";
-import { buttonVariants } from "@/components/ui/button-variants";
+import { Button } from "@/components/ui/button";
 import { LanguageSwitcher } from "@/components/ui/LanguageSwitcher";
+import { Badge } from "@/components/ui/badge";
 import { LogoMark } from "@/components/logo-mark";
-import { cn } from "@/lib/utils";
-import dynamic from "next/dynamic";
-import { type Variants } from "framer-motion";
-
-// framer-motionを動的にインポート
-const MotionDiv = dynamic(
-  () => import("framer-motion").then(mod => ({ default: mod.motion.div })),
-  { 
-    ssr: false,
-    loading: () => <div />
-  }
-);
-
-const MotionP = dynamic(
-  () => import("framer-motion").then(mod => ({ default: mod.motion.p })),
-  { 
-    ssr: false,
-    loading: () => <p />
-  }
-);
-
-const MotionH1 = dynamic(
-  () => import("framer-motion").then(mod => ({ default: mod.motion.h1 })),
-  { 
-    ssr: false,
-    loading: () => <h1 />
-  }
-);
 
 const fadeUpVariants: Variants = {
-  hidden: { opacity: 0, y: 24 },
-  show: {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.45 },
+    transition: { duration: 0.65, ease: "easeOut" },
   },
 };
 
-const containerVariants: Variants = {
-  hidden: { opacity: 0 },
-  show: {
-    opacity: 1,
+const sectionVariants: Variants = {
+  hidden: {},
+  visible: {
     transition: {
-      staggerChildren: 0.12,
+      staggerChildren: 0.1,
+      delayChildren: 0.05,
     },
   },
 };
 
 export function LandingHeader() {
-  const landingTranslations = useTranslations("Landing");
+  const tLandingV2 = useTranslations("LandingV2");
   const betaTranslations = useTranslations("Beta");
 
   return (
-    <header className="border-b border-border/70 bg-background/90 backdrop-blur supports-[backdrop-filter]:bg-background/70">
-      <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-3 px-4 py-3">
-        <div className="flex min-w-0 items-center gap-3 text-foreground">
+    <header className="border-b border-zinc-800/80 bg-zinc-950/90 backdrop-blur supports-[backdrop-filter]:bg-zinc-950/80">
+      <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-3 px-4 py-3 md:px-6">
+        <Link
+          href="/"
+          className="flex min-w-0 items-center gap-3 text-zinc-100"
+          aria-label="SpliTrip home"
+        >
           <LogoMark className="truncate text-xl md:text-2xl" />
-        </div>
+        </Link>
         <div className="flex shrink-0 items-center gap-2 sm:gap-3">
           <span
-            className="rounded-md bg-teal-500 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-white shadow-sm dark:bg-teal-500"
+            className="rounded border border-zinc-700 bg-zinc-900 px-2 py-0.5 text-[10px] font-bold tracking-widest text-zinc-200 uppercase"
             title={betaTranslations("badgeAria")}
           >
             {betaTranslations("badge")}
           </span>
-          <Link
-            href="/login"
-            className={cn(
-              buttonVariants({ variant: "outline", size: "sm" }),
-              "min-h-9",
-            )}
-          >
-            {landingTranslations("header.signIn")}
+          <Link href="/login">
+            <Button
+              variant="outline"
+              size="sm"
+              className="min-h-[44px] border-zinc-600 bg-transparent text-zinc-100 hover:bg-zinc-900"
+            >
+              {tLandingV2("actions.login")}
+            </Button>
           </Link>
-          <LanguageSwitcher />
+          <div className="hidden sm:block">
+            <LanguageSwitcher />
+          </div>
         </div>
       </div>
     </header>
@@ -87,56 +67,67 @@ export function LandingHeader() {
 }
 
 export function HeroSection() {
-  const landingTranslations = useTranslations("Landing");
+  const t = useTranslations("LandingV2");
 
   return (
-    <MotionDiv
-      className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-4 py-14 text-center md:py-20"
-      variants={containerVariants}
+    <motion.section
+      className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-4 py-16 text-center md:py-24"
       initial="hidden"
-      animate="show"
+      whileInView="visible"
+      viewport={{ once: true, amount: 0.3 }}
+      variants={sectionVariants}
     >
-      <MotionP
-        variants={fadeUpVariants}
-        className="mx-auto rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-xs font-medium text-primary"
-      >
-        {landingTranslations("hero.badge")}
-      </MotionP>
-      <MotionH1
-        variants={fadeUpVariants}
-        className="mx-auto max-w-3xl text-balance text-3xl font-bold leading-tight text-foreground md:text-4xl lg:text-5xl"
-      >
-        {landingTranslations("hero.title")}
-      </MotionH1>
-      <MotionP
-        variants={fadeUpVariants}
-        className="mx-auto max-w-2xl text-pretty text-sm text-muted-foreground md:text-base"
-      >
-        {landingTranslations("hero.description")}
-      </MotionP>
-      <MotionDiv
-        variants={fadeUpVariants}
-        className="flex flex-col items-center justify-center gap-3 sm:flex-row"
-      >
-        <Link
-          href="/login"
-          className={cn(
-            buttonVariants({ size: "lg" }),
-            "min-h-[44px] w-full shadow-sm transition-transform duration-200 hover:-translate-y-0.5 hover:shadow-lg sm:w-auto",
-          )}
+      <motion.div variants={fadeUpVariants}>
+        <Badge
+          variant="outline"
+          className="border-zinc-700 bg-zinc-900/70 text-[10px] tracking-widest text-zinc-300 uppercase"
         >
-          {landingTranslations("hero.primaryCta")}
+          {t("hero.kicker")}
+        </Badge>
+      </motion.div>
+      <motion.h1
+        variants={fadeUpVariants}
+        className="mx-auto max-w-4xl text-balance text-3xl font-medium leading-none tracking-tight text-zinc-200 md:text-5xl"
+      >
+        <span className="block text-zinc-200">{t("hero.titleLine1")}</span>
+        <span className="mt-2 block font-bold text-zinc-50">
+          {t("hero.titleLine2")}
+        </span>
+      </motion.h1>
+      <motion.p
+        variants={fadeUpVariants}
+        className="mx-auto max-w-2xl text-pretty text-sm leading-relaxed text-zinc-400 md:text-base"
+      >
+        {t("hero.description")}
+      </motion.p>
+      <motion.div
+        variants={fadeUpVariants}
+        className="mx-auto flex w-full max-w-md flex-col items-stretch justify-center gap-3 sm:max-w-none sm:w-auto sm:flex-row"
+      >
+        <Link href="/login" className="w-full sm:w-auto">
+          <Button
+            size="lg"
+            className="h-auto min-h-[44px] w-full rounded-full bg-zinc-50 px-10 text-zinc-900 hover:bg-zinc-200"
+          >
+            {t("hero.cta")}
+          </Button>
         </Link>
-        <Link
-          href="/pitch"
-          className={cn(
-            buttonVariants({ variant: "outline", size: "lg" }),
-            "min-h-[44px] w-full transition-transform duration-200 hover:-translate-y-0.5 hover:shadow-md sm:w-auto",
-          )}
-        >
-          {landingTranslations("hero.secondaryCta")}
+        <Link href="/dashboard/groups/new" className="w-full sm:w-auto">
+          <Button
+            size="lg"
+            variant="outline"
+            className="h-auto min-h-[44px] w-full rounded-full border-zinc-600 bg-transparent px-8 text-zinc-100 hover:bg-zinc-900"
+          >
+            {t("hero.ctaSecondary")}
+          </Button>
         </Link>
-      </MotionDiv>
-    </MotionDiv>
+      </motion.div>
+      <motion.p
+        variants={fadeUpVariants}
+        className="text-xs text-zinc-500"
+      >
+        {t("hero.note")}
+      </motion.p>
+    </motion.section>
   );
 }
