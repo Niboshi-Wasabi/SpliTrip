@@ -323,7 +323,7 @@ export function LandingPage({ initialSession }: LandingPageProps) {
                         className="mt-0.5 h-5 w-5 shrink-0 text-zinc-300"
                         aria-hidden
                       />
-                      <p className="line-clamp-2 text-left text-base font-semibold leading-tight tracking-tight text-zinc-100">
+                      <p className="text-left text-base font-semibold leading-snug tracking-tight text-zinc-100">
                         {t(`bento.items.${id}.title`)}
                       </p>
                     </div>
