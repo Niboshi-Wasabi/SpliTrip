@@ -128,7 +128,7 @@ function buildMaintenanceRedirectUrl(request: NextRequest): URL {
   return new URL("/maintenance", request.url);
 }
 
-export async function proxy(request: NextRequest) {
+export default async function proxy(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
 
   // Supabase `redirectTo` は `/auth/callback` 固定。ここだけロケール付きに書き換えない（next-intl を通さない）。
