@@ -1,6 +1,7 @@
+import { createClient } from "@supabase/supabase-js";
 import { getTranslations } from "next-intl/server";
-import { createClient } from "@/utils/supabase/server";
 import type { AppLocale } from "@/i18n/routing";
+import { getSupabaseEnv } from "@/utils/supabase/env";
 
 type Row = {
   id: string;
@@ -25,13 +26,15 @@ type Props = {
 export async function PublishedAppAnnouncements({ locale }: Props) {
   const t = await getTranslations({ locale, namespace: "AppAnnouncements" });
 
-  let supabase: Awaited<ReturnType<typeof createClient>>;
-  try {
-    supabase = await createClient();
-  } catch (clientError) {
-    console.error("[PublishedAppAnnouncements] Supabase client:", clientError);
+  // Cookie なしの anon クライアント（公開行のみ RLS で読む）。静的生成時も cookies を触らない。
+  // No cookies: safe for prerender; published rows are readable under RLS for anon.
+  const env = getSupabaseEnv();
+  if (!env) {
     return null;
   }
+  const supabase = createClient(env.url, env.anonKey, {
+    auth: { persistSession: false, autoRefreshToken: false },
+  });
 
   const { data, error } = await supabase
     .from("app_announcements")
