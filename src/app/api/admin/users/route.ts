@@ -16,6 +16,19 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ ok: false, message: "Unauthorized" }, { status: 401 });
   }
 
+  const { data: profile, error: profileError } = await supabase
+    .from("user_profiles")
+    .select("is_admin")
+    .eq("id", user.id)
+    .maybeSingle();
+  if (profileError) {
+    console.error("[API/Action Error - admin users is_admin]:", profileError);
+    return NextResponse.json({ ok: false, message: "server_error" }, { status: 500 });
+  }
+  if (profile?.is_admin !== true) {
+    return NextResponse.json({ ok: false, message: "forbidden" }, { status: 403 });
+  }
+
   try {
     const { items, totalCount } = await listAdminUsers();
     const out = NextResponse.json({

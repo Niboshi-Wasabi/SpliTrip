@@ -24,10 +24,27 @@ export function AdminUsersDashboard() {
     return [];
   }, [usersResponse]);
 
-  if (fetchError || !usersResponse?.ok) {
+  if (isLoading) {
+    return (
+      <div className="flex min-h-[200px] items-center justify-center text-sm text-zinc-500">
+        読み込み中…
+      </div>
+    );
+  }
+
+  const hasFetchFailure = Boolean(fetchError);
+  const hasExplicitFailure = usersResponse != null && usersResponse.ok === false;
+  if (hasFetchFailure || hasExplicitFailure) {
+    const errorMessage = fetchError instanceof Error ? fetchError.message : String(fetchError ?? "");
     console.error("[AdminUsersDashboard] データ取得エラー:", fetchError);
-    const isConfigError = fetchError?.status === 500 || fetchError?.message?.includes('service_role');
-    const isPermissionError = fetchError?.status === 403;
+    const isConfigError =
+      fetchError && typeof fetchError === "object" && "status" in fetchError
+        ? (fetchError as { status: number }).status === 500
+        : false;
+    const isPermissionError =
+      fetchError && typeof fetchError === "object" && "status" in fetchError
+        ? (fetchError as { status: number }).status === 403
+        : false;
     
     return (
       <div className="space-y-4">
@@ -35,15 +52,16 @@ export function AdminUsersDashboard() {
           {isConfigError ? (
             <>
               <p className="font-semibold mb-2">サーバー設定エラー</p>
-              <p>SUPABASE_SERVICE_ROLE_KEY の設定を確認してください。</p>
-              <p className="mt-2 text-xs">現在の値: {process.env.SUPABASE_SERVICE_ROLE_KEY ? '設定済み' : '未設定'}</p>
+              <p>サーバー側の設定を確認してください。問題が続く場合はサポートに連絡してください。</p>
             </>
           ) : isPermissionError ? (
-            <p>管理者権限が不足しています。管理者ログインを確認してください。</p>
+            <p>管理者権限が不足しています。管理者アカウントでログインしているか確認してください。</p>
           ) : (
             <>
               <p>ユーザー一覧の取得に失敗しました。</p>
-              <p className="mt-1 text-xs">エラー: {fetchError?.message || 'Unknown error'}</p>
+              {errorMessage ? (
+                <p className="mt-1 text-xs">詳細: {errorMessage}</p>
+              ) : null}
             </>
           )}
         </div>
