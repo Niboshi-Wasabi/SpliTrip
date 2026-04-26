@@ -48,10 +48,10 @@
 | **Google ログイン** | OAuth（PKCE）。`/auth/callback` でコード交換・セッション確立。 |
 | **Google One Tap** | 未ログイン LP（`/[locale]`）で `https://accounts.google.com/gsi/client` を読み込み、右上プロンプトからワンタップ認証。`response.credential` を `supabase.auth.signInWithIdToken({ provider: 'google', token })` に渡してセッション化し、成功時は `/{locale}/dashboard` へ遷移。`NEXT_PUBLIC_GOOGLE_CLIENT_ID` が必須。 |
 | **LINE ログイン** | `/api/auth/line` → LINE → `/api/auth/callback/line` → サービスロール＋`verifyOtp` 相当でセッション確立。 |
-| **二段階認証（WebAuthn）** | **全ユーザー必須**。1段目（Google / LINE）成功後、`/{locale}/auth/2fa` で **パスキー（生体認証 / セキュリティキー）** または **バックアップコード** による2段目認証を実施。サーバーは `WEBAUTHN_RP_ID`（未設定時はリクエストホストから導出し、`www.` 接頭の場合は apex に正規化）で `rpId` を決定する。本番 Vercel では `WEBAUTHN_RP_ID=splitrip.net` を推奨。PWA: `AppPerformanceEnhancer` が `public/service-worker.js` を `'/service-worker.js'` で登録（旧 `'/sw.js'` 参照は失効時に解除）。 |
-| **2FA 復旧** | 初回登録時にバックアップコードを発行。設定画面で再発行可能。コードはハッシュ化して保存し、使用時に `used_at` を記録（再利用不可）。 |
+| **二段階認証（WebAuthn）** | **必須フローではない（当面オフ）**。ミドルウェアの 2FA 未完了リダイレクトは **無効化**（`src/utils/supabase/middleware.ts` 内の該当ブロックはコメントアウト）。`/{locale}/auth/2fa` は **旧URL互換**として `next` 等へ即リダイレクトするのみ。WebAuthn / バックアップ用 **Route Handler・DB スキーマ（`user_webauthn_credentials` 等）は存続**するが、ログイン直後の強制 2FA は行わない。`getWebAuthnRpId`（`src/lib/auth/two-factor.ts`）は **リクエスト origin の hostname** を `rpId` に使う（`localhost` / `127.0.0.1` はそのまま）。PWA: `AppPerformanceEnhancer` が `public/service-worker.js` を `'/service-worker.js'` で登録（旧 `'/sw.js'` は解除）。 |
+| **2FA 復旧** | 初回登録時にバックアップコードを発行する API・DB ロジックは存続。設定画面の **2FA 管理フォーム（`TwoFactorSettingsForm`）はコメントアウト**しており、UI からの再発行導線は非表示。コードはハッシュ化して `used_at` で再利用不可。 |
 | **Turnstile（Cloudflare CAPTCHA）** | ログイン画面・招待ゲートで有効化可能。`NEXT_PUBLIC_CLOUDFLARE_TURNSTILE_SITE_KEY` / `CLOUDFLARE_TURNSTILE_SECRET_KEY` が揃うと有効化され、LINE開始前にはサーバー側でも検証。 |
-| **セッション維持とガード** | ミドルウェアで Supabase セッション更新。`/dashboard`・`/settings` は未ログイン時にガード。加えて、ログイン済みでも 2FA 未完了時は `/{locale}/auth/2fa` へリダイレクト。 |
+| **セッション維持とガード** | プロキシ（`src/proxy.ts`）＋ `finalizeSupabaseSession` 等で Supabase セッション更新。`/dashboard`・`/settings`（ロケール接頭辞を除いたパス基準）で **未ログイン時** は `/` 等へ制御。2FA 未完了リダイレクトは**行わない**。 |
 | **オンボーディング** | 初回表示名など（`/onboarding`）。表示名は **最大 50 文字**（`DISPLAY_NAME_MAX_LENGTH`、フォーム `maxLength` と `PATCH /api/profile/display-name` の共通検証）。 |
 | **アバター（頭文字）** | プロフィール画像がない場合、`UserAvatar` が表示名から `stringToColor` で **決定論的なパステル背景**と **コントラストの前景色**（相対輝度に基づく）を適用。 |
 | **ピッチデッキ** | `/pitch` のスライド紹介。初回は `needs_pitch_deck` RPC 等で **閲覧必須ルート**になり得る。閲覧完了は `mark_pitch_deck_seen` / `POST /api/profile/pitch-deck-seen`。 |
@@ -145,7 +145,7 @@
 | **送金先** | `payment_links` 等を API 経由で更新（マイグレーション未適用時はエラーメッセージ）。 |
 | **PRO / OCR** | `premium_access`（PRO）、`premium_access_source`（`stripe`＝課金、`manual`＝運営付与）、`ocr_usage_count`（無料の OCR 累計）。認証ユーザーが自分の PRO フラグだけを書き換えることは DB トリガーで拒否。`increment_ocr_usage_if_not_premium` で成功後に加算。 |
 | **支払い管理（PRO）** | Stripe 審査対応が完了するまで UI は一時的に **準備中（Coming Soon）**。課金基盤（Webhook / `premium_access` 判定）は将来再開に備えて保持。 |
-| **管理画面（Admin Control Panel Suite）** | `user_profiles.is_admin = true` のユーザーのみ `/{locale}/admin` にアクセス可能。`proxy.ts` で非管理者はダッシュボードへリダイレクト。**Step-Up認証（任意）**: 環境変数 **`ADMIN_STEP_UP_ENABLED=true`** のときのみ、管理 API で WebAuthn 再認証（`admin_stepup_verified`）を要求。未設定／`false` のときは要求しない（デフォルト）。**基盤**: `admin_audit_logs`、`app_announcements`（アイコン種別・優先度付き）、`system_settings` テーブル。**管理スイート**: タブ形式UI（`AdminAppShell`、各タブに色分けアイコン）で統合。トップは `listAdminUsers` を1回だけ呼び、概要KPI＋ユーザーテーブルに同じデータを使う。**お知らせ機能**: トピック別タブ形式（announcement, feature, bugfix, design, security, maintenance）で、各トピック専用のフォーム＋ライブプレビューを提供。各トピックは左右2カラム（編集フォーム＋リアルタイムプレビュー）でアイコン種別・優先度・公開状態の見え方を保存前に確認可能。既存お知らせはトピック毎にフィルタ表示、編集時は該当トピックタブに自動切り替え。削除APIは未存在IDを `404 not_found` で返し、UI側で失敗理由を表示。**レスポンス最適化**: 管理各タブページは `proxy.ts` の認可に一本化し、ページ遷移時の重複 `getUser/is_admin` クエリを削減。**API**: `/api/admin/users/*/grant-pro|revoke-pro|sync-stripe`、`/api/admin/announcements`、`/api/admin/system-settings`、`/api/admin/support/groups/*`、WebAuthn再認証。**セキュリティ**: Service Role バイパス、全操作の監査ログ記録、Step-Up認証 (`two_factor_security_events`)。 |
+| **管理画面（Admin Control Panel Suite）** | `user_profiles.is_admin = true` のユーザーのみ `/{locale}/admin` にアクセス可能。`proxy.ts` で非管理者はダッシュボードへリダイレクト。**Step-Up 再認証（任意）**: 環境変数 **`ADMIN_STEP_UP_ENABLED=true`** のときのみ、一部管理 API で `requireAdminStepUpOrJson` により **`admin_stepup_verified` Cookie** を要求。未設定のときは要求しない（デフォルト）。**基盤**: `admin_audit_logs`、`app_announcements`、 `system_settings` テーブル。**管理スイート**: タブ形式UI（`AdminAppShell`、各タブに色分けアイコン）で統合。トップは `listAdminUsers` を1回呼び、概要KPI＋ユーザーテーブルに同じデータを使う。`**GET /api/admin/users` はセッションで `is_admin` を検証**したうえで Service Role 経由の一覧取得。**お知らせ（管理）**: トピック別タブ＋ライブプレビュー。公開済み（`is_published`）行は RLS で一般も SELECT 可。**エンドユーザー向け表示**は `[locale]/layout` の `PublishedAppAnnouncements`（**メンテバナー直下**、最大 5 件、**anon クライアント＋RLS** で取得し cookies を使わない）。**API**: `GET/POST /api/admin/announcements`、 `GET/POST/PATCH/DELETE` 他、`GET /api/admin/audit-logs` 等。**セキュリティ**: 管理操作は `admin_audit_logs` 等。2FA 用監査 `two_factor_security_events` は **ユーザー向け 2FA API** 向け。 |
 
 ### PRO 手動付与
 
@@ -190,8 +190,8 @@ where id = '<ユーザーUUID>';
 
 | 領域 | エンドポイント例 |
 |------|------------------|
-| 2FA（WebAuthn / Backup） | `GET /api/auth/2fa/status`、`POST /api/auth/2fa/webauthn/register/options`、`POST /api/auth/2fa/webauthn/register/verify`、`POST /api/auth/2fa/webauthn/authenticate/options`、`POST /api/auth/2fa/webauthn/authenticate/verify`、`POST /api/auth/2fa/backup/verify`、`POST /api/auth/2fa/backup/regenerate` |
-| 管理（PRO 手動付与/解除） | `POST /api/admin/users/[userId]/grant-pro` / `POST /api/admin/users/[userId]/revoke-pro` — 管理者セッション必須。Service Role で `user_profiles` 更新。 |
+| 2FA（WebAuthn / Backup） | `GET /api/auth/2fa/status`、`POST` … 各種（**コードは存続。ログイン直後の強制2FAはオフ**） |
+| 管理 | `GET /api/admin/users`（一覧）、`GET /api/admin/audit-logs`；`POST /api/admin/users/[userId]/grant-pro` / `revoke-pro` / `sync-stripe` 等。管理者＋`is_admin` 検証（`GET /api/admin/users`）。 |
 | グループ | `POST /api/groups`、`GET/PATCH …/api/groups/[groupId]` |
 | 出費 | `POST/GET …/expenses`、`GET/PATCH/DELETE …/expenses/[expenseId]` |
 | 領収書 | `…/expenses/[expenseId]/receipt` |
@@ -242,9 +242,9 @@ where id = '<ユーザーUUID>';
 - `user_profiles.two_factor_enabled`（boolean）、`user_profiles.is_admin`（管理者フラグ）
 - `user_webauthn_credentials`（WebAuthn 資格情報）
 - `user_backup_codes`（バックアップコードのハッシュ管理）
-- `two_factor_security_events`（2FA 成功/失敗監査イベント）
+- `two_factor_security_events`（2FA 成功/失敗監査イベント）— **ユーザー向け 2FA API** の監査用
 - `admin_audit_logs`（管理者操作の監査ログ、管理者のみRLS SELECT可）
-- 2FA verify API には **IP + user 単位の簡易レート制限**（失敗回数ベース）を適用
+- 2FA verify API には **IP + user 単位の簡易レート制限**（失敗回数ベース）を適用（**API は存続。アプリ主導の「ログイン直後2FA必須」はオフ**）
 
 ### Supabase CLI でリモートにマイグレーションを当てる
 
@@ -265,6 +265,7 @@ where id = '<ユーザーUUID>';
 
 - **Web Push** は API に **基盤のプレースホルダー**があり、エンドユーザー向けの本番通知フローは **未完了** と見なすのが安全です。
 - 文言・ラベルは **`messages/ja.json` / `en.json`** を中心に管理されています。
+- **Next.js 16（本リポジトリ）** のエッジ前処理のエントリは **`src/proxy.ts` の `default` エクスポート**（`proxy` ファイル）。プロジェクトルートの `middleware.ts` とは **併用不可**（公式メッセージ通り、片方に統一）。
 
 ---
 
