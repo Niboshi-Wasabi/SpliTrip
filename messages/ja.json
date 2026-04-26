@@ -653,6 +653,9 @@
     "title": "SpliTrip（スプリトリップ）- グループ旅行の精算アプリ",
     "description": "グループ旅行中の立替をリアルタイムに記録し、精算を自動計算するWebアプリ"
   },
+  "AppAnnouncements": {
+    "stripTitle": "お知らせ"
+  },
   "Terms": {
     "pageTitle": "利用規約",
     "lastUpdated": "最終更新日: 2026年4月13日",

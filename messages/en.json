@@ -646,6 +646,9 @@
     "title": "SpliTrip - Group Travel Expense Split App",
     "description": "A web app that records shared travel expenses in real time and automatically calculates settlements."
   },
+  "AppAnnouncements": {
+    "stripTitle": "Announcements"
+  },
   "Terms": {
     "pageTitle": "Terms of Service",
     "lastUpdated": "Last updated: April 13, 2026",
