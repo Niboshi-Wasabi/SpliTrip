@@ -152,23 +152,24 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(new URL(`/${locale}/dashboard`, request.url));
   }
 
+  // 管理者Step-Up認証を無効化（2FA廃止）
   // 管理者は短寿命の admin_stepup_verified なしでは /admin を除く管理領域へ入れない。
   // Admins need WebAuthn step-up (cookie) except on the verify page itself.
-  if (
-    isAdminUser &&
-    adminUserId &&
-    isAdminPath(pathname) &&
-    !isAdminVerifyPath(pathname) &&
-    !isAdminStepUpVerified(request, adminUserId)
-  ) {
-    const locale = localeFromPathname(pathname);
-    const verifyUrl = new URL(`/${locale}/admin/verify`, request.url);
-    verifyUrl.searchParams.set(
-      "next",
-      request.nextUrl.pathname + request.nextUrl.search,
-    );
-    return NextResponse.redirect(verifyUrl);
-  }
+  // if (
+  //   isAdminUser &&
+  //   adminUserId &&
+  //   isAdminPath(pathname) &&
+  //   !isAdminVerifyPath(pathname) &&
+  //   !isAdminStepUpVerified(request, adminUserId)
+  // ) {
+  //   const locale = localeFromPathname(pathname);
+  //   const verifyUrl = new URL(`/${locale}/admin/verify`, request.url);
+  //   verifyUrl.searchParams.set(
+  //     "next",
+  //     request.nextUrl.pathname + request.nextUrl.search,
+  //   );
+  //   return NextResponse.redirect(verifyUrl);
+  // }
 
   if (
     (await isMaintenanceModeEnabledForRequest()) &&
