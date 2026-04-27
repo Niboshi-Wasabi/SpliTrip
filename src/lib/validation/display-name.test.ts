@@ -35,8 +35,8 @@ describe("validateDisplayNameInput", () => {
 
 describe("clampDisplayNameForProfileStorage", () => {
   it("51文字超は先頭50文字に切り詰め", () => {
-    const long = "あ".repeat(DISPLAY_NAME_MAX_LENGTH + 5);
-    expect(clampDisplayNameForProfileStorage(long).length).toBe(
+    const overlongText = "あ".repeat(DISPLAY_NAME_MAX_LENGTH + 5);
+    expect(clampDisplayNameForProfileStorage(overlongText).length).toBe(
       DISPLAY_NAME_MAX_LENGTH,
     );
   });
