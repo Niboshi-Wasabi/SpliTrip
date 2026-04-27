@@ -309,9 +309,9 @@ $$;
 
 do $alter_ins$
 declare
-  r record;
+  function_signature_record record;
 begin
-  for r in
+  for function_signature_record in
     select p.oid::regprocedure as sig
     from pg_proc p
     join pg_namespace n on n.oid = p.pronamespace
@@ -319,7 +319,10 @@ begin
       and n.nspname = 'public'
   loop
     -- ALTER FUNCTION … SET は括弧形ではない（42601 になる）。SET row_security TO off が正しい。
-    execute format('alter function %s set row_security to off', r.sig);
+    execute format(
+      'alter function %s set row_security to off',
+      function_signature_record.sig
+    );
   end loop;
 end
 $alter_ins$;

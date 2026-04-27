@@ -249,8 +249,8 @@ export function AdminStepUpPanel({ nextPath = "/admin" }: AdminStepUpPanelProps)
 function arrayBufferToBase64URL(buffer: ArrayBuffer): string {
   const bytes = new Uint8Array(buffer);
   let binary = "";
-  for (let i = 0; i < bytes.byteLength; i++) {
-    binary += String.fromCharCode(bytes[i]);
+  for (let byteIndex = 0; byteIndex < bytes.byteLength; byteIndex++) {
+    binary += String.fromCharCode(bytes[byteIndex]);
   }
   return btoa(binary)
     .replace(/\+/g, "-")

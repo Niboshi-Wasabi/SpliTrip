@@ -16,21 +16,21 @@ type PromoBannerValue = {
 
 function getPostgrestErrorMessage(error: unknown): string {
   if (error && typeof error === "object" && "message" in error) {
-    const m = (error as { message: unknown }).message;
-    if (typeof m === "string" && m.length > 0) {
-      return m;
+    const messageValue = (error as { message: unknown }).message;
+    if (typeof messageValue === "string" && messageValue.length > 0) {
+      return messageValue;
     }
   }
   return "";
 }
 
 function logSettingsReadDebug(scope: string, error: unknown): void {
-  const msg = getPostgrestErrorMessage(error);
-  if (!msg) {
+  const postgrestErrorMessage = getPostgrestErrorMessage(error);
+  if (!postgrestErrorMessage) {
     return;
   }
   if (process.env.NODE_ENV === "development") {
-    console.warn(`[${scope}]`, msg);
+    console.warn(`[${scope}]`, postgrestErrorMessage);
   }
 }
 
@@ -59,8 +59,8 @@ export async function getMaintenanceModeFromDatabase(): Promise<boolean> {
     logSettingsReadDebug("getMaintenanceModeFromDatabase", error);
     return false;
   }
-  const v = (data?.value as MaintenanceModeValue | null) ?? null;
-  return v?.enabled === true;
+  const maintenanceModeValue = (data?.value as MaintenanceModeValue | null) ?? null;
+  return maintenanceModeValue?.enabled === true;
 }
 
 export async function getMaintenanceBannerMessageFromDatabase(): Promise<string> {
@@ -77,8 +77,8 @@ export async function getMaintenanceBannerMessageFromDatabase(): Promise<string>
     logSettingsReadDebug("getMaintenanceBannerMessageFromDatabase", error);
     return "";
   }
-  const v = (data?.value as MaintenanceBannerValue | null) ?? null;
-  const text = (v?.message ?? "").trim();
+  const maintenanceBannerValue = (data?.value as MaintenanceBannerValue | null) ?? null;
+  const text = (maintenanceBannerValue?.message ?? "").trim();
   return text;
 }
 

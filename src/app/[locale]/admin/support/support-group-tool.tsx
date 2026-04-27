@@ -29,27 +29,27 @@ export function SupportGroupTool() {
   const t = useTranslations("Admin");
   const [groupId, setGroupId] = useState("");
   const [busy, setBusy] = useState(false);
-  const [err, setErr] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [group, setGroup] = useState<{ name: string; currency_code: string } | null>(null);
   const [expenses, setExpenses] = useState<Expense[]>([]);
 
   async function run() {
     setBusy(true);
-    setErr(null);
+    setErrorMessage(null);
     setGroup(null);
     setExpenses([]);
     const id = groupId.trim();
     if (!id) {
-      setErr(t("supportEmptyId"));
+      setErrorMessage(t("supportEmptyId"));
       setBusy(false);
       return;
     }
     try {
-      const res = await fetch(
+      const response = await fetch(
         `/api/admin/support/groups/${encodeURIComponent(id)}`,
         { cache: "no-store" },
       );
-      const j = (await res.json().catch(() => null)) as
+      const responseBody = (await response.json().catch(() => null)) as
         | {
             ok?: boolean;
             group?: { name: string; currency_code: string };
@@ -57,22 +57,22 @@ export function SupportGroupTool() {
             message?: string;
           }
         | null;
-      if (res.status === 403) {
-        setErr(t("stepUpRequiredError"));
+      if (response.status === 403) {
+        setErrorMessage(t("stepUpRequiredError"));
         return;
       }
-      if (!j?.ok) {
-        if (j?.message === "group_not_found") {
-          setErr(t("supportGroupNotFound"));
+      if (!responseBody?.ok) {
+        if (responseBody?.message === "group_not_found") {
+          setErrorMessage(t("supportGroupNotFound"));
         } else {
-          setErr(t("supportLoadError"));
+          setErrorMessage(t("supportLoadError"));
         }
         return;
       }
-      setGroup(j.group ?? null);
-      setExpenses(j.expenses ?? []);
+      setGroup(responseBody.group ?? null);
+      setExpenses(responseBody.expenses ?? []);
     } catch {
-      setErr(t("supportLoadError"));
+      setErrorMessage(t("supportLoadError"));
     } finally {
       setBusy(false);
     }
@@ -87,18 +87,23 @@ export function SupportGroupTool() {
           <Input
             id="gid"
             value={groupId}
-            onChange={(e) => setGroupId(e.target.value)}
+            onChange={(event) => setGroupId(event.target.value)}
             placeholder="UUID"
             className="font-mono text-sm"
           />
         </div>
-        <Button type="button" onClick={() => void run()} disabled={busy}>
+        <Button
+          type="button"
+          onClick={() => void run()}
+          disabled={busy}
+          className="min-h-[44px]"
+        >
           {t("supportLoadButton")}
         </Button>
       </div>
-      {err ? (
+      {errorMessage ? (
         <p className="text-sm text-destructive" role="alert">
-          {err}
+          {errorMessage}
         </p>
       ) : null}
       {group ? (
@@ -123,19 +128,20 @@ export function SupportGroupTool() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {expenses.map((e) => (
-                <TableRow key={e.id}>
+              {expenses.map((expenseItem) => (
+                <TableRow key={expenseItem.id}>
                   <TableCell className="whitespace-nowrap text-xs">
-                    {e.expense_date ?? (e.created_at ? e.created_at.slice(0, 10) : "—")}
+                    {expenseItem.expense_date ??
+                      (expenseItem.created_at ? expenseItem.created_at.slice(0, 10) : "—")}
                   </TableCell>
                   <TableCell className="text-sm font-medium">
-                    {formatYen(Number(e.amount) || 0)}
+                    {formatYen(Number(expenseItem.amount) || 0)}
                   </TableCell>
                   <TableCell className="max-w-xs text-sm">
-                    {e.description ?? "—"}
+                    {expenseItem.description ?? "—"}
                   </TableCell>
                   <TableCell className="font-mono text-xs">
-                    {e.payer_id ? `${e.payer_id.slice(0, 8)}…` : "—"}
+                    {expenseItem.payer_id ? `${expenseItem.payer_id.slice(0, 8)}…` : "—"}
                   </TableCell>
                 </TableRow>
               ))}

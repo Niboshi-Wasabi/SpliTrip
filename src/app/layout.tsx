@@ -24,10 +24,10 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const c = await cookies();
-  const raw = c.get("NEXT_LOCALE")?.value;
-  const locale: AppLocale = isAppLocale(raw || "")
-    ? (raw as AppLocale)
+  const cookieStore = await cookies();
+  const rawLocaleCookie = cookieStore.get("NEXT_LOCALE")?.value;
+  const locale: AppLocale = isAppLocale(rawLocaleCookie || "")
+    ? (rawLocaleCookie as AppLocale)
     : routing.defaultLocale;
   const htmlClassName = getLocaleHtmlClassName(locale);
 

@@ -26,8 +26,8 @@ export function stripLocaleFromPathname(pathname: string): string {
 }
 
 function isProtectedPath(pathname: string): boolean {
-  const p = stripLocaleFromPathname(pathname);
-  return p.startsWith("/dashboard") || p.startsWith("/settings");
+  const normalizedPathname = stripLocaleFromPathname(pathname);
+  return normalizedPathname.startsWith("/dashboard") || normalizedPathname.startsWith("/settings");
 }
 
 function resolveLocaleFromPathname(pathname: string): AppLocale {

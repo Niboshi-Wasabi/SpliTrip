@@ -94,11 +94,11 @@ security definer
 set search_path = public
 set row_security = off
 as $$
-  select row_to_json(r) from (
+  select row_to_json(profile_row) from (
     select id, display_name, avatar_url, paypal_me_id, cash_app_cashtag, preferred_language
     from public.user_profiles
     where id = auth.uid()
-  ) r;
+  ) profile_row;
 $$;
 
 -- RPC to update payment methods.

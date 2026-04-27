@@ -35,18 +35,18 @@ export function DisplayNameForm({ initialDisplayName }: Props) {
     setMessage(null);
     setError(null);
 
-    const res = await fetch("/api/profile/display-name", {
+    const response = await fetch("/api/profile/display-name", {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ display_name: trimmed }),
     });
 
-    const responseBody = (await res.json().catch(() => ({}))) as {
+    const responseBody = (await response.json().catch(() => ({}))) as {
       error?: string;
       display_name?: string;
     };
 
-    if (!res.ok) {
+    if (!response.ok) {
       if (responseBody.error === "display_name_too_long") {
         setError(translations("tooLong"));
       } else if (responseBody.error === "display_name_required") {

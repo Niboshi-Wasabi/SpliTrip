@@ -37,7 +37,7 @@
 | **全画面メンテ** | `MAINTENANCE_MODE` または `NEXT_PUBLIC_MAINTENANCE_MODE` を `true` / `1` / `yes` にすると、`src/proxy.ts` が **OAuth 用 `/auth/*` 通過後**に一般ページを **`/maintenance` または `/{locale}/maintenance`** へ **302 リダイレクト**。メンテページは `messages` の `Maintenance` 名前空間。`robots`: noindex。 |
 | **ミドルウェア対象外** | `matcher` により **`/api/*` は `proxy` 未実行**（API・Webhook は従来どおり。監視用 **`GET /api/health`** は常時 200 JSON）。 |
 | **事前告知バナー** | `NEXT_PUBLIC_MAINTENANCE_ANNOUNCEMENT` に任意の一文を入れると、**メンテモードの有無に関わらず** `[locale]/layout` 上部にアンバー帯で表示（本文は環境変数のまま。ラベルは i18n）。 |
-| **アプリ内お知らせ（DB）** | 管理画面で `app_announcements` に保存した内容のうち **`is_published = true`（公開）** のものだけが、**メンテ／事前告知バナーの直下**（`PublishedAppAnnouncements`）に最大 5 件表示される。未公開（下書き）は RLS で一般ユーザーから参照不可。文言はロケールに応じて `title_ja` / `title_en` 等を切替。 |
+| **アプリ内お知らせ（DB）** | 管理画面で `app_announcements` に保存した内容のうち公開中の最新 1 件を対象に、ログインユーザーの `user_profiles.last_seen_announcement_id` と比較して未読時のみ **ブラー付きオーバーレイ（What's New モーダル）** を表示。確認ボタンで `POST /api/profile/last-seen-announcement` を呼び、既読化後は再表示しない。未公開（下書き）は RLS で一般ユーザーから参照不可。文言はロケールに応じて `title_ja` / `title_en` 等を切替。 |
 
 ---
 
@@ -70,7 +70,7 @@
 | **テーマ** | ライト / ダーク / システム（クライアント側プロバイダ）。 |
 | **モバイル** | ボトムナビ、タッチ向け `min-h-[44px]` などの UI 方針。 |
 | **PWA** | `manifest.webmanifest`、テーマカラー等（レイアウト・メタと連動）。アイコン類は `public/icons/icon.svg` を元に `npm run icons:build` で `public/icons/*` と `src/app/icon.png`・`apple-icon.png`・`favicon.ico` を生成。 |
-| **What's New モーダル** | 実装は存在（`src/components/ui/WhatsNewModal.tsx`）するが、現在はダッシュボードレイアウトから外しており**表示停止中**。 |
+| **What's New モーダル** | `src/components/ui/WhatsNewModal.tsx` + `src/components/announcements/whats-new-modal-gate.tsx` で有効。`[locale]/layout` にマウントされ、背景ブラー・Fade/Scale アニメーション付きで表示。 |
 
 ---
 
@@ -145,7 +145,7 @@
 | **送金先** | `payment_links` 等を API 経由で更新（マイグレーション未適用時はエラーメッセージ）。 |
 | **PRO / OCR** | `premium_access`（PRO）、`premium_access_source`（`stripe`＝課金、`manual`＝運営付与）、`ocr_usage_count`（無料の OCR 累計）。認証ユーザーが自分の PRO フラグだけを書き換えることは DB トリガーで拒否。`increment_ocr_usage_if_not_premium` で成功後に加算。 |
 | **支払い管理（PRO）** | Stripe 審査対応が完了するまで UI は一時的に **準備中（Coming Soon）**。課金基盤（Webhook / `premium_access` 判定）は将来再開に備えて保持。 |
-| **管理画面（Admin Control Panel Suite）** | `user_profiles.is_admin = true` のユーザーのみ `/{locale}/admin` にアクセス可能。`proxy.ts` で非管理者はダッシュボードへリダイレクト。**Step-Up 再認証（任意）**: 環境変数 **`ADMIN_STEP_UP_ENABLED=true`** のときのみ、一部管理 API で `requireAdminStepUpOrJson` により **`admin_stepup_verified` Cookie** を要求。未設定のときは要求しない（デフォルト）。**基盤**: `admin_audit_logs`、`app_announcements`、 `system_settings` テーブル。**管理スイート**: タブ形式UI（`AdminAppShell`、各タブに色分けアイコン）で統合。トップは `listAdminUsers` を1回呼び、概要KPI＋ユーザーテーブルに同じデータを使う。`**GET /api/admin/users` はセッションで `is_admin` を検証**したうえで Service Role 経由の一覧取得。**お知らせ（管理）**: トピック別タブ＋ライブプレビュー。公開済み（`is_published`）行は RLS で一般も SELECT 可。**エンドユーザー向け表示**は `[locale]/layout` の `PublishedAppAnnouncements`（**メンテバナー直下**、最大 5 件、**anon クライアント＋RLS** で取得し cookies を使わない）。**API**: `GET/POST /api/admin/announcements`、 `GET/POST/PATCH/DELETE` 他、`GET /api/admin/audit-logs` 等。**セキュリティ**: 管理操作は `admin_audit_logs` 等。2FA 用監査 `two_factor_security_events` は **ユーザー向け 2FA API** 向け。 |
+| **管理画面（Admin Control Panel Suite）** | `user_profiles.is_admin = true` のユーザーのみ `/{locale}/admin` にアクセス可能。`proxy.ts` で非管理者はダッシュボードへリダイレクト。**Step-Up 再認証（任意）**: 環境変数 **`ADMIN_STEP_UP_ENABLED=true`** のときのみ、一部管理 API で `requireAdminStepUpOrJson` により **`admin_stepup_verified` Cookie** を要求。未設定のときは要求しない（デフォルト）。**基盤**: `admin_audit_logs`、`app_announcements`、 `system_settings` テーブル。**管理スイート**: タブ形式UI（`AdminAppShell`、各タブに色分けアイコン）で統合。トップは `listAdminUsers` を1回呼び、概要KPI＋ユーザーテーブルに同じデータを使う。`**GET /api/admin/users` はセッションで `is_admin` を検証**したうえで Service Role 経由の一覧取得。**お知らせ（管理）**: トピック別タブ＋ライブプレビュー。公開済み（`is_published`）行は RLS で一般も SELECT 可。**エンドユーザー向け表示**は `[locale]/layout` の `WhatsNewModalGate`（未読時のみ表示）。**API**: `GET/POST /api/admin/announcements`、 `GET/POST/PATCH/DELETE` 他、`GET /api/admin/audit-logs` 等。**セキュリティ**: 管理操作は `admin_audit_logs` 等。2FA 用監査 `two_factor_security_events` は **ユーザー向け 2FA API** 向け。 |
 
 ### PRO 手動付与
 

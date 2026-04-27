@@ -67,7 +67,7 @@ security definer
 set search_path = public
 set row_security = off
 as $$
-  select row_to_json(r) from (
+  select row_to_json(profile_row) from (
     select
       id,
       display_name,
@@ -82,7 +82,7 @@ as $$
       ocr_usage_count
     from public.user_profiles
     where id = auth.uid()
-  ) r;
+  ) profile_row;
 $$;
 
 notify pgrst, 'reload schema';

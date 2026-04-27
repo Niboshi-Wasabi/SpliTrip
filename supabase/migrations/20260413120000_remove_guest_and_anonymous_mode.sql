@@ -146,16 +146,19 @@ $$;
 
 do $alter_ins$
 declare
-  r record;
+  function_signature_record record;
 begin
-  for r in
+  for function_signature_record in
     select p.oid::regprocedure as sig
     from pg_proc p
     join pg_namespace n on n.oid = p.pronamespace
     where p.proname = 'insert_expense_with_splits'
       and n.nspname = 'public'
   loop
-    execute format('alter function %s set row_security to off', r.sig);
+    execute format(
+      'alter function %s set row_security to off',
+      function_signature_record.sig
+    );
   end loop;
 end
 $alter_ins$;

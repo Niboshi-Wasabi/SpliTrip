@@ -247,13 +247,6 @@
     "navAudit": "監査ログ",
     "navSupport": "サポート",
     "stepUpRequiredError": "管理画面の再認証（パスキー）が切れています。検証画面から再度認証してください。",
-    "adminOnlyBadge": "管理者限定",
-    "adminNavAria": "管理画面のセクション",
-    "navUsers": "ユーザー",
-    "navAnnouncements": "お知らせ",
-    "navSystem": "システム設定",
-    "navAudit": "監査ログ",
-    "navSupport": "サポート",
     "syncStripe": "Stripe と同期",
     "syncStripeWorking": "同期中…",
     "syncStripeSuccess": "Stripe の状態を反映しました。",
@@ -654,7 +647,13 @@
     "description": "グループ旅行中の立替をリアルタイムに記録し、精算を自動計算するWebアプリ"
   },
   "AppAnnouncements": {
-    "stripTitle": "お知らせ"
+    "stripTitle": "お知らせ",
+    "badge": "WHAT'S NEW",
+    "fallbackTitle": "最新のお知らせ",
+    "fallbackBody": "最新情報があります。内容をご確認ください。",
+    "confirm": "確認した",
+    "confirming": "保存中...",
+    "markSeenError": "既読状態の更新に失敗しました。通信を確認してもう一度お試しください。"
   },
   "Terms": {
     "pageTitle": "利用規約",

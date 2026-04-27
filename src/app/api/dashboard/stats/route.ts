@@ -72,8 +72,12 @@ export async function GET(request: NextRequest) {
     }
 
     // 統計を計算
-    const totalExpenses = expenses?.reduce((sum, exp) => sum + (exp.amount || 0), 0) || 0;
-    const uniqueMembers = new Set(allMembers?.map(m => m.user_id) || []);
+    const totalExpenses =
+      expenses?.reduce(
+        (sum, expenseRow) => sum + (expenseRow.amount || 0),
+        0,
+      ) || 0;
+    const uniqueMembers = new Set(allMembers?.map((memberRow) => memberRow.user_id) || []);
     const totalMembers = uniqueMembers.size;
     
     // TODO: 実際の未精算額計算ロジックを実装

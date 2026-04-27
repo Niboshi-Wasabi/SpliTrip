@@ -22,12 +22,12 @@ export async function GET(request: NextRequest) {
   if (!user) {
     return NextResponse.json({ ok: false, message: "unauthorized" }, { status: 401 });
   }
-  const { data: p } = await supabase
+  const { data: adminProfile } = await supabase
     .from("user_profiles")
     .select("is_admin")
     .eq("id", user.id)
     .maybeSingle();
-  if (p?.is_admin !== true) {
+  if (adminProfile?.is_admin !== true) {
     return NextResponse.json({ ok: false, message: "forbidden" }, { status: 403 });
   }
   const block = requireAdminStepUpOrJson(request, user.id);
@@ -57,12 +57,12 @@ export async function PUT(request: NextRequest) {
   if (!user) {
     return NextResponse.json({ ok: false, message: "unauthorized" }, { status: 401 });
   }
-  const { data: p } = await supabase
+  const { data: adminProfile } = await supabase
     .from("user_profiles")
     .select("is_admin")
     .eq("id", user.id)
     .maybeSingle();
-  if (p?.is_admin !== true) {
+  if (adminProfile?.is_admin !== true) {
     return NextResponse.json({ ok: false, message: "forbidden" }, { status: 403 });
   }
   const block = requireAdminStepUpOrJson(request, user.id);
@@ -117,7 +117,7 @@ export async function PUT(request: NextRequest) {
     admin_user_id: user.id,
     target_user_id: null,
     action: "system_settings_update",
-    details: { keys: items.map((i) => i.key) },
+    details: { keys: items.map((settingsItem) => settingsItem.key) },
   });
 
   return NextResponse.json({ ok: true });

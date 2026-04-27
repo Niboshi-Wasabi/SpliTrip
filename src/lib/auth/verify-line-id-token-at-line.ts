@@ -8,9 +8,9 @@ export async function verifyLineIdTokenAtLineApi(
   | { ok: true; payload: Record<string, unknown> }
   | { ok: false; reason: string }
 > {
-  let res: Response;
+  let verifyResponse: Response;
   try {
-    res = await fetch(LINE_VERIFY_URL, {
+    verifyResponse = await fetch(LINE_VERIFY_URL, {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
       body: new URLSearchParams({
@@ -27,17 +27,17 @@ export async function verifyLineIdTokenAtLineApi(
     return { ok: false, reason: "fetch_failed" };
   }
 
-  const json = (await res
+  const responseBody = (await verifyResponse
     .json()
     .catch(() => null)) as Record<string, unknown> | null;
 
-  if (!res.ok || !json || typeof json.sub !== "string") {
+  if (!verifyResponse.ok || !responseBody || typeof responseBody.sub !== "string") {
     console.error(
       "[API/Action Error - verifyLineIdTokenAtLineApi invalid response]:",
-      { status: res.status, json },
+      { status: verifyResponse.status, responseBody },
     );
     return { ok: false, reason: "invalid_response" };
   }
 
-  return { ok: true, payload: json };
+  return { ok: true, payload: responseBody };
 }

@@ -283,10 +283,10 @@ set search_path = public
 set row_security = off
 as $$
 declare
-  g record;
+  group_row record;
 begin
   select id, name, currency_code, public_share_token
-  into g
+  into group_row
   from public.groups
   where id = p_group_id;
 
@@ -294,14 +294,14 @@ begin
     return null;
   end if;
 
-  if g.public_share_token is distinct from p_share_token then
+  if group_row.public_share_token is distinct from p_share_token then
     return null;
   end if;
 
   return json_build_object(
-    'group_id', g.id,
-    'name', g.name,
-    'currency_code', g.currency_code
+    'group_id', group_row.id,
+    'name', group_row.name,
+    'currency_code', group_row.currency_code
   );
 end;
 $$;

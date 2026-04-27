@@ -4,7 +4,10 @@ const PROVIDER_NOT_ENABLED_GUIDE =
   "Supabase ダッシュボードで、このログイン方法がまだ有効になっていません。" +
   "左メニュー [Authentication] → [Providers] を開き、使うプロバイダー（Google / LINE など）をオンにし、各サービスで発行したクライアント ID・シークレットを入力して保存してください。";
 
-function parseApiBody(message: string): { errorCode?: string; msg?: string } {
+function parseApiBody(message: string): {
+  errorCode?: string;
+  messageText?: string;
+} {
   const trimmed = message.trim();
   if (!trimmed.startsWith("{")) return {};
   try {
@@ -15,7 +18,7 @@ function parseApiBody(message: string): { errorCode?: string; msg?: string } {
     };
     return {
       errorCode: parsed.error_code ?? parsed.code,
-      msg: parsed.msg,
+      messageText: parsed.msg,
     };
   } catch {
     return {};
@@ -27,8 +30,8 @@ function parseApiBody(message: string): { errorCode?: string; msg?: string } {
  */
 export function formatOAuthLoginError(authError: AuthError): string {
   const message = authError.message ?? "";
-  const { errorCode, msg } = parseApiBody(message);
-  const combined = `${errorCode ?? ""} ${msg ?? ""} ${message}`.toLowerCase();
+  const { errorCode, messageText } = parseApiBody(message);
+  const combined = `${errorCode ?? ""} ${messageText ?? ""} ${message}`.toLowerCase();
 
   if (
     errorCode === "validation_failed" ||
@@ -39,6 +42,6 @@ export function formatOAuthLoginError(authError: AuthError): string {
     return PROVIDER_NOT_ENABLED_GUIDE;
   }
 
-  if (msg) return msg;
+  if (messageText) return messageText;
   return message || "ログインに失敗しました。もう一度お試しください。";
 }

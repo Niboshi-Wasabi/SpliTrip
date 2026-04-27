@@ -348,20 +348,20 @@ export function GroupExpensePanel({
       }));
     }
 
-    const res = await fetch(`/api/groups/${groupId}/expenses`, {
+    const response = await fetch(`/api/groups/${groupId}/expenses`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(base),
     });
 
-    const payload: unknown = await res.json().catch(() => null);
+    const payload: unknown = await response.json().catch(() => null);
 
     type CreateExpensePayload = {
       error?: string;
       receipt_error?: string | null;
     };
 
-    if (!res.ok) {
+    if (!response.ok) {
       const code =
         typeof payload === "object" &&
         payload !== null &&

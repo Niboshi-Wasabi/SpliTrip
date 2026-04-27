@@ -37,7 +37,7 @@ export function PaymentSettingsForm({
     setMessage(null);
     setError(null);
 
-    const res = await fetch("/api/profile/payment-methods", {
+    const response = await fetch("/api/profile/payment-methods", {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -47,9 +47,9 @@ export function PaymentSettingsForm({
       }),
     });
 
-    const body: unknown = await res.json().catch(() => null);
+    const body: unknown = await response.json().catch(() => null);
 
-    if (!res.ok) {
+    if (!response.ok) {
       const errorPayload = body as { error?: string };
       if (errorPayload.error === "invalid_paypal_me_id") {
         setError(translations("paymentPaypalInvalid"));

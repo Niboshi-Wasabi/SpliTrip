@@ -121,21 +121,19 @@ export function AnnouncementsManager() {
   const t = useTranslations("Admin");
   const locale = useLocale();
   const router = useRouter();
-  
-  // SWRを使用してお知らせデータを取得
-  const { 
-    data: announcementsResponse, 
-    error: loadError, 
+
+  const {
+    data: announcementsResponse,
+    error: loadError,
     isLoading,
-    mutate: refreshAnnouncements 
+    mutate: refreshAnnouncements
   } = useAnnouncements();
-  
+
   const [actionError, setActionError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [deletingAnnouncementId, setDeletingAnnouncementId] = useState<string | null>(null);
   const [activeTopicTab, setActiveTopicTab] = useState<AnnouncementIconType>("announcement");
-  
-  // 各トピック毎のフォームデータ
+
   const [topicForms, setTopicForms] = useState<TopicFormsState>(() => {
     const initialState = {} as TopicFormsState;
     ICON_TYPES.forEach((iconTypeItem) => {
@@ -152,16 +150,14 @@ export function AnnouncementsManager() {
   const activeTopicConfig = iconTypeMap.get(activeTopicTab);
   const ActiveTopicIcon = activeTopicConfig?.icon ?? Megaphone;
   const currentTopicForm = topicForms[activeTopicTab];
-  
-  // SWRレスポンスからrowsを取得
+
   const rows = useMemo(() => {
     if (announcementsResponse?.ok && announcementsResponse?.items) {
       return announcementsResponse.items as Row[];
     }
     return [];
   }, [announcementsResponse]);
-  
-  // エラーハンドリング
+
   const displayError = useMemo(() => {
     if (loadError) {
       return t("announcementLoadError");
@@ -196,14 +192,14 @@ export function AnnouncementsManager() {
         icon_type: topicType,
       };
 
-      const res = await fetch("/api/admin/announcements", {
+      const response = await fetch("/api/admin/announcements", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
         credentials: "include",
       });
 
-      if (!res.ok) {
+      if (!response.ok) {
         setActionError(
           locale === "en" ? "Failed to save announcement." : "保存に失敗しました。",
         );
@@ -211,9 +207,7 @@ export function AnnouncementsManager() {
       }
 
       resetTopicForm(topicType);
-      // SWRキャッシュを更新（即座にUIに反映）
       await refreshAnnouncements();
-      // グローバルキャッシュも更新
       mutate("/api/admin/announcements");
       router.refresh();
     } finally {
@@ -229,15 +223,15 @@ export function AnnouncementsManager() {
     setBusy(true);
     setDeletingAnnouncementId(announcementId);
     try {
-      const res = await fetch(`/api/admin/announcements/${announcementId}`, { 
+      const response = await fetch(`/api/admin/announcements/${announcementId}`, {
         method: "DELETE",
         credentials: "include",
       });
-      if (!res.ok) {
-        const payload = (await res.json().catch(() => null)) as
+      if (!response.ok) {
+        const responseBody = (await response.json().catch(() => null)) as
           | { message?: string }
           | null;
-        if (payload?.message === "not_found") {
+        if (responseBody?.message === "not_found") {
           setActionError(
             locale === "en"
               ? "This announcement no longer exists."
@@ -250,9 +244,7 @@ export function AnnouncementsManager() {
         }
         return;
       }
-      // SWRキャッシュを更新（即座にUIに反映）
       await refreshAnnouncements();
-      // グローバルキャッシュも更新
       mutate("/api/admin/announcements");
       router.refresh();
     } finally {
@@ -261,7 +253,6 @@ export function AnnouncementsManager() {
     }
   }
 
-  // トピック毎のお知らせをフィルタ
   const getAnnouncementsByTopic = useCallback(
     (topicType: AnnouncementIconType) => {
       return rows.filter((row) => row.icon_type === topicType);
@@ -277,9 +268,8 @@ export function AnnouncementsManager() {
 
     return (
       <div className="space-y-6">
-        {/* トピック説明 */}
         <div className="rounded-lg border border-border bg-muted/30 p-4">
-          <div className="flex items-center gap-3 mb-2">
+          <div className="mb-2 flex items-center gap-3">
             <TopicIcon className={`h-5 w-5 ${topicConfig?.color ?? ""}`} />
             <h3 className="font-medium">
               {locale === "en" ? topicConfig?.labelEn : topicConfig?.labelJa}
@@ -290,12 +280,10 @@ export function AnnouncementsManager() {
           </p>
         </div>
 
-        {/* 作成・プレビューセクション */}
         <div className="grid gap-4 lg:grid-cols-2">
-          {/* 編集フォーム */}
-          <div className="rounded-lg border border-border bg-card p-4 space-y-3">
+          <div className="space-y-3 rounded-lg border border-border bg-card p-4">
             <h2 className="text-sm font-medium">編集</h2>
-            
+
             <div className="grid gap-2 sm:grid-cols-2">
               <div>
                 <Label htmlFor={`tja_${topicType}`}>タイトル（日本語）</Label>
@@ -390,7 +378,7 @@ export function AnnouncementsManager() {
                 type="button"
                 onClick={() => void saveTopicAnnouncement(topicType)}
                 disabled={busy}
-                className="gap-1.5"
+                className="min-h-[44px] gap-1.5"
               >
                 <Plus className="h-4 w-4" />
                 作成
@@ -400,18 +388,18 @@ export function AnnouncementsManager() {
                 variant="outline"
                 onClick={() => resetTopicForm(topicType)}
                 disabled={busy}
+                className="min-h-[44px]"
               >
                 クリア
               </Button>
             </div>
           </div>
 
-          {/* プレビュー */}
-          <div className="rounded-lg border border-border bg-card p-4 space-y-3">
+          <div className="space-y-3 rounded-lg border border-border bg-card p-4">
             <h2 className="text-sm font-medium">
               {locale === "en" ? "Preview" : "プレビュー"}
             </h2>
-            <div className="rounded-lg border border-border bg-background/70 p-4 space-y-3">
+            <div className="space-y-3 rounded-lg border border-border bg-background/70 p-4">
               <div className="flex items-start gap-3">
                 <TopicIcon className={`mt-0.5 h-5 w-5 ${topicConfig?.color ?? ""}`} />
                 <div className="min-w-0 flex-1 space-y-1">
@@ -448,7 +436,6 @@ export function AnnouncementsManager() {
           </div>
         </div>
 
-        {/* このトピックの既存お知らせ一覧 */}
         {topicAnnouncements.length > 0 && (
           <div className="space-y-3">
             <h3 className="flex items-center gap-2 text-sm font-medium">
@@ -509,20 +496,20 @@ export function AnnouncementsManager() {
                             aria-label={t("announcementEdit")}
                             onClick={() => editExistingAnnouncement(announcementRow)}
                             disabled={busy}
-                            className="h-8 w-8"
+                            className="min-h-[44px] min-w-[44px]"
                           >
-                            <Pencil className="h-3 w-3" />
+                            <Pencil className="h-4 w-4" />
                           </Button>
                           <Button
                             type="button"
                             size="icon"
                             variant="outline"
-                            className="text-destructive h-8 w-8"
+                            className="text-destructive min-h-[44px] min-w-[44px]"
                             aria-label={t("announcementDelete")}
                             onClick={() => void remove(announcementRow.id)}
                             disabled={busy || deletingAnnouncementId === announcementRow.id}
                           >
-                            <Trash2 className="h-3 w-3" />
+                            <Trash2 className="h-4 w-4" />
                           </Button>
                         </div>
                       </TableCell>
@@ -540,7 +527,6 @@ export function AnnouncementsManager() {
   const editExistingAnnouncement = (announcementRow: Row) => {
     const topicType = announcementRow.icon_type as AnnouncementIconType;
     if (iconTypeMap.has(topicType)) {
-      // 該当トピックタブに切り替えてフォームに既存データを設定
       setActiveTopicTab(topicType);
       updateTopicForm(topicType, {
         title_ja: announcementRow.title_ja,
@@ -550,15 +536,11 @@ export function AnnouncementsManager() {
         priority: announcementRow.priority ?? 0,
         is_published: announcementRow.is_published,
       });
-      
-      // 編集機能は現在未実装
-      // 将来的には既存お知らせの編集機能を追加する可能性あり
     }
   };
 
   return (
     <div className="space-y-6">
-      {/* 手動リフレッシュボタンとエラー表示 */}
       <div className="flex items-center justify-between">
         <div className="space-y-1">
           {displayError ? (
@@ -566,30 +548,27 @@ export function AnnouncementsManager() {
               {displayError}
             </p>
           ) : null}
-          
           {actionError ? (
             <p className="text-sm text-destructive" role="alert">
               {actionError}
             </p>
           ) : null}
         </div>
-        
         <Button
           type="button"
           variant="outline"
           size="sm"
-          onClick={() => refreshAnnouncements()}
+          onClick={() => void refreshAnnouncements()}
           disabled={isLoading}
-          className="gap-1.5"
+          className="min-h-[44px] gap-1.5"
         >
           <RefreshCw className={cn("h-3 w-3", isLoading && "animate-spin")} />
           更新
         </Button>
       </div>
 
-      {/* トピック別ナビゲーション */}
       <div className="space-y-6">
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-6">
           {ICON_TYPES.map((iconTypeItem) => {
             const Icon = iconTypeItem.icon;
             const topicAnnouncements = getAnnouncementsByTopic(iconTypeItem.value);
@@ -601,7 +580,7 @@ export function AnnouncementsManager() {
                 variant={isActive ? "default" : "outline"}
                 size="sm"
                 className={cn(
-                  "flex items-center gap-1.5 text-xs h-auto py-2 px-3 justify-start",
+                  "flex min-h-[44px] items-center justify-start gap-1.5 px-3 py-2 text-xs",
                   isActive && "ring-2 ring-ring ring-offset-2"
                 )}
                 onClick={() => setActiveTopicTab(iconTypeItem.value as AnnouncementIconType)}
@@ -620,13 +599,11 @@ export function AnnouncementsManager() {
           })}
         </div>
 
-        {/* アクティブトピックのフォーム */}
         <div>
           {renderTopicForm(activeTopicTab)}
         </div>
       </div>
 
-      {/* 全体の一覧（オプション - 必要に応じて表示/非表示） */}
       {rows.length > 0 && (
         <details className="space-y-3">
           <summary className="cursor-pointer text-sm font-medium text-muted-foreground hover:text-foreground">
@@ -697,20 +674,20 @@ export function AnnouncementsManager() {
                             aria-label={t("announcementEdit")}
                             onClick={() => editExistingAnnouncement(announcementRow)}
                             disabled={busy}
-                            className="h-8 w-8"
+                            className="min-h-[44px] min-w-[44px]"
                           >
-                            <Pencil className="h-3 w-3" />
+                            <Pencil className="h-4 w-4" />
                           </Button>
                           <Button
                             type="button"
                             size="icon"
                             variant="outline"
-                            className="text-destructive h-8 w-8"
+                            className="text-destructive min-h-[44px] min-w-[44px]"
                             aria-label={t("announcementDelete")}
                             onClick={() => void remove(announcementRow.id)}
                             disabled={busy || deletingAnnouncementId === announcementRow.id}
                           >
-                            <Trash2 className="h-3 w-3" />
+                            <Trash2 className="h-4 w-4" />
                           </Button>
                         </div>
                       </TableCell>

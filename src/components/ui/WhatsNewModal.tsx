@@ -1,104 +1,153 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-import { Gift, PartyPopper, Rocket, Sparkles } from "lucide-react";
+import { useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import {
-  APP_CHANGELOG_ENTRIES,
-  APP_CHANGELOG_VERSION,
-  type ChangelogEntry,
-} from "@/config/changelog";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+  AlertCircle,
+  BellRing,
+  PartyPopper,
+  ShieldCheck,
+  Sparkles,
+  Wrench,
+} from "lucide-react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-const LAST_SEEN_UPDATE_VERSION_KEY = "lastSeenUpdateVersion";
+type AnnouncementIconType =
+  | "feature"
+  | "bugfix"
+  | "announcement"
+  | "design"
+  | "security"
+  | "maintenance"
+  | null;
 
-function getChangelogIcon(iconName: ChangelogEntry["iconName"]) {
-  if (iconName === "gift") {
-    return Gift;
+export type WhatsNewAnnouncement = {
+  id: string;
+  title: string;
+  content: string;
+  iconType: AnnouncementIconType;
+};
+
+type WhatsNewModalProps = {
+  announcement: WhatsNewAnnouncement;
+  defaultOpen: boolean;
+};
+
+function resolveAnnouncementIcon(iconType: AnnouncementIconType) {
+  switch (iconType) {
+    case "feature":
+      return Sparkles;
+    case "bugfix":
+      return Wrench;
+    case "security":
+      return ShieldCheck;
+    case "maintenance":
+      return AlertCircle;
+    case "design":
+      return PartyPopper;
+    case "announcement":
+    default:
+      return BellRing;
   }
-  if (iconName === "rocket") {
-    return Rocket;
-  }
-  return Sparkles;
 }
 
-export function WhatsNewModal() {
-  const [isOpen, setIsOpen] = useState(false);
-  const [hasCheckedStorage, setHasCheckedStorage] = useState(false);
+export function WhatsNewModal({ announcement, defaultOpen }: WhatsNewModalProps) {
+  const t = useTranslations("AppAnnouncements");
+  const [isOpen, setIsOpen] = useState(defaultOpen);
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
+  const AnnouncementIcon = resolveAnnouncementIcon(announcement.iconType);
 
-  useEffect(() => {
-    queueMicrotask(() => {
-      const lastSeenVersion = localStorage.getItem(LAST_SEEN_UPDATE_VERSION_KEY);
-      const shouldOpen = lastSeenVersion !== APP_CHANGELOG_VERSION;
-      setIsOpen(shouldOpen);
-      setHasCheckedStorage(true);
-    });
-  }, []);
+  async function handleConfirm() {
+    if (isSaving) {
+      return;
+    }
 
-  const changelogEntries = useMemo(() => APP_CHANGELOG_ENTRIES, []);
+    setIsSaving(true);
+    setSaveError(null);
 
-  function handleGotItClick() {
-    localStorage.setItem(LAST_SEEN_UPDATE_VERSION_KEY, APP_CHANGELOG_VERSION);
-    setIsOpen(false);
-  }
+    try {
+      const response = await fetch("/api/profile/last-seen-announcement", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ announcementId: announcement.id }),
+      });
 
-  if (!hasCheckedStorage) {
-    return null;
+      if (!response.ok) {
+        throw new Error("save_failed");
+      }
+
+      setIsOpen(false);
+    } catch (error) {
+      console.error("[WhatsNewModal] mark seen failed:", error);
+      setSaveError(t("markSeenError"));
+    } finally {
+      setIsSaving(false);
+    }
   }
 
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogContent className="max-h-[min(90vh,640px)] overflow-y-auto sm:max-w-lg">
-        <DialogHeader>
-          <div className="flex items-center gap-2">
-            <span className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/15 text-primary">
-              <PartyPopper className="h-5 w-5" aria-hidden />
-            </span>
-            <DialogTitle className="text-left text-base leading-snug">
-              What&apos;s New - 新機能のお知らせ
-            </DialogTitle>
-          </div>
-          <DialogDescription className="text-left text-sm">
-            最新バージョン {APP_CHANGELOG_VERSION} の更新内容です。
-          </DialogDescription>
-        </DialogHeader>
-
-        <ul className="space-y-3 rounded-lg border border-border bg-muted/30 p-3 text-sm">
-          {changelogEntries.map((changelogEntry) => {
-            const EntryIcon = getChangelogIcon(changelogEntry.iconName);
-            return (
-              <li key={changelogEntry.title} className="flex gap-2">
-                <EntryIcon
-                  className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-400"
-                  aria-hidden
-                />
-                <div className="space-y-0.5">
-                  <p className="font-medium leading-snug text-foreground">
-                    {changelogEntry.title}
-                  </p>
-                  <p className="leading-snug text-muted-foreground">
-                    {changelogEntry.description}
-                  </p>
-                </div>
-              </li>
-            );
-          })}
-        </ul>
-
-        <Button
-          type="button"
-          className="min-h-[44px] w-full md:min-h-10"
-          onClick={handleGotItClick}
+    <AnimatePresence>
+      {isOpen ? (
+        <motion.div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-md md:p-6"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.2, ease: "easeOut" }}
+          role="presentation"
         >
-          確認しました (Got it!)
-        </Button>
-      </DialogContent>
-    </Dialog>
+          <motion.div
+            initial={{ opacity: 0, y: 18, scale: 0.97 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 8, scale: 0.98 }}
+            transition={{ duration: 0.28, ease: "easeOut" }}
+            className="w-full max-w-xl"
+          >
+            <Card className="border-zinc-800 bg-zinc-950/95 text-zinc-100 shadow-2xl">
+              <CardHeader className="space-y-4">
+                <div className="flex items-center gap-3">
+                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-zinc-700 bg-zinc-900 text-zinc-200">
+                    <AnnouncementIcon className="h-5 w-5" aria-hidden />
+                  </span>
+                  <div className="space-y-1">
+                    <p className="text-[10px] font-medium tracking-widest text-zinc-400 uppercase">
+                      {t("badge")}
+                    </p>
+                    <CardTitle className="font-serif text-xl leading-tight tracking-tight text-zinc-50">
+                      {announcement.title || t("fallbackTitle")}
+                    </CardTitle>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-5">
+                <p className="whitespace-pre-wrap text-sm leading-relaxed text-zinc-300">
+                  {announcement.content || t("fallbackBody")}
+                </p>
+
+                {saveError ? (
+                  <p className="rounded-md border border-red-900/60 bg-red-950/40 px-3 py-2 text-xs text-red-200">
+                    {saveError}
+                  </p>
+                ) : null}
+
+                <Button
+                  type="button"
+                  onClick={handleConfirm}
+                  disabled={isSaving}
+                  className="min-h-[44px] w-full"
+                >
+                  {isSaving ? t("confirming") : t("confirm")}
+                </Button>
+              </CardContent>
+            </Card>
+          </motion.div>
+        </motion.div>
+      ) : null}
+    </AnimatePresence>
   );
 }

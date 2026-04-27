@@ -647,7 +647,13 @@
     "description": "A web app that records shared travel expenses in real time and automatically calculates settlements."
   },
   "AppAnnouncements": {
-    "stripTitle": "Announcements"
+    "stripTitle": "Announcements",
+    "badge": "WHAT'S NEW",
+    "fallbackTitle": "Latest update",
+    "fallbackBody": "There is a new announcement. Please check the details.",
+    "confirm": "Got it",
+    "confirming": "Saving...",
+    "markSeenError": "Could not update read status. Check your connection and try again."
   },
   "Terms": {
     "pageTitle": "Terms of Service",
