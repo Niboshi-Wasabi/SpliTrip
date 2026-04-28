@@ -107,6 +107,7 @@ type TopicFormData = {
 };
 
 type TopicFormsState = Record<AnnouncementIconType, TopicFormData>;
+type TopicEditingAnnouncementState = Record<AnnouncementIconType, string | null>;
 
 const createEmptyTopicForm = (): TopicFormData => ({
   title_ja: "",
@@ -141,6 +142,14 @@ export function AnnouncementsManager() {
     });
     return initialState;
   });
+  const [topicEditingAnnouncementIds, setTopicEditingAnnouncementIds] =
+    useState<TopicEditingAnnouncementState>(() => {
+      const initialState = {} as TopicEditingAnnouncementState;
+      ICON_TYPES.forEach((iconTypeItem) => {
+        initialState[iconTypeItem.value] = null;
+      });
+      return initialState;
+    });
 
   const iconTypeMap = useMemo(
     () => new Map(ICON_TYPES.map((iconTypeItem) => [iconTypeItem.value, iconTypeItem])),
@@ -180,6 +189,10 @@ export function AnnouncementsManager() {
       ...currentForms,
       [topicType]: createEmptyTopicForm(),
     }));
+    setTopicEditingAnnouncementIds((currentEditingIds) => ({
+      ...currentEditingIds,
+      [topicType]: null,
+    }));
   }, []);
 
   async function saveTopicAnnouncement(topicType: AnnouncementIconType) {
@@ -191,9 +204,15 @@ export function AnnouncementsManager() {
         ...formData,
         icon_type: topicType,
       };
+      const editingAnnouncementId = topicEditingAnnouncementIds[topicType];
+      const isEditingMode = typeof editingAnnouncementId === "string";
+      const requestUrl = isEditingMode
+        ? `/api/admin/announcements/${editingAnnouncementId}`
+        : "/api/admin/announcements";
+      const requestMethod = isEditingMode ? "PUT" : "POST";
 
-      const response = await fetch("/api/admin/announcements", {
-        method: "POST",
+      const response = await fetch(requestUrl, {
+        method: requestMethod,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
         credentials: "include",
@@ -201,7 +220,13 @@ export function AnnouncementsManager() {
 
       if (!response.ok) {
         setActionError(
-          locale === "en" ? "Failed to save announcement." : "保存に失敗しました。",
+          locale === "en"
+            ? isEditingMode
+              ? "Failed to update announcement."
+              : "Failed to save announcement."
+            : isEditingMode
+              ? "お知らせの更新に失敗しました。"
+              : "保存に失敗しました。",
         );
         return;
       }
@@ -263,6 +288,8 @@ export function AnnouncementsManager() {
   const renderTopicForm = (topicType: AnnouncementIconType) => {
     const topicConfig = iconTypeMap.get(topicType);
     const formData = topicForms[topicType];
+    const editingAnnouncementId = topicEditingAnnouncementIds[topicType];
+    const isEditingMode = typeof editingAnnouncementId === "string";
     const TopicIcon = topicConfig?.icon ?? Megaphone;
     const topicAnnouncements = getAnnouncementsByTopic(topicType);
 
@@ -282,7 +309,9 @@ export function AnnouncementsManager() {
 
         <div className="grid gap-4 lg:grid-cols-2">
           <div className="space-y-3 rounded-lg border border-border bg-card p-4">
-            <h2 className="text-sm font-medium">編集</h2>
+            <h2 className="text-sm font-medium">
+              {isEditingMode ? "編集（上書き保存）" : "新規作成"}
+            </h2>
 
             <div className="grid gap-2 sm:grid-cols-2">
               <div>
@@ -380,8 +409,12 @@ export function AnnouncementsManager() {
                 disabled={busy}
                 className="min-h-[44px] gap-1.5"
               >
-                <Plus className="h-4 w-4" />
-                作成
+                {isEditingMode ? (
+                  <Pencil className="h-4 w-4" />
+                ) : (
+                  <Plus className="h-4 w-4" />
+                )}
+                {isEditingMode ? "上書き保存" : "作成"}
               </Button>
               <Button
                 type="button"
@@ -390,7 +423,7 @@ export function AnnouncementsManager() {
                 disabled={busy}
                 className="min-h-[44px]"
               >
-                クリア
+                {isEditingMode ? "編集をキャンセル" : "クリア"}
               </Button>
             </div>
           </div>
@@ -536,6 +569,10 @@ export function AnnouncementsManager() {
         priority: announcementRow.priority ?? 0,
         is_published: announcementRow.is_published,
       });
+      setTopicEditingAnnouncementIds((currentEditingIds) => ({
+        ...currentEditingIds,
+        [topicType]: announcementRow.id,
+      }));
     }
   };
 
