@@ -1,4 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
+import { Megaphone } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import type { AppLocale } from "@/i18n/routing";
 import { getSupabaseEnv } from "@/utils/supabase/env";
@@ -72,20 +73,21 @@ export async function PublishedAppAnnouncements({ locale }: Props) {
   return (
     <section
       aria-label={t("stripTitle")}
-      className="border-b border-zinc-800/60 bg-zinc-900/20 px-4 py-4"
+      className="border-b border-zinc-800/60 bg-zinc-900/20 px-4 py-3"
     >
-      <div className="mx-auto w-full max-w-3xl space-y-3">
-        <h2 className="text-xs font-medium uppercase tracking-widest text-zinc-500">
-          {t("stripTitle")}
-        </h2>
-        <ul className="space-y-3">
+      <div className="mx-auto flex w-full max-w-3xl items-center gap-2 overflow-x-auto">
+        <Megaphone
+          className="h-4 w-4 shrink-0 text-zinc-500"
+          aria-label={t("stripTitle")}
+        />
+        <ul className="flex min-w-0 items-center gap-2">
           {visible.map((row) => (
             <li
               key={row.id}
-              className="rounded-md border border-zinc-800/80 bg-zinc-950/40 px-3 py-2.5"
+              className="shrink-0 rounded-md border border-zinc-800/80 bg-zinc-950/40 px-3 py-2"
             >
               <details className="group">
-                <summary className="cursor-pointer list-none font-serif text-sm font-medium tracking-tight text-zinc-100 outline-none marker:content-none hover:text-zinc-50 focus-visible:ring-2 focus-visible:ring-zinc-500 focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-950">
+                <summary className="max-w-[70vw] cursor-pointer list-none truncate whitespace-nowrap font-serif text-sm font-medium tracking-tight text-zinc-100 outline-none marker:content-none hover:text-zinc-50 focus-visible:ring-2 focus-visible:ring-zinc-500 focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-950 md:max-w-[28rem]">
                   {row.title && row.title.trim().length > 0
                     ? row.title
                     : locale === "en"
@@ -93,7 +95,9 @@ export async function PublishedAppAnnouncements({ locale }: Props) {
                       : "無題のお知らせ"}
                 </summary>
                 {row.content && row.content.trim().length > 0 ? (
-                  <p className="mt-2 whitespace-pre-wrap text-sm text-zinc-400">{row.content}</p>
+                  <p className="mt-2 max-w-[80vw] whitespace-pre-wrap text-sm text-zinc-400 md:max-w-[32rem]">
+                    {row.content}
+                  </p>
                 ) : null}
               </details>
             </li>
