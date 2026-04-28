@@ -37,7 +37,7 @@
 | **全画面メンテ** | `MAINTENANCE_MODE` または `NEXT_PUBLIC_MAINTENANCE_MODE` を `true` / `1` / `yes` にすると、`src/proxy.ts` が **OAuth 用 `/auth/*` 通過後**に一般ページを **`/maintenance` または `/{locale}/maintenance`** へ **302 リダイレクト**。メンテページは `messages` の `Maintenance` 名前空間。`robots`: noindex。 |
 | **ミドルウェア対象外** | `matcher` により **`/api/*` は `proxy` 未実行**（API・Webhook は従来どおり。監視用 **`GET /api/health`** は常時 200 JSON）。 |
 | **事前告知バナー** | `NEXT_PUBLIC_MAINTENANCE_ANNOUNCEMENT` に任意の一文を入れると、**メンテモードの有無に関わらず** `[locale]/layout` 上部にアンバー帯で表示（本文は環境変数のまま。ラベルは i18n）。 |
-| **アプリ内お知らせ（DB）** | 管理画面で `app_announcements` に保存した内容のうち公開中の最新 1 件を対象に、ログインユーザーの `user_profiles.last_seen_announcement_id` と比較して未読時のみ **ブラー付きオーバーレイ（What's New モーダル）** を表示。確認ボタンで `POST /api/profile/last-seen-announcement` を呼び、既読化後は再表示しない。未公開（下書き）は RLS で一般ユーザーから参照不可。文言はロケールに応じて `title_ja` / `title_en` 等を切替。 |
+| **アプリ内お知らせ（DB）** | 管理画面で `app_announcements` に保存した内容のうち公開中の最新 1 件を対象に、ログインユーザーの `user_profiles.last_seen_announcement_id` と比較して未読時のみ **ブラー付きオーバーレイ（What's New モーダル）** を表示。確認ボタンで `POST /api/profile/last-seen-announcement` を呼び、既読化後は再表示しない。未公開（下書き）は RLS で一般ユーザーから参照不可。**公開期限（`expires_at`）** を設定した場合は期限切れ後にヘッダー表示・モーダル表示の両方から自動除外される。文言はロケールに応じて `title_ja` / `title_en` 等を切替。 |
 
 ---
 

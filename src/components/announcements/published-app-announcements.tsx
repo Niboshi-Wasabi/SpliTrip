@@ -11,6 +11,7 @@ type Row = {
   content_en: string;
   icon_type: string | null;
   priority: number | null;
+  expires_at: string | null;
   created_at: string;
 };
 
@@ -35,11 +36,13 @@ export async function PublishedAppAnnouncements({ locale }: Props) {
   const supabase = createClient(env.url, env.anonKey, {
     auth: { persistSession: false, autoRefreshToken: false },
   });
+  const nowIsoTimestamp = new Date().toISOString();
 
   const { data, error } = await supabase
     .from("app_announcements")
-    .select("id, title_ja, title_en, content_ja, content_en, icon_type, priority, created_at")
+    .select("id, title_ja, title_en, content_ja, content_en, icon_type, priority, expires_at, created_at")
     .eq("is_published", true)
+    .or(`expires_at.is.null,expires_at.gt.${nowIsoTimestamp}`)
     .order("priority", { ascending: false })
     .order("created_at", { ascending: false })
     .limit(5);

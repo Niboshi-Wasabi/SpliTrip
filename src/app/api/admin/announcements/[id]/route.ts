@@ -46,6 +46,7 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
     icon_type?: string;
     priority?: number;
     is_published?: boolean;
+    expires_at?: string | null;
   };
   let body: Body;
   try {
@@ -55,7 +56,7 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
   }
   const validIconTypes = ['feature', 'bugfix', 'announcement', 'design', 'security', 'maintenance'];
   
-  const patch: Record<string, string | boolean | number> = {};
+  const patch: Record<string, string | boolean | number | null> = {};
   if (body.title_ja !== undefined) patch.title_ja = body.title_ja;
   if (body.title_en !== undefined) patch.title_en = body.title_en;
   if (body.content_ja !== undefined) patch.content_ja = body.content_ja;
@@ -67,6 +68,17 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
     patch.priority = body.priority;
   }
   if (body.is_published !== undefined) patch.is_published = body.is_published;
+  if (body.expires_at !== undefined) {
+    if (body.expires_at === null || body.expires_at === "") {
+      patch.expires_at = null;
+    } else {
+      const parsedExpiresAt = new Date(body.expires_at);
+      if (Number.isNaN(parsedExpiresAt.getTime())) {
+        return NextResponse.json({ ok: false, message: "invalid_expires_at" }, { status: 400 });
+      }
+      patch.expires_at = parsedExpiresAt.toISOString();
+    }
+  }
   const { error } = await supabase
     .from("app_announcements")
     .update(patch)

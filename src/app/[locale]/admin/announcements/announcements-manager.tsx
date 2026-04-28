@@ -40,6 +40,7 @@ type Row = {
   icon_type: string;
   priority: number;
   is_published: boolean;
+  expires_at: string | null;
   created_at: string;
   updated_at: string;
 };
@@ -104,6 +105,7 @@ type TopicFormData = {
   content_en: string;
   priority: number;
   is_published: boolean;
+  expires_at: string;
 };
 
 type TopicFormsState = Record<AnnouncementIconType, TopicFormData>;
@@ -116,6 +118,7 @@ const createEmptyTopicForm = (): TopicFormData => ({
   content_en: "",
   priority: 0,
   is_published: false,
+  expires_at: "",
 });
 
 export function AnnouncementsManager() {
@@ -150,6 +153,35 @@ export function AnnouncementsManager() {
       });
       return initialState;
     });
+
+  const toDateTimeLocalValue = (isoTimestamp: string | null): string => {
+    if (!isoTimestamp) {
+      return "";
+    }
+    const date = new Date(isoTimestamp);
+    if (Number.isNaN(date.getTime())) {
+      return "";
+    }
+    const localDate = new Date(date.getTime() - date.getTimezoneOffset() * 60_000);
+    return localDate.toISOString().slice(0, 16);
+  };
+
+  const formatExpiryLabel = (isoTimestamp: string | null): string => {
+    if (!isoTimestamp) {
+      return locale === "en" ? "No expiry" : "期限なし";
+    }
+    const date = new Date(isoTimestamp);
+    if (Number.isNaN(date.getTime())) {
+      return locale === "en" ? "No expiry" : "期限なし";
+    }
+    return new Intl.DateTimeFormat(locale === "en" ? "en-US" : "ja-JP", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+    }).format(date);
+  };
 
   const iconTypeMap = useMemo(
     () => new Map(ICON_TYPES.map((iconTypeItem) => [iconTypeItem.value, iconTypeItem])),
@@ -203,6 +235,9 @@ export function AnnouncementsManager() {
       const payload = {
         ...formData,
         icon_type: topicType,
+        expires_at: formData.expires_at
+          ? new Date(formData.expires_at).toISOString()
+          : null,
       };
       const editingAnnouncementId = topicEditingAnnouncementIds[topicType];
       const isEditingMode = typeof editingAnnouncementId === "string";
@@ -339,6 +374,21 @@ export function AnnouncementsManager() {
             </div>
 
             <div>
+              <Label htmlFor={`expires_${topicType}`}>公開期限（任意）</Label>
+              <Input
+                id={`expires_${topicType}`}
+                type="datetime-local"
+                value={formData.expires_at}
+                onChange={(event) =>
+                  updateTopicForm(topicType, { expires_at: event.target.value })
+                }
+              />
+              <p className="mt-1 text-xs text-muted-foreground">
+                未設定なら無期限で公開されます。
+              </p>
+            </div>
+
+            <div>
               <Label htmlFor={`cja_${topicType}`}>本文（日本語）</Label>
               <textarea
                 id={`cja_${topicType}`}
@@ -463,6 +513,14 @@ export function AnnouncementsManager() {
                   <p className="whitespace-pre-wrap break-words text-xs text-muted-foreground">
                     {(formData.content_en || "").trim() || "No English content"}
                   </p>
+                  <p className="text-xs text-muted-foreground">
+                    {locale === "en" ? "Expiry: " : "公開期限: "}
+                    {formData.expires_at
+                      ? formatExpiryLabel(new Date(formData.expires_at).toISOString())
+                      : locale === "en"
+                        ? "No expiry"
+                        : "期限なし"}
+                  </p>
                 </div>
               </div>
             </div>
@@ -517,6 +575,10 @@ export function AnnouncementsManager() {
                                 {t("announcementDraftBadge")}
                               </Badge>
                             )}
+                            <Badge variant="outline" className="w-fit text-[10px]">
+                              {locale === "en" ? "Expiry" : "期限"}:{" "}
+                              {formatExpiryLabel(announcementRow.expires_at)}
+                            </Badge>
                           </div>
                         </div>
                       </TableCell>
@@ -568,6 +630,7 @@ export function AnnouncementsManager() {
         content_en: announcementRow.content_en ?? "",
         priority: announcementRow.priority ?? 0,
         is_published: announcementRow.is_published,
+        expires_at: toDateTimeLocalValue(announcementRow.expires_at),
       });
       setTopicEditingAnnouncementIds((currentEditingIds) => ({
         ...currentEditingIds,
@@ -698,6 +761,10 @@ export function AnnouncementsManager() {
                                   {t("announcementDraftBadge")}
                                 </Badge>
                               )}
+                              <Badge variant="outline" className="w-fit text-[10px]">
+                                {locale === "en" ? "Expiry" : "期限"}:{" "}
+                                {formatExpiryLabel(announcementRow.expires_at)}
+                              </Badge>
                             </div>
                           </div>
                         </div>
