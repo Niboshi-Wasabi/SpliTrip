@@ -3,4 +3,4 @@ export const BETA_FEEDBACK_HREF =
   typeof process.env.NEXT_PUBLIC_OPEN_BETA_FEEDBACK_URL === "string" &&
   process.env.NEXT_PUBLIC_OPEN_BETA_FEEDBACK_URL.length > 0
     ? process.env.NEXT_PUBLIC_OPEN_BETA_FEEDBACK_URL
-    : "https://github.com/Niboshi-Wasabi/SpliTrip/issues";
+    : "https://forms.gle/Y3oL8tTcwR3ujKmWA";

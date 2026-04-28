@@ -38,6 +38,7 @@ import { PromoBanner } from "@/components/ads/PromoBanner";
 import { SupportDeveloper } from "@/components/ads/SupportDeveloper";
 import { DashboardSpendingChart } from "./dashboard-spending-chart";
 import { LogoutButton } from "./logout-button";
+import { BETA_FEEDBACK_HREF } from "@/lib/beta-feedback-href";
 import { getCategoryColor, getExpenseCategoryChartColor } from "@/lib/categories";
 import {
   EXPENSE_CATEGORY_IDS,
@@ -384,9 +385,14 @@ export default async function DashboardPage({ params }: PageProps) {
           {loginTranslations("privacy")}
         </Link>
         <span className="mx-2">·</span>
-        <Link href="/commerce" className="underline underline-offset-4 hover:text-foreground">
-          {loginTranslations("commerce")}
-        </Link>
+        <a
+          href={BETA_FEEDBACK_HREF}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="underline underline-offset-4 hover:text-foreground"
+        >
+          {loginTranslations("feedbackForm")}
+        </a>
       </footer>
     </div>
   );

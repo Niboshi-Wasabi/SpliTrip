@@ -84,14 +84,18 @@ export async function PublishedAppAnnouncements({ locale }: Props) {
               key={row.id}
               className="rounded-md border border-zinc-800/80 bg-zinc-950/40 px-3 py-2.5"
             >
-              {row.title && row.title.trim().length > 0 ? (
-                <p className="font-serif text-sm font-medium tracking-tight text-zinc-100">
-                  {row.title}
-                </p>
-              ) : null}
-              {row.content && row.content.trim().length > 0 ? (
-                <p className="mt-1 whitespace-pre-wrap text-sm text-zinc-400">{row.content}</p>
-              ) : null}
+              <details className="group">
+                <summary className="cursor-pointer list-none font-serif text-sm font-medium tracking-tight text-zinc-100 outline-none marker:content-none hover:text-zinc-50 focus-visible:ring-2 focus-visible:ring-zinc-500 focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-950">
+                  {row.title && row.title.trim().length > 0
+                    ? row.title
+                    : locale === "en"
+                      ? "Untitled announcement"
+                      : "無題のお知らせ"}
+                </summary>
+                {row.content && row.content.trim().length > 0 ? (
+                  <p className="mt-2 whitespace-pre-wrap text-sm text-zinc-400">{row.content}</p>
+                ) : null}
+              </details>
             </li>
           ))}
         </ul>
