@@ -235,6 +235,7 @@ where id = '<ユーザーUUID>';
 | **テスト** | Jest（ユニット・コンポーネントテストが存在）。 |
 | **DB** | `supabase/migrations` にスキーマ・RLS・RPC の定義（本番は Supabase へ適用が前提）。 |
 | **Supabase CLI** | リポジトリに `supabase`（CLI）を `devDependencies` 登録。`npm run db:login` → `npm run db:link -- --project-ref <ref>` → `npm run db:push` でリモート DB にマイグレーションを適用。適用状況の確認は `npm run db:migration:list`。 |
+| **Vercel 計測** | `src/app/layout.tsx` で `@vercel/analytics/next` の `<Analytics />` と `@vercel/speed-insights/next` の `<SpeedInsights />` を有効化。 |
 | **セキュリティスキャン（CI）** | `npm run security:scan` で 5観点（未知import / f-string SQL / `except: pass` / ハードコード秘密 / 入力パス結合）を機械検出。GitHub Actions（`.github/workflows/security-scan.yml`）で `master` / `staging` push と PR 時に自動実行。 |
 
 ### 2FA 関連の DB 追加（2026-04）

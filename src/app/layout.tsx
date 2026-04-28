@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { cookies } from "next/headers";
 import Script from "next/script";
+import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import { routing, type AppLocale } from "@/i18n/routing";
 import { isAppLocale } from "@/lib/i18n/next-intl-locale";
 import { getLocaleHtmlClassName } from "@/lib/i18n/app-gfonts";
@@ -46,6 +48,8 @@ export default async function RootLayout({
       >
         <Script src="/theme-bootstrap.js" strategy="beforeInteractive" />
         {children}
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );
