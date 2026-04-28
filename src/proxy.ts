@@ -11,7 +11,6 @@ import { applyProfilePreferredLocaleCookie } from "./lib/i18n/profile-locale-coo
 import { isMaintenanceModeEnabledForRequest } from "./lib/maintenance";
 import { finalizeSupabaseSession } from "./utils/supabase/middleware";
 import { getSupabaseEnv } from "./utils/supabase/env";
-import { isAdminStepUpVerified } from "./lib/auth/two-factor";
 
 const intlMiddleware = createIntlMiddleware(routing);
 
@@ -78,12 +77,18 @@ function isAdminVerifyPath(pathname: string): boolean {
   return segments[0] === "admin" && segments[1] === "verify";
 }
 
-type AdminContext = { isAdmin: boolean; userId: string | null };
+type UserAccessContext = {
+  isAdmin: boolean;
+  userId: string | null;
+  isDeleted: boolean;
+};
 
-async function resolveAdminContext(request: NextRequest): Promise<AdminContext> {
+async function resolveUserAccessContext(
+  request: NextRequest,
+): Promise<UserAccessContext> {
   const env = getSupabaseEnv();
   if (!env) {
-    return { isAdmin: false, userId: null };
+    return { isAdmin: false, userId: null, isDeleted: false };
   }
 
   const supabase = createServerClient(env.url, env.anonKey, {
@@ -101,19 +106,32 @@ async function resolveAdminContext(request: NextRequest): Promise<AdminContext> 
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) {
-    return { isAdmin: false, userId: null };
+    return { isAdmin: false, userId: null, isDeleted: false };
   }
 
   const { data: profile } = await supabase
     .from("user_profiles")
-    .select("is_admin")
+    .select("is_admin, deleted_at")
     .eq("id", user.id)
     .maybeSingle();
 
-  if (profile?.is_admin === true) {
-    return { isAdmin: true, userId: user.id };
+  return {
+    isAdmin: profile?.is_admin === true,
+    userId: user.id,
+    isDeleted: profile?.deleted_at != null,
+  };
+}
+
+function isAccountDeletedPath(pathname: string): boolean {
+  const segments = pathname.split("/").filter(Boolean);
+  if (segments.length === 0) {
+    return false;
   }
-  return { isAdmin: false, userId: null };
+  const firstSegment = segments[0];
+  if (routing.locales.includes(firstSegment as AppLocale)) {
+    return segments[1] === "account-deleted";
+  }
+  return firstSegment === "account-deleted";
 }
 
 function buildMaintenanceRedirectUrl(request: NextRequest): URL {
@@ -144,8 +162,18 @@ export default async function proxy(request: NextRequest) {
     );
   }
 
-  const { isAdmin: isAdminUser, userId: adminUserId } =
-    await resolveAdminContext(request);
+  const {
+    isAdmin: isAdminUser,
+    userId: accessUserId,
+    isDeleted: isDeletedUser,
+  } = await resolveUserAccessContext(request);
+
+  if (isDeletedUser && !isAccountDeletedPath(pathname)) {
+    const locale = localeFromPathname(pathname);
+    return NextResponse.redirect(
+      new URL(`/${locale}/account-deleted`, request.url),
+    );
+  }
 
   if (isAdminPath(pathname) && !isAdminUser) {
     const locale = localeFromPathname(pathname);
@@ -157,10 +185,10 @@ export default async function proxy(request: NextRequest) {
   // Admins need WebAuthn step-up (cookie) except on the verify page itself.
   // if (
   //   isAdminUser &&
-  //   adminUserId &&
+  //   accessUserId &&
   //   isAdminPath(pathname) &&
   //   !isAdminVerifyPath(pathname) &&
-  //   !isAdminStepUpVerified(request, adminUserId)
+  //   !isAdminStepUpVerified(request, accessUserId)
   // ) {
   //   const locale = localeFromPathname(pathname);
   //   const verifyUrl = new URL(`/${locale}/admin/verify`, request.url);

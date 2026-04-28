@@ -8,6 +8,7 @@ export type AdminUserListItem = {
   premium_access: boolean;
   premium_access_source: string | null;
   is_admin: boolean;
+  deleted_at: string | null;
   created_at: string;
   last_sign_in_at: string | null;
 };
@@ -41,7 +42,7 @@ export async function listAdminUsers(): Promise<{
   const userIds = authUsers.users.map(user => user.id);
   const { data: profiles, error: profilesError } = await serviceSupabase
     .from("user_profiles")
-    .select("id, display_name, avatar_url, premium_access, premium_access_source, is_admin")
+    .select("id, display_name, avatar_url, premium_access, premium_access_source, is_admin, deleted_at")
     .in("id", userIds);
 
   if (profilesError) {
@@ -66,6 +67,7 @@ export async function listAdminUsers(): Promise<{
       premium_access: profile?.premium_access || false,
       premium_access_source: profile?.premium_access_source || null,
       is_admin: profile?.is_admin || false,
+      deleted_at: profile?.deleted_at || null,
       created_at: authUser.created_at,
       last_sign_in_at: authUser.last_sign_in_at || null,
     };

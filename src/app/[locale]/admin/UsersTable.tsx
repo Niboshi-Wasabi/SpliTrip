@@ -14,7 +14,23 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Crown, Shield, Loader2, CheckCircle, AlertCircle, Repeat } from "lucide-react";
+import {
+  Crown,
+  Shield,
+  Loader2,
+  CheckCircle,
+  AlertCircle,
+  Repeat,
+  Trash2,
+} from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import type { AdminUserListItem } from "@/lib/admin/list-admin-users";
 
 type UsersTableProps = {
@@ -23,6 +39,11 @@ type UsersTableProps = {
 
 export function UsersTable({ users }: UsersTableProps) {
   const [loadingActions, setLoadingActions] = useState<Set<string>>(new Set());
+  const [deleteTargetUser, setDeleteTargetUser] = useState<AdminUserListItem | null>(
+    null,
+  );
+  const [isDeletingUser, setIsDeletingUser] = useState(false);
+  const [deleteErrorMessage, setDeleteErrorMessage] = useState<string | null>(null);
   const router = useRouter();
   const t = useTranslations("Admin");
 
@@ -67,10 +88,59 @@ export function UsersTable({ users }: UsersTableProps) {
     }
   };
 
+  const handleDeleteUser = async () => {
+    if (!deleteTargetUser || isDeletingUser) {
+      return;
+    }
+    setIsDeletingUser(true);
+    setDeleteErrorMessage(null);
+    try {
+      const response = await fetch(
+        `/api/admin/users/${deleteTargetUser.id}/delete`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        },
+      );
+      const responseBody = (await response.json().catch(() => null)) as
+        | { error?: string; alreadyDeleted?: boolean }
+        | null;
+
+      if (!response.ok) {
+        const errorCode = responseBody?.error;
+        if (errorCode === "self_delete_not_allowed") {
+          setDeleteErrorMessage(t("deleteSelfNotAllowed"));
+        } else if (errorCode === "admin_delete_not_allowed") {
+          setDeleteErrorMessage(t("deleteAdminNotAllowed"));
+        } else if (errorCode === "target_user_not_found") {
+          setDeleteErrorMessage(t("deleteNotFound"));
+        } else {
+          setDeleteErrorMessage(t("deleteError"));
+        }
+        return;
+      }
+
+      alert(
+        responseBody?.alreadyDeleted
+          ? t("deleteAlready")
+          : t("deleteSuccess"),
+      );
+      setDeleteTargetUser(null);
+      router.refresh();
+    } catch (error) {
+      console.error("[deleteUser] エラー:", error);
+      setDeleteErrorMessage(t("deleteError"));
+    } finally {
+      setIsDeletingUser(false);
+    }
+  };
+
   const handleGrantPro = async (userId: string) => {
     if (loadingActions.has(userId)) return;
 
-    const user = users.find(u => u.id === userId);
+    const user = users.find((userItem) => userItem.id === userId);
     if (!user) return;
 
     if (user.premium_access) {
@@ -127,7 +197,7 @@ export function UsersTable({ users }: UsersTableProps) {
   const handleRevokePro = async (userId: string) => {
     if (loadingActions.has(userId)) return;
 
-    const user = users.find(u => u.id === userId);
+    const user = users.find((userItem) => userItem.id === userId);
     if (!user) return;
 
     if (!user.premium_access) {
@@ -189,7 +259,7 @@ export function UsersTable({ users }: UsersTableProps) {
   const handleSyncStripe = async (userId: string) => {
     if (loadingActions.has(userId)) return;
 
-    const user = users.find(u => u.id === userId);
+    const user = users.find((userItem) => userItem.id === userId);
     if (!user) return;
 
     setLoadingActions(prev => new Set(prev).add(userId));
@@ -309,6 +379,10 @@ export function UsersTable({ users }: UsersTableProps) {
                         <Badge variant="outline" className="text-xs">
                           管理者
                         </Badge>
+                      ) : user.deleted_at ? (
+                        <Badge variant="secondary" className="text-xs">
+                          {t("accountDeleted")}
+                        </Badge>
                       ) : (
                         <>
                           <div className="flex gap-1">
@@ -365,6 +439,22 @@ export function UsersTable({ users }: UsersTableProps) {
                               {isLoading ? t("syncStripeWorking") : t("syncStripe")}
                             </span>
                           </Button>
+                          <Button
+                            size="sm"
+                            variant="destructive"
+                            onClick={() => {
+                              setDeleteErrorMessage(null);
+                              setDeleteTargetUser(user);
+                            }}
+                            disabled={isLoading}
+                            className="text-xs h-7 px-2"
+                            title={t("deleteUser")}
+                          >
+                            <Trash2 className="h-3 w-3" />
+                            <span className="ml-1 hidden lg:inline">
+                              {t("deleteUser")}
+                            </span>
+                          </Button>
                         </>
                       )}
                     </div>
@@ -379,6 +469,70 @@ export function UsersTable({ users }: UsersTableProps) {
       <div className="text-xs text-muted-foreground text-center">
         合計 {users.length} 人のユーザーが登録されています
       </div>
+
+      <Dialog
+        open={deleteTargetUser !== null}
+        onOpenChange={(isOpen) => {
+          if (!isOpen && !isDeletingUser) {
+            setDeleteTargetUser(null);
+            setDeleteErrorMessage(null);
+          }
+        }}
+      >
+        <DialogContent showCloseButton={!isDeletingUser} className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>{t("deleteDialogTitle")}</DialogTitle>
+            <DialogDescription>
+              {deleteTargetUser
+                ? t("deleteDialogDescription", {
+                    name:
+                      deleteTargetUser.display_name ||
+                      deleteTargetUser.email ||
+                      "User",
+                  })
+                : t("deleteDialogFallbackDescription")}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-700 dark:border-red-900/60 dark:bg-red-950/20 dark:text-red-300">
+            {t("deleteDialogWarning")}
+          </div>
+          {deleteErrorMessage ? (
+            <p className="text-sm text-destructive" role="alert">
+              {deleteErrorMessage}
+            </p>
+          ) : null}
+          <DialogFooter>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => {
+                setDeleteTargetUser(null);
+                setDeleteErrorMessage(null);
+              }}
+              disabled={isDeletingUser}
+              className="min-h-[44px]"
+            >
+              {t("cancel")}
+            </Button>
+            <Button
+              type="button"
+              variant="destructive"
+              onClick={() => void handleDeleteUser()}
+              disabled={isDeletingUser}
+              className="min-h-[44px]"
+            >
+              {isDeletingUser ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  {t("deleting")}
+                </>
+              ) : (
+                t("deleteConfirm")
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

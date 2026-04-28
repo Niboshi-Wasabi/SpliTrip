@@ -227,6 +227,7 @@
     "auditColDetails": "詳細",
     "actionGrantPro": "PRO 付与",
     "actionRevokePro": "PRO 解除",
+    "actionDeleteUser": "ユーザー削除",
     "noAuditLogs": "表示できる履歴はまだありません。",
     "stepUpTitle": "管理画面の再認証",
     "stepUpDescription": "管理画面に入る前に、ログイン時の二段階認証に加えて、パスキー（生体認証）でもう一度本人確認を行ってください。",
@@ -252,6 +253,20 @@
     "syncStripeSuccess": "Stripe の状態を反映しました。",
     "syncStripeSkippedManual": "手動 PRO のためプレミアム状態はそのままです。Stripe に紐づいていないか、同期待ちです。",
     "syncStripeError": "Stripe 同期に失敗しました。",
+    "deleteUser": "ユーザー削除",
+    "deleting": "削除中…",
+    "deleteConfirm": "削除を実行する",
+    "deleteSuccess": "ユーザーを削除しました。",
+    "deleteError": "ユーザー削除に失敗しました。",
+    "deleteAlready": "このユーザーはすでに削除済みです。",
+    "deleteDialogTitle": "ユーザーを削除しますか？",
+    "deleteDialogDescription": "「{name}」を削除対象としてマークします。以降このユーザーはアプリを利用できません。",
+    "deleteDialogFallbackDescription": "このユーザーを削除対象としてマークします。以降このユーザーはアプリを利用できません。",
+    "deleteDialogWarning": "この操作は取り消しできません。実行前に対象ユーザーを必ず確認してください。",
+    "deleteSelfNotAllowed": "自分自身は削除できません。",
+    "deleteAdminNotAllowed": "管理者ユーザーはこの画面から削除できません。",
+    "deleteNotFound": "対象ユーザーが見つかりません。",
+    "accountDeleted": "削除済み",
     "actionSyncStripe": "Stripe 同期",
     "actionSystemSettings": "システム設定の更新",
     "actionSupportViewGroup": "サポート: グループ閲覧",
@@ -297,6 +312,13 @@
     "supportColAmount": "金額",
     "supportColDesc": "内容",
     "supportColPayer": "支払者 (user id)"
+  },
+  "DeletedAccount": {
+    "title": "このアカウントは削除されています",
+    "description": "管理者によりこのアカウントは利用停止となりました。現在のセッションでは SpliTrip を利用できません。",
+    "contactHint": "誤りの可能性がある場合は、運営または管理者へお問い合わせください。",
+    "signOut": "ログアウトする",
+    "signingOut": "ログアウト中…"
   },
   "Settings": {
     "backDashboard": "ダッシュボード",
@@ -878,15 +900,15 @@
       "subtitle": "出費の入り組み方に合わせて、同じ体験で扱えます。",
       "items": {
         "winterCamp": {
-          "title": "🏂 スノボ・ゴルフ・キャンプ合宿",
+          "title": "スノボ・ゴルフ・キャンプ合宿",
           "body": "車代、宿代、リフト券が入り乱れる出費も、一つのグループで整理。誰がいくら立て替えたかを見失いません。"
         },
         "abroad": {
-          "title": "✈️ 海外旅行",
+          "title": "海外旅行",
           "body": "外貨と日本円が混ざっても、参考レートで揃えて一発精算。通貨がバラバラなメンバーでも迷いにくいです。"
         },
         "largeParty": {
-          "title": "🍻 大人数の飲み会・フェス",
+          "title": "大人数の飲み会・フェス",
           "body": "飲む人／飲まない人の傾斜配分も、比率や品目で素早く。少人数向けの作法に縛られません。"
         }
       }
@@ -946,3 +968,4 @@
     }
   }
 }
+

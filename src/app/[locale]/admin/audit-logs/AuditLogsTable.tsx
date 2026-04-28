@@ -10,7 +10,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Crown, Shield, CheckCircle, XCircle } from "lucide-react";
+import { Crown, Shield, CheckCircle, XCircle, Trash2 } from "lucide-react";
 import type { AdminAuditLogItem } from "@/lib/admin/list-admin-audit-logs";
 
 type AuditLogsTableProps = {
@@ -45,6 +45,13 @@ export function AuditLogsTable({ logs }: AuditLogsTableProps) {
           <Badge variant="destructive" className="gap-1">
             <XCircle className="h-3 w-3" />
             {t("actionRevokePro")}
+          </Badge>
+        );
+      case "delete_user":
+        return (
+          <Badge variant="destructive" className="gap-1">
+            <Trash2 className="h-3 w-3" />
+            {t("actionDeleteUser")}
           </Badge>
         );
       default:

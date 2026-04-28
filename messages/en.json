@@ -227,6 +227,7 @@
     "auditColDetails": "Details",
     "actionGrantPro": "Grant PRO",
     "actionRevokePro": "Revoke PRO",
+    "actionDeleteUser": "Delete user",
     "noAuditLogs": "No records yet.",
     "stepUpTitle": "Verify your identity for admin",
     "stepUpDescription": "In addition to sign-in 2FA, confirm your identity with your passkey (e.g. biometrics) before opening the admin area.",
@@ -252,6 +253,20 @@
     "syncStripeSuccess": "Profile updated from Stripe.",
     "syncStripeSkippedManual": "This user has manual PRO; premium left unchanged (no link or not Stripe-sourced).",
     "syncStripeError": "Stripe sync failed.",
+    "deleteUser": "Delete user",
+    "deleting": "Deleting…",
+    "deleteConfirm": "Delete user",
+    "deleteSuccess": "User deleted.",
+    "deleteError": "Failed to delete user.",
+    "deleteAlready": "This user is already deleted.",
+    "deleteDialogTitle": "Delete this user?",
+    "deleteDialogDescription": "\"{name}\" will be marked as deleted and blocked from using the app.",
+    "deleteDialogFallbackDescription": "This user will be marked as deleted and blocked from using the app.",
+    "deleteDialogWarning": "This action cannot be undone. Please verify the target user before proceeding.",
+    "deleteSelfNotAllowed": "You cannot delete your own account from this screen.",
+    "deleteAdminNotAllowed": "Admin users cannot be deleted from this screen.",
+    "deleteNotFound": "Target user was not found.",
+    "accountDeleted": "Deleted",
     "actionSyncStripe": "Stripe sync",
     "actionSystemSettings": "System settings change",
     "actionSupportViewGroup": "Support: view group",
@@ -297,6 +312,13 @@
     "supportColAmount": "Amount",
     "supportColDesc": "Description",
     "supportColPayer": "Payer (user id)"
+  },
+  "DeletedAccount": {
+    "title": "This account has been deleted",
+    "description": "An admin has disabled this account. You can no longer use SpliTrip with this session.",
+    "contactHint": "If you believe this is a mistake, please contact support or your administrator.",
+    "signOut": "Sign out",
+    "signingOut": "Signing out…"
   },
   "Settings": {
     "backDashboard": "Dashboard",
@@ -878,15 +900,15 @@
       "subtitle": "Same flow—whether your costs are all over the place.",
       "items": {
         "winterCamp": {
-          "title": "🏂 Ski, golf, camp weekends",
+          "title": "Ski, golf, camp weekends",
           "body": "Gas, lodging, lift tickets, gear—track who paid what in one group without losing the thread."
         },
         "abroad": {
-          "title": "✈️ Trips abroad",
+          "title": "Trips abroad",
           "body": "Mix foreign currency and yen; use reference rates to settle in one pass with less mental load."
         },
         "largeParty": {
-          "title": "🍻 Big dinners and festivals",
+          "title": "Big dinners and festivals",
           "body": "Split drinkers and non-drinkers with ratios or line items—no need to force equal checks on everyone."
         }
       }
@@ -946,3 +968,4 @@
     }
   }
 }
+
