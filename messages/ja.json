@@ -998,6 +998,11 @@
       "fallbackBody": "最新情報があります。内容をご確認ください。",
       "close": "閉じる"
     },
+    "whatsNewBanner": {
+      "newBadge": "NEW",
+      "viewDetails": "詳細を見る",
+      "dismissAria": "このお知らせバナーを閉じる"
+    },
     "bento": {
       "title": "旅の会計のストレスを、ここで減らす",
       "subtitle": "割り勘・次の会計・送金まで、体験を中心にまとめました。",

@@ -998,6 +998,11 @@
       "fallbackBody": "There is a new announcement. Please check the details.",
       "close": "Close"
     },
+    "whatsNewBanner": {
+      "newBadge": "NEW",
+      "viewDetails": "Read more",
+      "dismissAria": "Dismiss announcement banner"
+    },
     "bento": {
       "title": "Less stress around travel money",
       "subtitle": "Rounding, who pays next, and payouts—organized around how it feels to use.",

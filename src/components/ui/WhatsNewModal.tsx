@@ -34,6 +34,10 @@ export type WhatsNewAnnouncement = {
 type WhatsNewModalProps = {
   announcement: WhatsNewAnnouncement;
   defaultOpen: boolean;
+  /** プロフィール既読APIを呼ぶ（既定）。LP などでは api を無効にして閉じるのみ。 */
+  markSeenBehavior?: "api" | "none";
+  /** モーダルが閉じられた直後に呼ぶ（両モード共通・成功クローズ時のみ）。 */
+  onClosed?: () => void;
 };
 
 function resolveAnnouncementIcon(iconType: AnnouncementIconType) {
@@ -54,7 +58,12 @@ function resolveAnnouncementIcon(iconType: AnnouncementIconType) {
   }
 }
 
-export function WhatsNewModal({ announcement, defaultOpen }: WhatsNewModalProps) {
+export function WhatsNewModal({
+  announcement,
+  defaultOpen,
+  markSeenBehavior = "api",
+  onClosed,
+}: WhatsNewModalProps) {
   const t = useTranslations("AppAnnouncements");
   const [isOpen, setIsOpen] = useState(defaultOpen);
   const [isSaving, setIsSaving] = useState(false);
@@ -63,6 +72,12 @@ export function WhatsNewModal({ announcement, defaultOpen }: WhatsNewModalProps)
 
   async function handleConfirm() {
     if (isSaving) {
+      return;
+    }
+
+    if (markSeenBehavior === "none") {
+      setIsOpen(false);
+      onClosed?.();
       return;
     }
 
@@ -83,6 +98,7 @@ export function WhatsNewModal({ announcement, defaultOpen }: WhatsNewModalProps)
       }
 
       setIsOpen(false);
+      onClosed?.();
     } catch (error) {
       console.error("[WhatsNewModal] mark seen failed:", error);
       setSaveError(t("markSeenError"));

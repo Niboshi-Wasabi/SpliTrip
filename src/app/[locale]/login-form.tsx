@@ -30,6 +30,7 @@ import type { Provider } from "@supabase/supabase-js";
 import { TurnstileWidget } from "@/components/auth/TurnstileWidget";
 import { getTurnstileSiteKey } from "@/utils/turnstile/env";
 import { verifyTurnstileTokenOnServer } from "@/lib/turnstile/verify-client";
+import { LANDING_PAGE_BACKGROUND_CLASSNAME } from "@/constants/landing-background";
 
 type LoginProvider = "google" | "line";
 type LoadingAction = LoginProvider;
@@ -264,7 +265,9 @@ export function LoginForm() {
     !supabaseReady || loadingAction !== null || emailActionBusy || passwordResetBusy;
 
   return (
-    <div className="relative flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-blue-50 via-white to-emerald-50 px-4 pb-10 pt-14 dark:from-blue-950/50 dark:via-background dark:to-emerald-950/40">
+    <div
+      className={`relative flex min-h-screen flex-col items-center justify-center px-4 pb-10 pt-14 ${LANDING_PAGE_BACKGROUND_CLASSNAME}`}
+    >
       <div className="absolute right-4 top-4 z-10">
         <ThemeToggle />
       </div>
