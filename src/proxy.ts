@@ -4,9 +4,10 @@
  */
 import createIntlMiddleware from "next-intl/middleware";
 import { createServerClient } from "@supabase/ssr";
-import { type NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { routing, type AppLocale } from "./i18n/routing";
 import { applyAccessBasedLocaleHint } from "./lib/i18n/infer-locale-from-access";
+import { SPLITRIP_REQUEST_PATHNAME_HEADER_NAME } from "./lib/i18n/splitrip-request-headers";
 import { applyProfilePreferredLocaleCookie } from "./lib/i18n/profile-locale-cookie";
 import { isMaintenanceModeEnabledForRequest } from "./lib/maintenance";
 import { finalizeSupabaseSession } from "./utils/supabase/middleware";
@@ -50,6 +51,18 @@ function localeFromPathname(pathname: string): AppLocale {
     return firstSegment as AppLocale;
   }
   return routing.defaultLocale;
+}
+
+function withRequestPathnameHeader(
+  incoming: NextRequest,
+  pathname: string,
+): NextRequest {
+  const nextHeaders = new Headers(incoming.headers);
+  nextHeaders.set(SPLITRIP_REQUEST_PATHNAME_HEADER_NAME, pathname);
+  return new NextRequest(incoming.url, {
+    headers: nextHeaders,
+    method: incoming.method,
+  });
 }
 
 function isAdminPath(pathname: string): boolean {
@@ -213,9 +226,13 @@ export default async function proxy(request: NextRequest) {
   // Step 1b: first visit (no NEXT_LOCALE): geo + Accept-Language hint for redirect/rewrite.
   // 手順1b: 初回は国コードと Accept-Language で最適なロケールへ（英語ヘッダー一辺倒を防ぐ）。
   const localizedRequest = applyAccessBasedLocaleHint(profileLocaleRequest);
+  const localizedRequestWithPathHeader = withRequestPathnameHeader(
+    localizedRequest,
+    pathname,
+  );
   // Step 2: next-intl resolves locale (cookie, Accept-Language, prefix rules).
   // 手順2: next-intl がロケールを解決（Cookie・Accept-Language・プレフィックス）。
-  const intlResponse = intlMiddleware(localizedRequest);
+  const intlResponse = intlMiddleware(localizedRequestWithPathHeader);
   // Step 3: attach refreshed Supabase cookies to intl redirects/rewrites.
   // 手順3: Supabase の更新済み Cookie を intl のレスポンスへ載せる。
   return finalizeSupabaseSession(localizedRequest, intlResponse);

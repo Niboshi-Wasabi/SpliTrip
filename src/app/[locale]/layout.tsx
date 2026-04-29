@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
+import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { getMessages, getTranslations, setRequestLocale } from "next-intl/server";
 import { routing, type AppLocale } from "@/i18n/routing";
+import { SPLITRIP_REQUEST_PATHNAME_HEADER_NAME } from "@/lib/i18n/splitrip-request-headers";
 import { AppProviders } from "@/app/providers";
 import { BottomNav } from "@/components/bottom-nav";
 import { SyncDocumentLocale } from "@/components/i18n/sync-document-locale";
@@ -13,6 +15,7 @@ import { MaintenanceAnnouncementBanner } from "@/components/maintenance/maintena
 import { MaintenanceScheduleGuard } from "@/components/maintenance/maintenance-schedule-guard";
 import { getLocaleHtmlClassName } from "@/lib/i18n/app-gfonts";
 import { getUiMonoStackId, getUiSansStackId } from "@/lib/i18n/locale-ui-fonts";
+import { stripLocaleFromPathname } from "@/utils/supabase/middleware";
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
@@ -67,6 +70,16 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
   setRequestLocale(localeParam);
   const messages = await getMessages();
 
+  const headerList = await headers();
+  const requestPathnameFromMiddleware = headerList.get(
+    SPLITRIP_REQUEST_PATHNAME_HEADER_NAME,
+  );
+  const pathWithoutLocalePrefix = requestPathnameFromMiddleware
+    ? stripLocaleFromPathname(requestPathnameFromMiddleware)
+    : null;
+  const showPublishedAppAnnouncementsStrip =
+    pathWithoutLocalePrefix === null || pathWithoutLocalePrefix !== "/";
+
   const uiSansStackId = getUiSansStackId(locale);
   const uiMonoStackId = getUiMonoStackId(locale);
   const htmlClassName = getLocaleHtmlClassName(locale);
@@ -84,7 +97,9 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
         <AppProviders>
           <MaintenanceAnnouncementBanner />
           <MaintenanceScheduleGuard />
-          <PublishedAppAnnouncements locale={locale} />
+          {showPublishedAppAnnouncementsStrip ? (
+            <PublishedAppAnnouncements locale={locale} />
+          ) : null}
           <WhatsNewModalGate locale={locale} />
           {children}
           <AppSiteFooter />

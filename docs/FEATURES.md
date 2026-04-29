@@ -38,7 +38,7 @@
 | **ミドルウェア対象外** | `matcher` により **`/api/*` は `proxy` 未実行**（API・Webhook は従来どおり。監視用 **`GET /api/health`** は常時 200 JSON）。 |
 | **事前告知バナー** | `NEXT_PUBLIC_MAINTENANCE_ANNOUNCEMENT` に任意の一文を入れると、**メンテモードの有無に関わらず** `[locale]/layout` 上部にアンバー帯で表示（本文は環境変数のまま。ラベルは i18n）。加えて `maintenance_schedules` を参照する `MaintenanceScheduleGuard` が、開始24時間前から時限バナーを表示。 |
 | **スケジュールメンテ（DB）** | `maintenance_schedules`（`start_time` / `end_time` / `is_enabled` / 日英告知文）を `GET/PUT /api/admin/maintenance` で管理。開始〜終了の間は `MaintenanceScheduleGuard` がクライアント側で `/{locale}/maintenance` へ遷移（`MAINTENANCE_MODE=true` の強制モードは従来どおりフェイルセーフとして優先）。 |
-| **アプリ内お知らせ（DB）** | 管理画面で `app_announcements` に保存した内容のうち公開中の最新 1 件を対象に、ログインユーザーの `user_profiles.last_seen_announcement_id` と比較して未読時のみ **ブラー付きオーバーレイ（What's New モーダル）** を表示。確認ボタンで `POST /api/profile/last-seen-announcement` を呼び、既読化後は再表示しない。未公開（下書き）は RLS で一般ユーザーから参照不可。**公開期限（`expires_at`）** を設定した場合は期限切れ後にヘッダー表示・モーダル表示の両方から自動除外される。ヘッダー帯では **タイトルのみ** を表示し、クリックで本文を展開表示。文言はロケールに応じて `title_ja` / `title_en` 等を切替。 |
+| **アプリ内お知らせ（DB）** | 管理画面で `app_announcements` に保存した内容のうち公開中の最新 1 件を対象に、ログインユーザーの `user_profiles.last_seen_announcement_id` と比較して未読時のみ **ブラー付きオーバーレイ（What's New モーダル）** を表示。確認ボタンで `POST /api/profile/last-seen-announcement` を呼び、既読化後は再表示しない。未公開（下書き）は RLS で一般ユーザーから参照不可。**公開期限（`expires_at`）** を設定した場合は期限切れ後にヘッダー表示・モーダル表示の両方から自動除外される。**ヘッダー横スクロール帯**（`PublishedAppAnnouncements`）では **タイトルのみ** を表示し、クリックで本文を展開表示。文言はロケールに応じて `title_ja` / `title_en` 等を切替。**ランディングページ（`/{locale}` トップ）では当該帯のみ非表示**（モーダルは従来どおり）。 |
 
 ---
 
@@ -68,7 +68,7 @@
 | **ロケール** | `next-intl` で **2 言語（`ja`, `en`）** をサポート。既定は `ja`。初回（`NEXT_LOCALE` 未設定）は Proxy で `Accept-Language` と国コードを参照して言語を補正し、next-intl が適切なロケールへリダイレクト／書き換えする。**日本（JP）からのアクセス**で `Accept-Language` に `ja` が含まれない場合は **日本語（`ja`）** を優先（`infer-locale-from-access.ts`）。`ja` を明示したヘッダは上書きしない。**デバイス UI 言語**は `navigator.languages` を Cookie `SPLITRIP_DEVICE_LANGS` に保存し、初回リクエスト以降は `Accept-Language` より先に交渉へ載せる。クライアントの `DeviceLocaleSync` が初回のみ URL ロケールをデバイスに合わせ、ユーザーが言語を手動変更したら `localStorage` / `sessionStorage` の `splitrip_locale_bootstrap_done` で自動合わせを止める。 |
 | **UI フォント（本文・見出し）** | アルファベット系コードポイントは **Source Serif 4**、日本語は **Noto Serif JP** を優先。ロケール切替は `src/lib/i18n/locale-ui-fonts.ts` と `html[data-ui-sans]` で `ja/en` を扱う。 |
 | **等幅フォント** | `ja` / `en` ともに Fira Code 系スタックを利用（最終フォールバックは OS 標準 monospace）。`html[data-ui-mono]`。 |
-| **言語スイッチャー** | `LanguageSwitcher` は **JA / EN トグル**で即時切替。LP ヘッダー・設定ヘッダー等。LP 以外の画面では `GlobalLanguagePickerFab`（地球アイコン FAB）から **言語選択モーダル**（`language-picker-modal.tsx`）でも同様に切替可能。 |
+| **言語スイッチャー** | `LanguageSwitcher` は **JA / EN トグル**で即時切替。LP ヘッダー・設定ヘッダー等。言語選択モーダル（`language-picker-modal.tsx`）は FAB 以外の導線から利用可能。 |
 | **テーマ** | ライト / ダーク / システム（クライアント側プロバイダ）。 |
 | **モバイル** | ボトムナビ、タッチ向け `min-h-[44px]` などの UI 方針。 |
 | **PWA** | `manifest.webmanifest`、テーマカラー等（レイアウト・メタと連動）。アイコン類は `public/icons/icon.svg` を元に `npm run icons:build` で `public/icons/*` と `src/app/icon.png`・`apple-icon.png`・`favicon.ico` を生成。 |
