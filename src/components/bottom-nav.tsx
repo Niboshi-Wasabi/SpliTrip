@@ -25,6 +25,7 @@ const HIDDEN_PATHS = [
   "/onboarding",
   "/pitch",
   "/maintenance",
+  "/status",
 ];
 
 function isHiddenPath(pathnameWithoutLocalePrefix: string): boolean {

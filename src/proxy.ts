@@ -15,7 +15,7 @@ import { getSupabaseEnv } from "./utils/supabase/env";
 
 const intlMiddleware = createIntlMiddleware(routing);
 
-function pathnameStartsWithLocaleMaintenance(pathname: string): boolean {
+function pathnameStartsWithLocaleSingleSegment(pathname: string, segment: string): boolean {
   const segments = pathname.split("/").filter(Boolean);
   if (segments.length < 2) {
     return false;
@@ -25,7 +25,11 @@ function pathnameStartsWithLocaleMaintenance(pathname: string): boolean {
   if (!routing.locales.includes(maybeLocale as AppLocale)) {
     return false;
   }
-  return rest.length === 1 && rest[0] === "maintenance";
+  return rest.length === 1 && rest[0] === segment;
+}
+
+function pathnameStartsWithLocaleMaintenance(pathname: string): boolean {
+  return pathnameStartsWithLocaleSingleSegment(pathname, "maintenance");
 }
 
 function pathnameIsMaintenancePath(pathname: string): boolean {
@@ -35,11 +39,21 @@ function pathnameIsMaintenancePath(pathname: string): boolean {
   return pathnameStartsWithLocaleMaintenance(pathname);
 }
 
+function pathnameIsStatusPath(pathname: string): boolean {
+  if (pathname === "/status") {
+    return true;
+  }
+  return pathnameStartsWithLocaleSingleSegment(pathname, "status");
+}
+
 function pathnameAllowedDuringMaintenance(pathname: string): boolean {
   if (pathname.startsWith("/_next") || pathname.startsWith("/_vercel")) {
     return true;
   }
   if (pathnameIsMaintenancePath(pathname)) {
+    return true;
+  }
+  if (pathnameIsStatusPath(pathname)) {
     return true;
   }
   return false;

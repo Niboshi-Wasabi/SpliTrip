@@ -6,6 +6,7 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 import { buttonVariants } from "@/components/ui/button-variants";
 import { cn } from "@/lib/utils";
 import {
+  Activity,
   ArrowLeft,
   Clock3,
   FileText,
@@ -36,6 +37,12 @@ const NAV = [
     key: "navMaintenance" as const,
     icon: Clock3,
     iconClass: "text-amber-600 dark:text-amber-400",
+  },
+  {
+    href: "/admin/status" as const,
+    key: "navSystemStatus" as const,
+    icon: Activity,
+    iconClass: "text-sky-600 dark:text-sky-400",
   },
   {
     href: "/admin/system" as const,

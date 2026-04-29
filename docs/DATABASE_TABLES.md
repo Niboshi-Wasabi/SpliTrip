@@ -22,6 +22,7 @@
 | `admin_audit_logs` | 管理画面向け操作ログ（PRO 手動付与など） | `20260423223000` |
 | `app_announcements` | アプリ内お知らせ（What's New）多言語対応 | `20260424100000`, `20260425042000`, `20260430153000`（`display_order`） |
 | `maintenance_schedules` | 時限メンテのスケジュールと日英告知（緊急度付き） | `20260430033000`, `20260430153000` |
+| `system_status` | 公開ステータス（サービス単位の稼働ラベル） | `20260430200000` |
 | `system_settings` | 動的システム設定（メンテ・プロモバナー等） | `20260424100000` |
 | `stripe_webhook_events` | Stripe Webhook 処理済み event の冪等記録 | `20260415070000` |
 | `stripe_customer_user_links` | Stripe `customer_id` ↔ `auth.users` の紐付け | `20260415070000` |
@@ -365,6 +366,21 @@ Supabase Dashboard の Advisor 警告の整理方針は **`SUPABASE_SECURITY_ADV
 | `message_urgency` | `text` | YES | — | CHECK `normal` / `high` または NULL | 告知緊急度。**有効**な行のうちどれかが `high` のときのみ、選択対象は `high` の行に限定される。すべて未設定なら従来どおり有効行すべてが対象。 |
 
 **マイグレーション:** `20260430033000`（テーブル作成）、`20260430153000`（`message_urgency`）
+
+---
+
+## `system_status`
+
+サービス単位の稼働状況（公開 `/status` ページ・管理上書き）。
+
+| 列名 | 型 | NULL | デフォルト | 制約・参照 | 説明 |
+|------|-----|------|------------|------------|------|
+| `service_key` | `text` | NOT NULL | — | PRIMARY KEY | 固定キー（例: `core_api_database`）。 |
+| `status` | `text` | NOT NULL | — | CHECK（4値） | `operational` / `degraded` / `partial_outage` / `major_outage`（初期シードはすべて `operational`） |
+| `updated_at` | `timestamptz` | NOT NULL | `now()` | — | 最終更新（トリガーで更新） |
+
+**RLS:** 有効（**誰でも SELECT可**、`is_admin=true` が INSERT/UPDATE/DELETE）。  
+**マイグレーション:** `20260430200000`
 
 ---
 
