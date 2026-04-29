@@ -38,29 +38,32 @@ export function OnboardingForm({ suggestedName, nextPath }: Props) {
     setSubmitting(true);
     setErrorMessage(null);
 
-    const response = await fetch("/api/profile/display-name", {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ display_name: trimmed }),
-    });
+    try {
+      const response = await fetch("/api/profile/display-name", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ display_name: trimmed }),
+      });
 
-    const responseBody = (await response.json().catch(() => ({}))) as {
-      error?: string;
-    };
+      const responseBody = (await response.json().catch(() => ({}))) as {
+        error?: string;
+      };
 
-    if (!response.ok) {
-      if (responseBody.error === "display_name_too_long") {
-        setErrorMessage(translations("tooLong"));
-      } else if (responseBody.error === "display_name_required") {
-        setErrorMessage(translations("required"));
-      } else {
-        setErrorMessage(translations("saveError"));
+      if (!response.ok) {
+        if (responseBody.error === "display_name_too_long") {
+          setErrorMessage(translations("tooLong"));
+        } else if (responseBody.error === "display_name_required") {
+          setErrorMessage(translations("required"));
+        } else {
+          setErrorMessage(translations("saveError"));
+        }
+        return;
       }
-      setSubmitting(false);
-      return;
-    }
 
-    router.push(nextPath);
+      router.push(nextPath);
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   return (

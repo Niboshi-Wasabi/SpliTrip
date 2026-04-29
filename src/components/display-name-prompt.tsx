@@ -45,23 +45,26 @@ export function DisplayNamePrompt({
     setSaving(true);
     setError(null);
 
-    const response = await fetch("/api/profile/display-name", {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ display_name: trimmed }),
-    });
+    try {
+      const response = await fetch("/api/profile/display-name", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ display_name: trimmed }),
+      });
 
-    if (!response.ok) {
-      setError(translations("saveError"));
+      if (!response.ok) {
+        setError(translations("saveError"));
+        return;
+      }
+
+      onSaved?.(trimmed);
+      if (groupId) {
+        broadcastGroupRefresh(groupId);
+      }
+      router.refresh();
+    } finally {
       setSaving(false);
-      return;
     }
-
-    onSaved?.(trimmed);
-    if (groupId) {
-      broadcastGroupRefresh(groupId);
-    }
-    router.refresh();
   }
 
   if (!editing) {

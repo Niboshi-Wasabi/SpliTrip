@@ -35,34 +35,36 @@ export function DisplayNameForm({ initialDisplayName }: Props) {
     setMessage(null);
     setError(null);
 
-    const response = await fetch("/api/profile/display-name", {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ display_name: trimmed }),
-    });
+    try {
+      const response = await fetch("/api/profile/display-name", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ display_name: trimmed }),
+      });
 
-    const responseBody = (await response.json().catch(() => ({}))) as {
-      error?: string;
-      display_name?: string;
-    };
+      const responseBody = (await response.json().catch(() => ({}))) as {
+        error?: string;
+        display_name?: string;
+      };
 
-    if (!response.ok) {
-      if (responseBody.error === "display_name_too_long") {
-        setError(translations("tooLong"));
-      } else if (responseBody.error === "display_name_required") {
-        setError(translations("required"));
-      } else {
-        setError(translations("saveError"));
+      if (!response.ok) {
+        if (responseBody.error === "display_name_too_long") {
+          setError(translations("tooLong"));
+        } else if (responseBody.error === "display_name_required") {
+          setError(translations("required"));
+        } else {
+          setError(translations("saveError"));
+        }
+        return;
       }
-      setSaving(false);
-      return;
-    }
 
-    if (typeof responseBody.display_name === "string") {
-      setDisplayName(responseBody.display_name);
+      if (typeof responseBody.display_name === "string") {
+        setDisplayName(responseBody.display_name);
+      }
+      setMessage(translations("saved"));
+    } finally {
+      setSaving(false);
     }
-    setMessage(translations("saved"));
-    setSaving(false);
   }
 
   return (
