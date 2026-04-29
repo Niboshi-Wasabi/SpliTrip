@@ -3,7 +3,7 @@
     "brandSubtitle": "SpliTrip",
     "tagline": "Split trip expenses, simply.",
     "title": "Sign in",
-    "description": "Sign in with Google or LINE to start.",
+    "description": "Sign in with Google, LINE, or email to start.",
     "supabaseNotConfigured": "Supabase is not configured. Set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY in .env.local at the project root, then restart the dev server.",
     "googleLogin": "Continue with Google",
     "lineLogin": "Continue with LINE",
@@ -19,7 +19,19 @@
     "oneTapUnavailable": "Google One Tap could not be shown. Please continue with the regular sign-in buttons.",
     "oneTapDismissed": "Google One Tap prompt was dismissed. You can continue with the regular sign-in buttons.",
     "captchaRequired": "Please complete the security check before signing in.",
-    "captchaFailed": "Security verification failed. Please try again."
+    "captchaFailed": "Security verification failed. Please try again.",
+    "emailPlaceholder": "Email address",
+    "passwordPlaceholder": "Password",
+    "emailRequired": "Please enter your email address.",
+    "passwordRequired": "Please enter your password.",
+    "emailLogin": "Sign in with email",
+    "createAccount": "Create account",
+    "switchToCreateAccount": "Create an account",
+    "switchToSignIn": "Back to sign in",
+    "forgotPassword": "Forgot password?",
+    "passwordResetSent": "Password reset email has been sent.",
+    "signUpSuccess": "Account created. Please verify your email before signing in.",
+    "sending": "Sending…"
   },
   "TwoFactor": {
     "gateTitle": "Two-factor authentication",
@@ -147,7 +159,7 @@
   },
   "JoinGate": {
     "title": "Join the group",
-    "description": "Sign in with Google or LINE to join this group."
+    "description": "Sign in with Google, LINE, or email to join this group."
   },
   "GroupNew": {
     "backDashboard": "Dashboard",

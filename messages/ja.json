@@ -3,7 +3,7 @@
     "brandSubtitle": "スプリトリップ",
     "tagline": "グループ旅行の精算をシンプルに。",
     "title": "ログイン",
-    "description": "SNSログインで精算を始める",
+    "description": "SNSまたはメールでログインして精算を始める",
     "supabaseNotConfigured": "Supabase の接続情報が未設定です。プロジェクト直下の .env.local に NEXT_PUBLIC_SUPABASE_URL と NEXT_PUBLIC_SUPABASE_ANON_KEY を設定し、開発サーバーを再起動してください。",
     "googleLogin": "Googleでログイン",
     "lineLogin": "LINEでログイン",
@@ -19,7 +19,19 @@
     "oneTapUnavailable": "Google One Tap を表示できませんでした。通常のログインボタンをご利用ください。",
     "oneTapDismissed": "Google One Tap プロンプトを閉じました。必要に応じて通常のログインボタンをご利用ください。",
     "captchaRequired": "ログイン前にセキュリティ確認を完了してください。",
-    "captchaFailed": "セキュリティ確認に失敗しました。もう一度お試しください。"
+    "captchaFailed": "セキュリティ確認に失敗しました。もう一度お試しください。",
+    "emailPlaceholder": "メールアドレス",
+    "passwordPlaceholder": "パスワード",
+    "emailRequired": "メールアドレスを入力してください。",
+    "passwordRequired": "パスワードを入力してください。",
+    "emailLogin": "メールでログイン",
+    "createAccount": "アカウントを作成",
+    "switchToCreateAccount": "アカウントを作成",
+    "switchToSignIn": "ログインに戻る",
+    "forgotPassword": "パスワードを忘れた場合",
+    "passwordResetSent": "パスワード再設定メールを送信しました。",
+    "signUpSuccess": "アカウントを作成しました。メール確認後にログインしてください。",
+    "sending": "送信中…"
   },
   "TwoFactor": {
     "gateTitle": "二段階認証",
@@ -147,7 +159,7 @@
   },
   "JoinGate": {
     "title": "グループに参加",
-    "description": "Google または LINE でログインしてください。ログイン後、この招待で参加できます。"
+    "description": "Google / LINE またはメールでログインしてください。ログイン後、この招待で参加できます。"
   },
   "GroupNew": {
     "backDashboard": "ダッシュボード",

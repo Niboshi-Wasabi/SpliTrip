@@ -7,7 +7,6 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import { routing, type AppLocale } from "@/i18n/routing";
 import { getSupabaseEnv } from "./env";
-import { isTwoFactorVerified } from "@/lib/auth/two-factor";
 
 /**
  * Removes optional `/{locale}` prefix (any app locale) so auth rules match localized URLs.
@@ -28,14 +27,6 @@ export function stripLocaleFromPathname(pathname: string): string {
 function isProtectedPath(pathname: string): boolean {
   const normalizedPathname = stripLocaleFromPathname(pathname);
   return normalizedPathname.startsWith("/dashboard") || normalizedPathname.startsWith("/settings");
-}
-
-function resolveLocaleFromPathname(pathname: string): AppLocale {
-  const segment = pathname.split("/").filter(Boolean)[0];
-  if (segment && routing.locales.includes(segment as AppLocale)) {
-    return segment as AppLocale;
-  }
-  return routing.defaultLocale;
 }
 
 /**

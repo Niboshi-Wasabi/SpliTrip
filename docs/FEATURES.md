@@ -48,6 +48,7 @@
 | **Google ログイン** | OAuth（PKCE）。`/auth/callback` でコード交換・セッション確立。 |
 | **Google One Tap** | 未ログイン LP（`/[locale]`）で `https://accounts.google.com/gsi/client` を読み込み、右上プロンプトからワンタップ認証。`response.credential` を `supabase.auth.signInWithIdToken({ provider: 'google', token })` に渡してセッション化し、成功時は `/{locale}/dashboard` へ遷移。`NEXT_PUBLIC_GOOGLE_CLIENT_ID` が必須。 |
 | **LINE ログイン** | `/api/auth/line` → LINE → `/api/auth/callback/line` → サービスロール＋`verifyOtp` 相当でセッション確立。 |
+| **メール/パスワード認証** | ログイン画面（`/[locale]/login`）と招待ゲート（`/[locale]/join/[token]`）で `supabase.auth.signUp({ email, password })` / `supabase.auth.signInWithPassword({ email, password })` / `supabase.auth.resetPasswordForEmail(email)` を利用可能。UI は「ログイン / アカウント作成」の切替と Forgot Password 導線を持つ。 |
 | **二段階認証（WebAuthn）** | **必須フローではない（当面オフ）**。ミドルウェアの 2FA 未完了リダイレクトは **無効化**（`src/utils/supabase/middleware.ts` 内の該当ブロックはコメントアウト）。`/{locale}/auth/2fa` は **旧URL互換**として `next` 等へ即リダイレクトするのみ。WebAuthn / バックアップ用 **Route Handler・DB スキーマ（`user_webauthn_credentials` 等）は存続**するが、ログイン直後の強制 2FA は行わない。`getWebAuthnRpId`（`src/lib/auth/two-factor.ts`）は **リクエスト origin の hostname** を `rpId` に使う（`localhost` / `127.0.0.1` はそのまま）。PWA: `AppPerformanceEnhancer` が `public/service-worker.js` を `'/service-worker.js'` で登録（旧 `'/sw.js'` は解除）。 |
 | **2FA 復旧** | 初回登録時にバックアップコードを発行する API・DB ロジックは存続。設定画面の **2FA 管理フォーム（`TwoFactorSettingsForm`）はコメントアウト**しており、UI からの再発行導線は非表示。コードはハッシュ化して `used_at` で再利用不可。 |
 | **Turnstile（Cloudflare CAPTCHA）** | ログイン画面・招待ゲートで有効化可能。`NEXT_PUBLIC_CLOUDFLARE_TURNSTILE_SITE_KEY` / `CLOUDFLARE_TURNSTILE_SECRET_KEY` が揃うと有効化され、LINE開始前にはサーバー側でも検証。 |
@@ -83,7 +84,7 @@
 | **グループ詳細** | `/dashboard/groups/[groupId]`：メンバー・アバター、通貨、招待、出費・グラフ・精算・エクスポートを一画面に集約。 |
 | **公開 URL エイリアス** | `/groups/[id]` → 認証済みダッシュボードの同グループへリダイレクト（招待メール用など）。 |
 | **招待** | `invite_token` ベースの `/join/[token]`。リンクコピー・共有・**QR 表示（モーダル / 背景ブラー）**。 |
-| **参加** | ログイン済みは RPC で参加。未ログインは **Google / LINE**（`JoinGate`）。 |
+| **参加** | ログイン済みは RPC で参加。未ログインは **Google / LINE / メール**（`JoinGate`）。 |
 | **メンバー** | 表示名・アバター。 |
 | **閲覧専用共有** | `/groups/[id]/shared?t=…` — ログイン不要。**`public_share_token` と一致する `t`** で RPC 経由のサマリー表示。 |
 

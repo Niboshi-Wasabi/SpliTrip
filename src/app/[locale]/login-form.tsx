@@ -10,6 +10,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { Loader2 } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { LogoMark } from "@/components/logo-mark";
 import {
   Card,
@@ -32,6 +33,7 @@ import { verifyTurnstileTokenOnServer } from "@/lib/turnstile/verify-client";
 
 type LoginProvider = "google" | "line";
 type LoadingAction = LoginProvider;
+type EmailAuthMode = "signIn" | "signUp";
 
 function GoogleIcon() {
   return (
@@ -99,6 +101,12 @@ export function LoginForm() {
     null,
   );
   const [error, setError] = useState<string | null>(null);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [emailAuthMode, setEmailAuthMode] = useState<EmailAuthMode>("signIn");
+  const [emailActionBusy, setEmailActionBusy] = useState(false);
+  const [emailAuthSuccess, setEmailAuthSuccess] = useState<string | null>(null);
+  const [passwordResetBusy, setPasswordResetBusy] = useState(false);
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
   const supabaseReady = isSupabaseConfigured();
   const isTurnstileEnabled = getTurnstileSiteKey().length > 0;
@@ -164,7 +172,96 @@ export function LoginForm() {
     }
   }
 
-  const authButtonsDisabled = !supabaseReady || loadingAction !== null;
+  function validateEmailAuthInput(): boolean {
+    const normalizedEmail = email.trim();
+    if (!normalizedEmail) {
+      setError(translations("emailRequired"));
+      return false;
+    }
+    if (!password) {
+      setError(translations("passwordRequired"));
+      return false;
+    }
+    return true;
+  }
+
+  async function handleEmailAuthSubmit() {
+    if (!isSupabaseConfigured()) {
+      setError(translations("supabaseNotConfigured"));
+      return;
+    }
+    if (!validateEmailAuthInput()) {
+      return;
+    }
+
+    const supabase = createClient();
+    setEmailActionBusy(true);
+    setError(null);
+    setEmailAuthSuccess(null);
+    const normalizedEmail = email.trim();
+
+    try {
+      if (emailAuthMode === "signUp") {
+        const { error: signUpError } = await supabase.auth.signUp({
+          email: normalizedEmail,
+          password,
+        });
+        if (signUpError) {
+          setError(signUpError.message);
+          return;
+        }
+        setEmailAuthSuccess(translations("signUpSuccess"));
+        setEmailAuthMode("signIn");
+        return;
+      }
+
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email: normalizedEmail,
+        password,
+      });
+      if (signInError) {
+        setError(signInError.message);
+        return;
+      }
+      window.location.assign(dashboardPath);
+    } finally {
+      setEmailActionBusy(false);
+    }
+  }
+
+  async function handleForgotPassword() {
+    const normalizedEmail = email.trim();
+    if (!normalizedEmail) {
+      setError(translations("emailRequired"));
+      return;
+    }
+    if (!isSupabaseConfigured()) {
+      setError(translations("supabaseNotConfigured"));
+      return;
+    }
+
+    setPasswordResetBusy(true);
+    setError(null);
+    setEmailAuthSuccess(null);
+    const supabase = createClient();
+    const siteOrigin = getPublicSiteOrigin();
+    const { error: resetError } = await supabase.auth.resetPasswordForEmail(
+      normalizedEmail,
+      {
+        redirectTo: `${siteOrigin}/login`,
+      },
+    );
+    if (resetError) {
+      setError(resetError.message);
+      setPasswordResetBusy(false);
+      return;
+    }
+    setEmailAuthSuccess(translations("passwordResetSent"));
+    setPasswordResetBusy(false);
+  }
+
+  const authButtonsDisabled =
+    !supabaseReady || loadingAction !== null || emailActionBusy || passwordResetBusy;
 
   return (
     <div className="relative flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-blue-50 via-white to-emerald-50 px-4 pb-10 pt-14 dark:from-blue-950/50 dark:via-background dark:to-emerald-950/40">
@@ -195,6 +292,11 @@ export function LoginForm() {
               {error}
             </div>
           )}
+          {emailAuthSuccess ? (
+            <div className="rounded-md bg-emerald-50 p-3 text-center text-sm text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300">
+              {emailAuthSuccess}
+            </div>
+          ) : null}
           {isTurnstileEnabled ? (
             <TurnstileWidget onTokenChange={setTurnstileToken} />
           ) : null}
@@ -221,6 +323,64 @@ export function LoginForm() {
               );
             },
           )}
+          <div className="my-2 h-px w-full bg-border" />
+          <div className="space-y-3">
+            <Input
+              type="email"
+              inputMode="email"
+              autoComplete="email"
+              placeholder={translations("emailPlaceholder")}
+              value={email}
+              onChange={(event) => setEmail(event.target.value)}
+              disabled={authButtonsDisabled}
+            />
+            <Input
+              type="password"
+              autoComplete={emailAuthMode === "signUp" ? "new-password" : "current-password"}
+              placeholder={translations("passwordPlaceholder")}
+              value={password}
+              onChange={(event) => setPassword(event.target.value)}
+              disabled={authButtonsDisabled}
+            />
+            <Button
+              type="button"
+              className="min-h-[44px] w-full"
+              disabled={authButtonsDisabled}
+              onClick={() => void handleEmailAuthSubmit()}
+            >
+              {emailActionBusy ? (
+                <Loader2 className="h-5 w-5 animate-spin" />
+              ) : emailAuthMode === "signUp" ? (
+                translations("createAccount")
+              ) : (
+                translations("emailLogin")
+              )}
+            </Button>
+            <div className="flex items-center justify-between text-sm">
+              <button
+                type="button"
+                className="text-muted-foreground underline underline-offset-4 hover:text-foreground"
+                onClick={() =>
+                  setEmailAuthMode((currentMode) =>
+                    currentMode === "signIn" ? "signUp" : "signIn",
+                  )
+                }
+                disabled={authButtonsDisabled}
+              >
+                {emailAuthMode === "signIn"
+                  ? translations("switchToCreateAccount")
+                  : translations("switchToSignIn")}
+              </button>
+              <button
+                type="button"
+                className="text-muted-foreground underline underline-offset-4 hover:text-foreground"
+                onClick={() => void handleForgotPassword()}
+                disabled={authButtonsDisabled}
+              >
+                {passwordResetBusy ? translations("sending") : translations("forgotPassword")}
+              </button>
+            </div>
+          </div>
         </CardContent>
       </Card>
 
