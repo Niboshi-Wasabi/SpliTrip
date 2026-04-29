@@ -11,15 +11,16 @@ type GroupDetailApiPayload = {
 function removeExpenseFromCache(
   currentValue: GroupDetailApiPayload | undefined,
   expenseId: string,
-): GroupDetailApiPayload | undefined {
-  if (!currentValue?.data?.expenses) {
-    return currentValue;
+): GroupDetailApiPayload {
+  const normalizedCurrentValue = currentValue ?? {};
+  if (!normalizedCurrentValue.data?.expenses) {
+    return normalizedCurrentValue;
   }
   return {
-    ...currentValue,
+    ...normalizedCurrentValue,
     data: {
-      ...currentValue.data,
-      expenses: currentValue.data.expenses.filter(
+      ...normalizedCurrentValue.data,
+      expenses: normalizedCurrentValue.data.expenses.filter(
         (expenseRow) => expenseRow.id !== expenseId,
       ),
     },
@@ -84,7 +85,7 @@ export function useGroupOptimisticMutations(groupId: string) {
         },
         {
           optimisticData: (currentValue: GroupDetailApiPayload | undefined) =>
-            currentValue,
+            currentValue ?? {},
           rollbackOnError: true,
           revalidate: false,
         },

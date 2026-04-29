@@ -24,6 +24,89 @@ import type { ExpenseRowDb, GroupMemberRow } from "@/lib/group-queries";
 import { GroupExpenseDetailDialog } from "./group-expense-detail-dialog";
 import { useLongPress } from "@/hooks/use-long-press";
 
+function MobileExpenseListItem({
+  expense,
+  members,
+  currencyCode,
+  exchangeRates,
+  categoryDisplayLabel,
+  untitledExpenseLabel,
+  onOpenDetail,
+  onTouchLongPressStart,
+  onTouchPressEnd,
+}: {
+  expense: ExpenseRowDb;
+  members: GroupMemberRow[];
+  currencyCode: string;
+  exchangeRates: Record<string, number> | null;
+  categoryDisplayLabel: string;
+  untitledExpenseLabel: string;
+  onOpenDetail: (openedExpense: ExpenseRowDb) => void;
+  onTouchLongPressStart: (
+    touchedExpense: ExpenseRowDb,
+    touchCenterLeft: number,
+    touchCenterTop: number,
+  ) => void;
+  onTouchPressEnd: () => void;
+}) {
+  const payerMember = members.find(
+    (member) => member.user_id === expense.payer_id,
+  );
+  const categoryId = parseExpenseCategoryId(expense.category);
+
+  const longPress = useLongPress({
+    delayMs: 450,
+    onLongPress: () =>
+      onTouchLongPressStart(
+        expense,
+        window.innerWidth / 2,
+        window.innerHeight / 2,
+      ),
+    onPressEnd: () => {
+      onTouchPressEnd();
+    },
+  });
+
+  return (
+    <li className="list-none">
+      <button
+        type="button"
+        className="w-full rounded-lg border border-border bg-card p-3 text-left text-sm text-card-foreground transition-colors hover:bg-muted/40"
+        onClick={() => onOpenDetail(expense)}
+        {...longPress.bind}
+      >
+        <div className="flex flex-wrap items-baseline justify-between gap-2">
+          <span className="flex min-w-0 items-center gap-1.5 font-medium">
+            <ExpenseCategoryIcon categoryId={categoryId} />
+            <span className="truncate">
+              {expense.description?.trim() || untitledExpenseLabel}
+            </span>
+          </span>
+          <span className="font-semibold">
+            <AmountWithConversion
+              amount={Number(expense.amount)}
+              currencyCode={currencyCode}
+              exchangeRates={exchangeRates}
+            />
+          </span>
+        </div>
+        <div className="mt-1 flex flex-wrap items-center gap-1.5 text-xs text-muted-foreground">
+          <span>{categoryDisplayLabel}</span>
+          <span>·</span>
+          <UserAvatar
+            displayName={payerMember?.display_name ?? "?"}
+            avatarUrl={payerMember?.avatar_url}
+            size="sm"
+          />
+          <span>
+            {expense.expense_date} · {payerMember?.display_name}
+          </span>
+        </div>
+      </button>
+    </li>
+  );
+}
+
 type Props = {
   groupId: string;
   expenses: ExpenseRowDb[];
@@ -152,67 +235,33 @@ export function GroupExpenseList({
   return (
     <>
       <ul className="space-y-3 md:hidden">
-        {visibleExpenses.map((expense) => {
-          const payerMember = members.find(
-            (member) => member.user_id === expense.payer_id,
-          );
-          const categoryId = parseExpenseCategoryId(expense.category);
-          const longPress = useLongPress({
-            delayMs: 450,
-            onLongPress: () => {
+        {visibleExpenses.map((expense) => (
+          <MobileExpenseListItem
+            key={expense.id}
+            expense={expense}
+            members={members}
+            currencyCode={currencyCode}
+            exchangeRates={exchangeRates}
+            categoryDisplayLabel={categoryTranslations(
+              parseExpenseCategoryId(expense.category),
+            )}
+            untitledExpenseLabel={listTranslations("untitled")}
+            onOpenDetail={openDetail}
+            onTouchLongPressStart={(touchedExpense, touchCenterLeft, touchCenterTop) => {
               setPreviewState({
-                expense,
-                anchorLeft: window.innerWidth / 2,
-                anchorTop: window.innerHeight / 2,
+                expense: touchedExpense,
+                anchorLeft: touchCenterLeft,
+                anchorTop: touchCenterTop,
                 isTouchMode: true,
               });
-            },
-            onPressEnd: () => {
+            }}
+            onTouchPressEnd={() => {
               setPreviewState((currentPreview) =>
                 currentPreview?.isTouchMode ? null : currentPreview,
               );
-            },
-          });
-          return (
-            <li key={expense.id} className="list-none">
-              <button
-                type="button"
-                className="w-full rounded-lg border border-border bg-card p-3 text-left text-sm text-card-foreground transition-colors hover:bg-muted/40"
-                onClick={() => openDetail(expense)}
-                {...longPress.bind}
-              >
-                <div className="flex flex-wrap items-baseline justify-between gap-2">
-                  <span className="flex min-w-0 items-center gap-1.5 font-medium">
-                    <ExpenseCategoryIcon categoryId={categoryId} />
-                    <span className="truncate">
-                      {expense.description?.trim() ||
-                        listTranslations("untitled")}
-                    </span>
-                  </span>
-                  <span className="font-semibold">
-                    <AmountWithConversion
-                      amount={Number(expense.amount)}
-                      currencyCode={currencyCode}
-                      exchangeRates={exchangeRates}
-                    />
-                  </span>
-                </div>
-                <div className="mt-1 flex flex-wrap items-center gap-1.5 text-xs text-muted-foreground">
-                  <span>{categoryTranslations(categoryId)}</span>
-                  <span>·</span>
-                  <UserAvatar
-                    displayName={payerMember?.display_name ?? "?"}
-                    avatarUrl={payerMember?.avatar_url}
-                    size="sm"
-                  />
-                  <span>
-                    {expense.expense_date} · {payerMember?.display_name}
-                  </span>
-                </div>
-              </button>
-            </li>
-          );
-        })}
+            }}
+          />
+        ))}
       </ul>
 
       <div className="hidden md:block">
