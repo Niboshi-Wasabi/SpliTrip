@@ -711,13 +711,21 @@
     "hint": "見出し（##）、リスト、強調（**太字**）、リンク（[表示名](URL)）など、Markdown が利用できます。"
   },
   "Maintenance": {
-    "pageTitle": "メンテナンス中 | SpliTrip",
+    "pageTitle": "サービス中断中 | SpliTrip",
     "headline": "ただいまメンテナンス中です",
     "body": "現在メンテナンスを実施しています。しばらくしてから再度アクセスしてください。",
-    "tryAgain": "トップを再読み込み",
+    "tryAgain": "トップへ戻る",
     "announcementLabel": "サービスお知らせ",
     "scheduledNoticeTitle": "メンテナンス予定",
-    "scheduledNoticeBody": "{period} の期間、サービスが一時停止します。{message}"
+    "scheduledNoticeBody": "{period} の期間、サービスが一時停止します。{message}",
+    "emergencyBadge": "メンテナンス実施中",
+    "emergencyHeadline": "サービスを一時停止しています",
+    "emergencyLead": "緊急の対応や安全な復旧が必要になった場合にもこの画面にお進みいただけるよう、共通のご案内をまとめています。復旧まで今しばらくお待ちください。",
+    "scheduleWindowHeading": "想定復旧時間（参考）",
+    "scheduleWindowTzNote": "表示時刻はお使いのブラウザが用いているローカルタイムゾーンに基づきます（参考値です）。",
+    "operatorMessageHeading": "運営からのメッセージ",
+    "announcementsListHeading": "お知らせ一覧",
+    "emergencyFooterHint": "画面をそのまま再読み込みしていただいても問題ありません。トップページは下のボタンからご確認いただけます。"
   },
   "Premium": {
     "modalTitle": "SpliTrip PROにアップグレード",

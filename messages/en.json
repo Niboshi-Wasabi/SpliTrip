@@ -711,13 +711,21 @@
     "hint": "You can use Markdown: headings (`##`), lists, emphasis (`**bold**`), links (`[label](url)`), and tables (GitHub-flavored)."
   },
   "Maintenance": {
-    "pageTitle": "Maintenance | SpliTrip",
+    "pageTitle": "Service unavailable | SpliTrip",
     "headline": "Under maintenance",
-    "body": "Please try again shortly.",
-    "tryAgain": "Retry from home",
+    "body": "We’re performing maintenance. Please try again in a moment.",
+    "tryAgain": "Back to top",
     "announcementLabel": "Notice",
     "scheduledNoticeTitle": "Scheduled maintenance",
-    "scheduledNoticeBody": "Service will be unavailable during {period}. {message}"
+    "scheduledNoticeBody": "Service will be unavailable during {period}. {message}",
+    "emergencyBadge": "Maintenance",
+    "emergencyHeadline": "Service temporarily unavailable",
+    "emergencyLead": "This page stays available whether work is planned or urgent. Updates from the operators and announcements are listed below. Thank you for your patience while we restore service.",
+    "scheduleWindowHeading": "Estimated restoration window",
+    "scheduleWindowTzNote": "Times reflect your browser’s local timezone where a schedule applies; values are indicative only.",
+    "operatorMessageHeading": "Message from the operators",
+    "announcementsListHeading": "Announcements",
+    "emergencyFooterHint": "You can reload this tab safely. Use the button below to open the home page."
   },
   "Premium": {
     "modalTitle": "Upgrade to SpliTrip PRO",

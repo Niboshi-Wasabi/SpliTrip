@@ -2,10 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { useLocale } from "next-intl";
-import {
-  AnnouncementRotateAndList,
-  type SerializedAnnouncementListItem,
-} from "@/components/announcements/announcement-rotate-and-list";
+import { AnnouncementRotateAndList } from "@/components/announcements/announcement-rotate-and-list";
+import type { SerializedPublicAnnouncementItem } from "@/lib/public-app-announcements";
 import type { AppLocale } from "@/i18n/routing";
 
 type PublicAnnouncementApiRow = {
@@ -18,7 +16,7 @@ type PublicAnnouncementApiRow = {
 
 export function PublicAnnouncement() {
   const locale = useLocale() as AppLocale;
-  const [serializedItems, setSerializedItems] = useState<SerializedAnnouncementListItem[]>(
+  const [serializedItems, setSerializedItems] = useState<SerializedPublicAnnouncementItem[]>(
     [],
   );
 

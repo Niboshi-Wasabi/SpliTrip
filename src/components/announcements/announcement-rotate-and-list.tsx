@@ -13,18 +13,16 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import type { SerializedPublicAnnouncementItem } from "@/lib/public-app-announcements";
 
 const ROTATION_INTERVAL_MS = 5600;
 
-export type SerializedAnnouncementListItem = {
-  id: string;
-  title: string;
-  content: string;
-};
+/** @deprecated `SerializedPublicAnnouncementItem` に統一 */
+export type SerializedAnnouncementListItem = SerializedPublicAnnouncementItem;
 
 type AnnouncementRotateAndListProps = {
   variant: "appStrip" | "landingBanner";
-  items: SerializedAnnouncementListItem[];
+  items: SerializedPublicAnnouncementItem[];
 };
 
 function deriveDisplayTitle(
