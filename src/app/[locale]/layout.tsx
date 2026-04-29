@@ -77,8 +77,10 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
   const pathWithoutLocalePrefix = requestPathnameFromMiddleware
     ? stripLocaleFromPathname(requestPathnameFromMiddleware)
     : null;
+  const suppressPublishedAnnouncementStrip =
+    pathWithoutLocalePrefix === "/" || pathWithoutLocalePrefix === "/maintenance";
   const showPublishedAppAnnouncementsStrip =
-    pathWithoutLocalePrefix === null || pathWithoutLocalePrefix !== "/";
+    pathWithoutLocalePrefix === null || !suppressPublishedAnnouncementStrip;
 
   const uiSansStackId = getUiSansStackId(locale);
   const uiMonoStackId = getUiMonoStackId(locale);
