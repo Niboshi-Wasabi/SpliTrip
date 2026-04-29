@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { getSupabaseEnv } from "@/utils/supabase/env";
 
+/** 公開中のお知らせ一覧（匿名・公開行のみ）。LP およびクライアント表示用の単一ソース。 */
 export async function GET() {
   const env = getSupabaseEnv();
   if (!env) {
@@ -22,13 +23,12 @@ export async function GET() {
     .or(`expires_at.is.null,expires_at.gt.${nowIsoTimestamp}`)
     .order("priority", { ascending: false })
     .order("created_at", { ascending: false })
-    .limit(1)
-    .maybeSingle();
+    .limit(5);
 
   if (error) {
-    console.error("[API/Action Error - GET /api/public/announcements/latest]:", error);
+    console.error("[API/Action Error - GET /api/public/announcements]:", error);
     return NextResponse.json({ ok: false, message: "query_error" }, { status: 500 });
   }
 
-  return NextResponse.json({ ok: true, item: data ?? null });
+  return NextResponse.json({ ok: true, items: data ?? [] });
 }

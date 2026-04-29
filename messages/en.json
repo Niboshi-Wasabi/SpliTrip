@@ -749,6 +749,7 @@
     "description": "A web app that records shared travel expenses in real time and automatically calculates settlements."
   },
   "AppAnnouncements": {
+    "listDialogTitle": "Announcements",
     "stripTitle": "Announcements",
     "badge": "WHAT'S NEW",
     "fallbackTitle": "Latest update",
@@ -949,8 +950,7 @@
       "badge": "WHAT'S NEW",
       "fallbackTitle": "Latest announcement",
       "fallbackBody": "There is a new announcement. Please check the details.",
-      "close": "Close",
-      "dismiss": "Hide this announcement"
+      "close": "Close"
     },
     "bento": {
       "title": "Less stress around travel money",

@@ -1,9 +1,10 @@
 import { createClient } from "@supabase/supabase-js";
-import { Megaphone } from "lucide-react";
-import { getTranslations } from "next-intl/server";
-import { SafeMarkdown } from "@/components/markdown/safe-markdown";
 import type { AppLocale } from "@/i18n/routing";
 import { getSupabaseEnv } from "@/utils/supabase/env";
+import {
+  AnnouncementRotateAndList,
+  type SerializedAnnouncementListItem,
+} from "@/components/announcements/announcement-rotate-and-list";
 
 type Row = {
   id: string;
@@ -23,14 +24,11 @@ type Props = {
 
 /**
  * Renders published in-app announcements below the maintenance strip (all locale routes).
- * メンテ／事前告知バナー直下に、`app_announcements` の **公開** 行のみを表示する（全ロケール共通）。
+ * メンテ／事前告知バナー直下に、`app_announcements` の **公開** 行のみを表示する。
  * RLS allows `anon` to `select` rows where `is_published = true`.
+ * 複数件はストリップ上で順にフェード・切り替え、クリックで一覧モーダル。
  */
 export async function PublishedAppAnnouncements({ locale }: Props) {
-  const t = await getTranslations({ locale, namespace: "AppAnnouncements" });
-
-  // Cookie なしの anon クライアント（公開行のみ RLS で読む）。静的生成時も cookies を触らない。
-  // No cookies: safe for prerender; published rows are readable under RLS for anon.
   const env = getSupabaseEnv();
   if (!env) {
     return null;
@@ -55,57 +53,17 @@ export async function PublishedAppAnnouncements({ locale }: Props) {
   }
 
   const rows = (data ?? []) as Row[];
-  const visible = rows
-    .map((row) => {
-      const title = locale === "en" ? row.title_en : row.title_ja;
-      const content = locale === "en" ? row.content_en : row.content_ja;
-      return { id: row.id, title, content };
-    })
+  const serializedItems: SerializedAnnouncementListItem[] = rows
+    .map((row) => ({
+      id: row.id,
+      title: locale === "en" ? row.title_en : row.title_ja,
+      content: locale === "en" ? row.content_en : row.content_ja,
+    }))
     .filter(
       (row) =>
         (row.title && row.title.trim().length > 0) ||
         (row.content && row.content.trim().length > 0),
     );
 
-  if (visible.length === 0) {
-    return null;
-  }
-
-  return (
-    <section
-      aria-label={t("stripTitle")}
-      className="border-b border-zinc-800/60 bg-zinc-900/20 px-4 py-3"
-    >
-      <div className="mx-auto flex w-full max-w-3xl items-center gap-2 overflow-x-auto">
-        <Megaphone
-          className="h-4 w-4 shrink-0 text-zinc-500"
-          aria-label={t("stripTitle")}
-        />
-        <ul className="flex min-w-0 items-center gap-2">
-          {visible.map((row) => (
-            <li
-              key={row.id}
-              className="shrink-0 rounded-md border border-zinc-800/80 bg-zinc-950/40 px-3 py-2"
-            >
-              <details className="group">
-                <summary className="max-w-[70vw] cursor-pointer list-none truncate whitespace-nowrap font-serif text-sm font-medium tracking-tight text-zinc-100 outline-none marker:content-none hover:text-zinc-50 focus-visible:ring-2 focus-visible:ring-zinc-500 focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-950 md:max-w-[28rem]">
-                  {row.title && row.title.trim().length > 0
-                    ? row.title
-                    : locale === "en"
-                      ? "Untitled announcement"
-                      : "無題のお知らせ"}
-                </summary>
-                {row.content && row.content.trim().length > 0 ? (
-                  <SafeMarkdown
-                    markdown={row.content}
-                    className="prose prose-sm dark:prose-invert prose-zinc mt-2 w-full max-w-[80vw] text-zinc-300 md:max-w-[32rem]"
-                  />
-                ) : null}
-              </details>
-            </li>
-          ))}
-        </ul>
-      </div>
-    </section>
-  );
+  return <AnnouncementRotateAndList variant="appStrip" items={serializedItems} />;
 }

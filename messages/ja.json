@@ -749,6 +749,7 @@
     "description": "グループ旅行中の立替をリアルタイムに記録し、精算を自動計算するWebアプリ"
   },
   "AppAnnouncements": {
+    "listDialogTitle": "お知らせ一覧",
     "stripTitle": "お知らせ",
     "badge": "WHAT'S NEW",
     "fallbackTitle": "最新のお知らせ",
@@ -949,8 +950,7 @@
       "badge": "WHAT'S NEW",
       "fallbackTitle": "最新のお知らせ",
       "fallbackBody": "最新情報があります。内容をご確認ください。",
-      "close": "閉じる",
-      "dismiss": "このお知らせを非表示"
+      "close": "閉じる"
     },
     "bento": {
       "title": "旅の会計のストレスを、ここで減らす",
