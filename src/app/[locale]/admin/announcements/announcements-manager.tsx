@@ -392,82 +392,42 @@ export function AnnouncementsManager() {
               </p>
             </div>
 
-            <div className="grid gap-6 lg:grid-cols-2">
-              <div className="space-y-2">
-                <Label htmlFor={`cja_${topicType}`}>{t("announcementContentJa")}</Label>
-                <textarea
-                  id={`cja_${topicType}`}
-                  rows={10}
-                  spellCheck={false}
-                  className="border-input bg-background ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring flex min-h-[200px] w-full rounded-md border px-3 py-2 font-mono text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
-                  value={formData.content_ja}
-                  onChange={(event) =>
-                    updateTopicForm(topicType, { content_ja: event.target.value })
-                  }
-                  placeholder="日本語の本文（Markdown）"
-                  aria-describedby={`cja_hint_${topicType}`}
-                />
-                <p id={`cja_hint_${topicType}`} className="text-xs text-muted-foreground">
-                  {markdownEditorTranslations("hint")}
-                </p>
-                <p className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
-                  {markdownEditorTranslations("input")}
-                </p>
-              </div>
-              <div className="flex min-h-[200px] flex-col gap-2">
-                <span className="text-sm font-medium">{markdownEditorTranslations("preview")}</span>
-                <div className="min-h-[200px] flex-1 overflow-auto rounded-md border border-border bg-zinc-950/50 p-3">
-                  {(formData.content_ja || "").trim() ? (
-                    <SafeMarkdown
-                      markdown={formData.content_ja}
-                      className="prose prose-invert prose-sm max-h-[min(50vh,28rem)] max-w-none"
-                    />
-                  ) : (
-                    <p className="text-sm text-muted-foreground">
-                      {t("announcementPreviewEmptyBody")}
-                    </p>
-                  )}
-                </div>
-              </div>
+            <div>
+              <Label htmlFor={`cja_${topicType}`}>{t("announcementContentJa")}</Label>
+              <textarea
+                id={`cja_${topicType}`}
+                rows={10}
+                spellCheck={false}
+                className="border-input bg-background ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring mt-2 flex min-h-[120px] w-full rounded-md border px-3 py-2 font-mono text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
+                value={formData.content_ja}
+                onChange={(event) =>
+                  updateTopicForm(topicType, { content_ja: event.target.value })
+                }
+                placeholder="日本語の本文（Markdown）"
+                aria-describedby={`cja_hint_${topicType}`}
+              />
+              <p id={`cja_hint_${topicType}`} className="mt-1 text-xs text-muted-foreground">
+                {markdownEditorTranslations("hint")}
+              </p>
             </div>
 
-            <div className="grid gap-6 lg:grid-cols-2">
-              <div className="space-y-2">
-                <Label htmlFor={`cen_${topicType}`}>{t("announcementContentEn")}</Label>
-                <textarea
-                  id={`cen_${topicType}`}
-                  rows={10}
-                  spellCheck={false}
-                  className="border-input bg-background ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring flex min-h-[200px] w-full rounded-md border px-3 py-2 font-mono text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
-                  value={formData.content_en}
-                  onChange={(event) =>
-                    updateTopicForm(topicType, { content_en: event.target.value })
-                  }
-                  placeholder="English body (Markdown)"
-                  aria-describedby={`cen_hint_${topicType}`}
-                />
-                <p id={`cen_hint_${topicType}`} className="text-xs text-muted-foreground">
-                  {markdownEditorTranslations("hint")}
-                </p>
-                <p className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
-                  {markdownEditorTranslations("input")}
-                </p>
-              </div>
-              <div className="flex min-h-[200px] flex-col gap-2">
-                <span className="text-sm font-medium">{markdownEditorTranslations("preview")}</span>
-                <div className="min-h-[200px] flex-1 overflow-auto rounded-md border border-border bg-zinc-950/50 p-3">
-                  {(formData.content_en || "").trim() ? (
-                    <SafeMarkdown
-                      markdown={formData.content_en}
-                      className="prose prose-invert prose-sm max-h-[min(50vh,28rem)] max-w-none"
-                    />
-                  ) : (
-                    <p className="text-sm text-muted-foreground">
-                      {t("announcementPreviewNoEnglishBody")}
-                    </p>
-                  )}
-                </div>
-              </div>
+            <div>
+              <Label htmlFor={`cen_${topicType}`}>{t("announcementContentEn")}</Label>
+              <textarea
+                id={`cen_${topicType}`}
+                rows={10}
+                spellCheck={false}
+                className="border-input bg-background ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring mt-2 flex min-h-[120px] w-full rounded-md border px-3 py-2 font-mono text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
+                value={formData.content_en}
+                onChange={(event) =>
+                  updateTopicForm(topicType, { content_en: event.target.value })
+                }
+                placeholder="English body (Markdown)"
+                aria-describedby={`cen_hint_${topicType}`}
+              />
+              <p id={`cen_hint_${topicType}`} className="mt-1 text-xs text-muted-foreground">
+                {markdownEditorTranslations("hint")}
+              </p>
             </div>
 
             <div className="grid gap-2 sm:grid-cols-2">
