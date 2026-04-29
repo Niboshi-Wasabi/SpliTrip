@@ -36,7 +36,8 @@
 |------|------|
 | **全画面メンテ** | `MAINTENANCE_MODE` または `NEXT_PUBLIC_MAINTENANCE_MODE` を `true` / `1` / `yes` にすると、`src/proxy.ts` が **OAuth 用 `/auth/*` 通過後**に一般ページを **`/maintenance` または `/{locale}/maintenance`** へ **302 リダイレクト**。メンテページは `messages` の `Maintenance` 名前空間。`robots`: noindex。 |
 | **ミドルウェア対象外** | `matcher` により **`/api/*` は `proxy` 未実行**（API・Webhook は従来どおり。監視用 **`GET /api/health`** は常時 200 JSON）。 |
-| **事前告知バナー** | `NEXT_PUBLIC_MAINTENANCE_ANNOUNCEMENT` に任意の一文を入れると、**メンテモードの有無に関わらず** `[locale]/layout` 上部にアンバー帯で表示（本文は環境変数のまま。ラベルは i18n）。 |
+| **事前告知バナー** | `NEXT_PUBLIC_MAINTENANCE_ANNOUNCEMENT` に任意の一文を入れると、**メンテモードの有無に関わらず** `[locale]/layout` 上部にアンバー帯で表示（本文は環境変数のまま。ラベルは i18n）。加えて `maintenance_schedules` を参照する `MaintenanceScheduleGuard` が、開始24時間前から時限バナーを表示。 |
+| **スケジュールメンテ（DB）** | `maintenance_schedules`（`start_time` / `end_time` / `is_enabled` / 日英告知文）を `GET/PUT /api/admin/maintenance` で管理。開始〜終了の間は `MaintenanceScheduleGuard` がクライアント側で `/{locale}/maintenance` へ遷移（`MAINTENANCE_MODE=true` の強制モードは従来どおりフェイルセーフとして優先）。 |
 | **アプリ内お知らせ（DB）** | 管理画面で `app_announcements` に保存した内容のうち公開中の最新 1 件を対象に、ログインユーザーの `user_profiles.last_seen_announcement_id` と比較して未読時のみ **ブラー付きオーバーレイ（What's New モーダル）** を表示。確認ボタンで `POST /api/profile/last-seen-announcement` を呼び、既読化後は再表示しない。未公開（下書き）は RLS で一般ユーザーから参照不可。**公開期限（`expires_at`）** を設定した場合は期限切れ後にヘッダー表示・モーダル表示の両方から自動除外される。ヘッダー帯では **タイトルのみ** を表示し、クリックで本文を展開表示。文言はロケールに応じて `title_ja` / `title_en` 等を切替。 |
 
 ---
@@ -94,10 +95,12 @@
 
 | 機能 | 内容 |
 |------|------|
-| **出費の追加** | 支払人、金額、説明、日付、**カテゴリ**（食費・交通・宿泊・観光・その他 等）。`group-expense-panel` では **日付チップ（今日/昨日/おととい）**、**品目別の負担者クイック選択（全員/自分のみ）**、**金額のインライン計算（許可した式のみ評価）**、**保存して次を入力**（保存後に支払人・日付・通貨を維持しつつ内容をリセット）。 |
+| **出費の追加** | 支払人、金額、説明、日付、**カテゴリ**（食費・交通・宿泊・観光・その他 等）。`group-expense-panel` では **日付チップ（今日/昨日/おととい）**、**品目別の負担者クイック選択（全員/自分のみ）**、**金額のインライン計算（許可した式のみ評価）**、**保存して次を入力**（保存後に支払人・日付・通貨を維持しつつ内容をリセット）に加え、**外貨グループ時の JPY 概算プレビュー（リアルタイム）**を表示。 |
 | **割り方（スプリット）** | **均等 / 金額指定 / シェア比率 / パーセント / 品目別（項目行）**。端数は **端数ポリシー**（公平な端数配分・支払人負担・特定メンバー・先頭順など）を UI で選択。 |
 | **DB 連携** | `split_type`・`expense_splits` 等で負担行を保持（API・マイグレーションと整合）。 |
 | **出費一覧** | テーブル表示、カテゴリ・日付・金額など。PC は行ホバー 500ms で**内訳プレビュー**、モバイルは**長押し中プレビュー**（参加者アバター・名前・負担額）を表示。 |
+| **個人レシート・インボックス（ローカル）** | PWA 前提のローカル保存（IndexedDB / `idb`）。`レシートを撮って一時保存` ボタンから `accept="image/*" capture="environment"` を即起動し、撮影後は追加入力なしで保存。未処理一覧（Inbox 件数バッジ）からサムネイルを開き、対象グループを選んで入力へ遷移。 |
+| **Sticky レシートビューア** | グループ画面の出費フォームと並列表示。モバイルは上下、PC は左右分割で、レシート画像を sticky 表示＋ズームして参照しながら入力可能。保存成功時は該当レシートをローカルインボックスから削除。 |
 | **出費詳細** | モーダル：**領収書**、**削除**、**監査ログ**、**コメント投稿・一覧**（API 経由）。 |
 | **レシート AI** | 画像を Gemini で解析する **Server Action**（金額・説明・日付の候補をフォームに流し込み。自動保存はしない）。**無料は成功ごとに `ocr_usage_count` を加算し上限に達するとブロック**（PRO は無制限）。 |
 | **領収書ファイル** | Storage 連携の API（アップロード・署名 URL 表示など）。 |
@@ -110,7 +113,7 @@
 | 機能 | 内容 |
 |------|------|
 | **精算プラン** | ネット残高から **送金回数を減らす** グリーディな突合（`simplify-debts` / グループ台帳と連携）。 |
-| **精算一覧 UI** | 「誰から誰へいくら」表示。ログインユーザーが **支払う側** の行に **送金ボタン**と**送金済みボタン（マイクロアニメーション）**。受け取る側の行では**請求文コピー**（金額+送金リンク入り）をワンタップ実行。 |
+| **精算一覧 UI** | 「誰から誰へいくら」表示。ログインユーザーが **支払う側** の行に **送金ボタン**と**送金済みボタン（マイクロアニメーション）**。受け取る側の行では**請求文コピー**（金額+送金リンク入り）をワンタップ実行。送金済み操作は楽観的UIで即時反映し、通信失敗時はロールバック。 |
 | **送金先リンク** | プロフィールの **`payment_links`（JSONB）** 等から URL を解決。**ドメインからファビコン**を表示、失敗時は汎用アイコン。サービス名が分かる場合は **「○○で送金」** 風のラベル。 |
 | **次は誰が払う？** | 残高目安に基づく **次の会計担当のヒント** カード。 |
 | **通貨・換算** | 基準通貨が JPY 以外のとき **参考レート表示**（取得失敗時はメッセージ）。 |
@@ -123,6 +126,7 @@
 |------|------|
 | **統計カード** | 総支出・グループ数・グループあたり平均など。 |
 | **支出グラフ** | **グループ別** / **カテゴリ別** の切替（Recharts）。グループ内でも **支払った人別 / カテゴリ別** の円グラフ。 |
+| **Inbox 導線/FAB** | ダッシュボードに未処理件数付き Inbox 導線と、固定 FAB（クイック撮影保存）を表示。 |
 
 ---
 
@@ -146,7 +150,7 @@
 | **送金先** | `payment_links` 等を API 経由で更新（マイグレーション未適用時はエラーメッセージ）。 |
 | **PRO / OCR** | `premium_access`（PRO）、`premium_access_source`（`stripe`＝課金、`manual`＝運営付与）、`ocr_usage_count`（無料の OCR 累計）。認証ユーザーが自分の PRO フラグだけを書き換えることは DB トリガーで拒否。`increment_ocr_usage_if_not_premium` で成功後に加算。 |
 | **支払い管理（PRO）** | Stripe 審査対応が完了するまで UI は一時的に **準備中（Coming Soon）**。課金基盤（Webhook / `premium_access` 判定）は将来再開に備えて保持。 |
-| **管理画面（Admin Control Panel Suite）** | `user_profiles.is_admin = true` のユーザーのみ `/{locale}/admin` にアクセス可能。`proxy.ts` で非管理者はダッシュボードへリダイレクト。**Step-Up 再認証（任意）**: 環境変数 **`ADMIN_STEP_UP_ENABLED=true`** のときのみ、一部管理 API で `requireAdminStepUpOrJson` により **`admin_stepup_verified` Cookie** を要求。未設定のときは要求しない（デフォルト）。**基盤**: `admin_audit_logs`、`app_announcements`、 `system_settings` テーブル。**管理スイート**: タブ形式UI（`AdminAppShell`、各タブに色分けアイコン）で統合。トップは `listAdminUsers` を1回呼び、概要KPI＋ユーザーテーブルに同じデータを使う。`**GET /api/admin/users` はセッションで `is_admin` を検証**したうえで Service Role 経由の一覧取得。**ユーザー削除（管理）**: Users タブで警告モーダル確認後に削除実行（`POST /api/admin/users/[userId]/delete`）。削除されたユーザーは `user_profiles.deleted_at` を持ち、`proxy.ts` で `/{locale}/account-deleted` に誘導。**お知らせ（管理）**: トピック別タブ＋ライブプレビュー。公開済み（`is_published`）行は RLS で一般も SELECT 可。**エンドユーザー向け表示**は `[locale]/layout` の `WhatsNewModalGate`（未読時のみ表示）。**API**: `GET/POST /api/admin/announcements`、 `GET/POST/PATCH/DELETE` 他、`GET /api/admin/audit-logs` 等。**セキュリティ**: 管理操作は `admin_audit_logs` 等。2FA 用監査 `two_factor_security_events` は **ユーザー向け 2FA API** 向け。 |
+| **管理画面（Admin Control Panel Suite）** | `user_profiles.is_admin = true` のユーザーのみ `/{locale}/admin` にアクセス可能。`proxy.ts` で非管理者はダッシュボードへリダイレクト。**Step-Up 再認証（任意）**: 環境変数 **`ADMIN_STEP_UP_ENABLED=true`** のときのみ、一部管理 API で `requireAdminStepUpOrJson` により **`admin_stepup_verified` Cookie** を要求。未設定のときは要求しない（デフォルト）。**基盤**: `admin_audit_logs`、`app_announcements`、`system_settings`、`maintenance_schedules` テーブル。**管理スイート**: タブ形式UI（`AdminAppShell`、各タブに色分けアイコン）で統合。トップは `listAdminUsers` を1回呼び、概要KPI＋ユーザーテーブルに同じデータを使う。`**GET /api/admin/users` はセッションで `is_admin` を検証**したうえで Service Role 経由の一覧取得。**ユーザー削除（管理）**: Users タブで警告モーダル確認後に削除実行（`POST /api/admin/users/[userId]/delete`）。削除されたユーザーは `user_profiles.deleted_at` を持ち、`proxy.ts` で `/{locale}/account-deleted` に誘導。**お知らせ（管理）**: トピック別タブ＋ライブプレビュー。公開済み（`is_published`）行は RLS で一般も SELECT 可。**メンテナンス（管理）**: `/{locale}/admin/maintenance` で開始/終了日時と日英告知文を編集。**エンドユーザー向け表示**は `[locale]/layout` の `WhatsNewModalGate` と `MaintenanceScheduleGuard`。**API**: `GET/POST /api/admin/announcements`、`GET/PUT/POST/PATCH /api/admin/maintenance`、`GET /api/admin/audit-logs` 等。**セキュリティ**: 管理操作は `admin_audit_logs` 等。2FA 用監査 `two_factor_security_events` は **ユーザー向け 2FA API** 向け。 |
 
 ### PRO 手動付与
 

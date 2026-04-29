@@ -40,6 +40,7 @@ import { DashboardSpendingChart } from "./dashboard-spending-chart";
 import { LogoutButton } from "./logout-button";
 import { BETA_FEEDBACK_HREF } from "@/lib/beta-feedback-href";
 import { getCategoryColor, getExpenseCategoryChartColor } from "@/lib/categories";
+import { ReceiptInboxDashboardTools } from "@/components/receipt-inbox/receipt-inbox-dashboard-tools";
 import {
   EXPENSE_CATEGORY_IDS,
   parseExpenseCategoryId,
@@ -367,6 +368,15 @@ export default async function DashboardPage({ params }: PageProps) {
                 >
                   {dashboardPageTranslations("createGroupButton")}
                 </Link>
+              </div>
+              <div className="mt-4">
+                <ReceiptInboxDashboardTools
+                  currentUserId={user.id}
+                  groups={groups.map((groupItem) => ({
+                    id: groupItem.group.id,
+                    name: groupItem.group.name,
+                  }))}
+                />
               </div>
               <div className="mt-4">
                 <PromoBanner hidden={dashboardHasPremium} locale={locale} />

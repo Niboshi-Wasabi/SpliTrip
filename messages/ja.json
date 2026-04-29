@@ -257,6 +257,7 @@
     "adminNavAria": "管理画面のセクション",
     "navUsers": "ユーザー",
     "navAnnouncements": "お知らせ",
+    "navMaintenance": "メンテナンス",
     "navSystem": "システム設定",
     "navAudit": "監査ログ",
     "navSupport": "サポート",
@@ -302,6 +303,17 @@
     "announcementDraftBadge": "下書き",
     "announcementsPageDescription": "What is New 向けのお知らせを日本語・英語で管理します。",
     "systemPageDescription": "メンテナンスやバナーなど、再デプロイなしで変更できるシステム設定です。",
+    "maintenancePageDescription": "時限メンテナンスの開始・終了時刻と告知文を管理します。",
+    "maintenanceLoadError": "メンテナンス設定の取得に失敗しました。",
+    "maintenanceSaveError": "メンテナンス設定の保存に失敗しました。",
+    "maintenanceSaved": "メンテナンス設定を保存しました。",
+    "maintenanceEnabled": "スケジュールメンテナンスを有効化",
+    "maintenanceStartTime": "開始日時",
+    "maintenanceEndTime": "終了日時",
+    "maintenanceMessageJa": "告知文（日本語）",
+    "maintenanceMessageEn": "告知文（英語）",
+    "maintenanceInvalidRange": "開始日時と終了日時を正しく入力してください。",
+    "maintenanceSaveButton": "メンテナンス設定を保存",
     "systemSettingsLoadError": "設定の取得に失敗しました。",
     "systemSettingsSaveError": "保存に失敗しました。",
     "systemSettingsSaved": "保存しました。",
@@ -472,6 +484,7 @@
     "memberSelectOnlyMe": "自分のみ",
     "saveAndAddAnother": "保存して次を入力",
     "amountExpressionInvalid": "計算できない入力です（例: 1500 * 2 や 500 + 200）。",
+    "jpyPreviewApprox": "≒ 約 {amount} (JPY)",
     "splitModeEqual": "みんなで均等",
     "splitModeExact": "一人ずつ金額を指定",
     "splitModeShares": "比率（シェア）で分ける",
@@ -511,7 +524,8 @@
     "colPayer": "支払った人",
     "colAmount": "金額",
     "previewTitle": "内訳プレビュー",
-    "previewEmpty": "内訳がありません"
+    "previewEmpty": "内訳がありません",
+    "deleteRollbackToast": "削除に失敗したため、出費を元に戻しました。"
   },
   "HelpTooltips": {
     "splitModeAria": "割り方の説明を開く",
@@ -596,6 +610,22 @@
     "emptyGroups": "まだグループがありません。まずは作成しましょう。",
     "createGroupButton": "新しいグループを作成"
   },
+  "ReceiptInbox": {
+    "quickSaveButton": "レシートを撮って一時保存",
+    "savedToast": "インボックスに保存しました",
+    "inboxTitle": "未処理のレシート",
+    "inboxCount": "Inbox: {count}件",
+    "openInForm": "このレシートで入力",
+    "deleteFromInbox": "インボックスから削除",
+    "empty": "未処理のレシートはありません。",
+    "loading": "読み込み中…",
+    "close": "閉じる",
+    "stickyViewerTitle": "Stickyレシートビューア",
+    "stickyViewerDescription": "レシートを見ながら下のフォームに入力できます。",
+    "zoomLabel": "拡大率",
+    "receiptImageAlt": "保存済みレシート画像",
+    "selectedReceiptMissing": "対象のレシートが見つかりませんでした。インボックスから選び直してください。"
+  },
   "CategoryChart": {
     "empty": "支出データがありません",
     "untitled": "（無題）",
@@ -615,7 +645,8 @@
     "requestTemplate": "今回の旅行の精算だよ！合計で {amount} になったよ。ここから送金よろしくね👉 {paymentUrl}",
     "requestNoPaymentLink": "（送金リンク未設定）",
     "markSettled": "送金済みにする",
-    "markSettledDone": "送金済み ✔"
+    "markSettledDone": "送金済み ✔",
+    "markSettledFailed": "送金済みの反映に失敗しました。通信状況をご確認ください。"
   },
   "Onboarding": {
     "title": "ユーザー名を設定",
@@ -666,7 +697,9 @@
     "headline": "ただいまメンテナンス中です",
     "body": "現在メンテナンスを実施しています。しばらくしてから再度アクセスしてください。",
     "tryAgain": "トップを再読み込み",
-    "announcementLabel": "サービスお知らせ"
+    "announcementLabel": "サービスお知らせ",
+    "scheduledNoticeTitle": "メンテナンス予定",
+    "scheduledNoticeBody": "{period} の期間、サービスが一時停止します。{message}"
   },
   "Premium": {
     "modalTitle": "SpliTrip PROにアップグレード",

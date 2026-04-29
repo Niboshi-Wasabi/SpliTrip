@@ -43,13 +43,18 @@ import {
 import { GroupExpenseList } from "./group-expense-list";
 import { fetchExchangeRates } from "@/utils/exchangeRates";
 import { PromoBanner } from "@/components/ads/PromoBanner";
+import { GroupReceiptStickyEntry } from "./group-receipt-sticky-entry";
 
 export const dynamic = "force-dynamic";
 
-type PageProps = { params: Promise<{ locale: string; groupId: string }> };
+type PageProps = {
+  params: Promise<{ locale: string; groupId: string }>;
+  searchParams: Promise<{ receiptInboxId?: string }>;
+};
 
-export default async function GroupDetailPage({ params }: PageProps) {
+export default async function GroupDetailPage({ params, searchParams }: PageProps) {
   const { locale, groupId } = await params;
+  const { receiptInboxId } = await searchParams;
   const supabase = await createClient();
 
   const {
@@ -327,12 +332,24 @@ export default async function GroupDetailPage({ params }: PageProps) {
           </div>
 
           <div className="print:hidden">
-            <GroupExpensePanel
-              groupId={groupId}
-              members={members}
-              currencyCode={group.currency_code}
-              currentUserId={user.id}
-            />
+            {typeof receiptInboxId === "string" && receiptInboxId.length > 0 ? (
+              <GroupReceiptStickyEntry
+                receiptInboxId={receiptInboxId}
+                currentUserId={user.id}
+                groupId={groupId}
+                members={members}
+                currencyCode={group.currency_code}
+                exchangeRates={exchangeRates}
+              />
+            ) : (
+              <GroupExpensePanel
+                groupId={groupId}
+                members={members}
+                currencyCode={group.currency_code}
+                exchangeRates={exchangeRates}
+                currentUserId={user.id}
+              />
+            )}
           </div>
 
           <div className="space-y-6">
@@ -403,6 +420,7 @@ export default async function GroupDetailPage({ params }: PageProps) {
               </p>
             ) : (
               <GroupSettlementList
+                groupId={groupId}
                 settlements={settlements}
                 currencyCode={group.currency_code}
                 currentUserId={user.id}

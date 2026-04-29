@@ -7,6 +7,7 @@ import { buttonVariants } from "@/components/ui/button-variants";
 import { cn } from "@/lib/utils";
 import {
   ArrowLeft,
+  Clock3,
   FileText,
   History,
   LayoutGrid,
@@ -29,6 +30,12 @@ const NAV = [
     key: "navAnnouncements" as const,
     icon: FileText,
     iconClass: "text-blue-600 dark:text-blue-400",
+  },
+  {
+    href: "/admin/maintenance" as const,
+    key: "navMaintenance" as const,
+    icon: Clock3,
+    iconClass: "text-amber-600 dark:text-amber-400",
   },
   {
     href: "/admin/system" as const,

@@ -1,0 +1,192 @@
+"use client";
+
+import { useCallback, useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import type { MaintenanceScheduleRow } from "@/lib/maintenance-schedule";
+
+type MaintenanceResponse = {
+  ok?: boolean;
+  item?: MaintenanceScheduleRow | null;
+  message?: string;
+};
+
+function toDateTimeLocalValue(isoText: string): string {
+  const date = new Date(isoText);
+  if (!Number.isFinite(date.getTime())) {
+    return "";
+  }
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  const hours = String(date.getHours()).padStart(2, "0");
+  const minutes = String(date.getMinutes()).padStart(2, "0");
+  return `${year}-${month}-${day}T${hours}:${minutes}`;
+}
+
+function toIsoOrEmpty(localValue: string): string {
+  if (!localValue.trim()) {
+    return "";
+  }
+  const date = new Date(localValue);
+  return Number.isFinite(date.getTime()) ? date.toISOString() : "";
+}
+
+export function MaintenanceScheduleForm() {
+  const adminTranslations = useTranslations("Admin");
+  const [scheduleId, setScheduleId] = useState<string | null>(null);
+  const [isEnabled, setIsEnabled] = useState(false);
+  const [startTimeLocal, setStartTimeLocal] = useState("");
+  const [endTimeLocal, setEndTimeLocal] = useState("");
+  const [messageJa, setMessageJa] = useState("");
+  const [messageEn, setMessageEn] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [savedMessage, setSavedMessage] = useState<string | null>(null);
+
+  const load = useCallback(async () => {
+    setErrorMessage(null);
+    const response = await fetch("/api/admin/maintenance", { cache: "no-store" });
+    const body = (await response.json().catch(() => null)) as
+      | MaintenanceResponse
+      | null;
+    if (!response.ok || !body?.ok) {
+      setErrorMessage(adminTranslations("maintenanceLoadError"));
+      return;
+    }
+    if (!body.item) {
+      setScheduleId(null);
+      return;
+    }
+    setScheduleId(body.item.id);
+    setIsEnabled(body.item.is_enabled);
+    setStartTimeLocal(toDateTimeLocalValue(body.item.start_time));
+    setEndTimeLocal(toDateTimeLocalValue(body.item.end_time));
+    setMessageJa(body.item.announcement_message_ja ?? "");
+    setMessageEn(body.item.announcement_message_en ?? "");
+  }, [adminTranslations]);
+
+  useEffect(() => {
+    void load();
+  }, [load]);
+
+  async function save() {
+    setBusy(true);
+    setSavedMessage(null);
+    setErrorMessage(null);
+    const startIso = toIsoOrEmpty(startTimeLocal);
+    const endIso = toIsoOrEmpty(endTimeLocal);
+    if (!startIso || !endIso) {
+      setBusy(false);
+      setErrorMessage(adminTranslations("maintenanceInvalidRange"));
+      return;
+    }
+
+    const response = await fetch("/api/admin/maintenance", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        id: scheduleId ?? undefined,
+        is_enabled: isEnabled,
+        start_time: startIso,
+        end_time: endIso,
+        announcement_message_ja: messageJa,
+        announcement_message_en: messageEn,
+      }),
+    });
+    const body = (await response.json().catch(() => null)) as
+      | MaintenanceResponse
+      | null;
+    if (!response.ok || !body?.ok || !body.item) {
+      setBusy(false);
+      setErrorMessage(adminTranslations("maintenanceSaveError"));
+      return;
+    }
+    setScheduleId(body.item.id);
+    setSavedMessage(adminTranslations("maintenanceSaved"));
+    setBusy(false);
+  }
+
+  return (
+    <div className="space-y-4">
+      {errorMessage ? (
+        <p className="text-sm text-destructive" role="alert">
+          {errorMessage}
+        </p>
+      ) : null}
+      {savedMessage ? (
+        <p className="text-sm text-emerald-600 dark:text-emerald-400" role="status">
+          {savedMessage}
+        </p>
+      ) : null}
+
+      <div className="space-y-3 rounded-lg border border-border p-4">
+        <div className="flex items-center gap-2">
+          <input
+            id="maintenance-enabled"
+            type="checkbox"
+            className="h-4 w-4"
+            checked={isEnabled}
+            onChange={(event) => setIsEnabled(event.target.checked)}
+          />
+          <Label htmlFor="maintenance-enabled">
+            {adminTranslations("maintenanceEnabled")}
+          </Label>
+        </div>
+      </div>
+
+      <div className="grid gap-3 sm:grid-cols-2">
+        <div className="space-y-1.5">
+          <Label htmlFor="maintenance-start">{adminTranslations("maintenanceStartTime")}</Label>
+          <Input
+            id="maintenance-start"
+            type="datetime-local"
+            value={startTimeLocal}
+            onChange={(event) => setStartTimeLocal(event.target.value)}
+          />
+        </div>
+        <div className="space-y-1.5">
+          <Label htmlFor="maintenance-end">{adminTranslations("maintenanceEndTime")}</Label>
+          <Input
+            id="maintenance-end"
+            type="datetime-local"
+            value={endTimeLocal}
+            onChange={(event) => setEndTimeLocal(event.target.value)}
+          />
+        </div>
+      </div>
+
+      <div className="space-y-1.5">
+        <Label htmlFor="maintenance-message-ja">{adminTranslations("maintenanceMessageJa")}</Label>
+        <textarea
+          id="maintenance-message-ja"
+          rows={2}
+          className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+          value={messageJa}
+          onChange={(event) => setMessageJa(event.target.value)}
+        />
+      </div>
+      <div className="space-y-1.5">
+        <Label htmlFor="maintenance-message-en">{adminTranslations("maintenanceMessageEn")}</Label>
+        <textarea
+          id="maintenance-message-en"
+          rows={2}
+          className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+          value={messageEn}
+          onChange={(event) => setMessageEn(event.target.value)}
+        />
+      </div>
+
+      <Button
+        type="button"
+        className="min-h-[44px]"
+        onClick={() => void save()}
+        disabled={busy}
+      >
+        {busy ? adminTranslations("saving") : adminTranslations("maintenanceSaveButton")}
+      </Button>
+    </div>
+  );
+}

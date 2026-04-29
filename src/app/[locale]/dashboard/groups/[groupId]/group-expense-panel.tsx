@@ -24,6 +24,8 @@ import {
   type ExpenseCategoryId,
 } from "@/lib/expense-categories";
 import { evaluateRestrictedAmountExpression } from "@/lib/arithmetic-expression";
+import { convertAmount } from "@/utils/exchangeRates";
+import { formatMoneyByCurrency } from "@/lib/currency-payment-amount";
 
 type SplitMode = "equal" | "exact" | "shares" | "percent" | "itemized";
 
@@ -54,8 +56,10 @@ type Props = {
   groupId: string;
   members: GroupMemberRow[];
   currencyCode: string;
+  exchangeRates: Record<string, number> | null;
   /** Logged-in user (for 「自分のみ」 in itemized participant selection). */
   currentUserId: string;
+  onExpenseSaved?: () => void | Promise<void>;
 };
 
 function localDateInputString(referenceDate: Date): string {
@@ -97,7 +101,9 @@ export function GroupExpensePanel({
   groupId,
   members,
   currencyCode,
+  exchangeRates,
   currentUserId,
+  onExpenseSaved,
 }: Props) {
   const router = useRouter();
   const amountInputReference = useRef<HTMLInputElement>(null);
@@ -156,6 +162,29 @@ export function GroupExpensePanel({
   const expenseTotalIsValid =
     Number.isFinite(parsedExpenseTotal) && parsedExpenseTotal > 0;
   const memberIds = members.map((memberRow) => memberRow.user_id);
+  const approximateJpyPreview = useMemo(() => {
+    if (currencyCode.trim().toUpperCase() === "JPY" || !exchangeRates) {
+      return null;
+    }
+    const trimmedAmount = amount.trim();
+    if (!trimmedAmount) {
+      return null;
+    }
+    const amountResolution = evaluateRestrictedAmountExpression(trimmedAmount);
+    if (!amountResolution.ok) {
+      return null;
+    }
+    const convertedAmount = convertAmount(
+      amountResolution.value,
+      currencyCode,
+      "JPY",
+      exchangeRates,
+    );
+    if (convertedAmount === null) {
+      return null;
+    }
+    return formatMoneyByCurrency("JPY", Math.round(convertedAmount));
+  }, [amount, currencyCode, exchangeRates]);
 
   const exactSummary = useMemo(() => {
     if (!expenseTotalIsValid) {
@@ -588,6 +617,7 @@ export function GroupExpensePanel({
     }
 
     resetFormAfterSuccessfulSave(submitIntent);
+    await onExpenseSaved?.();
   }
 
   if (members.length === 0) {
@@ -663,6 +693,13 @@ export function GroupExpensePanel({
               role="status"
             >
               {amountExpressionHint}
+            </p>
+          ) : null}
+          {approximateJpyPreview ? (
+            <p className="text-xs text-muted-foreground" role="status">
+              {formTranslations("jpyPreviewApprox", {
+                amount: approximateJpyPreview,
+              })}
             </p>
           ) : null}
         </div>

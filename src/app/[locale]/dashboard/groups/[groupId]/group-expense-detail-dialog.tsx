@@ -23,6 +23,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { useGroupOptimisticMutations } from "@/hooks/use-group-optimistic-mutations";
 
 type AuditItem = {
   id: string;
@@ -44,6 +45,8 @@ type Props = {
   expense: ExpenseRowDb | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  onExpenseDeletedOptimistic?: (expense: ExpenseRowDb) => void;
+  onExpenseDeleteRollback?: (expense: ExpenseRowDb) => void;
   members: GroupMemberRow[];
   currencyCode: string;
   exchangeRates: Record<string, number> | null;
@@ -89,6 +92,8 @@ export function GroupExpenseDetailDialog({
   expense,
   open,
   onOpenChange,
+  onExpenseDeletedOptimistic,
+  onExpenseDeleteRollback,
   members,
   currencyCode,
   exchangeRates,
@@ -97,6 +102,7 @@ export function GroupExpenseDetailDialog({
   const detailTranslations = useTranslations("ExpenseDetail");
   const categoryTranslations = useTranslations("ExpenseCategory");
   const commentTranslations = useTranslations("ExpenseComments");
+  const { deleteExpenseOptimistically } = useGroupOptimisticMutations(groupId);
 
   const [auditItems, setAuditItems] = useState<AuditItem[]>([]);
   const [auditLoading, setAuditLoading] = useState(false);
@@ -244,15 +250,20 @@ export function GroupExpenseDetailDialog({
     }
     setDeleting(true);
     try {
-      const response = await fetch(
-        `/api/groups/${groupId}/expenses/${expense.id}`,
-        { method: "DELETE" },
-      );
-      if (!response.ok) {
+      const deleteSucceeded = await deleteExpenseOptimistically({
+        expenseId: expense.id,
+        onOptimisticApplied: () => {
+          onExpenseDeletedOptimistic?.(expense);
+          onOpenChange(false);
+        },
+        onRollback: () => {
+          onExpenseDeleteRollback?.(expense);
+        },
+      });
+      if (!deleteSucceeded) {
         window.alert(detailTranslations("deleteFailed"));
         return;
       }
-      onOpenChange(false);
       broadcastGroupRefresh(groupId);
       router.refresh();
     } finally {

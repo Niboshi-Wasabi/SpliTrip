@@ -257,6 +257,7 @@
     "adminNavAria": "Admin sections",
     "navUsers": "Users",
     "navAnnouncements": "Announcements",
+    "navMaintenance": "Maintenance",
     "navSystem": "System",
     "navAudit": "Audit log",
     "navSupport": "Support",
@@ -302,6 +303,17 @@
     "announcementDraftBadge": "Draft",
     "announcementsPageDescription": "Manage What's New in Japanese and English.",
     "systemPageDescription": "Maintenance, banners, and other runtime settings without redeploying.",
+    "maintenancePageDescription": "Manage scheduled maintenance windows and bilingual announcement messages.",
+    "maintenanceLoadError": "Could not load maintenance settings.",
+    "maintenanceSaveError": "Could not save maintenance settings.",
+    "maintenanceSaved": "Maintenance settings saved.",
+    "maintenanceEnabled": "Enable scheduled maintenance",
+    "maintenanceStartTime": "Start time",
+    "maintenanceEndTime": "End time",
+    "maintenanceMessageJa": "Announcement message (JA)",
+    "maintenanceMessageEn": "Announcement message (EN)",
+    "maintenanceInvalidRange": "Please enter a valid start/end time range.",
+    "maintenanceSaveButton": "Save maintenance settings",
     "systemSettingsLoadError": "Could not load settings.",
     "systemSettingsSaveError": "Could not save settings.",
     "systemSettingsSaved": "Saved.",
@@ -472,6 +484,7 @@
     "memberSelectOnlyMe": "Only me",
     "saveAndAddAnother": "Save & add another",
     "amountExpressionInvalid": "Could not evaluate that expression (e.g. 1500 * 2 or 500 + 200).",
+    "jpyPreviewApprox": "≈ about {amount} (JPY)",
     "splitModeEqual": "Split equally",
     "splitModeExact": "Exact amounts per person",
     "splitModeShares": "By share weights",
@@ -529,7 +542,8 @@
     "colPayer": "Who paid",
     "colAmount": "Amount",
     "previewTitle": "Split preview",
-    "previewEmpty": "No split details"
+    "previewEmpty": "No split details",
+    "deleteRollbackToast": "Delete failed, so the expense was restored."
   },
   "ExpenseDetail": {
     "untitled": "(Untitled)",
@@ -596,6 +610,22 @@
     "emptyGroups": "No groups yet. Create your first one.",
     "createGroupButton": "Create group"
   },
+  "ReceiptInbox": {
+    "quickSaveButton": "Take and save receipt",
+    "savedToast": "Saved to inbox",
+    "inboxTitle": "Unprocessed receipts",
+    "inboxCount": "Inbox: {count}",
+    "openInForm": "Open in expense form",
+    "deleteFromInbox": "Delete from inbox",
+    "empty": "No unprocessed receipts.",
+    "loading": "Loading…",
+    "close": "Close",
+    "stickyViewerTitle": "Sticky receipt viewer",
+    "stickyViewerDescription": "Keep this receipt visible while filling the expense form.",
+    "zoomLabel": "Zoom",
+    "receiptImageAlt": "Saved receipt image",
+    "selectedReceiptMissing": "Receipt not found. Please choose another from inbox."
+  },
   "CategoryChart": {
     "empty": "No spending data",
     "untitled": "(Untitled)",
@@ -615,7 +645,8 @@
     "requestTemplate": "Trip settlement update! Your total is {amount}. Please send it from here 👉 {paymentUrl}",
     "requestNoPaymentLink": "(No payment link set)",
     "markSettled": "Mark as settled",
-    "markSettledDone": "Settled ✔"
+    "markSettledDone": "Settled ✔",
+    "markSettledFailed": "Could not mark as settled. Please check your connection."
   },
   "Onboarding": {
     "title": "Set your name",
@@ -666,7 +697,9 @@
     "headline": "Under maintenance",
     "body": "Please try again shortly.",
     "tryAgain": "Retry from home",
-    "announcementLabel": "Notice"
+    "announcementLabel": "Notice",
+    "scheduledNoticeTitle": "Scheduled maintenance",
+    "scheduledNoticeBody": "Service will be unavailable during {period}. {message}"
   },
   "Premium": {
     "modalTitle": "Upgrade to SpliTrip PRO",

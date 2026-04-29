@@ -10,6 +10,7 @@ import { AppSiteFooter } from "@/components/layout/app-site-footer";
 import { PublishedAppAnnouncements } from "@/components/announcements/published-app-announcements";
 import { WhatsNewModalGate } from "@/components/announcements/whats-new-modal-gate";
 import { MaintenanceAnnouncementBanner } from "@/components/maintenance/maintenance-announcement-banner";
+import { MaintenanceScheduleGuard } from "@/components/maintenance/maintenance-schedule-guard";
 import { getLocaleHtmlClassName } from "@/lib/i18n/app-gfonts";
 import { getUiMonoStackId, getUiSansStackId } from "@/lib/i18n/locale-ui-fonts";
 
@@ -82,6 +83,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
       <NextIntlClientProvider messages={messages}>
         <AppProviders>
           <MaintenanceAnnouncementBanner />
+          <MaintenanceScheduleGuard />
           <PublishedAppAnnouncements locale={locale} />
           <WhatsNewModalGate locale={locale} />
           {children}

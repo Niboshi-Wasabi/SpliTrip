@@ -23,8 +23,10 @@ import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
 import { Check, Copy, Wallet } from "lucide-react";
 import confetti from "canvas-confetti";
+import { useGroupOptimisticMutations } from "@/hooks/use-group-optimistic-mutations";
 
 type Props = {
+  groupId: string;
   settlements: GroupSettlement[];
   currencyCode: string;
   currentUserId: string;
@@ -76,6 +78,7 @@ function PaymentActionButton({
 }
 
 export function GroupSettlementList({
+  groupId,
   settlements,
   currencyCode,
   currentUserId,
@@ -83,6 +86,7 @@ export function GroupSettlementList({
   exchangeRates,
 }: Props) {
   const settlementTranslations = useTranslations("Settlement");
+  const { markSettlementOptimistically } = useGroupOptimisticMutations(groupId);
   const [settledRowKeys, setSettledRowKeys] = useState<Record<string, boolean>>(
     {},
   );
@@ -127,8 +131,27 @@ export function GroupSettlementList({
     }, 1800);
   }
 
-  function handleMarkAsSettled(rowKey: string): void {
-    setSettledRowKeys((previousRows) => ({ ...previousRows, [rowKey]: true }));
+  async function handleMarkAsSettled(rowKey: string): Promise<void> {
+    const markSucceeded = await markSettlementOptimistically({
+      rowKey,
+      onOptimisticApplied: () => {
+        setSettledRowKeys((previousRows) => ({ ...previousRows, [rowKey]: true }));
+      },
+      onRollback: () => {
+        setSettledRowKeys((previousRows) => {
+          const nextRows = { ...previousRows };
+          delete nextRows[rowKey];
+          return nextRows;
+        });
+      },
+    });
+    if (!markSucceeded) {
+      setCopyToastMessage(settlementTranslations("markSettledFailed"));
+      setTimeout(() => {
+        setCopyToastMessage(null);
+      }, 1800);
+      return;
+    }
     void confetti({
       particleCount: 42,
       spread: 62,
@@ -227,7 +250,7 @@ export function GroupSettlementList({
                     className={`min-h-[44px] gap-1.5 text-xs sm:min-h-0 sm:h-7 ${
                       rowIsMarkedSettled ? "scale-[1.03]" : ""
                     }`}
-                    onClick={() => handleMarkAsSettled(rowKey)}
+                    onClick={() => void handleMarkAsSettled(rowKey)}
                   >
                     <Check className="h-3.5 w-3.5" aria-hidden />
                     {rowIsMarkedSettled

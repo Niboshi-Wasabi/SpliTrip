@@ -5,7 +5,7 @@
  * 出費一覧（詳細ダイアログで領収書・監査）。
  */
 
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { UserAvatar } from "@/components/user-avatar";
 import { ExpenseCategoryIcon } from "@/components/expense-category-icon";
@@ -84,7 +84,13 @@ export function GroupExpenseList({
   );
   const [dialogOpen, setDialogOpen] = useState(false);
   const [previewState, setPreviewState] = useState<PreviewState | null>(null);
+  const [visibleExpenses, setVisibleExpenses] = useState<ExpenseRowDb[]>(expenses);
+  const [deleteToastMessage, setDeleteToastMessage] = useState<string | null>(null);
   const hoverTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    setVisibleExpenses(expenses);
+  }, [expenses]);
 
   function openDetail(expense: ExpenseRowDb): void {
     setSelectedExpense(expense);
@@ -135,7 +141,7 @@ export function GroupExpenseList({
     });
   }, [members, previewState]);
 
-  if (expenses.length === 0) {
+  if (visibleExpenses.length === 0) {
     return (
       <p className="py-6 text-center text-sm text-muted-foreground">
         {listTranslations("empty")}
@@ -146,7 +152,7 @@ export function GroupExpenseList({
   return (
     <>
       <ul className="space-y-3 md:hidden">
-        {expenses.map((expense) => {
+        {visibleExpenses.map((expense) => {
           const payerMember = members.find(
             (member) => member.user_id === expense.payer_id,
           );
@@ -224,7 +230,7 @@ export function GroupExpenseList({
               </TableRow>
             </TableHeader>
             <TableBody>
-              {expenses.map((expense) => {
+              {visibleExpenses.map((expense) => {
                 const payerMember = members.find(
                   (member) => member.user_id === expense.payer_id,
                 );
@@ -339,10 +345,38 @@ export function GroupExpenseList({
         expense={selectedExpense}
         open={dialogOpen}
         onOpenChange={setDialogOpen}
+        onExpenseDeletedOptimistic={(deletedExpense) => {
+          setVisibleExpenses((previousExpenses) =>
+            previousExpenses.filter((expenseRow) => expenseRow.id !== deletedExpense.id),
+          );
+        }}
+        onExpenseDeleteRollback={(rolledBackExpense) => {
+          setVisibleExpenses((previousExpenses) => {
+            if (
+              previousExpenses.some(
+                (expenseRow) => expenseRow.id === rolledBackExpense.id,
+              )
+            ) {
+              return previousExpenses;
+            }
+            return [...previousExpenses, rolledBackExpense].sort((leftRow, rightRow) =>
+              rightRow.expense_date.localeCompare(leftRow.expense_date),
+            );
+          });
+          setDeleteToastMessage(listTranslations("deleteRollbackToast"));
+          setTimeout(() => {
+            setDeleteToastMessage(null);
+          }, 1800);
+        }}
         members={members}
         currencyCode={currencyCode}
         exchangeRates={exchangeRates}
       />
+      {deleteToastMessage ? (
+        <div className="pointer-events-none fixed right-4 bottom-6 z-50 rounded-md border border-border bg-card px-3 py-2 text-xs shadow-lg">
+          {deleteToastMessage}
+        </div>
+      ) : null}
     </>
   );
 }
