@@ -465,6 +465,13 @@
     "descriptionLabel": "Description",
     "descriptionPlaceholder": "e.g. Dinner",
     "dateLabel": "Date",
+    "dateChipToday": "Today",
+    "dateChipYesterday": "Yesterday",
+    "dateChipTwoDaysAgo": "2 days ago",
+    "memberSelectAll": "All",
+    "memberSelectOnlyMe": "Only me",
+    "saveAndAddAnother": "Save & add another",
+    "amountExpressionInvalid": "Could not evaluate that expression (e.g. 1500 * 2 or 500 + 200).",
     "splitModeEqual": "Split equally",
     "splitModeExact": "Exact amounts per person",
     "splitModeShares": "By share weights",
@@ -520,7 +527,9 @@
     "colDate": "Date",
     "colDescription": "Description",
     "colPayer": "Who paid",
-    "colAmount": "Amount"
+    "colAmount": "Amount",
+    "previewTitle": "Split preview",
+    "previewEmpty": "No split details"
   },
   "ExpenseDetail": {
     "untitled": "(Untitled)",
@@ -599,7 +608,14 @@
     "payWithLinePay": "Send with LINE Pay",
     "payWithVenmo": "Send with Venmo",
     "payWithGeneric": "Open saved link",
-    "faviconAlt": ""
+    "faviconAlt": "",
+    "copyRequest": "Copy request text",
+    "copiedToast": "Copied to clipboard",
+    "copiedFailedToast": "Failed to copy",
+    "requestTemplate": "Trip settlement update! Your total is {amount}. Please send it from here 👉 {paymentUrl}",
+    "requestNoPaymentLink": "(No payment link set)",
+    "markSettled": "Mark as settled",
+    "markSettledDone": "Settled ✔"
   },
   "Onboarding": {
     "title": "Set your name",

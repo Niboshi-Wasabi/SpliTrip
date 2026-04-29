@@ -465,6 +465,13 @@
     "descriptionLabel": "内容",
     "descriptionPlaceholder": "例: 夕食",
     "dateLabel": "日付",
+    "dateChipToday": "今日",
+    "dateChipYesterday": "昨日",
+    "dateChipTwoDaysAgo": "おととい",
+    "memberSelectAll": "全員",
+    "memberSelectOnlyMe": "自分のみ",
+    "saveAndAddAnother": "保存して次を入力",
+    "amountExpressionInvalid": "計算できない入力です（例: 1500 * 2 や 500 + 200）。",
     "splitModeEqual": "みんなで均等",
     "splitModeExact": "一人ずつ金額を指定",
     "splitModeShares": "比率（シェア）で分ける",
@@ -502,7 +509,9 @@
     "colDate": "日付",
     "colDescription": "内容",
     "colPayer": "支払った人",
-    "colAmount": "金額"
+    "colAmount": "金額",
+    "previewTitle": "内訳プレビュー",
+    "previewEmpty": "内訳がありません"
   },
   "HelpTooltips": {
     "splitModeAria": "割り方の説明を開く",
@@ -599,7 +608,14 @@
     "payWithLinePay": "LINE Pay で送金",
     "payWithVenmo": "Venmo で送金",
     "payWithGeneric": "登録したURLで送金",
-    "faviconAlt": ""
+    "faviconAlt": "",
+    "copyRequest": "請求文をコピー",
+    "copiedToast": "クリップボードにコピーしました",
+    "copiedFailedToast": "コピーに失敗しました",
+    "requestTemplate": "今回の旅行の精算だよ！合計で {amount} になったよ。ここから送金よろしくね👉 {paymentUrl}",
+    "requestNoPaymentLink": "（送金リンク未設定）",
+    "markSettled": "送金済みにする",
+    "markSettledDone": "送金済み ✔"
   },
   "Onboarding": {
     "title": "ユーザー名を設定",

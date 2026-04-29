@@ -8,7 +8,7 @@
  * 理由: ベンダー固有の URL 生成を `resolved-payment-targets` に閉じる。
  */
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import type { GroupMemberRow } from "@/lib/group-queries";
 import type { GroupSettlement } from "@/lib/group-ledger";
 import { UserAvatar } from "@/components/user-avatar";
@@ -21,7 +21,8 @@ import {
 } from "@/lib/resolved-payment-targets";
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
-import { Wallet } from "lucide-react";
+import { Check, Copy, Wallet } from "lucide-react";
+import confetti from "canvas-confetti";
 
 type Props = {
   settlements: GroupSettlement[];
@@ -82,6 +83,15 @@ export function GroupSettlementList({
   exchangeRates,
 }: Props) {
   const settlementTranslations = useTranslations("Settlement");
+  const [settledRowKeys, setSettledRowKeys] = useState<Record<string, boolean>>(
+    {},
+  );
+  const [copyToastMessage, setCopyToastMessage] = useState<string | null>(null);
+
+  const currentUserMember = useMemo(
+    () => findMemberByUserId(members, currentUserId),
+    [currentUserId, members],
+  );
 
   function labelForTarget(target: ResolvedPaymentTarget): string {
     return settlementTranslations(
@@ -95,10 +105,45 @@ export function GroupSettlementList({
     );
   }
 
+  async function copySettlementRequestText(
+    amount: number,
+    paymentUrl: string | null,
+  ): Promise<void> {
+    const requestText = settlementTranslations("requestTemplate", {
+      amount: formatMoneyByCurrency(currencyCode, amount),
+      paymentUrl:
+        paymentUrl && paymentUrl.length > 0
+          ? paymentUrl
+          : settlementTranslations("requestNoPaymentLink"),
+    });
+    try {
+      await navigator.clipboard.writeText(requestText);
+      setCopyToastMessage(settlementTranslations("copiedToast"));
+    } catch {
+      setCopyToastMessage(settlementTranslations("copiedFailedToast"));
+    }
+    setTimeout(() => {
+      setCopyToastMessage(null);
+    }, 1800);
+  }
+
+  function handleMarkAsSettled(rowKey: string): void {
+    setSettledRowKeys((previousRows) => ({ ...previousRows, [rowKey]: true }));
+    void confetti({
+      particleCount: 42,
+      spread: 62,
+      origin: { y: 0.75 },
+      ticks: 160,
+    });
+  }
+
   return (
     <ul className="space-y-2">
       {settlements.map((settlementRow, rowIndex) => {
+        const rowKey = `${settlementRow.fromUserId}-${settlementRow.toUserId}-${rowIndex}`;
+        const rowIsMarkedSettled = settledRowKeys[rowKey] === true;
         const viewerIsDebtor = settlementRow.fromUserId === currentUserId;
+        const viewerIsCreditor = settlementRow.toUserId === currentUserId;
         const debtorMember = findMemberByUserId(
           members,
           settlementRow.fromUserId,
@@ -116,10 +161,18 @@ export function GroupSettlementList({
               )
             : [];
         const hasPaymentTargets = paymentTargets.length > 0;
+        const recipientPaymentTargets = viewerIsCreditor && currentUserMember
+          ? resolvePaymentTargetsForMember(
+              currentUserMember,
+              currencyCode,
+              settlementRow.amount,
+            )
+          : [];
+        const requestPaymentUrl = recipientPaymentTargets[0]?.paymentUrl ?? null;
 
         return (
           <li
-            key={`${settlementRow.fromUserId}-${settlementRow.toUserId}-${rowIndex}`}
+            key={rowKey}
             className="flex min-h-[44px] flex-col gap-2 rounded-lg border p-3 text-sm sm:flex-row sm:flex-wrap sm:items-center sm:justify-between"
           >
             <span className="flex items-center gap-1.5">
@@ -167,12 +220,48 @@ export function GroupSettlementList({
                       labelText={labelForTarget(target)}
                     />
                   ))}
+                  <Button
+                    type="button"
+                    variant={rowIsMarkedSettled ? "secondary" : "outline"}
+                    size="sm"
+                    className={`min-h-[44px] gap-1.5 text-xs sm:min-h-0 sm:h-7 ${
+                      rowIsMarkedSettled ? "scale-[1.03]" : ""
+                    }`}
+                    onClick={() => handleMarkAsSettled(rowKey)}
+                  >
+                    <Check className="h-3.5 w-3.5" aria-hidden />
+                    {rowIsMarkedSettled
+                      ? settlementTranslations("markSettledDone")
+                      : settlementTranslations("markSettled")}
+                  </Button>
                 </div>
+              ) : null}
+              {viewerIsCreditor ? (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="min-h-[44px] gap-1.5 text-xs print:hidden sm:min-h-0 sm:h-7"
+                  onClick={() =>
+                    void copySettlementRequestText(
+                      settlementRow.amount,
+                      requestPaymentUrl,
+                    )
+                  }
+                >
+                  <Copy className="h-3.5 w-3.5" aria-hidden />
+                  {settlementTranslations("copyRequest")}
+                </Button>
               ) : null}
             </div>
           </li>
         );
       })}
+      {copyToastMessage ? (
+        <li className="pointer-events-none fixed right-4 bottom-6 z-50 rounded-md border border-border bg-card px-3 py-2 text-xs shadow-lg">
+          {copyToastMessage}
+        </li>
+      ) : null}
     </ul>
   );
 }

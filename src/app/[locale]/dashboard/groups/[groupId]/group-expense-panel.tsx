@@ -5,7 +5,7 @@
  * Live validation mirrors `src/utils/settlement.ts` minor-unit math.
  */
 
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { Loader2 } from "lucide-react";
@@ -23,6 +23,7 @@ import {
   EXPENSE_CATEGORY_IDS,
   type ExpenseCategoryId,
 } from "@/lib/expense-categories";
+import { evaluateRestrictedAmountExpression } from "@/lib/arithmetic-expression";
 
 type SplitMode = "equal" | "exact" | "shares" | "percent" | "itemized";
 
@@ -53,7 +54,28 @@ type Props = {
   groupId: string;
   members: GroupMemberRow[];
   currencyCode: string;
+  /** Logged-in user (for 「自分のみ」 in itemized participant selection). */
+  currentUserId: string;
 };
+
+function localDateInputString(referenceDate: Date): string {
+  const year = referenceDate.getFullYear();
+  const month = String(referenceDate.getMonth() + 1).padStart(2, "0");
+  const day = String(referenceDate.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
+function formatAmountInputValue(amountValue: number, minorExponent: number): string {
+  if (!Number.isFinite(amountValue)) {
+    return "";
+  }
+  if (minorExponent === 0) {
+    return String(Math.round(amountValue));
+  }
+  const factor = 10 ** minorExponent;
+  const rounded = Math.round(amountValue * factor) / factor;
+  return rounded.toFixed(minorExponent);
+}
 
 function policyToApi(
   kind: RemainderUiKind,
@@ -75,8 +97,10 @@ export function GroupExpensePanel({
   groupId,
   members,
   currencyCode,
+  currentUserId,
 }: Props) {
   const router = useRouter();
+  const amountInputReference = useRef<HTMLInputElement>(null);
   const formTranslations = useTranslations("GroupExpenseForm");
   const helpTranslations = useTranslations("HelpTooltips");
   const categoryLabelTranslations = useTranslations("ExpenseCategory");
@@ -86,8 +110,8 @@ export function GroupExpensePanel({
   const [payerId, setPayerId] = useState(members[0]?.user_id ?? "");
   const [amount, setAmount] = useState("");
   const [description, setDescription] = useState("");
-  const [expenseDate, setExpenseDate] = useState(
-    () => new Date().toISOString().slice(0, 10),
+  const [expenseDate, setExpenseDate] = useState(() =>
+    localDateInputString(new Date()),
   );
   const [splitMode, setSplitMode] = useState<SplitMode>("equal");
   const [remainderKind, setRemainderKind] =
@@ -121,6 +145,9 @@ export function GroupExpensePanel({
 
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [amountExpressionHint, setAmountExpressionHint] = useState<
+    string | null
+  >(null);
 
   const [expenseCategoryId, setExpenseCategoryId] =
     useState<ExpenseCategoryId>("other");
@@ -259,6 +286,58 @@ export function GroupExpensePanel({
     formTranslations,
   ]);
 
+  function applyExpenseDateFromDaysAgo(daysAgo: number) {
+    const referenceDate = new Date();
+    referenceDate.setHours(12, 0, 0, 0);
+    referenceDate.setDate(referenceDate.getDate() - daysAgo);
+    setExpenseDate(localDateInputString(referenceDate));
+  }
+
+  function handleAmountInputBlur() {
+    const trimmed = amount.trim();
+    if (!trimmed) {
+      setAmountExpressionHint(null);
+      return;
+    }
+    const evaluated = evaluateRestrictedAmountExpression(trimmed);
+    if (!evaluated.ok) {
+      setAmountExpressionHint(formTranslations("amountExpressionInvalid"));
+      return;
+    }
+    setAmountExpressionHint(null);
+    setAmount(formatAmountInputValue(evaluated.value, minorExp));
+  }
+
+  function applyItemizedParticipantMode(
+    lineKey: string,
+    mode: "all" | "only_me",
+  ) {
+    setItemLines((previousLines) =>
+      previousLines.map((lineEntry) => {
+        if (lineEntry.key !== lineKey) {
+          return lineEntry;
+        }
+        if (mode === "all") {
+          return {
+            ...lineEntry,
+            selected: Object.fromEntries(
+              members.map((memberRow) => [memberRow.user_id, true]),
+            ),
+          };
+        }
+        return {
+          ...lineEntry,
+          selected: Object.fromEntries(
+            members.map((memberRow) => [
+              memberRow.user_id,
+              memberRow.user_id === currentUserId,
+            ]),
+          ),
+        };
+      }),
+    );
+  }
+
   function updateExact(userId: string, value: string) {
     setExactByUser((prev) => ({ ...prev, [userId]: value }));
   }
@@ -290,12 +369,75 @@ export function GroupExpensePanel({
     );
   }
 
-  async function onSubmit(formEvent: React.FormEvent) {
+  function resetFormAfterSuccessfulSave(
+    submitIntent: "save" | "saveAndAnother",
+  ) {
+    setAmount("");
+    setDescription("");
+    setExactByUser(
+      Object.fromEntries(members.map((memberRow) => [memberRow.user_id, ""])),
+    );
+    setShareByUser(
+      Object.fromEntries(members.map((memberRow) => [memberRow.user_id, "1"])),
+    );
+    setPercentByUser(() => {
+      const equalShareText = members.length
+        ? (100 / members.length).toFixed(2)
+        : "0";
+      return Object.fromEntries(
+        members.map((memberRow) => [
+          memberRow.user_id,
+          equalShareText,
+        ]),
+      );
+    });
+    setItemLines([
+      {
+        key: crypto.randomUUID(),
+        amount: "",
+        selected: Object.fromEntries(
+          members.map((memberRow) => [memberRow.user_id, true]),
+        ),
+      },
+    ]);
+    setExpenseCategoryId("other");
+    setSubmitting(false);
+    setAmountExpressionHint(null);
+    broadcastGroupRefresh(groupId);
+    router.refresh();
+    if (submitIntent === "saveAndAnother") {
+      setTimeout(() => {
+        amountInputReference.current?.focus();
+      }, 0);
+    }
+  }
+
+  async function handleSubmit(
+    formEvent: React.FormEvent<HTMLFormElement>,
+  ): Promise<void> {
     formEvent.preventDefault();
-    if (!expenseTotalIsValid) {
+    const formElement = formEvent.currentTarget;
+    const formData = new FormData(formElement);
+    const intentRaw = formData.get("submitIntent");
+    const submitIntent =
+      intentRaw === "saveAndAnother" ? "saveAndAnother" : "save";
+
+    const trimmedAmountRaw = amount.trim();
+    const amountResolution = trimmedAmountRaw
+      ? evaluateRestrictedAmountExpression(trimmedAmountRaw)
+      : { ok: false as const };
+    if (!amountResolution.ok) {
       setError(formTranslations("clientInvalidAmount"));
       return;
     }
+    const resolvedExpenseTotalNumeric = amountResolution.value;
+    if (!Number.isFinite(resolvedExpenseTotalNumeric) || resolvedExpenseTotalNumeric <= 0) {
+      setError(formTranslations("clientInvalidAmount"));
+      return;
+    }
+    setAmount(formatAmountInputValue(resolvedExpenseTotalNumeric, minorExp));
+    setAmountExpressionHint(null);
+
     if (!payerId) {
       setError(formTranslations("clientSelectPayer"));
       return;
@@ -306,9 +448,18 @@ export function GroupExpensePanel({
       return;
     }
 
-    if (splitMode === "itemized" && !itemizedMatches) {
-      setError(formTranslations("clientItemizedMustMatch"));
-      return;
+    if (splitMode === "itemized") {
+      const targetMinorResolved = toMinorUnits(
+        resolvedExpenseTotalNumeric,
+        currencyCode,
+      );
+      const itemizedOkNow =
+        itemLines.length > 0 &&
+        itemizedSumMinor === targetMinorResolved;
+      if (!itemizedOkNow) {
+        setError(formTranslations("clientItemizedMustMatch"));
+        return;
+      }
     }
 
     setSubmitting(true);
@@ -318,7 +469,7 @@ export function GroupExpensePanel({
 
     const base: Record<string, unknown> = {
       payer_id: payerId,
-      amount: parsedExpenseTotal,
+      amount: resolvedExpenseTotalNumeric,
       description: description.trim() || null,
       expense_date: expenseDate,
       category: expenseCategoryId,
@@ -436,25 +587,7 @@ export function GroupExpensePanel({
       setError(formTranslations("receiptUploadFailed"));
     }
 
-    setAmount("");
-    setDescription("");
-    setExactByUser(Object.fromEntries(members.map((memberRow) => [memberRow.user_id, ""])));
-    setShareByUser(Object.fromEntries(members.map((memberRow) => [memberRow.user_id, "1"])));
-    setPercentByUser(() => {
-      const each = members.length ? (100 / members.length).toFixed(2) : "0";
-      return Object.fromEntries(members.map((memberRow) => [memberRow.user_id, each]));
-    });
-    setItemLines([
-      {
-        key: crypto.randomUUID(),
-        amount: "",
-        selected: Object.fromEntries(members.map((memberRow) => [memberRow.user_id, true])),
-      },
-    ]);
-    setExpenseCategoryId("other");
-    setSubmitting(false);
-    broadcastGroupRefresh(groupId);
-    router.refresh();
+    resetFormAfterSuccessfulSave(submitIntent);
   }
 
   if (members.length === 0) {
@@ -467,7 +600,7 @@ export function GroupExpensePanel({
 
   return (
     <form
-      onSubmit={(formEvent) => void onSubmit(formEvent)}
+      onSubmit={(formEvent) => void handleSubmit(formEvent)}
       className="flex flex-col gap-4 rounded-lg border border-border bg-card p-3 sm:p-4"
     >
       <h3 className="text-sm font-semibold">{formTranslations("title")}</h3>
@@ -504,15 +637,34 @@ export function GroupExpensePanel({
           </Label>
           <Input
             id="amount"
-            type="number"
+            ref={amountInputReference}
+            type="text"
             inputMode="decimal"
-            min={minorExp === 0 ? 1 : 0.01}
-            step={amountStep}
+            autoComplete="off"
+            spellCheck={false}
             value={amount}
-            onChange={(changeEvent) => setAmount(changeEvent.target.value)}
+            onChange={(changeEvent) => {
+              setAmountExpressionHint(null);
+              setError(null);
+              setAmount(changeEvent.target.value);
+            }}
+            onBlur={() => handleAmountInputBlur()}
             disabled={submitting}
             required
+            className="min-h-[44px] py-2 md:min-h-8 md:py-1"
+            aria-describedby={
+              amountExpressionHint ? "expense-amount-hint" : undefined
+            }
           />
+          {amountExpressionHint ? (
+            <p
+              id="expense-amount-hint"
+              className="text-xs text-amber-800 dark:text-amber-200"
+              role="status"
+            >
+              {amountExpressionHint}
+            </p>
+          ) : null}
         </div>
       </div>
 
@@ -529,12 +681,45 @@ export function GroupExpensePanel({
 
       <div className="space-y-2">
         <Label htmlFor="edate">{formTranslations("dateLabel")}</Label>
+        <div className="flex flex-wrap gap-2">
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            className="min-h-[40px] shrink-0 px-3 md:min-h-8"
+            disabled={submitting}
+            onClick={() => applyExpenseDateFromDaysAgo(0)}
+          >
+            {formTranslations("dateChipToday")}
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            className="min-h-[40px] shrink-0 px-3 md:min-h-8"
+            disabled={submitting}
+            onClick={() => applyExpenseDateFromDaysAgo(1)}
+          >
+            {formTranslations("dateChipYesterday")}
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            className="min-h-[40px] shrink-0 px-3 md:min-h-8"
+            disabled={submitting}
+            onClick={() => applyExpenseDateFromDaysAgo(2)}
+          >
+            {formTranslations("dateChipTwoDaysAgo")}
+          </Button>
+        </div>
         <Input
           id="edate"
           type="date"
           value={expenseDate}
           onChange={(changeEvent) => setExpenseDate(changeEvent.target.value)}
           disabled={submitting}
+          className="min-h-[44px] md:min-h-8"
         />
       </div>
 
@@ -857,7 +1042,33 @@ export function GroupExpensePanel({
                     </Button>
                   ) : null}
                 </div>
-                <div className="flex flex-wrap gap-2 text-xs">
+                <div className="flex flex-wrap items-center gap-2 border-b border-border/60 pb-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="min-h-[40px] shrink-0 md:min-h-8"
+                    disabled={submitting}
+                    onClick={() =>
+                      applyItemizedParticipantMode(line.key, "all")
+                    }
+                  >
+                    {formTranslations("memberSelectAll")}
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="min-h-[40px] shrink-0 md:min-h-8"
+                    disabled={submitting}
+                    onClick={() =>
+                      applyItemizedParticipantMode(line.key, "only_me")
+                    }
+                  >
+                    {formTranslations("memberSelectOnlyMe")}
+                  </Button>
+                </div>
+                <div className="flex flex-wrap gap-2 pt-1 text-xs">
                   {members.map((memberRow) => (
                     <label
                       key={memberRow.user_id}
@@ -920,12 +1131,30 @@ export function GroupExpensePanel({
       ) : null}
 
       {/* min-h-[44px]: タッチターゲット確保 / Ensure touch target size on mobile */}
-      <Button type="submit" disabled={submitting} className="min-h-[44px] md:min-h-0">
-        {submitting ? (
-          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-        ) : null}
-        {formTranslations("submitButton")}
-      </Button>
+      <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
+        <Button
+          type="submit"
+          name="submitIntent"
+          value="save"
+          disabled={submitting}
+          className="min-h-[44px] w-full sm:w-auto md:min-h-0"
+        >
+          {submitting ? (
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          ) : null}
+          {formTranslations("submitButton")}
+        </Button>
+        <Button
+          type="submit"
+          name="submitIntent"
+          value="saveAndAnother"
+          variant="outline"
+          disabled={submitting}
+          className="min-h-[44px] w-full sm:w-auto md:min-h-0"
+        >
+          {formTranslations("saveAndAddAnother")}
+        </Button>
+      </div>
     </form>
   );
 }

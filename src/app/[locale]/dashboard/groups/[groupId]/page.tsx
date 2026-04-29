@@ -331,6 +331,7 @@ export default async function GroupDetailPage({ params }: PageProps) {
               groupId={groupId}
               members={members}
               currencyCode={group.currency_code}
+              currentUserId={user.id}
             />
           </div>
 
