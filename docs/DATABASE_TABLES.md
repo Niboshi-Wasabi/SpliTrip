@@ -20,7 +20,8 @@
 | `user_backup_codes` | 2FA バックアップコード（ハッシュ） | `20260422010000` |
 | `two_factor_security_events` | 2FA の検証監査イベント | `20260422013000` |
 | `admin_audit_logs` | 管理画面向け操作ログ（PRO 手動付与など） | `20260423223000` |
-| `app_announcements` | アプリ内お知らせ（What's New）多言語対応 | `20260424100000`, `20260425042000` |
+| `app_announcements` | アプリ内お知らせ（What's New）多言語対応 | `20260424100000`, `20260425042000`, `20260430153000`（`display_order`） |
+| `maintenance_schedules` | 時限メンテのスケジュールと日英告知（緊急度付き） | `20260430033000`, `20260430153000` |
 | `system_settings` | 動的システム設定（メンテ・プロモバナー等） | `20260424100000` |
 | `stripe_webhook_events` | Stripe Webhook 処理済み event の冪等記録 | `20260415070000` |
 | `stripe_customer_user_links` | Stripe `customer_id` ↔ `auth.users` の紐付け | `20260415070000` |
@@ -344,13 +345,26 @@ Supabase Dashboard の Advisor 警告の整理方針は **`SUPABASE_SECURITY_ADV
 | `content_en` | `text` | NOT NULL | `''` | — | 英語本文 |
 | `icon_type` | `text` | NOT NULL | `'announcement'` | CHECK `('feature', 'bugfix', 'announcement', 'design', 'security', 'maintenance')` | アイコン種別 |
 | `priority` | `integer` | NOT NULL | `0` | — | 表示優先度（0=通常、1=高、2=緊急） |
+| `display_order` | `integer` | NOT NULL | `0` | — | LP・公開一覧の並び（昇順で先頭。同値は `priority` → `created_at` でタイブレーク） |
 | `is_published` | `boolean` | NOT NULL | `false` | — | 公開フラグ |
 | `created_at` | `timestamptz` | NOT NULL | `now()` | — | 作成日時 |
 | `updated_at` | `timestamptz` | NOT NULL | `now()` | — | 更新日時（トリガーで自動更新） |
 
 **インデックス:** `created_at` DESC, `is_published`, `icon_type`, `(priority DESC, created_at DESC)` WHERE `is_published = true`
 **RLS:** 有効（公開済みは誰でも読取可、管理者は全操作可）。
-**マイグレーション:** `20260424100000`, `20260425042000`（アイコン・優先度追加）
+**マイグレーション:** `20260424100000`, `20260425042000`（アイコン・優先度）、期限・`display_order` は `20260428192000` / `20260430153000` を参照。
+
+---
+
+## `maintenance_schedules`
+
+スケジュールメンテナンス（事前告知バナー・メンテページの告知文）。複数行を登録可能だが、運用上は単一行で管理することが多い。
+
+| 列名 | 型 | NULL | デフォルト | 制約・参照 | 説明 |
+|------|-----|------|------------|------------|------|
+| `message_urgency` | `text` | YES | — | CHECK `normal` / `high` または NULL | 告知緊急度。**有効**な行のうちどれかが `high` のときのみ、選択対象は `high` の行に限定される。すべて未設定なら従来どおり有効行すべてが対象。 |
+
+**マイグレーション:** `20260430033000`（テーブル作成）、`20260430153000`（`message_urgency`）
 
 ---
 

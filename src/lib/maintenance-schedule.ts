@@ -3,6 +3,9 @@ import { getSupabaseEnv } from "@/utils/supabase/env";
 
 export const MAINTENANCE_PRE_NOTICE_MS = 24 * 60 * 60 * 1000;
 
+/** メンテ告知の緊急度。NULL は未設定（従来参加ロジックのみ）。複数 enabled のうち1件でも `high` があれば、選択対象は `high` の行に限定される。 */
+export type MaintenanceScheduleMessageUrgency = "normal" | "high";
+
 export type MaintenanceScheduleRow = {
   id: string;
   is_enabled: boolean;
@@ -10,6 +13,7 @@ export type MaintenanceScheduleRow = {
   end_time: string;
   announcement_message_ja: string;
   announcement_message_en: string;
+  message_urgency: MaintenanceScheduleMessageUrgency | null;
   updated_at?: string;
 };
 
@@ -28,13 +32,25 @@ export function selectCurrentMaintenanceSchedule(
   if (enabledSchedules.length === 0) {
     return null;
   }
-  enabledSchedules.sort((leftSchedule, rightSchedule) => {
+  const hasHighUrgencyEnabled = enabledSchedules.some(
+    (scheduleRow) => scheduleRow.message_urgency === "high",
+  );
+  let candidateSchedules = enabledSchedules;
+  if (hasHighUrgencyEnabled) {
+    candidateSchedules = enabledSchedules.filter(
+      (scheduleRow) => scheduleRow.message_urgency === "high",
+    );
+  }
+  if (candidateSchedules.length === 0) {
+    return null;
+  }
+  candidateSchedules.sort((leftSchedule, rightSchedule) => {
     return (
       new Date(leftSchedule.start_time).getTime() -
       new Date(rightSchedule.start_time).getTime()
     );
   });
-  return enabledSchedules[0] ?? null;
+  return candidateSchedules[0] ?? null;
 }
 
 export function computeMaintenanceScheduleWindowState(
@@ -90,7 +106,7 @@ export async function fetchMaintenanceSchedulesForPublicRead(): Promise<
   const { data, error } = await supabase
     .from("maintenance_schedules")
     .select(
-      "id, is_enabled, start_time, end_time, announcement_message_ja, announcement_message_en, updated_at",
+      "id, is_enabled, start_time, end_time, announcement_message_ja, announcement_message_en, message_urgency, updated_at",
     )
     .order("start_time", { ascending: true })
     .limit(20);

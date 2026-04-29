@@ -41,6 +41,7 @@ type Row = {
   content_en: string;
   icon_type: string;
   priority: number;
+  display_order: number;
   is_published: boolean;
   expires_at: string | null;
   created_at: string;
@@ -105,6 +106,7 @@ type TopicFormData = {
   title_en: string;
   content_ja: string;
   content_en: string;
+  display_order: number;
   priority: number;
   is_published: boolean;
   expires_at: string;
@@ -118,6 +120,7 @@ const createEmptyTopicForm = (): TopicFormData => ({
   title_en: "",
   content_ja: "",
   content_en: "",
+  display_order: 0,
   priority: 0,
   is_published: false,
   expires_at: "",
@@ -319,7 +322,23 @@ export function AnnouncementsManager() {
 
   const getAnnouncementsByTopic = useCallback(
     (topicType: AnnouncementIconType) => {
-      return rows.filter((row) => row.icon_type === topicType);
+      return rows
+        .filter((announcementRow) => announcementRow.icon_type === topicType)
+        .sort((leftAnnouncement, rightAnnouncement) => {
+          const orderCompare =
+            (leftAnnouncement.display_order ?? 0) -
+            (rightAnnouncement.display_order ?? 0);
+          if (orderCompare !== 0) {
+            return orderCompare;
+          }
+          const leftCreatedTimestamp = new Date(
+            leftAnnouncement.created_at,
+          ).getTime();
+          const rightCreatedTimestamp = new Date(
+            rightAnnouncement.created_at,
+          ).getTime();
+          return rightCreatedTimestamp - leftCreatedTimestamp;
+        });
     },
     [rows],
   );
@@ -427,6 +446,32 @@ export function AnnouncementsManager() {
               />
               <p id={`cen_hint_${topicType}`} className="mt-1 text-xs text-muted-foreground">
                 {markdownEditorTranslations("hint")}
+              </p>
+            </div>
+
+            <div>
+              <Label htmlFor={`display_order_${topicType}`}>
+                {t("announcementDisplayOrderLabel")}
+              </Label>
+              <Input
+                id={`display_order_${topicType}`}
+                type="number"
+                inputMode="numeric"
+                min={0}
+                max={999999}
+                value={Number.isFinite(formData.display_order) ? formData.display_order : 0}
+                onChange={(event) => {
+                  const nextValue = parseInt(event.target.value, 10);
+                  updateTopicForm(topicType, {
+                    display_order: Number.isFinite(nextValue)
+                      ? Math.max(0, Math.min(999999, nextValue))
+                      : 0,
+                  });
+                }}
+                className="mt-1 max-w-[12rem]"
+              />
+              <p className="mt-1 text-xs text-muted-foreground">
+                {t("announcementDisplayOrderHint")}
               </p>
             </div>
 
@@ -655,6 +700,10 @@ export function AnnouncementsManager() {
                               {locale === "en" ? "Expiry" : "期限"}:{" "}
                               {formatExpiryLabel(announcementRow.expires_at)}
                             </Badge>
+                            <Badge variant="outline" className="w-fit text-[10px]">
+                              {locale === "en" ? "Order" : "表示順"}:{" "}
+                              {announcementRow.display_order ?? 0}
+                            </Badge>
                           </div>
                         </div>
                       </TableCell>
@@ -704,6 +753,7 @@ export function AnnouncementsManager() {
         title_en: announcementRow.title_en,
         content_ja: announcementRow.content_ja ?? "",
         content_en: announcementRow.content_en ?? "",
+        display_order: announcementRow.display_order ?? 0,
         priority: announcementRow.priority ?? 0,
         is_published: announcementRow.is_published,
         expires_at: toDateTimeLocalValue(announcementRow.expires_at),
@@ -840,6 +890,10 @@ export function AnnouncementsManager() {
                               <Badge variant="outline" className="w-fit text-[10px]">
                                 {locale === "en" ? "Expiry" : "期限"}:{" "}
                                 {formatExpiryLabel(announcementRow.expires_at)}
+                              </Badge>
+                              <Badge variant="outline" className="w-fit text-[10px]">
+                                {locale === "en" ? "Order" : "表示順"}:{" "}
+                                {announcementRow.display_order ?? 0}
                               </Badge>
                             </div>
                           </div>

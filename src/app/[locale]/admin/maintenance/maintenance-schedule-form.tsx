@@ -44,6 +44,9 @@ export function MaintenanceScheduleForm() {
   const [endTimeLocal, setEndTimeLocal] = useState("");
   const [messageJa, setMessageJa] = useState("");
   const [messageEn, setMessageEn] = useState("");
+  const [messageUrgencySelection, setMessageUrgencySelection] = useState<
+    "unset" | "normal" | "high"
+  >("unset");
   const [busy, setBusy] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [savedMessage, setSavedMessage] = useState<string | null>(null);
@@ -68,6 +71,13 @@ export function MaintenanceScheduleForm() {
     setEndTimeLocal(toDateTimeLocalValue(body.item.end_time));
     setMessageJa(body.item.announcement_message_ja ?? "");
     setMessageEn(body.item.announcement_message_en ?? "");
+    if (body.item.message_urgency === "high") {
+      setMessageUrgencySelection("high");
+    } else if (body.item.message_urgency === "normal") {
+      setMessageUrgencySelection("normal");
+    } else {
+      setMessageUrgencySelection("unset");
+    }
   }, [adminTranslations]);
 
   useEffect(() => {
@@ -96,6 +106,8 @@ export function MaintenanceScheduleForm() {
         end_time: endIso,
         announcement_message_ja: messageJa,
         announcement_message_en: messageEn,
+        message_urgency:
+          messageUrgencySelection === "unset" ? null : messageUrgencySelection,
       }),
     });
     const body = (await response.json().catch(() => null)) as
@@ -137,6 +149,33 @@ export function MaintenanceScheduleForm() {
             {adminTranslations("maintenanceEnabled")}
           </Label>
         </div>
+      </div>
+
+      <div className="space-y-1.5 rounded-lg border border-border p-4">
+        <Label htmlFor="maintenance-message-urgency">
+          {adminTranslations("maintenanceMessageUrgencyLabel")}
+        </Label>
+        <select
+          id="maintenance-message-urgency"
+          value={messageUrgencySelection}
+          onChange={(event) =>
+            setMessageUrgencySelection(event.target.value as "unset" | "normal" | "high")
+          }
+          className="border-input bg-background ring-offset-background focus-visible:ring-ring flex h-10 w-full max-w-md rounded-md border px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
+        >
+          <option value="unset">
+            {adminTranslations("maintenanceMessageUrgencyUnset")}
+          </option>
+          <option value="normal">
+            {adminTranslations("maintenanceMessageUrgencyNormal")}
+          </option>
+          <option value="high">
+            {adminTranslations("maintenanceMessageUrgencyHigh")}
+          </option>
+        </select>
+        <p className="text-xs text-muted-foreground">
+          {adminTranslations("maintenanceMessageUrgencyHint")}
+        </p>
       </div>
 
       <div className="grid gap-3 sm:grid-cols-2">

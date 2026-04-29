@@ -30,7 +30,7 @@ export async function GET(request: NextRequest) {
   const { data: scheduleRows, error } = await supabase
     .from("maintenance_schedules")
     .select(
-      "id, is_enabled, start_time, end_time, announcement_message_ja, announcement_message_en, updated_at",
+      "id, is_enabled, start_time, end_time, announcement_message_ja, announcement_message_en, message_urgency, updated_at",
     )
     .order("start_time", { ascending: true })
     .limit(20);

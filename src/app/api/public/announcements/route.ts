@@ -17,10 +17,11 @@ export async function GET() {
   const { data, error } = await supabase
     .from("app_announcements")
     .select(
-      "id, title_ja, title_en, content_ja, content_en, icon_type, priority, expires_at, created_at",
+      "id, title_ja, title_en, content_ja, content_en, icon_type, priority, display_order, expires_at, created_at",
     )
     .eq("is_published", true)
     .or(`expires_at.is.null,expires_at.gt.${nowIsoTimestamp}`)
+    .order("display_order", { ascending: true })
     .order("priority", { ascending: false })
     .order("created_at", { ascending: false })
     .limit(5);

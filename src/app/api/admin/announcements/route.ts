@@ -33,7 +33,10 @@ export async function GET(request: NextRequest) {
 
   const { data, error } = await supabase
     .from("app_announcements")
-    .select("id, title_ja, title_en, content_ja, content_en, icon_type, priority, is_published, expires_at, created_at, updated_at")
+    .select(
+      "id, title_ja, title_en, content_ja, content_en, icon_type, priority, display_order, is_published, expires_at, created_at, updated_at",
+    )
+    .order("display_order", { ascending: true })
     .order("created_at", { ascending: false });
   if (error) {
     console.error("[admin announcements list]:", error);
@@ -77,6 +80,7 @@ export async function POST(request: NextRequest) {
     content_en?: string;
     icon_type?: string;
     priority?: number;
+    display_order?: number;
     is_published?: boolean;
     expires_at?: string | null;
   };
@@ -96,6 +100,11 @@ export async function POST(request: NextRequest) {
   const priority = typeof body.priority === 'number' && body.priority >= 0 && body.priority <= 2
     ? body.priority
     : 0;
+  const displayOrder =
+    typeof body.display_order === "number" &&
+    Number.isFinite(body.display_order)
+      ? Math.max(0, Math.min(999_999, Math.floor(body.display_order)))
+      : 0;
   let expiresAt: string | null = null;
   if (body.expires_at !== undefined && body.expires_at !== null && body.expires_at !== "") {
     const parsedExpiresAt = new Date(body.expires_at);
@@ -114,6 +123,7 @@ export async function POST(request: NextRequest) {
       content_en: body.content_en ?? "",
       icon_type: iconType,
       priority: priority,
+      display_order: displayOrder,
       is_published: body.is_published === true,
       expires_at: expiresAt,
     })
@@ -134,6 +144,7 @@ export async function POST(request: NextRequest) {
         announcement_id: data.id,
         icon_type: iconType,
         priority,
+        display_order: displayOrder,
         is_published: body.is_published === true,
         expires_at: expiresAt,
       },

@@ -46,6 +46,7 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
     content_en?: string;
     icon_type?: string;
     priority?: number;
+    display_order?: number;
     is_published?: boolean;
     expires_at?: string | null;
   };
@@ -67,6 +68,16 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
   }
   if (body.priority !== undefined && typeof body.priority === 'number' && body.priority >= 0 && body.priority <= 2) {
     patch.priority = body.priority;
+  }
+  if (
+    body.display_order !== undefined &&
+    typeof body.display_order === "number" &&
+    Number.isFinite(body.display_order)
+  ) {
+    patch.display_order = Math.max(
+      0,
+      Math.min(999_999, Math.floor(body.display_order)),
+    );
   }
   if (body.is_published !== undefined) patch.is_published = body.is_published;
   if (body.expires_at !== undefined) {

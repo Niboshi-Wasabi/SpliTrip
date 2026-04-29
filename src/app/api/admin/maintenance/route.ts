@@ -10,7 +10,20 @@ type MaintenanceUpdateBody = {
   end_time: string;
   announcement_message_ja: string;
   announcement_message_en: string;
+  message_urgency?: string | null;
 };
+
+function parseMaintenanceMessageUrgency(
+  value: unknown,
+): { urgency: "normal" | "high" | null } | { error: "invalid_message_urgency" } {
+  if (value === undefined || value === null || value === "") {
+    return { urgency: null };
+  }
+  if (value === "normal" || value === "high") {
+    return { urgency: value };
+  }
+  return { error: "invalid_message_urgency" };
+}
 
 async function requireAdmin(
   request: NextRequest,
@@ -77,7 +90,7 @@ export async function GET(request: NextRequest) {
   const { data, error } = await supabase
     .from("maintenance_schedules")
     .select(
-      "id, is_enabled, start_time, end_time, announcement_message_ja, announcement_message_en, updated_at",
+      "id, is_enabled, start_time, end_time, announcement_message_ja, announcement_message_en, message_urgency, updated_at",
     )
     .order("updated_at", { ascending: false })
     .limit(1)
@@ -131,12 +144,18 @@ async function saveMaintenance(request: NextRequest) {
     return NextResponse.json({ ok: false, message: "invalid_time_range" }, { status: 400 });
   }
 
+  const parsedUrgency = parseMaintenanceMessageUrgency(body.message_urgency);
+  if ("error" in parsedUrgency) {
+    return NextResponse.json({ ok: false, message: parsedUrgency.error }, { status: 400 });
+  }
+
   const upsertPayload: Record<string, unknown> = {
     is_enabled: body.is_enabled === true,
     start_time: new Date(startTimestamp).toISOString(),
     end_time: new Date(endTimestamp).toISOString(),
     announcement_message_ja: String(body.announcement_message_ja ?? ""),
     announcement_message_en: String(body.announcement_message_en ?? ""),
+    message_urgency: parsedUrgency.urgency,
   };
   if (typeof body.id === "string" && body.id.length > 0) {
     upsertPayload.id = body.id;
@@ -146,7 +165,7 @@ async function saveMaintenance(request: NextRequest) {
     .from("maintenance_schedules")
     .upsert(upsertPayload, { onConflict: "id" })
     .select(
-      "id, is_enabled, start_time, end_time, announcement_message_ja, announcement_message_en, updated_at",
+      "id, is_enabled, start_time, end_time, announcement_message_ja, announcement_message_en, message_urgency, updated_at",
     )
     .single();
 

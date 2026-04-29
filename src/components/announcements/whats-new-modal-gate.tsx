@@ -21,9 +21,12 @@ export async function WhatsNewModalGate({ locale }: WhatsNewModalGateProps) {
 
   const { data: latestAnnouncement, error: latestAnnouncementError } = await supabase
     .from("app_announcements")
-    .select("id, title_ja, title_en, content_ja, content_en, icon_type, expires_at")
+    .select(
+      "id, title_ja, title_en, content_ja, content_en, icon_type, display_order, expires_at",
+    )
     .eq("is_published", true)
     .or(`expires_at.is.null,expires_at.gt.${new Date().toISOString()}`)
+    .order("display_order", { ascending: true })
     .order("priority", { ascending: false })
     .order("created_at", { ascending: false })
     .limit(1)
