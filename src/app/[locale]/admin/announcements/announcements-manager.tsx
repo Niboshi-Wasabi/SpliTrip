@@ -30,6 +30,7 @@ import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { useAnnouncements } from "@/components/admin/admin-data-provider";
 import { mutate } from "swr";
+import { AnimatePresence, motion } from "framer-motion";
 
 type Row = {
   id: string;
@@ -137,6 +138,7 @@ export function AnnouncementsManager() {
   const [busy, setBusy] = useState(false);
   const [deletingAnnouncementId, setDeletingAnnouncementId] = useState<string | null>(null);
   const [activeTopicTab, setActiveTopicTab] = useState<AnnouncementIconType>("announcement");
+  const [previewModalOpen, setPreviewModalOpen] = useState(false);
 
   const [topicForms, setTopicForms] = useState<TopicFormsState>(() => {
     const initialState = {} as TopicFormsState;
@@ -480,50 +482,95 @@ export function AnnouncementsManager() {
 
           <div className="space-y-3 rounded-lg border border-border bg-card p-4">
             <h2 className="text-sm font-medium">
-              {locale === "en" ? "Preview" : "プレビュー"}
+              {t("announcementPreview")}
             </h2>
-            <div className="space-y-3 rounded-lg border border-border bg-background/70 p-4">
-              <div className="flex items-start gap-3">
-                <TopicIcon className={`mt-0.5 h-5 w-5 ${topicConfig?.color ?? ""}`} />
-                <div className="min-w-0 flex-1 space-y-1">
+            <div className="space-y-4 rounded-lg border border-border bg-background/70 p-4">
+              <div className="space-y-2 rounded-lg border border-border bg-zinc-900/40 p-3">
+                <p className="text-xs uppercase tracking-widest text-muted-foreground">
+                  {t("announcementBannerPreview")}
+                </p>
+                <button
+                  type="button"
+                  className="w-full rounded-md border border-zinc-800 bg-zinc-900/60 px-3 py-2 text-left"
+                  onClick={() => setPreviewModalOpen(true)}
+                >
                   <div className="flex items-center gap-2">
-                    <p className="font-medium leading-tight">
-                      {(formData.title_ja || "").trim() || "（タイトル未入力）"}
-                    </p>
-                    {formData.priority > 0 ? (
-                      <Badge
-                        variant={formData.priority === 2 ? "destructive" : "default"}
-                        className="text-[10px] px-1.5 py-0.5"
-                      >
-                        {formData.priority === 2 ? "緊急" : "高"}
-                      </Badge>
-                    ) : null}
-                    <Badge variant={formData.is_published ? "default" : "secondary"}>
+                    <TopicIcon className={`h-4 w-4 ${topicConfig?.color ?? ""}`} />
+                    <Badge
+                      variant={formData.is_published ? "default" : "secondary"}
+                      className="text-[10px]"
+                    >
                       {formData.is_published
                         ? t("announcementPublishedBadge")
                         : t("announcementDraftBadge")}
                     </Badge>
+                    <p className="truncate text-sm font-medium text-zinc-100">
+                      {(formData.title_ja || "").trim() || t("announcementPreviewUntitled")}
+                    </p>
                   </div>
-                  <p className="text-xs text-muted-foreground">
-                    {(formData.title_en || "").trim() || "No English title"}
-                  </p>
-                  <p className="whitespace-pre-wrap break-words text-sm text-foreground">
-                    {(formData.content_ja || "").trim() || "（本文未入力）"}
-                  </p>
-                  <p className="whitespace-pre-wrap break-words text-xs text-muted-foreground">
-                    {(formData.content_en || "").trim() || "No English content"}
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    {locale === "en" ? "Expiry: " : "公開期限: "}
-                    {formData.expires_at
+                </button>
+              </div>
+
+              <div className="space-y-2 rounded-lg border border-border bg-zinc-950 p-3 text-zinc-100">
+                <p className="text-xs uppercase tracking-widest text-zinc-400">
+                  {t("announcementModalPreview")}
+                </p>
+                <p className="text-base font-semibold leading-tight">
+                  {(formData.title_ja || "").trim() || t("announcementPreviewUntitled")}
+                </p>
+                <p className="text-xs text-zinc-400">
+                  {(formData.title_en || "").trim() || t("announcementPreviewNoEnglishTitle")}
+                </p>
+                <p className="whitespace-pre-wrap break-words text-sm text-zinc-200">
+                  {(formData.content_ja || "").trim() || t("announcementPreviewEmptyBody")}
+                </p>
+                <p className="whitespace-pre-wrap break-words text-xs text-zinc-400">
+                  {(formData.content_en || "").trim() || t("announcementPreviewNoEnglishBody")}
+                </p>
+                <p className="text-xs text-zinc-500">
+                  {t("announcementPreviewExpiry", {
+                    expiry: formData.expires_at
                       ? formatExpiryLabel(new Date(formData.expires_at).toISOString())
-                      : locale === "en"
-                        ? "No expiry"
-                        : "期限なし"}
-                  </p>
-                </div>
+                      : t("announcementPreviewNoExpiry"),
+                  })}
+                </p>
               </div>
             </div>
+
+            <AnimatePresence>
+              {previewModalOpen ? (
+                <motion.div
+                  className="fixed inset-0 z-50 flex items-center justify-center bg-black/45 p-4 backdrop-blur-sm"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                >
+                  <motion.div
+                    className="w-full max-w-lg rounded-xl border border-zinc-800 bg-zinc-950 p-5 text-zinc-100 shadow-2xl"
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 8 }}
+                  >
+                  <div className="mb-3 flex items-center justify-between gap-2">
+                    <p className="text-lg font-semibold leading-tight">
+                      {(formData.title_ja || "").trim() || t("announcementPreviewUntitled")}
+                    </p>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setPreviewModalOpen(false)}
+                    >
+                      {t("announcementClosePreview")}
+                    </Button>
+                  </div>
+                  <p className="whitespace-pre-wrap text-sm text-zinc-300">
+                    {(formData.content_ja || "").trim() || t("announcementPreviewEmptyBody")}
+                  </p>
+                  </motion.div>
+                </motion.div>
+              ) : null}
+            </AnimatePresence>
           </div>
         </div>
 

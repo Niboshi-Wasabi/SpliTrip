@@ -241,6 +241,9 @@
     "actionGrantPro": "PRO 付与",
     "actionRevokePro": "PRO 解除",
     "actionDeleteUser": "ユーザー削除",
+    "actionAnnouncementCreate": "お知らせ作成",
+    "actionAnnouncementUpdate": "お知らせ更新",
+    "actionAnnouncementDelete": "お知らせ削除",
     "noAuditLogs": "表示できる履歴はまだありません。",
     "stepUpTitle": "管理画面の再認証",
     "stepUpDescription": "管理画面に入る前に、ログイン時の二段階認証に加えて、パスキー（生体認証）でもう一度本人確認を行ってください。",
@@ -302,6 +305,16 @@
     "announcementPublishedBadge": "公開中",
     "announcementDraftBadge": "下書き",
     "announcementsPageDescription": "What is New 向けのお知らせを日本語・英語で管理します。",
+    "announcementPreview": "LP表示プレビュー",
+    "announcementBannerPreview": "バナープレビュー",
+    "announcementModalPreview": "モーダルプレビュー",
+    "announcementPreviewUntitled": "（タイトル未入力）",
+    "announcementPreviewNoEnglishTitle": "No English title",
+    "announcementPreviewNoEnglishBody": "No English content",
+    "announcementPreviewEmptyBody": "（本文未入力）",
+    "announcementPreviewNoExpiry": "期限なし",
+    "announcementPreviewExpiry": "公開期限: {expiry}",
+    "announcementClosePreview": "プレビューを閉じる",
     "systemPageDescription": "メンテナンスやバナーなど、再デプロイなしで変更できるシステム設定です。",
     "maintenancePageDescription": "時限メンテナンスの開始・終了時刻と告知文を管理します。",
     "maintenanceLoadError": "メンテナンス設定の取得に失敗しました。",
@@ -927,33 +940,40 @@
       "ctaDashboard": "ダッシュボードへ",
       "note": "※ クレジットカード不要。ログインするだけで始められます"
     },
+    "announcement": {
+      "badge": "WHAT'S NEW",
+      "fallbackTitle": "最新のお知らせ",
+      "fallbackBody": "最新情報があります。内容をご確認ください。",
+      "close": "閉じる",
+      "dismiss": "このお知らせを非表示"
+    },
     "bento": {
       "title": "旅の会計のストレスを、ここで減らす",
       "subtitle": "割り勘・次の会計・送金まで、体験を中心にまとめました。",
       "items": {
         "receiptStorage": {
-          "title": "領収書の保管",
-          "body": "アップロードした領収書は、出費の詳細からいつでも開けます。クラウドに保存してチームで共有します。"
+          "title": "オフライン・インボックス",
+          "body": "電波がなくても写真を撮るだけで一時保存。あとからまとめて仕分けできます。"
         },
         "realtime": {
-          "title": "更新の通知",
-          "body": "他のメンバーが編集すると通知が出ます。画面を開いたまま最新の数字に追従できます。"
+          "title": "楽観的UIで待ち時間ゼロ",
+          "body": "削除や送金済み操作はタップ直後に反映。ネイティブアプリのような手触りです。"
         },
         "nextPayerHint": {
-          "title": "「次、誰が払う？」でもう迷わない",
-          "body": "AIが最適な担当をナビゲート。レジ前の相談や空気づまりを減らします。"
+          "title": "長押し / ホバーで内訳プレビュー",
+          "body": "画面を切り替えずに、誰がいくら負担したかをその場でサクッと確認できます。"
         },
         "roundingPolicies": {
-          "title": "1円単位の気まずさゼロ。柔軟な端数ルール",
-          "body": "割り切れない1円をどう扱うか。公平配分・支払人負担など、仲間内で合わせやすい方針を選べます。"
+          "title": "インライン電卓 & スマート入力",
+          "body": "数式をそのまま入力して自動計算。日付チップで今日/昨日も1タップ入力できます。"
         },
         "oneTapRemittance": {
-          "title": "PayPay等へワンタップ送金",
-          "body": "口座番号を聞き出す手間なし。登録した送金先へ、精算画面からすぐ飛べます。"
+          "title": "リアルタイム為替プレビュー",
+          "body": "USDやEUR入力中でも、すぐに日本円目安を表示。現地会計の判断が速くなります。"
         },
         "dashboardSummary": {
-          "title": "ダッシュボードの概要",
-          "body": "全グループの総支出や件数を一覧で把握。旅行ごとの状況を素早く確認できます。"
+          "title": "ダッシュボードで全体を俯瞰",
+          "body": "総支出・グループ別の状況・未処理レシート件数をまとめて把握できます。"
         }
       }
     },

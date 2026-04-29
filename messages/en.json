@@ -241,6 +241,9 @@
     "actionGrantPro": "Grant PRO",
     "actionRevokePro": "Revoke PRO",
     "actionDeleteUser": "Delete user",
+    "actionAnnouncementCreate": "Create announcement",
+    "actionAnnouncementUpdate": "Update announcement",
+    "actionAnnouncementDelete": "Delete announcement",
     "noAuditLogs": "No records yet.",
     "stepUpTitle": "Verify your identity for admin",
     "stepUpDescription": "In addition to sign-in 2FA, confirm your identity with your passkey (e.g. biometrics) before opening the admin area.",
@@ -302,6 +305,16 @@
     "announcementPublishedBadge": "Live",
     "announcementDraftBadge": "Draft",
     "announcementsPageDescription": "Manage What's New in Japanese and English.",
+    "announcementPreview": "LP preview",
+    "announcementBannerPreview": "Banner preview",
+    "announcementModalPreview": "Modal preview",
+    "announcementPreviewUntitled": "(Untitled)",
+    "announcementPreviewNoEnglishTitle": "No English title",
+    "announcementPreviewNoEnglishBody": "No English content",
+    "announcementPreviewEmptyBody": "(No body yet)",
+    "announcementPreviewNoExpiry": "No expiry",
+    "announcementPreviewExpiry": "Expiry: {expiry}",
+    "announcementClosePreview": "Close preview",
     "systemPageDescription": "Maintenance, banners, and other runtime settings without redeploying.",
     "maintenancePageDescription": "Manage scheduled maintenance windows and bilingual announcement messages.",
     "maintenanceLoadError": "Could not load maintenance settings.",
@@ -927,33 +940,40 @@
       "ctaDashboard": "Go to dashboard",
       "note": "* No credit card required. Sign in and you’re ready."
     },
+    "announcement": {
+      "badge": "WHAT'S NEW",
+      "fallbackTitle": "Latest announcement",
+      "fallbackBody": "There is a new announcement. Please check the details.",
+      "close": "Close",
+      "dismiss": "Hide this announcement"
+    },
     "bento": {
       "title": "Less stress around travel money",
       "subtitle": "Rounding, who pays next, and payouts—organized around how it feels to use.",
       "items": {
         "receiptStorage": {
-          "title": "Receipt files on record",
-          "body": "Uploaded receipts open from expense details anytime. Stored in the cloud for the group."
+          "title": "Offline receipt inbox",
+          "body": "Take a photo even without network and store it instantly. Sort and process receipts later."
         },
         "realtime": {
-          "title": "Update notices",
-          "body": "When someone edits data, you get a heads-up. Stay on the page and follow the latest totals."
+          "title": "Optimistic UI, no waiting",
+          "body": "Delete and settle actions reflect right away. The app feels fast like native."
         },
         "nextPayerHint": {
-          "title": "No more “who pays next?” debate",
-          "body": "AI nudges you toward a fair next payer so the line and the mood keep moving."
+          "title": "Long-press / hover split preview",
+          "body": "Check who owes what without leaving the current screen."
         },
         "roundingPolicies": {
-          "title": "No awkward yen leftovers",
-          "body": "Flexible rounding rules when the split doesn’t land on whole yen—fair share, payer absorbs, and more."
+          "title": "Inline calculator & smart input",
+          "body": "Type formulas directly and let the app resolve them. Date chips make entry one tap."
         },
         "oneTapRemittance": {
-          "title": "One-tap to PayPay and more",
-          "body": "Skip the bank-account back-and-forth. Jump to saved payout links right from settlement."
+          "title": "Live FX preview in JPY",
+          "body": "While entering USD or EUR, instantly see the estimated JPY amount."
         },
         "dashboardSummary": {
-          "title": "Dashboard overview",
-          "body": "See total spend and counts across groups at a glance. Check each trip’s status quickly."
+          "title": "Dashboard-level visibility",
+          "body": "Track total spend, group status, and unprocessed receipt count in one place."
         }
       }
     },

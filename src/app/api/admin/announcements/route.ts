@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAdminStepUpOrJson } from "@/lib/auth/admin-step-up-guard";
 import { createRouteHandlerSupabaseClient } from "@/utils/supabase/route-handler";
+import { createServiceRoleClient } from "@/utils/supabase/service-role";
 
 /**
  * 管理者: 告知一覧（下書き含む） / 新規作成。
@@ -122,5 +123,24 @@ export async function POST(request: NextRequest) {
     console.error("[admin announcements insert]:", error);
     return NextResponse.json({ ok: false, message: "insert_error" }, { status: 500 });
   }
+
+  try {
+    const serviceRoleSupabase = createServiceRoleClient();
+    await serviceRoleSupabase.from("admin_audit_logs").insert({
+      admin_user_id: user.id,
+      target_user_id: null,
+      action: "announcement_create",
+      details: {
+        announcement_id: data.id,
+        icon_type: iconType,
+        priority,
+        is_published: body.is_published === true,
+        expires_at: expiresAt,
+      },
+    });
+  } catch (caughtError) {
+    console.error("[admin announcements audit insert]:", caughtError);
+  }
+
   return NextResponse.json({ ok: true, id: data.id });
 }

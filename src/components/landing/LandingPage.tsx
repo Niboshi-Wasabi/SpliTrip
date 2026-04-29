@@ -28,6 +28,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { LogoMark } from "@/components/logo-mark";
 import { UserAvatarMenu } from "@/components/user-avatar-menu";
+import { PublicAnnouncement } from "@/components/landing/PublicAnnouncement";
 import {
   extractAvatarUrl,
   extractDisplayName,
@@ -229,6 +230,9 @@ export function LandingPage({ initialSession }: LandingPageProps) {
       </header>
 
       <main className="mx-auto flex w-full max-w-6xl flex-col px-4 pb-24 md:px-6">
+        <section className="pt-6">
+          <PublicAnnouncement />
+        </section>
         <motion.section
           className="flex flex-col items-center py-24 text-center md:py-32"
           initial="hidden"

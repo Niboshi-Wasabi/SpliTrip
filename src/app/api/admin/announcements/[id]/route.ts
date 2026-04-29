@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAdminStepUpOrJson } from "@/lib/auth/admin-step-up-guard";
 import { createRouteHandlerSupabaseClient } from "@/utils/supabase/route-handler";
+import { createServiceRoleClient } from "@/utils/supabase/service-role";
 
 type RouteParams = { params: Promise<{ id: string }> };
 
@@ -87,6 +88,22 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
     console.error("[admin announcement update]:", error);
     return NextResponse.json({ ok: false, message: "update_error" }, { status: 500 });
   }
+
+  try {
+    const serviceRoleSupabase = createServiceRoleClient();
+    await serviceRoleSupabase.from("admin_audit_logs").insert({
+      admin_user_id: user.id,
+      target_user_id: null,
+      action: "announcement_update",
+      details: {
+        announcement_id: id,
+        patch,
+      },
+    });
+  } catch (caughtError) {
+    console.error("[admin announcement update audit]:", caughtError);
+  }
+
   return NextResponse.json({ ok: true });
 }
 
@@ -130,5 +147,20 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
   if (!deletedRows || deletedRows.length === 0) {
     return NextResponse.json({ ok: false, message: "not_found" }, { status: 404 });
   }
+
+  try {
+    const serviceRoleSupabase = createServiceRoleClient();
+    await serviceRoleSupabase.from("admin_audit_logs").insert({
+      admin_user_id: user.id,
+      target_user_id: null,
+      action: "announcement_delete",
+      details: {
+        announcement_id: id,
+      },
+    });
+  } catch (caughtError) {
+    console.error("[admin announcement delete audit]:", caughtError);
+  }
+
   return NextResponse.json({ ok: true });
 }

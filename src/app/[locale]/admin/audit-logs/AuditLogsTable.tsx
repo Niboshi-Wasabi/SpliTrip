@@ -54,6 +54,12 @@ export function AuditLogsTable({ logs }: AuditLogsTableProps) {
             {t("actionDeleteUser")}
           </Badge>
         );
+      case "announcement_create":
+        return <Badge variant="default">{t("actionAnnouncementCreate")}</Badge>;
+      case "announcement_update":
+        return <Badge variant="outline">{t("actionAnnouncementUpdate")}</Badge>;
+      case "announcement_delete":
+        return <Badge variant="destructive">{t("actionAnnouncementDelete")}</Badge>;
       default:
         return <Badge variant="outline">{action}</Badge>;
     }
