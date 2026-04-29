@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { SafeMarkdown } from "@/components/markdown/safe-markdown";
 import { Label } from "@/components/ui/label";
 import type { MaintenanceScheduleRow } from "@/lib/maintenance-schedule";
 
@@ -36,6 +37,7 @@ function toIsoOrEmpty(localValue: string): string {
 
 export function MaintenanceScheduleForm() {
   const adminTranslations = useTranslations("Admin");
+  const markdownEditorTranslations = useTranslations("MarkdownEditor");
   const [scheduleId, setScheduleId] = useState<string | null>(null);
   const [isEnabled, setIsEnabled] = useState(false);
   const [startTimeLocal, setStartTimeLocal] = useState("");
@@ -158,25 +160,71 @@ export function MaintenanceScheduleForm() {
         </div>
       </div>
 
-      <div className="space-y-1.5">
-        <Label htmlFor="maintenance-message-ja">{adminTranslations("maintenanceMessageJa")}</Label>
-        <textarea
-          id="maintenance-message-ja"
-          rows={2}
-          className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-          value={messageJa}
-          onChange={(event) => setMessageJa(event.target.value)}
-        />
+      <div className="grid gap-6 lg:grid-cols-2">
+        <div className="space-y-2">
+          <Label htmlFor="maintenance-message-ja">{adminTranslations("maintenanceMessageJa")}</Label>
+          <textarea
+            id="maintenance-message-ja"
+            rows={12}
+            spellCheck={false}
+            className="w-full rounded-md border border-input bg-background px-3 py-2 font-mono text-sm leading-relaxed min-h-[200px]"
+            value={messageJa}
+            onChange={(event) => setMessageJa(event.target.value)}
+            aria-describedby="maintenance-message-ja-hint"
+          />
+          <p id="maintenance-message-ja-hint" className="text-xs text-muted-foreground">
+            {markdownEditorTranslations("hint")}
+          </p>
+          <p className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
+            {markdownEditorTranslations("input")}
+          </p>
+        </div>
+        <div className="flex flex-col gap-2 min-h-[200px]">
+          <span className="text-sm font-medium">{markdownEditorTranslations("preview")}</span>
+          <div className="min-h-[200px] flex-1 overflow-auto rounded-md border border-border bg-muted/30 p-3">
+            {messageJa.trim() ? (
+              <SafeMarkdown
+                markdown={messageJa}
+                className="prose prose-invert prose-sm max-h-[min(50vh,28rem)] max-w-none"
+              />
+            ) : (
+              <p className="text-sm text-muted-foreground">—</p>
+            )}
+          </div>
+        </div>
       </div>
-      <div className="space-y-1.5">
-        <Label htmlFor="maintenance-message-en">{adminTranslations("maintenanceMessageEn")}</Label>
-        <textarea
-          id="maintenance-message-en"
-          rows={2}
-          className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-          value={messageEn}
-          onChange={(event) => setMessageEn(event.target.value)}
-        />
+      <div className="grid gap-6 lg:grid-cols-2">
+        <div className="space-y-2">
+          <Label htmlFor="maintenance-message-en">{adminTranslations("maintenanceMessageEn")}</Label>
+          <textarea
+            id="maintenance-message-en"
+            rows={12}
+            spellCheck={false}
+            className="w-full rounded-md border border-input bg-background px-3 py-2 font-mono text-sm leading-relaxed min-h-[200px]"
+            value={messageEn}
+            onChange={(event) => setMessageEn(event.target.value)}
+            aria-describedby="maintenance-message-en-hint"
+          />
+          <p id="maintenance-message-en-hint" className="text-xs text-muted-foreground">
+            {markdownEditorTranslations("hint")}
+          </p>
+          <p className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
+            {markdownEditorTranslations("input")}
+          </p>
+        </div>
+        <div className="flex flex-col gap-2 min-h-[200px]">
+          <span className="text-sm font-medium">{markdownEditorTranslations("preview")}</span>
+          <div className="min-h-[200px] flex-1 overflow-auto rounded-md border border-border bg-muted/30 p-3">
+            {messageEn.trim() ? (
+              <SafeMarkdown
+                markdown={messageEn}
+                className="prose prose-invert prose-sm max-h-[min(50vh,28rem)] max-w-none"
+              />
+            ) : (
+              <p className="text-sm text-muted-foreground">—</p>
+            )}
+          </div>
+        </div>
       </div>
 
       <Button

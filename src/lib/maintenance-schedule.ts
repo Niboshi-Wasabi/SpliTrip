@@ -1,3 +1,6 @@
+import { createClient } from "@supabase/supabase-js";
+import { getSupabaseEnv } from "@/utils/supabase/env";
+
 export const MAINTENANCE_PRE_NOTICE_MS = 24 * 60 * 60 * 1000;
 
 export type MaintenanceScheduleRow = {
@@ -68,4 +71,34 @@ export function computeMaintenanceScheduleWindowState(
     inPreNoticeWindow,
     inMaintenanceWindow,
   };
+}
+
+/**
+ * `maintenance_schedules` は anon SELECT 可（RLS）。SSR のメンテページで告知文を表示するために使う。
+ * Anon-readable schedule rows for SSR maintenance copy (markdown body).
+ */
+export async function fetchMaintenanceSchedulesForPublicRead(): Promise<
+  MaintenanceScheduleRow[]
+> {
+  const env = getSupabaseEnv();
+  if (!env) {
+    return [];
+  }
+  const supabase = createClient(env.url, env.anonKey, {
+    auth: { persistSession: false, autoRefreshToken: false },
+  });
+  const { data, error } = await supabase
+    .from("maintenance_schedules")
+    .select(
+      "id, is_enabled, start_time, end_time, announcement_message_ja, announcement_message_en, updated_at",
+    )
+    .order("start_time", { ascending: true })
+    .limit(20);
+
+  if (error) {
+    console.error("[fetchMaintenanceSchedulesForPublicRead]:", error);
+    return [];
+  }
+
+  return (data ?? []) as MaintenanceScheduleRow[];
 }

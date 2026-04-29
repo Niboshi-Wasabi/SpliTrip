@@ -296,8 +296,8 @@
     "announcementDeleteConfirm": "Delete this announcement?",
     "announcementTitleJa": "Title (JA)",
     "announcementTitleEn": "Title (EN)",
-    "announcementContentJa": "Content (JA)",
-    "announcementContentEn": "Content (EN)",
+    "announcementContentJa": "Content (Japanese · Markdown)",
+    "announcementContentEn": "Content (English · Markdown)",
     "announcementPublished": "Published",
     "announcementColTitle": "Title",
     "announcementEmpty": "No announcements yet.",
@@ -323,8 +323,8 @@
     "maintenanceEnabled": "Enable scheduled maintenance",
     "maintenanceStartTime": "Start time",
     "maintenanceEndTime": "End time",
-    "maintenanceMessageJa": "Announcement message (JA)",
-    "maintenanceMessageEn": "Announcement message (EN)",
+    "maintenanceMessageJa": "Announcement message (Japanese · Markdown)",
+    "maintenanceMessageEn": "Announcement message (English · Markdown)",
     "maintenanceInvalidRange": "Please enter a valid start/end time range.",
     "maintenanceSaveButton": "Save maintenance settings",
     "systemSettingsLoadError": "Could not load settings.",
@@ -704,6 +704,11 @@
     "supportDescription": "Help cover server costs (Buy me a coffee)",
     "supportCompact": "Support",
     "supportUrlHint": "Set NEXT_PUBLIC_SUPPORT_DEVELOPER_URL to enable the donation link"
+  },
+  "MarkdownEditor": {
+    "input": "Source",
+    "preview": "Preview",
+    "hint": "You can use Markdown: headings (`##`), lists, emphasis (`**bold**`), links (`[label](url)`), and tables (GitHub-flavored)."
   },
   "Maintenance": {
     "pageTitle": "Maintenance | SpliTrip",

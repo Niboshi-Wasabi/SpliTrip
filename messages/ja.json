@@ -296,8 +296,8 @@
     "announcementDeleteConfirm": "このお知らせを削除しますか？",
     "announcementTitleJa": "タイトル（日本語）",
     "announcementTitleEn": "タイトル（英語）",
-    "announcementContentJa": "本文（日本語）",
-    "announcementContentEn": "本文（英語）",
+    "announcementContentJa": "本文（日本語・Markdown）",
+    "announcementContentEn": "本文（英語・Markdown）",
     "announcementPublished": "公開する",
     "announcementColTitle": "タイトル",
     "announcementEmpty": "お知らせはまだありません。",
@@ -323,8 +323,8 @@
     "maintenanceEnabled": "スケジュールメンテナンスを有効化",
     "maintenanceStartTime": "開始日時",
     "maintenanceEndTime": "終了日時",
-    "maintenanceMessageJa": "告知文（日本語）",
-    "maintenanceMessageEn": "告知文（英語）",
+    "maintenanceMessageJa": "告知文（日本語・Markdown）",
+    "maintenanceMessageEn": "告知文（英語・Markdown）",
     "maintenanceInvalidRange": "開始日時と終了日時を正しく入力してください。",
     "maintenanceSaveButton": "メンテナンス設定を保存",
     "systemSettingsLoadError": "設定の取得に失敗しました。",
@@ -704,6 +704,11 @@
     "supportDescription": "サーバー代をサポート（Buy me a coffee）",
     "supportCompact": "開発を支援",
     "supportUrlHint": "寄付リンクは環境変数 NEXT_PUBLIC_SUPPORT_DEVELOPER_URL で有効化できます"
+  },
+  "MarkdownEditor": {
+    "input": "入力",
+    "preview": "プレビュー",
+    "hint": "見出し（##）、リスト、強調（**太字**）、リンク（[表示名](URL)）など、Markdown が利用できます。"
   },
   "Maintenance": {
     "pageTitle": "メンテナンス中 | SpliTrip",

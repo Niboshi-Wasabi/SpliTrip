@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { motion, AnimatePresence } from "framer-motion";
 import { Megaphone, X } from "lucide-react";
+import { SafeMarkdown } from "@/components/markdown/safe-markdown";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import type { AppLocale } from "@/i18n/routing";
@@ -112,9 +113,16 @@ export function PublicAnnouncement() {
                   <X className="h-4 w-4" />
                 </button>
               </div>
-              <p className="whitespace-pre-wrap text-sm leading-relaxed text-zinc-300">
-                {localizedContent || t("fallbackBody")}
-              </p>
+              {localizedContent.trim().length > 0 ? (
+                <SafeMarkdown
+                  markdown={localizedContent}
+                  className="prose prose-sm dark:prose-invert prose-zinc max-w-none text-zinc-300"
+                />
+              ) : (
+                <p className="whitespace-pre-wrap text-sm leading-relaxed text-zinc-300">
+                  {t("fallbackBody")}
+                </p>
+              )}
               <div className="mt-5 flex justify-end gap-2">
                 <Button
                   type="button"

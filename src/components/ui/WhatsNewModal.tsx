@@ -11,6 +11,7 @@ import {
   Wrench,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { SafeMarkdown } from "@/components/markdown/safe-markdown";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
@@ -125,9 +126,16 @@ export function WhatsNewModal({ announcement, defaultOpen }: WhatsNewModalProps)
                 </div>
               </CardHeader>
               <CardContent className="space-y-5">
-                <p className="whitespace-pre-wrap text-sm leading-relaxed text-zinc-300">
-                  {announcement.content || t("fallbackBody")}
-                </p>
+                {(announcement.content || "").trim().length > 0 ? (
+                  <SafeMarkdown
+                    markdown={announcement.content}
+                    className="prose prose-sm dark:prose-invert prose-zinc max-w-none"
+                  />
+                ) : (
+                  <p className="whitespace-pre-wrap text-sm leading-relaxed text-zinc-300">
+                    {t("fallbackBody")}
+                  </p>
+                )}
 
                 {saveError ? (
                   <p className="rounded-md border border-red-900/60 bg-red-950/40 px-3 py-2 text-xs text-red-200">

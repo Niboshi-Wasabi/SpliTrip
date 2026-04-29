@@ -1,6 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
 import { Megaphone } from "lucide-react";
 import { getTranslations } from "next-intl/server";
+import { SafeMarkdown } from "@/components/markdown/safe-markdown";
 import type { AppLocale } from "@/i18n/routing";
 import { getSupabaseEnv } from "@/utils/supabase/env";
 
@@ -95,9 +96,10 @@ export async function PublishedAppAnnouncements({ locale }: Props) {
                       : "無題のお知らせ"}
                 </summary>
                 {row.content && row.content.trim().length > 0 ? (
-                  <p className="mt-2 max-w-[80vw] whitespace-pre-wrap text-sm text-zinc-400 md:max-w-[32rem]">
-                    {row.content}
-                  </p>
+                  <SafeMarkdown
+                    markdown={row.content}
+                    className="prose prose-sm dark:prose-invert prose-zinc mt-2 w-full max-w-[80vw] text-zinc-300 md:max-w-[32rem]"
+                  />
                 ) : null}
               </details>
             </li>
