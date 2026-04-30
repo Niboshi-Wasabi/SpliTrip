@@ -610,6 +610,8 @@
   "ExpenseDetail": {
     "untitled": "(Untitled)",
     "descriptionLabel": "Description",
+    "dateLabel": "Date",
+    "categoryLabel": "Category",
     "descriptionEdit": "Edit description",
     "descriptionSave": "Save",
     "descriptionCancel": "Cancel",

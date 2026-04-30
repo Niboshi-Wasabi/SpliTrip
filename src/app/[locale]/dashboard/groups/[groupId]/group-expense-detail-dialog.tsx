@@ -11,7 +11,11 @@ import { useTranslations } from "next-intl";
 import { Loader2, Trash2 } from "lucide-react";
 import { ExpenseCategoryIcon } from "@/components/expense-category-icon";
 import { broadcastGroupRefresh } from "@/lib/realtime-broadcast";
-import { parseExpenseCategoryId } from "@/lib/expense-categories";
+import {
+  EXPENSE_CATEGORY_IDS,
+  parseExpenseCategoryId,
+  type ExpenseCategoryId,
+} from "@/lib/expense-categories";
 import { formatMoneyByCurrency } from "@/lib/currency-payment-amount";
 import { convertAmount } from "@/utils/exchangeRates";
 import type { ExpenseRowDb, GroupMemberRow } from "@/lib/group-queries";
@@ -160,6 +164,8 @@ export function GroupExpenseDetailDialog({
   const [deleting, setDeleting] = useState(false);
   const [editingDescription, setEditingDescription] = useState(false);
   const [descriptionDraft, setDescriptionDraft] = useState("");
+  const [expenseDateDraft, setExpenseDateDraft] = useState("");
+  const [categoryDraft, setCategoryDraft] = useState<ExpenseCategoryId>("other");
   const [descriptionSaving, setDescriptionSaving] = useState(false);
   const [descriptionError, setDescriptionError] = useState<string | null>(null);
 
@@ -275,6 +281,8 @@ export function GroupExpenseDetailDialog({
       return;
     }
     setDescriptionDraft(expense.description?.trim() ?? "");
+    setExpenseDateDraft(expense.expense_date);
+    setCategoryDraft(parseExpenseCategoryId(expense.category));
     setEditingDescription(false);
     setDescriptionError(null);
     void loadAudit();
@@ -292,6 +300,8 @@ export function GroupExpenseDetailDialog({
       setCommentDraft("");
       setEditingDescription(false);
       setDescriptionDraft("");
+      setExpenseDateDraft("");
+      setCategoryDraft("other");
       setDescriptionError(null);
     }
   }, [open]);
@@ -308,7 +318,11 @@ export function GroupExpenseDetailDialog({
         {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ description: descriptionDraft.trim() }),
+          body: JSON.stringify({
+            description: descriptionDraft.trim(),
+            expense_date: expenseDateDraft,
+            category: categoryDraft,
+          }),
         },
       );
       if (!response.ok) {
@@ -318,6 +332,8 @@ export function GroupExpenseDetailDialog({
       const updatedExpense: ExpenseRowDb = {
         ...expense,
         description: descriptionDraft.trim() || null,
+        expense_date: expenseDateDraft,
+        category: categoryDraft,
       };
       onExpenseUpdated?.(updatedExpense);
       setEditingDescription(false);
@@ -422,6 +438,41 @@ export function GroupExpenseDetailDialog({
             </p>
             {editingDescription ? (
               <div className="space-y-2">
+                <div className="grid gap-2 sm:grid-cols-2">
+                  <div className="space-y-1">
+                    <label className="text-xs text-muted-foreground">
+                      {detailTranslations("dateLabel")}
+                    </label>
+                    <input
+                      type="date"
+                      value={expenseDateDraft}
+                      onChange={(event) => setExpenseDateDraft(event.target.value)}
+                      className="border-input bg-background ring-offset-background focus-visible:ring-ring h-10 w-full rounded-md border px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                      disabled={descriptionSaving}
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-xs text-muted-foreground">
+                      {detailTranslations("categoryLabel")}
+                    </label>
+                    <select
+                      value={categoryDraft}
+                      onChange={(event) =>
+                        setCategoryDraft(
+                          parseExpenseCategoryId(event.target.value),
+                        )
+                      }
+                      className="border-input bg-background ring-offset-background focus-visible:ring-ring h-10 w-full rounded-md border px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                      disabled={descriptionSaving}
+                    >
+                      {EXPENSE_CATEGORY_IDS.map((categoryId) => (
+                        <option key={categoryId} value={categoryId}>
+                          {categoryTranslations(categoryId)}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
                 <textarea
                   value={descriptionDraft}
                   onChange={(event) => setDescriptionDraft(event.target.value)}
@@ -451,6 +502,8 @@ export function GroupExpenseDetailDialog({
                     onClick={() => {
                       setEditingDescription(false);
                       setDescriptionDraft(expense.description?.trim() ?? "");
+                      setExpenseDateDraft(expense.expense_date);
+                      setCategoryDraft(parseExpenseCategoryId(expense.category));
                       setDescriptionError(null);
                     }}
                   >
@@ -466,6 +519,10 @@ export function GroupExpenseDetailDialog({
                 <p className="text-sm">
                   {expense.description?.trim() || detailTranslations("untitled")}
                 </p>
+                <span className="text-xs text-muted-foreground">
+                  {expense.expense_date} ·{" "}
+                  {categoryTranslations(parseExpenseCategoryId(expense.category))}
+                </span>
                 <Button
                   type="button"
                   variant="outline"

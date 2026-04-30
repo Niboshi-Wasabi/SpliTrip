@@ -610,6 +610,8 @@
   "ExpenseDetail": {
     "untitled": "（無題）",
     "descriptionLabel": "内容",
+    "dateLabel": "日付",
+    "categoryLabel": "分類",
     "descriptionEdit": "内容を編集",
     "descriptionSave": "上書き保存",
     "descriptionCancel": "キャンセル",
