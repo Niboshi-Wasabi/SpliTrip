@@ -37,6 +37,7 @@ type RemainderUiKind =
 
 type ItemLine = {
   key: string;
+  name: string;
   amount: string;
   selected: Record<string, boolean>;
 };
@@ -144,6 +145,7 @@ export function GroupExpensePanel({
   const [itemLines, setItemLines] = useState<ItemLine[]>(() => [
     {
       key: crypto.randomUUID(),
+      name: "",
       amount: "",
       selected: Object.fromEntries(members.map((memberRow) => [memberRow.user_id, true])),
     },
@@ -384,6 +386,7 @@ export function GroupExpensePanel({
       ...prev,
       {
         key: crypto.randomUUID(),
+        name: "",
         amount: "",
         selected: Object.fromEntries(members.map((memberRow) => [memberRow.user_id, true])),
       },
@@ -423,6 +426,7 @@ export function GroupExpensePanel({
     setItemLines([
       {
         key: crypto.randomUUID(),
+        name: "",
         amount: "",
         selected: Object.fromEntries(
           members.map((memberRow) => [memberRow.user_id, true]),
@@ -523,6 +527,7 @@ export function GroupExpensePanel({
       }));
     } else if (splitMode === "itemized") {
       base.itemized_lines = itemLines.map((line) => ({
+        name: line.name.trim(),
         amount: Number(line.amount),
         participant_ids: memberIds.filter((id) => line.selected[id]),
       }));
@@ -575,6 +580,9 @@ export function GroupExpensePanel({
         ),
         itemized_sum_mismatch: formTranslations(
           "validationErrors.itemized_sum_mismatch",
+        ),
+        invalid_itemized_lines: formTranslations(
+          "validationErrors.invalid_itemized_lines",
         ),
         invalid_line_amount: formTranslations(
           "validationErrors.invalid_line_amount",
@@ -1041,6 +1049,31 @@ export function GroupExpensePanel({
                 className="rounded-lg border bg-muted/30 p-3 space-y-2"
               >
                 <div className="flex flex-wrap items-end gap-2">
+                  <div className="space-y-1">
+                    <Label className="text-xs">
+                      {formTranslations("itemizedLineName")}
+                    </Label>
+                    <Input
+                      type="text"
+                      maxLength={80}
+                      className="w-48"
+                      value={line.name}
+                      onChange={(changeEvent) =>
+                        setItemLines((previousLines) =>
+                          previousLines.map((lineEntry) =>
+                            lineEntry.key === line.key
+                              ? {
+                                  ...lineEntry,
+                                  name: changeEvent.target.value,
+                                }
+                              : lineEntry,
+                          ),
+                        )
+                      }
+                      disabled={submitting}
+                      placeholder={formTranslations("itemizedLineNamePlaceholder")}
+                    />
+                  </div>
                   <div className="space-y-1">
                     <Label className="text-xs">
                       {formTranslations("itemizedLineAmount")}

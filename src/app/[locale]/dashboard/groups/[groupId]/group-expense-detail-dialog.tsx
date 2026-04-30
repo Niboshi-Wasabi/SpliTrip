@@ -52,6 +52,49 @@ type Props = {
   exchangeRates: Record<string, number> | null;
 };
 
+type ItemizedLineView = {
+  name: string | null;
+  amount: number;
+  participantIds: string[];
+};
+
+function parseItemizedLinesForView(raw: unknown): ItemizedLineView[] {
+  if (!Array.isArray(raw)) {
+    return [];
+  }
+  const parsedLines: ItemizedLineView[] = [];
+  for (const lineValue of raw) {
+    if (lineValue === null || typeof lineValue !== "object") {
+      continue;
+    }
+    const lineRecord = lineValue as {
+      name?: unknown;
+      amount?: unknown;
+      participant_ids?: unknown;
+    };
+    const amount = Number(lineRecord.amount);
+    if (!Number.isFinite(amount) || amount <= 0) {
+      continue;
+    }
+    const participantIds = Array.isArray(lineRecord.participant_ids)
+      ? lineRecord.participant_ids.map((value) => String(value))
+      : [];
+    if (participantIds.length === 0) {
+      continue;
+    }
+    const lineName =
+      typeof lineRecord.name === "string" && lineRecord.name.trim().length > 0
+        ? lineRecord.name.trim()
+        : null;
+    parsedLines.push({
+      name: lineName,
+      amount,
+      participantIds,
+    });
+  }
+  return parsedLines;
+}
+
 function actorLabel(
   actorId: string | null,
   members: GroupMemberRow[],
@@ -120,6 +163,7 @@ export function GroupExpenseDetailDialog({
   const [commentSaving, setCommentSaving] = useState(false);
 
   const expenseCategory = parseExpenseCategoryId(expense?.category);
+  const itemizedLines = parseItemizedLinesForView(expense?.itemized_lines);
 
   const loadComments = useCallback(async () => {
     if (!expense) {
@@ -385,6 +429,35 @@ export function GroupExpenseDetailDialog({
               })}
             </ul>
           </div>
+
+          {itemizedLines.length > 0 ? (
+            <div className="space-y-1">
+              <p className="text-xs font-medium text-muted-foreground">
+                {detailTranslations("itemizedHeading")}
+              </p>
+              <ul className="space-y-1 text-xs text-muted-foreground">
+                {itemizedLines.map((lineEntry, index) => {
+                  const participantNames = lineEntry.participantIds
+                    .map((participantId) => actorLabel(participantId, members))
+                    .join(", ");
+                  return (
+                    <li key={`${lineEntry.name ?? "line"}-${index}`}>
+                      <span className="font-medium text-foreground">
+                        {lineEntry.name ??
+                          detailTranslations("itemizedUntitled", {
+                            index: index + 1,
+                          })}
+                      </span>
+                      {" · "}
+                      {formatMoneyByCurrency(currencyCode, lineEntry.amount)}
+                      {" · "}
+                      {participantNames}
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          ) : null}
 
           {expense.receipt_url ? (
             <div className="space-y-2">

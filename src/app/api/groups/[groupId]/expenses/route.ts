@@ -42,6 +42,54 @@ type ExpenseBody = {
   itemized_lines?: unknown;
 };
 
+type StoredItemizedLine = {
+  name: string | null;
+  amount: number;
+  participant_ids: string[];
+};
+
+function parseStoredItemizedLines(raw: unknown): StoredItemizedLine[] | null {
+  if (!Array.isArray(raw)) {
+    return null;
+  }
+  const parsedLines: StoredItemizedLine[] = [];
+  for (const lineValue of raw) {
+    if (lineValue === null || typeof lineValue !== "object") {
+      return null;
+    }
+    const lineRecord = lineValue as {
+      name?: unknown;
+      amount?: unknown;
+      participant_ids?: unknown;
+    };
+    const lineAmount = Number(lineRecord.amount);
+    if (!Number.isFinite(lineAmount) || lineAmount <= 0) {
+      return null;
+    }
+    const participantIdsRaw = lineRecord.participant_ids;
+    if (!Array.isArray(participantIdsRaw)) {
+      return null;
+    }
+    const participantIds = participantIdsRaw
+      .map((value) => String(value).trim())
+      .filter((value, index, array) => value.length > 0 && array.indexOf(value) === index);
+    if (participantIds.length === 0) {
+      return null;
+    }
+    const rawName =
+      typeof lineRecord.name === "string" ? lineRecord.name.trim() : "";
+    if (rawName.length > 80) {
+      return null;
+    }
+    parsedLines.push({
+      name: rawName.length > 0 ? rawName : null,
+      amount: lineAmount,
+      participant_ids: participantIds,
+    });
+  }
+  return parsedLines;
+}
+
 function fileExtensionForReceiptMime(mime: string): string {
   if (mime === "image/jpeg") return "jpg";
   if (mime === "image/png") return "png";
@@ -173,6 +221,13 @@ export async function POST(request: NextRequest, context: RouteContext) {
   }
 
   const splitRows = built.splitRows;
+  const storedItemizedLines =
+    splitMode === "itemized"
+      ? parseStoredItemizedLines(body.itemized_lines)
+      : null;
+  if (splitMode === "itemized" && storedItemizedLines === null) {
+    return NextResponse.json({ error: "invalid_itemized_lines" }, { status: 400 });
+  }
 
   const splitsJson = splitRows.map((split) => ({
     user_id: split.user_id,
@@ -259,6 +314,25 @@ export async function POST(request: NextRequest, context: RouteContext) {
 
   let receiptUploaded = false;
   let receiptUploadError: string | null = null;
+
+  if (storedItemizedLines !== null) {
+    const { error: itemizedUpdateError } = await supabase
+      .from("group_expenses")
+      .update({ itemized_lines: storedItemizedLines })
+      .eq("id", expenseId)
+      .eq("group_id", groupId);
+    if (itemizedUpdateError) {
+      console.error("[API/Action Error - POST /api/groups/[groupId]/expenses itemized_lines]:", {
+        groupId,
+        expenseId,
+        error: itemizedUpdateError,
+      });
+      return NextResponse.json(
+        { error: "expense_insert_failed", message: INTERNAL_SERVER_ERROR_MESSAGE },
+        { status: 500 },
+      );
+    }
+  }
 
   if (receiptBase64Raw.length > 0) {
     if (!ALLOWED_RECEIPT_MIMES.has(receiptMimeRaw)) {

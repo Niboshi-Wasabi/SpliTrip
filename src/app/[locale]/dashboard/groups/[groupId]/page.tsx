@@ -320,6 +320,7 @@ export default async function GroupDetailPage({ params, searchParams }: PageProp
               description: expenseRow.description,
               amount: Number(expenseRow.amount),
               category: parseExpenseCategoryId(expenseRow.category),
+              itemized_lines: expenseRow.itemized_lines,
               expense_splits: (expenseRow.expense_splits ?? []).map(
                 (splitRow) => ({
                   user_id: splitRow.user_id,

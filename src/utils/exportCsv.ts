@@ -56,6 +56,7 @@ export type CsvExpenseInput = {
   category?: string;
   /** Optional display label for the category column (UI language). / カテゴリ列の表示名（UI 言語） */
   categoryLabel?: string;
+  itemized_lines?: unknown;
   expense_splits: { user_id: string; amount: number }[] | null;
 };
 
@@ -166,6 +167,48 @@ function buildSplitsSummaryCsv(
   return parts.join("; ");
 }
 
+function buildItemizedSummaryText(
+  locale: string,
+  currencyCode: string,
+  members: CsvMember[],
+  rawItemizedLines: unknown,
+): string {
+  if (!Array.isArray(rawItemizedLines) || rawItemizedLines.length === 0) {
+    return "";
+  }
+  const chunks: string[] = [];
+  for (const rawLine of rawItemizedLines) {
+    if (rawLine === null || typeof rawLine !== "object") {
+      continue;
+    }
+    const lineRecord = rawLine as {
+      name?: unknown;
+      amount?: unknown;
+      participant_ids?: unknown;
+    };
+    const lineAmount = Number(lineRecord.amount);
+    if (!Number.isFinite(lineAmount) || lineAmount <= 0) {
+      continue;
+    }
+    const participantIds = Array.isArray(lineRecord.participant_ids)
+      ? lineRecord.participant_ids.map((value) => String(value))
+      : [];
+    if (participantIds.length === 0) {
+      continue;
+    }
+    const lineName =
+      typeof lineRecord.name === "string" && lineRecord.name.trim().length > 0
+        ? lineRecord.name.trim()
+        : "item";
+    const readableParticipants = participantIds
+      .map((participantId) => displayNameForUserId(members, participantId))
+      .join("/");
+    const lineMoney = formatMoneyByCurrency(currencyCode, lineAmount, locale);
+    chunks.push(`${lineName}: ${lineMoney} (${readableParticipants})`);
+  }
+  return chunks.join(" | ");
+}
+
 /**
  * Sanitize group title for use inside a filename segment.
  * ファイル名の一部として使えるようグループ名を整形する。
@@ -271,6 +314,16 @@ export function buildGroupExportCsv(options: BuildGroupExportCsvOptions): string
       expenseRow.description?.trim() !== ""
         ? (expenseRow.description ?? "").trim()
         : "—";
+    const itemizedSummary = buildItemizedSummaryText(
+      locale,
+      currencyCode,
+      members,
+      expenseRow.itemized_lines,
+    );
+    const descriptionCell =
+      itemizedSummary.length > 0
+        ? `${description} / ${itemizedSummary}`
+        : description;
     const splitsText = buildSplitsSummaryCsv(
       locale,
       currencyCode,
@@ -282,7 +335,7 @@ export function buildGroupExportCsv(options: BuildGroupExportCsvOptions): string
         escapeCsvField(expenseRow.expense_date),
         escapeCsvField(payerName),
         escapeCsvField(categoryCell),
-        escapeCsvField(description),
+        escapeCsvField(descriptionCell),
         escapeCsvField(
           amountNumericForCsv(currencyCode, expenseRow.amount),
         ),

@@ -49,6 +49,7 @@ export type ExpenseRowDb = {
   receipt_url: string | null;
   expense_splits: SplitRow[] | null;
   split_type?: string | null;
+  itemized_lines?: unknown;
 };
 
 export type ExpenseAuditLogRow = {
@@ -265,6 +266,7 @@ export async function fetchGroupDetailForUser(
       category,
       receipt_url,
       split_type,
+      itemized_lines,
       expense_splits ( user_id, amount, ratio )
     `,
     )
