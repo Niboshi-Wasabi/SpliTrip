@@ -15,6 +15,8 @@ type Props = {
   members: GroupMemberRow[];
   currencyCode: string;
   exchangeRates: Record<string, number> | null;
+  groupPeriodStartDate: string | null;
+  groupPeriodEndDate: string | null;
 };
 
 export function GroupReceiptStickyEntry({
@@ -24,6 +26,8 @@ export function GroupReceiptStickyEntry({
   members,
   currencyCode,
   exchangeRates,
+  groupPeriodStartDate,
+  groupPeriodEndDate,
 }: Props) {
   const receiptInboxTranslations = useTranslations("ReceiptInbox");
   const router = useRouter();
@@ -114,6 +118,8 @@ export function GroupReceiptStickyEntry({
           currencyCode={currencyCode}
           exchangeRates={exchangeRates}
           currentUserId={currentUserId}
+          groupPeriodStartDate={groupPeriodStartDate}
+          groupPeriodEndDate={groupPeriodEndDate}
           onExpenseSaved={handleExpenseSaved}
         />
       </div>

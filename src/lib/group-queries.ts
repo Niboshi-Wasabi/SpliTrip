@@ -18,6 +18,8 @@ export type GroupRow = {
   created_by: string;
   created_at: string;
   invite_token: string;
+  period_start_date?: string | null;
+  period_end_date?: string | null;
   /** Read-only share token for `/groups/[id]/shared` (optional until migration applied). */
   public_share_token?: string;
 };
@@ -106,7 +108,7 @@ export async function listGroupsForUser(
 
   const { data: groups, error: groupsError } = await supabase
     .from("groups")
-    .select("id, name, currency_code, created_by, created_at, invite_token")
+    .select("id, name, currency_code, created_by, created_at, invite_token, period_start_date, period_end_date")
     .in("id", distinctGroupIds);
 
   if (groupsError) {
@@ -150,7 +152,7 @@ export async function fetchGroupDetailForUser(
   const { data: group, error: groupError } = await supabase
     .from("groups")
     .select(
-      "id, name, currency_code, created_by, created_at, invite_token, public_share_token",
+      "id, name, currency_code, created_by, created_at, invite_token, period_start_date, period_end_date, public_share_token",
     )
     .eq("id", groupId)
     .maybeSingle();

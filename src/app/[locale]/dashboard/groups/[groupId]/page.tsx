@@ -253,8 +253,18 @@ export default async function GroupDetailPage({ params, searchParams }: PageProp
             <GroupNameForm
               groupId={groupId}
               initialName={group.name}
+              initialPeriodStartDate={group.period_start_date ?? null}
+              initialPeriodEndDate={group.period_end_date ?? null}
               canEdit={currentUserCanEditGroupName}
             />
+            <p className="mt-1 text-xs text-muted-foreground">
+              {group.period_start_date && group.period_end_date
+                ? groupDetailTranslations("groupPeriodValue", {
+                    start: group.period_start_date,
+                    end: group.period_end_date,
+                  })
+                : groupDetailTranslations("groupPeriodUnset")}
+            </p>
             <div className="mt-1.5 flex items-center gap-2">
               <p className="text-xs text-muted-foreground">
                 {groupDetailTranslations("memberLine", {
@@ -353,6 +363,8 @@ export default async function GroupDetailPage({ params, searchParams }: PageProp
                 members={members}
                 currencyCode={group.currency_code}
                 exchangeRates={exchangeRates}
+                groupPeriodStartDate={group.period_start_date ?? null}
+                groupPeriodEndDate={group.period_end_date ?? null}
               />
             ) : (
               <GroupExpensePanel
@@ -361,6 +373,8 @@ export default async function GroupDetailPage({ params, searchParams }: PageProp
                 currencyCode={group.currency_code}
                 exchangeRates={exchangeRates}
                 currentUserId={user.id}
+                groupPeriodStartDate={group.period_start_date ?? null}
+                groupPeriodEndDate={group.period_end_date ?? null}
               />
             )}
           </div>

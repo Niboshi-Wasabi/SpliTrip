@@ -60,8 +60,24 @@ type Props = {
   exchangeRates: Record<string, number> | null;
   /** Logged-in user (for 「自分のみ」 in itemized participant selection). */
   currentUserId: string;
+  groupPeriodStartDate: string | null;
+  groupPeriodEndDate: string | null;
   onExpenseSaved?: () => void | Promise<void>;
 };
+
+function clampDateWithinRange(
+  dateValue: string,
+  minDate: string | null,
+  maxDate: string | null,
+): string {
+  if (minDate && dateValue < minDate) {
+    return minDate;
+  }
+  if (maxDate && dateValue > maxDate) {
+    return maxDate;
+  }
+  return dateValue;
+}
 
 function localDateInputString(referenceDate: Date): string {
   const year = referenceDate.getFullYear();
@@ -104,6 +120,8 @@ export function GroupExpensePanel({
   currencyCode,
   exchangeRates,
   currentUserId,
+  groupPeriodStartDate,
+  groupPeriodEndDate,
   onExpenseSaved,
 }: Props) {
   const router = useRouter();
@@ -118,7 +136,11 @@ export function GroupExpensePanel({
   const [amount, setAmount] = useState("");
   const [description, setDescription] = useState("");
   const [expenseDate, setExpenseDate] = useState(() =>
-    localDateInputString(new Date()),
+    clampDateWithinRange(
+      localDateInputString(new Date()),
+      groupPeriodStartDate,
+      groupPeriodEndDate,
+    ),
   );
   const [splitMode, setSplitMode] = useState<SplitMode>("equal");
   const [remainderKind, setRemainderKind] =
@@ -317,11 +339,21 @@ export function GroupExpensePanel({
     formTranslations,
   ]);
 
+  const todayDateString = localDateInputString(new Date());
+  const hideQuickDateButtons =
+    groupPeriodEndDate !== null && groupPeriodEndDate < todayDateString;
+
   function applyExpenseDateFromDaysAgo(daysAgo: number) {
     const referenceDate = new Date();
     referenceDate.setHours(12, 0, 0, 0);
     referenceDate.setDate(referenceDate.getDate() - daysAgo);
-    setExpenseDate(localDateInputString(referenceDate));
+    setExpenseDate(
+      clampDateWithinRange(
+        localDateInputString(referenceDate),
+        groupPeriodStartDate,
+        groupPeriodEndDate,
+      ),
+    );
   }
 
   function handleAmountInputBlur() {
@@ -473,6 +505,19 @@ export function GroupExpensePanel({
 
     if (!payerId) {
       setError(formTranslations("clientSelectPayer"));
+      return;
+    }
+
+    if (
+      (groupPeriodStartDate && expenseDate < groupPeriodStartDate) ||
+      (groupPeriodEndDate && expenseDate > groupPeriodEndDate)
+    ) {
+      setError(
+        formTranslations("clientDateOutOfGroupPeriod", {
+          start: groupPeriodStartDate ?? "",
+          end: groupPeriodEndDate ?? "",
+        }),
+      );
       return;
     }
 
@@ -726,38 +771,40 @@ export function GroupExpensePanel({
 
       <div className="space-y-2">
         <Label htmlFor="edate">{formTranslations("dateLabel")}</Label>
-        <div className="flex flex-wrap gap-2">
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            className="min-h-[40px] shrink-0 px-3 md:min-h-8"
-            disabled={submitting}
-            onClick={() => applyExpenseDateFromDaysAgo(0)}
-          >
-            {formTranslations("dateChipToday")}
-          </Button>
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            className="min-h-[40px] shrink-0 px-3 md:min-h-8"
-            disabled={submitting}
-            onClick={() => applyExpenseDateFromDaysAgo(1)}
-          >
-            {formTranslations("dateChipYesterday")}
-          </Button>
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            className="min-h-[40px] shrink-0 px-3 md:min-h-8"
-            disabled={submitting}
-            onClick={() => applyExpenseDateFromDaysAgo(2)}
-          >
-            {formTranslations("dateChipTwoDaysAgo")}
-          </Button>
-        </div>
+        {!hideQuickDateButtons ? (
+          <div className="flex flex-wrap gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              className="min-h-[40px] shrink-0 px-3 md:min-h-8"
+              disabled={submitting}
+              onClick={() => applyExpenseDateFromDaysAgo(0)}
+            >
+              {formTranslations("dateChipToday")}
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              className="min-h-[40px] shrink-0 px-3 md:min-h-8"
+              disabled={submitting}
+              onClick={() => applyExpenseDateFromDaysAgo(1)}
+            >
+              {formTranslations("dateChipYesterday")}
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              className="min-h-[40px] shrink-0 px-3 md:min-h-8"
+              disabled={submitting}
+              onClick={() => applyExpenseDateFromDaysAgo(2)}
+            >
+              {formTranslations("dateChipTwoDaysAgo")}
+            </Button>
+          </div>
+        ) : null}
         <Input
           id="edate"
           type="date"
@@ -765,7 +812,17 @@ export function GroupExpensePanel({
           onChange={(changeEvent) => setExpenseDate(changeEvent.target.value)}
           disabled={submitting}
           className="min-h-[44px] md:min-h-8"
+          min={groupPeriodStartDate ?? undefined}
+          max={groupPeriodEndDate ?? undefined}
         />
+        {groupPeriodStartDate && groupPeriodEndDate ? (
+          <p className="text-xs text-muted-foreground">
+            {formTranslations("dateRangeHint", {
+              start: groupPeriodStartDate,
+              end: groupPeriodEndDate,
+            })}
+          </p>
+        ) : null}
       </div>
 
       <fieldset className="space-y-2">

@@ -59,6 +59,32 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
     return NextResponse.json({ error: "empty_patch" }, { status: 400 });
   }
 
+  if (typeof patch.expense_date === "string") {
+    const { data: groupRow, error: groupError } = await supabase
+      .from("groups")
+      .select("period_start_date, period_end_date")
+      .eq("id", groupId)
+      .maybeSingle();
+    if (groupError) {
+      console.error(
+        "[API/Action Error - PATCH /api/groups/[groupId]/expenses/[expenseId] group period]:",
+        groupError,
+      );
+      return NextResponse.json({ error: "update_failed" }, { status: 500 });
+    }
+    const periodStartDate = groupRow?.period_start_date ?? null;
+    const periodEndDate = groupRow?.period_end_date ?? null;
+    if (
+      (periodStartDate && patch.expense_date < periodStartDate) ||
+      (periodEndDate && patch.expense_date > periodEndDate)
+    ) {
+      return NextResponse.json(
+        { error: "expense_date_out_of_group_period" },
+        { status: 400 },
+      );
+    }
+  }
+
   const { data: updatedRows, error: updateError } = await supabase
     .from("group_expenses")
     .update(patch)

@@ -62,13 +62,34 @@ export async function PATCH(request: Request, context: RouteContext) {
     return NextResponse.json({ error: "invalid_json" }, { status: 400 });
   }
 
-  const body = parsed as { name?: unknown };
+  const body = parsed as {
+    name?: unknown;
+    period_start_date?: unknown;
+    period_end_date?: unknown;
+  };
   const trimmedName = String(body.name ?? "").trim();
   if (trimmedName.length === 0) {
     return NextResponse.json({ error: "name_required" }, { status: 400 });
   }
   if (trimmedName.length > 100) {
     return NextResponse.json({ error: "name_too_long" }, { status: 400 });
+  }
+
+  const startDateRaw =
+    typeof body.period_start_date === "string"
+      ? body.period_start_date.trim()
+      : "";
+  const endDateRaw =
+    typeof body.period_end_date === "string"
+      ? body.period_end_date.trim()
+      : "";
+  const bothPeriodBlank = startDateRaw.length === 0 && endDateRaw.length === 0;
+  const bothPeriodFilled = startDateRaw.length > 0 && endDateRaw.length > 0;
+  if (!bothPeriodBlank && !bothPeriodFilled) {
+    return NextResponse.json({ error: "period_required_pair" }, { status: 400 });
+  }
+  if (bothPeriodFilled && startDateRaw > endDateRaw) {
+    return NextResponse.json({ error: "period_invalid_range" }, { status: 400 });
   }
 
   const membershipResponse = await supabase
@@ -100,9 +121,13 @@ export async function PATCH(request: Request, context: RouteContext) {
 
   const updateResponse = await supabase
     .from("groups")
-    .update({ name: trimmedName })
+    .update({
+      name: trimmedName,
+      period_start_date: bothPeriodFilled ? startDateRaw : null,
+      period_end_date: bothPeriodFilled ? endDateRaw : null,
+    })
     .eq("id", groupId)
-    .select("id, name")
+    .select("id, name, period_start_date, period_end_date")
     .maybeSingle();
 
   if (updateResponse.error) {

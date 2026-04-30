@@ -11,18 +11,30 @@ const GROUP_NAME_MAX_LENGTH = 100;
 type GroupNameFormProps = {
   groupId: string;
   initialName: string;
+  initialPeriodStartDate: string | null;
+  initialPeriodEndDate: string | null;
   canEdit: boolean;
 };
 
 export function GroupNameForm({
   groupId,
   initialName,
+  initialPeriodStartDate,
+  initialPeriodEndDate,
   canEdit,
 }: GroupNameFormProps) {
   const translations = useTranslations("GroupDetail");
   const [editing, setEditing] = useState(false);
   const [committedGroupName, setCommittedGroupName] = useState(initialName);
+  const [committedPeriodStartDate, setCommittedPeriodStartDate] = useState(
+    initialPeriodStartDate ?? "",
+  );
+  const [committedPeriodEndDate, setCommittedPeriodEndDate] = useState(
+    initialPeriodEndDate ?? "",
+  );
   const [groupName, setGroupName] = useState(initialName);
+  const [periodStartDate, setPeriodStartDate] = useState(initialPeriodStartDate ?? "");
+  const [periodEndDate, setPeriodEndDate] = useState(initialPeriodEndDate ?? "");
   const [saving, setSaving] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -48,12 +60,20 @@ export function GroupNameForm({
       const response = await fetch(`/api/groups/${groupId}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: trimmedGroupName }),
+        body: JSON.stringify({
+          name: trimmedGroupName,
+          period_start_date: periodStartDate,
+          period_end_date: periodEndDate,
+        }),
       });
 
       const responseBody = (await response.json().catch(() => ({}))) as {
         error?: string;
-        group?: { name?: string };
+        group?: {
+          name?: string;
+          period_start_date?: string | null;
+          period_end_date?: string | null;
+        };
       };
 
       if (!response.ok) {
@@ -63,6 +83,14 @@ export function GroupNameForm({
         }
         if (responseBody.error === "name_too_long") {
           setErrorMessage(translations("groupNameTooLong"));
+          return;
+        }
+        if (responseBody.error === "period_required_pair") {
+          setErrorMessage(translations("groupPeriodRequiredPair"));
+          return;
+        }
+        if (responseBody.error === "period_invalid_range") {
+          setErrorMessage(translations("groupPeriodInvalidRange"));
           return;
         }
         setErrorMessage(translations("groupNameSaveError"));
@@ -75,6 +103,12 @@ export function GroupNameForm({
           : trimmedGroupName;
       setCommittedGroupName(nextName);
       setGroupName(nextName);
+      const nextPeriodStartDate = responseBody.group?.period_start_date ?? "";
+      const nextPeriodEndDate = responseBody.group?.period_end_date ?? "";
+      setCommittedPeriodStartDate(nextPeriodStartDate);
+      setCommittedPeriodEndDate(nextPeriodEndDate);
+      setPeriodStartDate(nextPeriodStartDate);
+      setPeriodEndDate(nextPeriodEndDate);
       setEditing(false);
     } finally {
       setSaving(false);
@@ -127,11 +161,35 @@ export function GroupNameForm({
             onClick={() => {
               setEditing(false);
               setGroupName(committedGroupName);
+              setPeriodStartDate(committedPeriodStartDate);
+              setPeriodEndDate(committedPeriodEndDate);
               setErrorMessage(null);
             }}
           >
             {translations("cancelGroupName")}
           </Button>
+        </div>
+      </div>
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+        <div className="space-y-1">
+          <p className="text-xs text-muted-foreground">{translations("groupPeriodStartLabel")}</p>
+          <Input
+            type="date"
+            value={periodStartDate}
+            onChange={(changeEvent) => setPeriodStartDate(changeEvent.target.value)}
+            disabled={saving}
+            className="h-9"
+          />
+        </div>
+        <div className="space-y-1">
+          <p className="text-xs text-muted-foreground">{translations("groupPeriodEndLabel")}</p>
+          <Input
+            type="date"
+            value={periodEndDate}
+            onChange={(changeEvent) => setPeriodEndDate(changeEvent.target.value)}
+            disabled={saving}
+            className="h-9"
+          />
         </div>
       </div>
       {errorMessage ? (

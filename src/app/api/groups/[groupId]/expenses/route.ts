@@ -204,6 +204,14 @@ export async function POST(request: NextRequest, context: RouteContext) {
 
   const dateStr =
     expense_date.length > 0 ? expense_date : new Date().toISOString().slice(0, 10);
+  const groupPeriodStartDate = detail.data.group.period_start_date ?? null;
+  const groupPeriodEndDate = detail.data.group.period_end_date ?? null;
+  if (
+    (groupPeriodStartDate && dateStr < groupPeriodStartDate) ||
+    (groupPeriodEndDate && dateStr > groupPeriodEndDate)
+  ) {
+    return NextResponse.json({ error: "expense_date_out_of_group_period" }, { status: 400 });
+  }
 
   const built = buildExpenseSplitRows({
     splitMode,
