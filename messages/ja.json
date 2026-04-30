@@ -609,6 +609,11 @@
   },
   "ExpenseDetail": {
     "untitled": "（無題）",
+    "descriptionLabel": "内容",
+    "descriptionEdit": "内容を編集",
+    "descriptionSave": "上書き保存",
+    "descriptionCancel": "キャンセル",
+    "descriptionSaveError": "内容の保存に失敗しました。",
     "payerLabel": "支払った人",
     "receiptHeading": "領収書",
     "receiptLoading": "画像を読み込み中…",

@@ -417,6 +417,14 @@ export function GroupExpenseList({
             setDeleteToastMessage(null);
           }, 1800);
         }}
+        onExpenseUpdated={(updatedExpense) => {
+          setVisibleExpenses((previousExpenses) =>
+            previousExpenses.map((expenseRow) =>
+              expenseRow.id === updatedExpense.id ? updatedExpense : expenseRow,
+            ),
+          );
+          setSelectedExpense(updatedExpense);
+        }}
         members={members}
         currencyCode={currencyCode}
         exchangeRates={exchangeRates}

@@ -47,6 +47,7 @@ type Props = {
   onOpenChange: (open: boolean) => void;
   onExpenseDeletedOptimistic?: (expense: ExpenseRowDb) => void;
   onExpenseDeleteRollback?: (expense: ExpenseRowDb) => void;
+  onExpenseUpdated?: (expense: ExpenseRowDb) => void;
   members: GroupMemberRow[];
   currencyCode: string;
   exchangeRates: Record<string, number> | null;
@@ -137,6 +138,7 @@ export function GroupExpenseDetailDialog({
   onOpenChange,
   onExpenseDeletedOptimistic,
   onExpenseDeleteRollback,
+  onExpenseUpdated,
   members,
   currencyCode,
   exchangeRates,
@@ -156,6 +158,10 @@ export function GroupExpenseDetailDialog({
   const [receiptError, setReceiptError] = useState<string | null>(null);
 
   const [deleting, setDeleting] = useState(false);
+  const [editingDescription, setEditingDescription] = useState(false);
+  const [descriptionDraft, setDescriptionDraft] = useState("");
+  const [descriptionSaving, setDescriptionSaving] = useState(false);
+  const [descriptionError, setDescriptionError] = useState<string | null>(null);
 
   const [commentItems, setCommentItems] = useState<ExpenseCommentRow[]>([]);
   const [commentsLoading, setCommentsLoading] = useState(false);
@@ -268,6 +274,9 @@ export function GroupExpenseDetailDialog({
     if (!open || !expense) {
       return;
     }
+    setDescriptionDraft(expense.description?.trim() ?? "");
+    setEditingDescription(false);
+    setDescriptionError(null);
     void loadAudit();
     void loadReceipt();
     void loadComments();
@@ -281,8 +290,44 @@ export function GroupExpenseDetailDialog({
       setAuditError(null);
       setCommentItems([]);
       setCommentDraft("");
+      setEditingDescription(false);
+      setDescriptionDraft("");
+      setDescriptionError(null);
     }
   }, [open]);
+
+  async function handleSaveDescription(): Promise<void> {
+    if (!expense) {
+      return;
+    }
+    setDescriptionSaving(true);
+    setDescriptionError(null);
+    try {
+      const response = await fetch(
+        `/api/groups/${groupId}/expenses/${expense.id}`,
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ description: descriptionDraft.trim() }),
+        },
+      );
+      if (!response.ok) {
+        setDescriptionError(detailTranslations("descriptionSaveError"));
+        return;
+      }
+      const updatedExpense: ExpenseRowDb = {
+        ...expense,
+        description: descriptionDraft.trim() || null,
+      };
+      onExpenseUpdated?.(updatedExpense);
+      setEditingDescription(false);
+      broadcastGroupRefresh(groupId);
+      router.refresh();
+      await loadAudit();
+    } finally {
+      setDescriptionSaving(false);
+    }
+  }
 
   async function handleDelete(): Promise<void> {
     if (!expense) {
@@ -371,6 +416,72 @@ export function GroupExpenseDetailDialog({
         </DialogHeader>
 
         <div className="space-y-3 text-sm">
+          <div className="space-y-1 rounded-md border border-border bg-muted/20 p-2.5">
+            <p className="text-xs font-medium text-muted-foreground">
+              {detailTranslations("descriptionLabel")}
+            </p>
+            {editingDescription ? (
+              <div className="space-y-2">
+                <textarea
+                  value={descriptionDraft}
+                  onChange={(event) => setDescriptionDraft(event.target.value)}
+                  className="border-input bg-background ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring min-h-[72px] w-full rounded-md border px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                  maxLength={120}
+                  disabled={descriptionSaving}
+                />
+                <div className="flex flex-wrap gap-2">
+                  <Button
+                    type="button"
+                    size="sm"
+                    className="min-h-[40px] md:min-h-9"
+                    disabled={descriptionSaving}
+                    onClick={() => void handleSaveDescription()}
+                  >
+                    {descriptionSaving ? (
+                      <Loader2 className="mr-1.5 h-4 w-4 animate-spin" />
+                    ) : null}
+                    {detailTranslations("descriptionSave")}
+                  </Button>
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="ghost"
+                    className="min-h-[40px] md:min-h-9"
+                    disabled={descriptionSaving}
+                    onClick={() => {
+                      setEditingDescription(false);
+                      setDescriptionDraft(expense.description?.trim() ?? "");
+                      setDescriptionError(null);
+                    }}
+                  >
+                    {detailTranslations("descriptionCancel")}
+                  </Button>
+                </div>
+                {descriptionError ? (
+                  <p className="text-xs text-destructive">{descriptionError}</p>
+                ) : null}
+              </div>
+            ) : (
+              <div className="flex flex-wrap items-center gap-2">
+                <p className="text-sm">
+                  {expense.description?.trim() || detailTranslations("untitled")}
+                </p>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="min-h-[36px] md:min-h-8"
+                  onClick={() => {
+                    setEditingDescription(true);
+                    setDescriptionDraft(expense.description?.trim() ?? "");
+                  }}
+                >
+                  {detailTranslations("descriptionEdit")}
+                </Button>
+              </div>
+            )}
+          </div>
+
           <div className="flex flex-wrap items-center gap-2 text-muted-foreground">
             <span>{categoryTranslations(expenseCategory)}</span>
             <span>·</span>

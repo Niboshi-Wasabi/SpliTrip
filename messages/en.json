@@ -609,6 +609,11 @@
   },
   "ExpenseDetail": {
     "untitled": "(Untitled)",
+    "descriptionLabel": "Description",
+    "descriptionEdit": "Edit description",
+    "descriptionSave": "Save",
+    "descriptionCancel": "Cancel",
+    "descriptionSaveError": "Could not save the description.",
     "payerLabel": "Who paid",
     "receiptHeading": "Receipt",
     "receiptLoading": "Loading image…",
