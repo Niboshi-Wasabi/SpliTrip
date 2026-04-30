@@ -143,15 +143,6 @@ export default async function SettingsPage({ params }: PageProps) {
         </Card>
         <Card>
           <CardHeader>
-            <CardTitle>{t("twoFactorTitle")}</CardTitle>
-            <CardDescription>{t("twoFactorDescription")}</CardDescription>
-          </CardHeader>
-          <CardContent>
-            {/* <TwoFactorSettingsForm /> 2FA廃止により削除 */}
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader>
             <CardTitle>{t("paymentTitleBilingual")}</CardTitle>
             <CardDescription>{t("paymentDescription")}</CardDescription>
           </CardHeader>

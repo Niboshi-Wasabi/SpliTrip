@@ -44,6 +44,7 @@ import { GroupExpenseList } from "./group-expense-list";
 import { fetchExchangeRates } from "@/utils/exchangeRates";
 import { PromoBanner } from "@/components/ads/PromoBanner";
 import { GroupReceiptStickyEntry } from "./group-receipt-sticky-entry";
+import { GroupNameForm } from "./group-name-form";
 
 export const dynamic = "force-dynamic";
 
@@ -99,6 +100,7 @@ export default async function GroupDetailPage({ params, searchParams }: PageProp
   );
   const currentDisplayName =
     currentMember?.display_name ?? (locale === "ja" ? "ユーザー" : "User");
+  const currentUserCanEditGroupName = currentMember?.role === "owner";
   const totalGroupExpense = expenses.reduce(
     (sum, expense) => sum + Number(expense.amount),
     0,
@@ -248,7 +250,11 @@ export default async function GroupDetailPage({ params, searchParams }: PageProp
             </Link>
 
             <div className="min-w-0 flex-1">
-            <h1 className="text-lg font-bold text-foreground">{group.name}</h1>
+            <GroupNameForm
+              groupId={groupId}
+              initialName={group.name}
+              canEdit={currentUserCanEditGroupName}
+            />
             <div className="mt-1.5 flex items-center gap-2">
               <p className="text-xs text-muted-foreground">
                 {groupDetailTranslations("memberLine", {
@@ -268,11 +274,17 @@ export default async function GroupDetailPage({ params, searchParams }: PageProp
                 ))}
               </div>
             </div>
-            <div className="mt-3">
-              <GroupInviteButton
-                invitePath={invitePath}
-                groupName={group.name}
-              />
+            <div className="mt-3 flex flex-wrap items-center gap-2">
+              <GroupInviteButton invitePath={invitePath} groupName={group.name} />
+              <Link
+                href="/settings"
+                className={cn(
+                  buttonVariants({ variant: "outline", size: "sm" }),
+                  "min-h-[44px] md:min-h-0",
+                )}
+              >
+                {groupDetailTranslations("openSettings")}
+              </Link>
             </div>
             </div>
             <div className="hidden md:block">

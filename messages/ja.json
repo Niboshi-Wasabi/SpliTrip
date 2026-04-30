@@ -641,6 +641,13 @@
   "GroupDetail": {
     "backDashboard": "ダッシュボード",
     "memberLine": "{currency} · メンバー {count} 人",
+    "openSettings": "設定",
+    "editGroupName": "グループ名を編集",
+    "saveGroupName": "保存",
+    "cancelGroupName": "キャンセル",
+    "groupNameRequired": "グループ名を入力してください。",
+    "groupNameTooLong": "グループ名は100文字以内で入力してください。",
+    "groupNameSaveError": "グループ名の更新に失敗しました。",
     "expensesCardTitle": "登録済みの出費",
     "expensesCardDescription": "わけ方の入った一覧",
     "settlementCardTitle": "送金のしかた（送金回数を少なくする）",

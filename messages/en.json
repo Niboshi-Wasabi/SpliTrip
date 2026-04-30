@@ -641,6 +641,13 @@
   "GroupDetail": {
     "backDashboard": "Dashboard",
     "memberLine": "{currency} · {count} members",
+    "openSettings": "Settings",
+    "editGroupName": "Edit group name",
+    "saveGroupName": "Save",
+    "cancelGroupName": "Cancel",
+    "groupNameRequired": "Please enter a group name.",
+    "groupNameTooLong": "Group name must be 100 characters or less.",
+    "groupNameSaveError": "Could not update the group name.",
     "expensesCardTitle": "Recorded expenses",
     "expensesCardDescription": "List with how the bill was split",
     "settlementCardTitle": "Who pays whom (fewer transfers)",

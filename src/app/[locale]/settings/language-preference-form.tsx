@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { LOCALE_DISPLAY_OPTIONS } from "@/lib/i18n/locale-display-options";
 import { withLocalePrefix } from "@/lib/i18n/localized-paths";
 import { markLocaleChosenByUser } from "@/lib/i18n/device-locale-bootstrap-storage";
+import { useRouter } from "@/i18n/navigation";
 import type { AppLocale } from "@/i18n/routing";
 
 type Props = {
@@ -21,6 +22,7 @@ type Props = {
 
 export function LanguagePreferenceForm({ initialLanguage }: Props) {
   const activeLocale = useLocale();
+  const router = useRouter();
   const translations = useTranslations("Settings");
   const [language, setLanguage] = useState<AppLocale>(initialLanguage);
   const [message, setMessage] = useState<string | null>(null);
@@ -40,7 +42,7 @@ export function LanguagePreferenceForm({ initialLanguage }: Props) {
         const target = withLocalePrefix(language, "/settings");
         const currentLocale = activeLocale as AppLocale;
         if (target !== withLocalePrefix(currentLocale, "/settings")) {
-          window.location.assign(target);
+          router.replace("/settings", { locale: language });
           return;
         }
         setMessage(translations("saved"));
