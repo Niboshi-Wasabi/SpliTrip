@@ -9,7 +9,6 @@ import {
   computeMaintenanceScheduleWindowState,
   type MaintenanceScheduleRow,
 } from "@/lib/maintenance-schedule";
-import { stripMarkdownForPlainDisplay } from "@/lib/strip-markdown-for-plain-display";
 
 type MaintenanceStatusResponse = {
   ok: boolean;
@@ -82,20 +81,6 @@ export function MaintenanceScheduleGuard() {
     router.replace("/maintenance", { locale });
   }, [data?.shouldRedirectToMaintenance, locale, normalizedPathname, router]);
 
-  const announcementRawText = useMemo(() => {
-    if (!data?.schedule) {
-      return "";
-    }
-    return locale === "ja"
-      ? data.schedule.announcement_message_ja
-      : data.schedule.announcement_message_en;
-  }, [data?.schedule, locale]);
-
-  const announcementPlainText = useMemo(
-    () => stripMarkdownForPlainDisplay(announcementRawText).trim(),
-    [announcementRawText],
-  );
-
   if (!data?.schedule || !windowState.inPreNoticeWindow || !data.shouldShowPreNoticeBanner) {
     return null;
   }
@@ -117,11 +102,6 @@ export function MaintenanceScheduleGuard() {
     >
       <div className="font-semibold">{maintenanceTranslations("scheduledNoticeTitle")}</div>
       <div>{periodLeadText}</div>
-      {announcementPlainText.length > 0 ? (
-        <div className="whitespace-pre-wrap text-left md:text-center">
-          {announcementPlainText}
-        </div>
-      ) : null}
     </div>
   );
 }
