@@ -790,7 +790,7 @@
     "tryAgain": "トップを再読み込み",
     "announcementLabel": "サービスお知らせ",
     "scheduledNoticeTitle": "メンテナンス予定",
-    "scheduledNoticeBody": "{period} の期間、サービスが一時停止します。{message}"
+    "scheduledNoticeLead": "{period} の期間、サービスが一時停止します。"
   },
   "Premium": {
     "modalTitle": "SpliTrip PROにアップグレード",

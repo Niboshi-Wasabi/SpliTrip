@@ -790,7 +790,7 @@
     "tryAgain": "Retry from home",
     "announcementLabel": "Notice",
     "scheduledNoticeTitle": "Scheduled maintenance",
-    "scheduledNoticeBody": "Service will be unavailable during {period}. {message}"
+    "scheduledNoticeLead": "Service will be unavailable during {period}."
   },
   "Premium": {
     "modalTitle": "Upgrade to SpliTrip PRO",

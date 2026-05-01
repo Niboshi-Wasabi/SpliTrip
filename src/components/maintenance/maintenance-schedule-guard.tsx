@@ -9,6 +9,7 @@ import {
   computeMaintenanceScheduleWindowState,
   type MaintenanceScheduleRow,
 } from "@/lib/maintenance-schedule";
+import { stripMarkdownForPlainDisplay } from "@/lib/strip-markdown-for-plain-display";
 
 type MaintenanceStatusResponse = {
   ok: boolean;
@@ -81,7 +82,7 @@ export function MaintenanceScheduleGuard() {
     router.replace("/maintenance", { locale });
   }, [data?.shouldRedirectToMaintenance, locale, normalizedPathname, router]);
 
-  const activeMessage = useMemo(() => {
+  const announcementRawText = useMemo(() => {
     if (!data?.schedule) {
       return "";
     }
@@ -89,6 +90,11 @@ export function MaintenanceScheduleGuard() {
       ? data.schedule.announcement_message_ja
       : data.schedule.announcement_message_en;
   }, [data?.schedule, locale]);
+
+  const announcementPlainText = useMemo(
+    () => stripMarkdownForPlainDisplay(announcementRawText).trim(),
+    [announcementRawText],
+  );
 
   if (!data?.schedule || !windowState.inPreNoticeWindow || !data.shouldShowPreNoticeBanner) {
     return null;
@@ -100,18 +106,22 @@ export function MaintenanceScheduleGuard() {
     data.schedule.end_time,
   );
 
+  const periodLeadText = maintenanceTranslations("scheduledNoticeLead", {
+    period: localizedWindowText,
+  });
+
   return (
     <div
       role="status"
       className="border-b border-amber-200 bg-amber-50 px-4 py-2.5 text-center text-sm leading-snug text-amber-950 dark:border-amber-900/60 dark:bg-amber-950/35 dark:text-amber-100"
     >
-      <span className="font-semibold">{maintenanceTranslations("scheduledNoticeTitle")}</span>
-      <span className="mx-1">
-        {maintenanceTranslations("scheduledNoticeBody", {
-          period: localizedWindowText,
-          message: activeMessage,
-        })}
-      </span>
+      <div className="font-semibold">{maintenanceTranslations("scheduledNoticeTitle")}</div>
+      <div>{periodLeadText}</div>
+      {announcementPlainText.length > 0 ? (
+        <div className="whitespace-pre-wrap text-left md:text-center">
+          {announcementPlainText}
+        </div>
+      ) : null}
     </div>
   );
 }
