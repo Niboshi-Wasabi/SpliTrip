@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { Loader2, Pencil } from "lucide-react";
@@ -11,30 +12,19 @@ const GROUP_NAME_MAX_LENGTH = 100;
 type GroupNameFormProps = {
   groupId: string;
   initialName: string;
-  initialPeriodStartDate: string | null;
-  initialPeriodEndDate: string | null;
   canEdit: boolean;
 };
 
 export function GroupNameForm({
   groupId,
   initialName,
-  initialPeriodStartDate,
-  initialPeriodEndDate,
   canEdit,
 }: GroupNameFormProps) {
+  const router = useRouter();
   const translations = useTranslations("GroupDetail");
   const [editing, setEditing] = useState(false);
   const [committedGroupName, setCommittedGroupName] = useState(initialName);
-  const [committedPeriodStartDate, setCommittedPeriodStartDate] = useState(
-    initialPeriodStartDate ?? "",
-  );
-  const [committedPeriodEndDate, setCommittedPeriodEndDate] = useState(
-    initialPeriodEndDate ?? "",
-  );
   const [groupName, setGroupName] = useState(initialName);
-  const [periodStartDate, setPeriodStartDate] = useState(initialPeriodStartDate ?? "");
-  const [periodEndDate, setPeriodEndDate] = useState(initialPeriodEndDate ?? "");
   const [saving, setSaving] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -60,19 +50,13 @@ export function GroupNameForm({
       const response = await fetch(`/api/groups/${groupId}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: trimmedGroupName,
-          period_start_date: periodStartDate,
-          period_end_date: periodEndDate,
-        }),
+        body: JSON.stringify({ name: trimmedGroupName }),
       });
 
       const responseBody = (await response.json().catch(() => ({}))) as {
         error?: string;
         group?: {
           name?: string;
-          period_start_date?: string | null;
-          period_end_date?: string | null;
         };
       };
 
@@ -85,14 +69,6 @@ export function GroupNameForm({
           setErrorMessage(translations("groupNameTooLong"));
           return;
         }
-        if (responseBody.error === "period_required_pair") {
-          setErrorMessage(translations("groupPeriodRequiredPair"));
-          return;
-        }
-        if (responseBody.error === "period_invalid_range") {
-          setErrorMessage(translations("groupPeriodInvalidRange"));
-          return;
-        }
         setErrorMessage(translations("groupNameSaveError"));
         return;
       }
@@ -103,13 +79,8 @@ export function GroupNameForm({
           : trimmedGroupName;
       setCommittedGroupName(nextName);
       setGroupName(nextName);
-      const nextPeriodStartDate = responseBody.group?.period_start_date ?? "";
-      const nextPeriodEndDate = responseBody.group?.period_end_date ?? "";
-      setCommittedPeriodStartDate(nextPeriodStartDate);
-      setCommittedPeriodEndDate(nextPeriodEndDate);
-      setPeriodStartDate(nextPeriodStartDate);
-      setPeriodEndDate(nextPeriodEndDate);
       setEditing(false);
+      router.refresh();
     } finally {
       setSaving(false);
     }
@@ -123,7 +94,7 @@ export function GroupNameForm({
           type="button"
           size="sm"
           variant="ghost"
-          className="h-8 px-2"
+          className="min-h-[44px] shrink-0 px-2 md:min-h-0"
           onClick={() => setEditing(true)}
         >
           <Pencil className="mr-1 h-3.5 w-3.5" />
@@ -143,10 +114,11 @@ export function GroupNameForm({
           disabled={saving}
           className="h-9 max-w-sm"
         />
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <Button
             type="button"
             size="sm"
+            className="min-h-[44px] md:min-h-9"
             disabled={saving}
             onClick={() => void handleSave()}
           >
@@ -157,39 +129,16 @@ export function GroupNameForm({
             type="button"
             size="sm"
             variant="ghost"
+            className="min-h-[44px] md:min-h-9"
             disabled={saving}
             onClick={() => {
               setEditing(false);
               setGroupName(committedGroupName);
-              setPeriodStartDate(committedPeriodStartDate);
-              setPeriodEndDate(committedPeriodEndDate);
               setErrorMessage(null);
             }}
           >
             {translations("cancelGroupName")}
           </Button>
-        </div>
-      </div>
-      <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
-        <div className="space-y-1">
-          <p className="text-xs text-muted-foreground">{translations("groupPeriodStartLabel")}</p>
-          <Input
-            type="date"
-            value={periodStartDate}
-            onChange={(changeEvent) => setPeriodStartDate(changeEvent.target.value)}
-            disabled={saving}
-            className="h-9"
-          />
-        </div>
-        <div className="space-y-1">
-          <p className="text-xs text-muted-foreground">{translations("groupPeriodEndLabel")}</p>
-          <Input
-            type="date"
-            value={periodEndDate}
-            onChange={(changeEvent) => setPeriodEndDate(changeEvent.target.value)}
-            disabled={saving}
-            className="h-9"
-          />
         </div>
       </div>
       {errorMessage ? (

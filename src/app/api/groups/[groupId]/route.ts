@@ -67,29 +67,78 @@ export async function PATCH(request: Request, context: RouteContext) {
     period_start_date?: unknown;
     period_end_date?: unknown;
   };
-  const trimmedName = String(body.name ?? "").trim();
-  if (trimmedName.length === 0) {
-    return NextResponse.json({ error: "name_required" }, { status: 400 });
-  }
-  if (trimmedName.length > 100) {
-    return NextResponse.json({ error: "name_too_long" }, { status: 400 });
+
+  const nameProvided = Object.prototype.hasOwnProperty.call(body, "name");
+  const periodStartProvided = Object.prototype.hasOwnProperty.call(
+    body,
+    "period_start_date",
+  );
+  const periodEndProvided = Object.prototype.hasOwnProperty.call(
+    body,
+    "period_end_date",
+  );
+
+  if (periodStartProvided !== periodEndProvided) {
+    return NextResponse.json({ error: "period_both_required" }, { status: 400 });
   }
 
-  const startDateRaw =
-    typeof body.period_start_date === "string"
-      ? body.period_start_date.trim()
-      : "";
-  const endDateRaw =
-    typeof body.period_end_date === "string"
-      ? body.period_end_date.trim()
-      : "";
-  const bothPeriodBlank = startDateRaw.length === 0 && endDateRaw.length === 0;
-  const bothPeriodFilled = startDateRaw.length > 0 && endDateRaw.length > 0;
-  if (!bothPeriodBlank && !bothPeriodFilled) {
-    return NextResponse.json({ error: "period_required_pair" }, { status: 400 });
+  let trimmedNameForUpdate: string | undefined;
+  if (nameProvided) {
+    const trimmedName = String(body.name ?? "").trim();
+    if (trimmedName.length === 0) {
+      return NextResponse.json({ error: "name_required" }, { status: 400 });
+    }
+    if (trimmedName.length > 100) {
+      return NextResponse.json({ error: "name_too_long" }, { status: 400 });
+    }
+    trimmedNameForUpdate = trimmedName;
   }
-  if (bothPeriodFilled && startDateRaw > endDateRaw) {
-    return NextResponse.json({ error: "period_invalid_range" }, { status: 400 });
+
+  let periodStartForUpdate: string | null | undefined;
+  let periodEndForUpdate: string | null | undefined;
+  if (periodStartProvided && periodEndProvided) {
+    const startDateRaw =
+      typeof body.period_start_date === "string"
+        ? body.period_start_date.trim()
+        : "";
+    const endDateRaw =
+      typeof body.period_end_date === "string"
+        ? body.period_end_date.trim()
+        : "";
+    const bothPeriodBlank =
+      startDateRaw.length === 0 && endDateRaw.length === 0;
+    const bothPeriodFilled =
+      startDateRaw.length > 0 && endDateRaw.length > 0;
+    if (!bothPeriodBlank && !bothPeriodFilled) {
+      return NextResponse.json(
+        { error: "period_required_pair" },
+        { status: 400 },
+      );
+    }
+    if (bothPeriodFilled && startDateRaw > endDateRaw) {
+      return NextResponse.json({ error: "period_invalid_range" }, { status: 400 });
+    }
+    periodStartForUpdate = bothPeriodFilled ? startDateRaw : null;
+    periodEndForUpdate = bothPeriodFilled ? endDateRaw : null;
+  }
+
+  if (!trimmedNameForUpdate && periodStartForUpdate === undefined) {
+    return NextResponse.json({ error: "empty_patch" }, { status: 400 });
+  }
+
+  type GroupUpdatePayload = {
+    name?: string;
+    period_start_date?: string | null;
+    period_end_date?: string | null;
+  };
+
+  const updatePayload: GroupUpdatePayload = {};
+  if (trimmedNameForUpdate !== undefined) {
+    updatePayload.name = trimmedNameForUpdate;
+  }
+  if (periodStartForUpdate !== undefined && periodEndForUpdate !== undefined) {
+    updatePayload.period_start_date = periodStartForUpdate;
+    updatePayload.period_end_date = periodEndForUpdate;
   }
 
   const membershipResponse = await supabase
@@ -119,13 +168,7 @@ export async function PATCH(request: Request, context: RouteContext) {
     return NextResponse.json({ error: "owner_only" }, { status: 403 });
   }
 
-  const updateResponse = await supabase
-    .from("groups")
-    .update({
-      name: trimmedName,
-      period_start_date: bothPeriodFilled ? startDateRaw : null,
-      period_end_date: bothPeriodFilled ? endDateRaw : null,
-    })
+  const updateResponse = await supabase.from("groups").update(updatePayload)
     .eq("id", groupId)
     .select("id, name, period_start_date, period_end_date")
     .maybeSingle();
