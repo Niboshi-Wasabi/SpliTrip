@@ -20,6 +20,7 @@ import { OptimizedLink } from "@/components/common/optimized-link";
 const HIDDEN_PATHS = [
   "/",
   "/login",
+  "/login/staff",
   "/terms",
   "/privacy",
   "/onboarding",

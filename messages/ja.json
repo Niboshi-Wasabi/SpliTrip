@@ -4,6 +4,9 @@
     "tagline": "グループ旅行の精算をシンプルに。",
     "title": "ログイン",
     "description": "SNSまたはメールでログインして精算を始める",
+    "staffLoginPageTitle": "管理者ログイン | SpliTrip",
+    "staffLoginTitle": "管理者ログイン",
+    "staffLoginDescription": "メンテナンス中でも、管理者アカウントでログインできます。一般のログインはトップから行ってください。",
     "supabaseNotConfigured": "Supabase の接続情報が未設定です。プロジェクト直下の .env.local に NEXT_PUBLIC_SUPABASE_URL と NEXT_PUBLIC_SUPABASE_ANON_KEY を設定し、開発サーバーを再起動してください。",
     "googleLogin": "Googleでログイン",
     "lineLogin": "LINEでログイン",
@@ -800,7 +803,9 @@
     "tryAgain": "トップを再読み込み",
     "announcementLabel": "サービスお知らせ",
     "scheduledNoticeTitle": "メンテナンス予定",
-    "scheduledNoticeLead": "{period} の期間、サービスが一時停止します。"
+    "scheduledNoticeLead": "{period} の期間、サービスが一時停止します。",
+    "adminLoginLead": "サービス管理者の方",
+    "adminLoginLink": "管理者ログインへ"
   },
   "Premium": {
     "modalTitle": "SpliTrip PROにアップグレード",

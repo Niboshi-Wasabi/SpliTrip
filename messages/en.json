@@ -4,6 +4,9 @@
     "tagline": "Split trip expenses, simply.",
     "title": "Sign in",
     "description": "Sign in with Google, LINE, or email to start.",
+    "staffLoginPageTitle": "Admin sign-in | SpliTrip",
+    "staffLoginTitle": "Admin sign-in",
+    "staffLoginDescription": "During maintenance, you can still sign in with an admin account. For normal sign-in, use the home page.",
     "supabaseNotConfigured": "Supabase is not configured. Set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY in .env.local at the project root, then restart the dev server.",
     "googleLogin": "Continue with Google",
     "lineLogin": "Continue with LINE",
@@ -800,7 +803,9 @@
     "tryAgain": "Retry from home",
     "announcementLabel": "Notice",
     "scheduledNoticeTitle": "Scheduled maintenance",
-    "scheduledNoticeLead": "Service will be unavailable during {period}."
+    "scheduledNoticeLead": "Service will be unavailable during {period}.",
+    "adminLoginLead": "Site administrators",
+    "adminLoginLink": "Admin sign-in"
   },
   "Premium": {
     "modalTitle": "Upgrade to SpliTrip PRO",

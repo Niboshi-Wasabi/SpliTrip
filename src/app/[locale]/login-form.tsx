@@ -94,7 +94,12 @@ const PROVIDER_CONFIG: {
   },
 ];
 
-export function LoginForm() {
+type LoginFormProps = {
+  /** メンテ中でもプロキシを通過する `/login/staff` 用。管理者向けの説明を出す。 */
+  staffMaintenanceEntry?: boolean;
+};
+
+export function LoginForm({ staffMaintenanceEntry = false }: LoginFormProps) {
   const locale = useLocale();
   const translations = useTranslations("Login");
   const searchParams = useSearchParams();
@@ -280,8 +285,16 @@ export function LoginForm() {
 
       <Card className="w-full max-w-md shadow-xl">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl">{translations("title")}</CardTitle>
-          <CardDescription>{translations("description")}</CardDescription>
+          <CardTitle className="text-2xl">
+            {staffMaintenanceEntry
+              ? translations("staffLoginTitle")
+              : translations("title")}
+          </CardTitle>
+          <CardDescription>
+            {staffMaintenanceEntry
+              ? translations("staffLoginDescription")
+              : translations("description")}
+          </CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col gap-3">
           {!supabaseReady && (

@@ -68,15 +68,29 @@ export default async function MaintenancePage({ params }: PageProps) {
             {translations("body")}
           </p>
         )}
-        <Link
-          href="/"
-          className={cn(
-            buttonVariants({ variant: "default", size: "lg" }),
-            "mt-8 min-h-[44px] w-full",
-          )}
-        >
-          {translations("tryAgain")}
-        </Link>
+        <div className="mt-8 flex w-full flex-col gap-3">
+          <Link
+            href="/"
+            className={cn(
+              buttonVariants({ variant: "default", size: "lg" }),
+              "min-h-[44px] w-full",
+            )}
+          >
+            {translations("tryAgain")}
+          </Link>
+          <div className="rounded-lg border border-border bg-muted/40 px-4 py-3 text-left text-sm text-muted-foreground">
+            <p className="font-medium text-foreground">{translations("adminLoginLead")}</p>
+            <Link
+              href="/login/staff"
+              className={cn(
+                buttonVariants({ variant: "outline", size: "lg" }),
+                "mt-3 min-h-[44px] w-full",
+              )}
+            >
+              {translations("adminLoginLink")}
+            </Link>
+          </div>
+        </div>
       </div>
     </div>
   );

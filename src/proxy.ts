@@ -10,6 +10,7 @@ import { applyAccessBasedLocaleHint } from "./lib/i18n/infer-locale-from-access"
 import { SPLITRIP_REQUEST_PATHNAME_HEADER_NAME } from "./lib/i18n/splitrip-request-headers";
 import { applyProfilePreferredLocaleCookie } from "./lib/i18n/profile-locale-cookie";
 import { isMaintenanceModeEnabledForRequest } from "./lib/maintenance";
+import { pathnameIsStaffAdminLoginPath } from "./lib/maintenance-staff-login-path";
 import { finalizeSupabaseSession } from "./utils/supabase/middleware";
 import { getSupabaseEnv } from "./utils/supabase/env";
 
@@ -54,6 +55,9 @@ function pathnameAllowedDuringMaintenance(pathname: string): boolean {
     return true;
   }
   if (pathnameIsStatusPath(pathname)) {
+    return true;
+  }
+  if (pathnameIsStaffAdminLoginPath(pathname)) {
     return true;
   }
   return false;

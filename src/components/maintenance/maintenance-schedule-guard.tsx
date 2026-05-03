@@ -9,6 +9,7 @@ import {
   computeMaintenanceScheduleWindowState,
   type MaintenanceScheduleRow,
 } from "@/lib/maintenance-schedule";
+import { pathnameIsStaffAdminLoginPath } from "@/lib/maintenance-staff-login-path";
 
 type MaintenanceStatusResponse = {
   ok: boolean;
@@ -76,6 +77,9 @@ export function MaintenanceScheduleGuard() {
       return;
     }
     if (normalizedPathname.startsWith("/admin")) {
+      return;
+    }
+    if (pathnameIsStaffAdminLoginPath(pathname)) {
       return;
     }
     router.replace("/maintenance", { locale });

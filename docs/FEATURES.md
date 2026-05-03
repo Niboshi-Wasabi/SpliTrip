@@ -34,7 +34,7 @@
 
 | 項目 | 内容 |
 |------|------|
-| **全画面メンテ** | `MAINTENANCE_MODE` または `NEXT_PUBLIC_MAINTENANCE_MODE` を `true` / `1` / `yes` にすると、`src/proxy.ts` が **OAuth 用 `/auth/*` 通過後**に一般ページを **`/maintenance` または `/{locale}/maintenance`** へ **302 リダイレクト**。メンテページは `messages` の `Maintenance` 名前空間。`robots`: noindex。 |
+| **全画面メンテ** | `MAINTENANCE_MODE` または `NEXT_PUBLIC_MAINTENANCE_MODE` を `true` / `1` / `yes` にすると、`src/proxy.ts` が **OAuth 用 `/auth/*` 通過後**に一般ページを **`/maintenance` または `/{locale}/maintenance`** へ **302 リダイレクト**。メンテページは `messages` の `Maintenance` 名前空間。`robots`: noindex。**未ログインの管理者**がメンテ中に OAuth できるよう、**`/{locale}/login/staff`**（`localePrefix: as-needed` では既定ロケール時 **`/login/staff`**）を **`pathnameAllowedDuringMaintenance`** と **`MaintenanceScheduleGuard`** の両方で **一般メンテ誘導の対象外**にしている。メンテ画面から **`/login/staff`** への導線あり。ログイン済み管理者は従来どおり全画面メンテをバイパス。 |
 | **ミドルウェア対象外** | `matcher` により **`/api/*` は `proxy` 未実行**（API・Webhook は従来どおり。監視用 **`GET /api/health`** は常時 200 JSON）。 |
 | **事前告知バナー** | `NEXT_PUBLIC_MAINTENANCE_ANNOUNCEMENT` に任意の一文を入れると、**メンテモードの有無に関わらず** `[locale]/layout` 上部にアンバー帯で表示（本文は環境変数のまま。ラベルは i18n）。加えて `maintenance_schedules` を参照する `MaintenanceScheduleGuard` が、開始24時間前から時限バナーを表示。 |
 | **システムステータス** | `system_status` にコンポーネント別の状態と `updated_at` を保存。パブリック **`/{locale}/status`** と **`GET /api/public/system-status`** で表示（`messages.Status` はラベル・サマリー文言）。運営は **`GET /api/admin/status`** と **`PUT /api/admin/status`** で一括更新、更新は **`admin_audit_logs`** に `system_status_update` で記録。全画面メンテ時も **Proxy が `/status`（および `/{locale}/status`）を通過**させる。サイトフッター（`AppSiteFooter`）から導線。 |
@@ -50,7 +50,7 @@
 | **Google ログイン** | OAuth（PKCE）。`/auth/callback` でコード交換・セッション確立。 |
 | **Google One Tap** | 未ログイン LP（`/[locale]`）で `https://accounts.google.com/gsi/client` を読み込み、右上プロンプトからワンタップ認証。`response.credential` を `supabase.auth.signInWithIdToken({ provider: 'google', token })` に渡してセッション化し、成功時は `/{locale}/dashboard` へ遷移。`NEXT_PUBLIC_GOOGLE_CLIENT_ID` が必須。 |
 | **LINE ログイン** | `/api/auth/line` → LINE → `/api/auth/callback/line` → サービスロール＋`verifyOtp` 相当でセッション確立。 |
-| **メール/パスワード認証** | ログイン画面（`/[locale]/login`）と招待ゲート（`/[locale]/join/[token]`）で `supabase.auth.signUp({ email, password })` / `supabase.auth.signInWithPassword({ email, password })` / `supabase.auth.resetPasswordForEmail(email)` を利用可能。UI は「ログイン / アカウント作成」の切替と Forgot Password 導線を持つ。 |
+| **メール/パスワード認証** | ログイン画面（`/[locale]/login`）と招待ゲート（`/[locale]/join/[token]`）で `supabase.auth.signUp({ email, password })` / `supabase.auth.signInWithPassword({ email, password })` / `supabase.auth.resetPasswordForEmail(email)` を利用可能。UI は「ログイン / アカウント作成」の切替と Forgot Password 導線を持つ。**管理者専用ログイン**はメンテ中も利用できる **`/[locale]/login/staff`**（`LoginForm` の `staffMaintenanceEntry`）。 |
 | **二段階認証（WebAuthn）** | **必須フローではない（当面オフ）**。ミドルウェアの 2FA 未完了リダイレクトは **無効化**（`src/utils/supabase/middleware.ts` 内の該当ブロックはコメントアウト）。`/{locale}/auth/2fa` は **旧URL互換**として `next` 等へ即リダイレクトするのみ。WebAuthn / バックアップ用 **Route Handler・DB スキーマ（`user_webauthn_credentials` 等）は存続**するが、ログイン直後の強制 2FA は行わない。`getWebAuthnRpId`（`src/lib/auth/two-factor.ts`）は **リクエスト origin の hostname** を `rpId` に使う（`localhost` / `127.0.0.1` はそのまま）。PWA: `AppPerformanceEnhancer` が `public/service-worker.js` を `'/service-worker.js'` で登録（旧 `'/sw.js'` は解除）。 |
 | **2FA 復旧** | 初回登録時にバックアップコードを発行する API・DB ロジックは存続。設定画面の **2FA 管理フォーム（`TwoFactorSettingsForm`）はコメントアウト**しており、UI からの再発行導線は非表示。コードはハッシュ化して `used_at` で再利用不可。 |
 | **Turnstile（Cloudflare CAPTCHA）** | ログイン画面・招待ゲートで有効化可能。`NEXT_PUBLIC_CLOUDFLARE_TURNSTILE_SITE_KEY` / `CLOUDFLARE_TURNSTILE_SECRET_KEY` が揃うと有効化され、LINE開始前にはサーバー側でも検証。 |
