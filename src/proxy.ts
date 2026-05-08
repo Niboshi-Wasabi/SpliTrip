@@ -93,21 +93,6 @@ function isAdminPath(pathname: string): boolean {
   return firstSegment === "admin";
 }
 
-/**
- * 管理画面の Step-Up 再認証ページ（`/admin/verify` および `/{locale}/admin/verify`）。
- * Excludes these from the step-up redirect loop.
- */
-function isAdminVerifyPath(pathname: string): boolean {
-  const segments = pathname.split("/").filter(Boolean);
-  if (segments.length < 2) {
-    return false;
-  }
-  if (routing.locales.includes(segments[0] as AppLocale)) {
-    return segments[1] === "admin" && segments[2] === "verify";
-  }
-  return segments[0] === "admin" && segments[1] === "verify";
-}
-
 type UserAccessContext = {
   isAdmin: boolean;
   userId: string | null;
@@ -195,7 +180,6 @@ export default async function proxy(request: NextRequest) {
 
   const {
     isAdmin: isAdminUser,
-    userId: accessUserId,
     isDeleted: isDeletedUser,
   } = await resolveUserAccessContext(request);
 

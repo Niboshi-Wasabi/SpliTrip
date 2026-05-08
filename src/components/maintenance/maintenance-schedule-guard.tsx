@@ -83,7 +83,7 @@ export function MaintenanceScheduleGuard() {
       return;
     }
     router.replace("/maintenance", { locale });
-  }, [data?.shouldRedirectToMaintenance, locale, normalizedPathname, router]);
+  }, [data?.shouldRedirectToMaintenance, locale, normalizedPathname, pathname, router]);
 
   if (!data?.schedule || !windowState.inPreNoticeWindow || !data.shouldShowPreNoticeBanner) {
     return null;
