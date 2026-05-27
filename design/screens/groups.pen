@@ -103,7 +103,7 @@
     },
     "color.dark.surface": {
       "type": "color",
-      "value": "#1d1d1f"
+      "value": "#2c2c2e"
     },
     "color.dark.text": {
       "type": "color",
@@ -119,7 +119,7 @@
     },
     "color.dark.separator": {
       "type": "color",
-      "value": "rgba(255, 255, 255, 0.08)"
+      "value": "rgba(255, 255, 255, 0.12)"
     },
     "color.dark.cardBg": {
       "type": "color",
