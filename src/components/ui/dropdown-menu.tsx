@@ -12,13 +12,39 @@ function DropdownMenuTrigger(props: React.ComponentProps<typeof Dropdown.Trigger
   return <Dropdown.Trigger {...props} />;
 }
 
+type DropdownMenuAlign = "start" | "center" | "end";
+
+function mapAlignToPlacement(align?: DropdownMenuAlign): React.ComponentProps<
+  typeof Dropdown.Popover
+>["placement"] {
+  switch (align) {
+    case "start":
+      return "bottom start";
+    case "end":
+      return "bottom end";
+    case "center":
+      return "bottom";
+    default:
+      return undefined;
+  }
+}
+
+type DropdownMenuContentProps = Omit<
+  React.ComponentProps<typeof Dropdown.Popover>,
+  "placement"
+> & {
+  align?: DropdownMenuAlign;
+};
+
 function DropdownMenuContent({
   className,
   children,
+  align,
   ...props
-}: React.ComponentProps<typeof Dropdown.Popover>) {
+}: DropdownMenuContentProps) {
   return (
     <Dropdown.Popover
+      placement={mapAlignToPlacement(align)}
       className={cn(
         "min-w-32 rounded-lg border border-[var(--apple-separator)] bg-[var(--apple-card-bg)] p-1 text-[var(--apple-text)] shadow-lg",
         className,
