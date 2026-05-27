@@ -6,7 +6,8 @@ import { createServiceRoleClient } from "@/utils/supabase/service-role";
 export const dynamic = "force-dynamic";
 
 /**
- * Vercel Cron から `Authorization: Bearer <CRON_SECRET>` で呼ぶ。
+ * 定期プローブから `Authorization: Bearer <CRON_SECRET>` で呼ぶ（例: GitHub Actions のワークフロー）。
+ * Hobby では Vercel プラットフォーム Cron を使わないため、スケジュールはワークフロー側で設定する。
  * サービス状態を実測し `system_status` を更新する（`pinned_by_admin=true` の行はスキップ）。
  */
 export async function GET(request: NextRequest) {

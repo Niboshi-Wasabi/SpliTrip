@@ -377,7 +377,7 @@ Supabase Dashboard の Advisor 警告の整理方針は **`SUPABASE_SECURITY_ADV
 |------|-----|------|------------|------------|------|
 | `service_key` | `text` | NOT NULL | — | PRIMARY KEY | 固定キー（例: `core_api_database`）。 |
 | `status` | `text` | NOT NULL | — | CHECK（4値） | `operational` / `degraded` / `partial_outage` / `major_outage`（初期シードはすべて `operational`） |
-| `pinned_by_admin` | `boolean` | NOT NULL | `false` | — | `true` の行は Cron ヘルスチェックが `status` を上書きしない（手動での事故対応時）。 |
+| `pinned_by_admin` | `boolean` | NOT NULL | `false` | — | `true` の行は定期ヘルスチェック（GitHub Actions からのプローブなど）が `status` を上書きしない（手動での事故対応時）。 |
 | `updated_at` | `timestamptz` | NOT NULL | `now()` | — | 最終更新（トリガーで更新） |
 
 **RLS:** 有効（**誰でも SELECT可**、`is_admin=true` が INSERT/UPDATE/DELETE）。  

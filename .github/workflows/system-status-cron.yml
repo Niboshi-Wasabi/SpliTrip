@@ -1,0 +1,39 @@
+# Vercel Hobby は複数回/日の Cron が使えないため、本番のシステムステータス
+# プローブは GitHub Actions のスケジュールで `GET /api/cron/system-status` を叩く。
+# リポジトリ Secrets: SYSTEM_STATUS_CRON_URL, CRON_SECRET（README 参照）
+name: System status probe
+
+on:
+  schedule:
+    # 5 分間隔（UTC）。スケジュール実行は遅延することがある。
+    - cron: "*/5 * * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: system-status-probe
+  cancel-in-progress: false
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Trigger GET /api/cron/system-status
+        env:
+          CRON_URL: ${{ secrets.SYSTEM_STATUS_CRON_URL }}
+          CRON_SECRET_VALUE: ${{ secrets.CRON_SECRET }}
+        run: |
+          set -euo pipefail
+          if [ -z "${CRON_URL:-}" ] || [ -z "${CRON_SECRET_VALUE:-}" ]; then
+            echo "::error::リポジトリ Secrets に SYSTEM_STATUS_CRON_URL と CRON_SECRET を設定してください（README の「システムステータス自動プローブ」参照）。"
+            exit 1
+          fi
+          http_status=$(curl -sS -o /tmp/cron_response_body -w "%{http_code}" \
+            -X GET "$CRON_URL" \
+            -H "Authorization: Bearer ${CRON_SECRET_VALUE}" \
+            -H "Accept: application/json")
+          echo "HTTP ${http_status}"
+          cat /tmp/cron_response_body
+          if [ "$http_status" != "200" ]; then
+            exit 1
+          fi

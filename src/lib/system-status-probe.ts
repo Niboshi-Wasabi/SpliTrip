@@ -1,6 +1,6 @@
 /**
  * Periodic health probes for public system status (`system_status`).
- * Cron から呼ぶ。サービスキー単位で Supabase・Stripe・Gemini を軽く叩く。
+ * 定期ジョブ（GitHub Actions など）から呼ぶ。サービスキー単位で Supabase・Stripe・Gemini を軽く叩く。
  */
 import { GoogleGenAI } from "@google/genai";
 import Stripe from "stripe";

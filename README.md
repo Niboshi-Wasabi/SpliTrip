@@ -60,7 +60,7 @@ npm install
 | Google / LINE ログイン利用時 | Supabase・各コンソールのリダイレクト URL と整合させる（`LINE_CHANNEL_*`, `NEXT_PUBLIC_LINE_REDIRECT_URI` 等） |
 | Stripe 利用時 | `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `NEXT_PUBLIC_STRIPE_PAYMENT_LINK` 等 |
 | Gemini OCR 利用時 | `GEMINI_API_KEY` |
-| **システムステータス自動プローブ**（本番の Vercel Cron） | **`CRON_SECRET`**（`Authorization: Bearer …` と一致。未設定だと Cron ルートは 503）。将来の拡張候補は [`docs/FEATURES.md`](docs/FEATURES.md) の「システムステータス — 将来の改修」 |
+| **システムステータス自動プローブ**（本番） | **Vercel の環境変数**に **`CRON_SECRET`**（`GET /api/cron/system-status` の `Authorization: Bearer …` と一致。未設定だと 503）。**Vercel Hobby は `vercel.json` の Cron が使えない**ため、**GitHub Actions**（`.github/workflows/system-status-cron.yml`、概ね **5 分毎 UTC**）が同じ URL を叩く。**GitHub リポジトリ Secrets** に **`SYSTEM_STATUS_CRON_URL`**（Production の完全 URL。例: `https://splitrip.net/api/cron/system-status`）と **`CRON_SECRET`**（Vercel と同じ値）を設定する。将来の拡張候補は [`docs/FEATURES.md`](docs/FEATURES.md) の「システムステータス — 将来の改修」 |
 
 **本番と DB を分けたい**場合は、上記の **「ローカル Supabase」** を使うか、クラウド上で**別プロジェクト**を開発用に用意し、`.env.local` だけを開発用にする方法があります。
 

@@ -363,7 +363,7 @@
     "announcementDisplayOrderLabel": "Display order",
     "announcementDisplayOrderHint": "Lower numbers appear first on the LP and public lists.",
     "systemStatusPageDescription": "Edit labels on the public system status page. Scheduled health checks overwrite statuses unless you pin a row during incident messaging.",
-    "systemStatusHint": "Published to the status page and public API. Rows with \"pause automated updates\" are skipped by the scheduled probe cron job.",
+    "systemStatusHint": "Published to the status page and public API. Rows with \"pause automated updates\" are skipped by the scheduled health probe.",
     "systemStatusPinLabel": "Pause automated probe updates for this component",
     "systemStatusServiceCoreApiDatabase": "Core API & database",
     "systemStatusServiceAuthentication": "Authentication & sign-in",
