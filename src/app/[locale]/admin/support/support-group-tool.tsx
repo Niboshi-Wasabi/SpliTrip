@@ -117,7 +117,7 @@ export function SupportGroupTool() {
         </div>
       ) : null}
       {expenses.length > 0 ? (
-        <div className="max-h-[min(50vh,480px)] overflow-auto rounded-md border">
+        <div className="max-h-[min(50vh,480px)] overflow-auto">
           <Table>
             <TableHeader>
               <TableRow>

@@ -24,7 +24,7 @@ export function SupportDeveloper({ variant = "default" }: Props) {
   const hasUrl = externalUrl.length > 0;
 
   const baseClassName = cn(
-    "inline-flex items-center justify-center gap-2 rounded-lg border border-[var(--apple-separator)]/50 bg-muted/15 text-[var(--apple-text-secondary)] transition-colors",
+    "inline-flex items-center justify-center gap-2 rounded-lg border border-[var(--apple-separator)] bg-[var(--apple-fill-tertiary)] text-[var(--apple-text-secondary)] transition-colors",
     "hover:border-[var(--apple-separator)] hover:bg-[var(--apple-fill-tertiary)]/30 hover:text-[var(--apple-text)]",
     variant === "compact"
       ? "min-h-[40px] w-full px-2 py-1.5 text-[11px] font-medium"

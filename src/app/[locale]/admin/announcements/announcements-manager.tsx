@@ -417,7 +417,7 @@ export function AnnouncementsManager() {
                 id={`cja_${topicType}`}
                 rows={10}
                 spellCheck={false}
-                className="border-input ring-offset-background placeholder:text-[var(--apple-text-secondary)] focus-visible:ring-ring mt-2 flex min-h-[120px] w-full rounded-md border px-3 py-2 font-mono text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
+                className="mt-2 flex min-h-[120px] w-full rounded-lg border border-[var(--apple-separator)] bg-[var(--apple-surface)] px-3 py-2 font-mono text-sm text-[var(--apple-text)] placeholder:text-[var(--apple-text-secondary)] outline-none transition focus:border-[var(--apple-link)] focus:ring-2 focus:ring-[var(--apple-link)]/20"
                 value={formData.content_ja}
                 onChange={(event) =>
                   updateTopicForm(topicType, { content_ja: event.target.value })
@@ -436,7 +436,7 @@ export function AnnouncementsManager() {
                 id={`cen_${topicType}`}
                 rows={10}
                 spellCheck={false}
-                className="border-input ring-offset-background placeholder:text-[var(--apple-text-secondary)] focus-visible:ring-ring mt-2 flex min-h-[120px] w-full rounded-md border px-3 py-2 font-mono text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
+                className="mt-2 flex min-h-[120px] w-full rounded-lg border border-[var(--apple-separator)] bg-[var(--apple-surface)] px-3 py-2 font-mono text-sm text-[var(--apple-text)] placeholder:text-[var(--apple-text-secondary)] outline-none transition focus:border-[var(--apple-link)] focus:ring-2 focus:ring-[var(--apple-link)]/20"
                 value={formData.content_en}
                 onChange={(event) =>
                   updateTopicForm(topicType, { content_en: event.target.value })
@@ -486,7 +486,7 @@ export function AnnouncementsManager() {
                       priority: parseInt(event.target.value, 10),
                     })
                   }
-                  className="border-input ring-offset-background focus-visible:ring-ring flex h-10 w-full rounded-md border px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
+                  className="flex h-10 w-full rounded-lg border border-[var(--apple-separator)] bg-[var(--apple-surface)] px-3 py-2 text-sm text-[var(--apple-text)] outline-none transition focus:border-[var(--apple-link)] focus:ring-2 focus:ring-[var(--apple-link)]/20"
                 >
                   <option value={0}>通常</option>
                   <option value={1}>高</option>
@@ -548,7 +548,7 @@ export function AnnouncementsManager() {
                 </p>
                 <button
                   type="button"
-                  className="w-full rounded-md border border-zinc-800 bg-zinc-900/60 px-3 py-2 text-left"
+                  className="w-full rounded-lg border border-[var(--apple-separator)] bg-[var(--apple-fill-tertiary)] px-3 py-2 text-left"
                   onClick={() => setPreviewModalOpen(true)}
                 >
                   <div className="flex items-center gap-2">
@@ -655,7 +655,7 @@ export function AnnouncementsManager() {
               既存の{locale === "en" ? topicConfig?.labelEn : topicConfig?.labelJa}
               （{topicAnnouncements.length}件）
             </h3>
-            <div className="max-h-[min(40vh,320px)] overflow-auto rounded-md border">
+            <div className="max-h-[min(40vh,320px)] overflow-auto">
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -835,7 +835,7 @@ export function AnnouncementsManager() {
           <summary className="cursor-pointer text-sm font-medium text-[var(--apple-text-secondary)] hover:text-[var(--apple-text)]">
             全お知らせ一覧を表示（{rows.length}件）
           </summary>
-          <div className="max-h-[min(50vh,400px)] overflow-auto rounded-md border">
+          <div className="max-h-[min(50vh,400px)] overflow-auto">
             <Table>
               <TableHeader>
                 <TableRow>

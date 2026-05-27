@@ -188,7 +188,7 @@ export function SystemStatusAdminForm() {
                   }))
                 }
                 disabled={busy}
-                className="border-input ring-offset-background focus-visible:ring-ring flex h-11 min-h-[44px] w-full rounded-md border px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
+                className="flex h-11 min-h-[44px] w-full rounded-lg border border-[var(--apple-separator)] bg-[var(--apple-surface)] px-3 py-2 text-sm text-[var(--apple-text)] outline-none transition focus:border-[var(--apple-link)] focus:ring-2 focus:ring-[var(--apple-link)]/20"
               >
                 {SYSTEM_STATUS_VALUES.map((statusValue) => (
                   <option key={statusValue} value={statusValue}>

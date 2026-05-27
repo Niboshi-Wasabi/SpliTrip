@@ -221,9 +221,9 @@ export default async function GroupDetailPage({ params, searchParams }: PageProp
   });
 
   return (
-    <div className="min-h-screen">
-      <header className="border-b border-[var(--apple-separator)] bg-[var(--apple-card-bg)] shadow-sm print:hidden">
-        <div className="mx-auto max-w-6xl px-4 py-3">
+    <div className="flex min-h-dvh flex-col bg-[var(--apple-bg)] text-[var(--apple-text)]">
+      <header className="sticky top-0 z-30 border-b border-[var(--apple-separator)] bg-[var(--apple-nav-bg)] backdrop-blur-xl print:hidden">
+        <div className="mx-auto max-w-[980px] px-4 py-3">
           <div className="mb-3 flex items-center justify-between gap-2 md:mb-0 md:hidden">
             <Link
               href="/dashboard"
@@ -304,7 +304,7 @@ export default async function GroupDetailPage({ params, searchParams }: PageProp
       <RealtimeGroupSync groupId={groupId} currentUserId={user.id} />
 
       {/* pb-24: モバイルのボトムナビ分のクリアランス / Bottom nav clearance on mobile */}
-      <main className="mx-auto max-w-6xl space-y-6 px-4 py-6 pb-24 md:pb-6">
+      <main className="mx-auto w-full max-w-[980px] space-y-6 px-4 py-6 pb-24 md:pb-6">
         <div className="print:hidden">
           <DisplayNamePrompt currentName={currentDisplayName} groupId={groupId} />
         </div>
@@ -377,7 +377,7 @@ export default async function GroupDetailPage({ params, searchParams }: PageProp
           </div>
 
           <div className="space-y-6">
-            <div className="rounded-lg border border-[var(--apple-separator)] bg-[var(--apple-card-bg)] p-4 shadow-sm print:hidden">
+            <div className="rounded-2xl border border-[var(--apple-separator)] bg-[var(--apple-card-bg)] p-4 shadow-sm print:hidden">
               <p className="text-lg font-semibold text-[var(--apple-text)]">
                 {group.name}
               </p>

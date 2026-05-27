@@ -782,6 +782,14 @@
     "settings": "設定",
     "logout": "ログアウト"
   },
+  "AppShell": {
+    "home": "ホーム",
+    "groups": "グループ",
+    "stats": "統計",
+    "settings": "設定",
+    "logout": "ログアウト",
+    "navigation": "メインナビゲーション"
+  },
   "Ads": {
     "promoTitle": "次の旅行のホテルを探す",
     "promoSubtitle": "Book your next stay",

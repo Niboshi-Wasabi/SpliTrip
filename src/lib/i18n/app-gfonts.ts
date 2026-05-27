@@ -1,7 +1,6 @@
 import {
   Fira_Code,
-  Noto_Serif_JP,
-  Source_Serif_4,
+  Noto_Sans_JP,
 } from "next/font/google";
 import {
   getLocaleGoogleSansVariable,
@@ -12,27 +11,19 @@ import type { AppLocale } from "@/i18n/routing";
 const firaCode = Fira_Code({
   variable: "--font-fira-code",
   subsets: ["latin"],
-  preload: false, // 等幅フォントは必要時のみ読み込み
+  preload: false,
 });
 
-const sourceSerif4 = Source_Serif_4({
-  variable: "--font-source-serif",
-  subsets: ["latin", "latin-ext", "cyrillic", "cyrillic-ext"],
-  weight: ["400", "500", "600", "700"],
-  display: "swap",
-  preload: true, // メインフォントなのでプリロード有効
-});
-
-const notoSerifJp = Noto_Serif_JP({
-  variable: "--font-noto-serif-jp",
+const notoSansJp = Noto_Sans_JP({
+  variable: "--font-noto-sans-jp",
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
   display: "swap",
-  preload: true, // 日本語メインフォントなのでプリロード有効
+  preload: true,
 });
 
 const googleSansByKey = {
-  notoJp: notoSerifJp,
+  notoJp: notoSansJp,
 } as const;
 
 /**
@@ -42,7 +33,6 @@ export function getLocaleHtmlClassName(locale: AppLocale): string {
   const googleSansKey = getLocaleGoogleSansVariable(locale);
   const uiMonoStackId = getUiMonoStackId(locale);
   return [
-    sourceSerif4.variable,
     uiMonoStackId === "fira" ? firaCode.variable : "",
     googleSansKey !== "none" ? googleSansByKey[googleSansKey].variable : "",
     "h-full antialiased",
@@ -51,4 +41,4 @@ export function getLocaleHtmlClassName(locale: AppLocale): string {
     .join(" ");
 }
 
-export { firaCode, notoSerifJp, sourceSerif4 };
+export { firaCode, notoSansJp };

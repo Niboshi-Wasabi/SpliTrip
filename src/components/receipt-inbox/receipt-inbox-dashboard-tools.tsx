@@ -162,7 +162,7 @@ export function ReceiptInboxDashboardTools({ currentUserId, groups }: Props) {
                     </p>
                     {groups.length > 0 ? (
                       <select
-                        className="h-9 w-full rounded-md border border-input bg-transparent px-2 text-xs"
+                        className="h-9 w-full rounded-lg border border-[var(--apple-separator)] bg-[var(--apple-surface)] px-2 text-xs text-[var(--apple-text)]"
                         value={selectedGroupIdForReceipt(item.id) ?? ""}
                         onChange={(event) =>
                           setSelectedGroupByReceiptId((previousMap) => ({

@@ -45,10 +45,10 @@ export function UserAvatarMenu({
 
   const isLanding = variant === "landing";
   const contentClassName = isLanding
-    ? "w-48 border-zinc-800 bg-zinc-950 text-zinc-100"
+    ? "w-48 border-[var(--apple-separator)] bg-[var(--apple-card-bg)] text-[var(--apple-text)]"
     : "w-48";
   const itemClassName = "min-h-[44px] cursor-pointer";
-  const iconWrapClass = isLanding ? "text-zinc-200" : undefined;
+  const iconWrapClass = isLanding ? "text-[var(--apple-text-secondary)]" : undefined;
 
   const handleLogout = useCallback(async () => {
     if (isSupabaseConfigured()) {

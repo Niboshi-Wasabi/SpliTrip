@@ -23,8 +23,8 @@ export default function DashboardError({
     <div className="flex min-h-screen items-center justify-center px-4">
       <Card className="w-full max-w-md">
         <CardContent className="flex flex-col items-center gap-4 pt-8 text-center">
-          <div className="rounded-full bg-red-100 p-3">
-            <AlertCircle className="h-8 w-8 text-red-600" />
+          <div className="rounded-full bg-rose-500/10 p-3">
+            <AlertCircle className="size-8 text-rose-500" />
           </div>
           <h2 className="text-xl font-semibold">
             {dashboardErrorTranslations("title")}

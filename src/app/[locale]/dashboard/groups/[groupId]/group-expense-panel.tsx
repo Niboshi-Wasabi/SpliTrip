@@ -693,7 +693,7 @@ export function GroupExpensePanel({
           <Label htmlFor="payer">{formTranslations("payerLabel")}</Label>
           <select
             id="payer"
-            className="h-10 w-full rounded-lg border border-input bg-transparent px-2.5 text-sm outline-none focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/50 md:h-8"
+            className="h-10 w-full rounded-lg border border-[var(--apple-separator)] bg-[var(--apple-surface)] px-2.5 text-sm text-[var(--apple-text)] outline-none transition focus:border-[var(--apple-link)] focus:ring-2 focus:ring-[var(--apple-link)]/20 md:h-8"
             value={payerId}
             onChange={(changeEvent) => setPayerId(changeEvent.target.value)}
             disabled={submitting}
@@ -947,7 +947,7 @@ export function GroupExpensePanel({
           </label>
           {remainderKind === "specific_user" ? (
             <select
-              className="ml-6 h-8 max-w-xs rounded-lg border border-input bg-transparent px-2 text-sm"
+              className="ml-6 h-8 max-w-xs rounded-lg border border-[var(--apple-separator)] bg-[var(--apple-surface)] px-2 text-sm text-[var(--apple-text)] outline-none transition focus:border-[var(--apple-link)] focus:ring-2 focus:ring-[var(--apple-link)]/20"
               value={remainderUserId}
               onChange={(changeEvent) =>
                 setRemainderUserId(changeEvent.target.value)

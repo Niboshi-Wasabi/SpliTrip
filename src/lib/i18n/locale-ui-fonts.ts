@@ -39,7 +39,7 @@ export function getUiMonoStackId(locale: AppLocale): UiMonoStackId {
   }
 }
 
-/** Extra Google font loaded per locale (`[locale]/layout` → `html` class). `ja` は Noto Serif JP。 */
+/** Extra Google font loaded per locale (`[locale]/layout` → `html` class). `ja` は Noto Sans JP。 */
 export type LocaleGoogleSansVariable =
   | "none"
   | "notoJp";

@@ -1,26 +1,7 @@
 export const dynamic = "force-dynamic";
 
-/**
- * Main dashboard: group-based expense overview with per-group breakdown.
- */
-
 import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
-import {
-  Receipt,
-  FolderOpen,
-  TrendingUp,
-  UsersRound,
-} from "lucide-react";
-import { buttonVariants } from "@/components/ui/button-variants";
-import { cn } from "@/lib/utils";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { formatYen } from "@/lib/format";
 import { listGroupsForUser } from "@/lib/group-queries";
 import { createClient } from "@/utils/supabase/server";
@@ -34,17 +15,18 @@ import { redirect } from "@/i18n/navigation";
 import { UserAvatarMenu } from "@/components/user-avatar-menu";
 import { LogoMark } from "@/components/logo-mark";
 import { ThemeToggle } from "@/components/ThemeToggle";
-import { PromoBanner } from "@/components/ads/PromoBanner";
 import { SupportDeveloper } from "@/components/ads/SupportDeveloper";
 import { DashboardSpendingChart } from "./dashboard-spending-chart";
+import { DashboardStatsGrid } from "./dashboard-stats-grid";
+import { DashboardGroupsList } from "./dashboard-groups-list";
 import { LogoutButton } from "./logout-button";
 import { BETA_FEEDBACK_HREF } from "@/lib/beta-feedback-href";
 import { getCategoryColor, getExpenseCategoryChartColor } from "@/lib/categories";
-import { ReceiptInboxDashboardTools } from "@/components/receipt-inbox/receipt-inbox-dashboard-tools";
 import {
   EXPENSE_CATEGORY_IDS,
   parseExpenseCategoryId,
 } from "@/lib/expense-categories";
+import { PageHeader } from "@/components/app/page-header";
 
 type PageProps = { params: Promise<{ locale: string }> };
 
@@ -221,33 +203,18 @@ export default async function DashboardPage({ params }: PageProps) {
   const loginTranslations = await getTranslations("Login");
 
   return (
-    <div className="min-h-screen">
-      <header className="border-b border-[var(--apple-separator)] bg-[var(--apple-card-bg)] shadow-sm">
-        <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3">
+    <div className="flex min-h-dvh flex-col bg-[var(--apple-bg)] text-[var(--apple-text)]">
+      {/* Header */}
+      <header className="sticky top-0 z-30 border-b border-[var(--apple-separator)] bg-[var(--apple-nav-bg)] backdrop-blur-xl">
+        <div className="mx-auto flex h-[48px] max-w-[980px] items-center justify-between gap-3 px-4">
           <div className="flex items-center gap-3">
-            <LogoMark className="text-lg md:text-xl" />
-            <div>
-              <p className="text-base font-medium text-[var(--apple-text-secondary)]">
-                {dashboardPageTranslations("subtitle")}
-              </p>
-            </div>
+            <LogoMark className="text-lg" />
           </div>
           <div className="hidden min-w-0 flex-1 justify-center md:flex">
             <SupportDeveloper variant="header" />
           </div>
           <div className="flex items-center gap-1 sm:gap-2">
             <ThemeToggle />
-            {/* PC: テキスト付きナビ、モバイル: ボトムナビに移譲 */}
-            {/* PC: text nav buttons, Mobile: delegated to bottom nav */}
-            <Link
-              href="/settings"
-              className={cn(
-                buttonVariants({ variant: "ghost", size: "sm" }),
-                "hidden text-[var(--apple-text-secondary)] md:inline-flex",
-              )}
-            >
-              {bottomNavTranslations("settings")}
-            </Link>
             <div className="hidden md:block">
               <LogoutButton />
             </div>
@@ -261,51 +228,19 @@ export default async function DashboardPage({ params }: PageProps) {
         </div>
       </header>
 
-      {/* pb-20: ボトムナビの高さ分のクリアランス / Bottom nav clearance on mobile */}
-      <main className="mx-auto max-w-6xl px-4 py-6 pb-24 md:pb-6">
-        <div className="mb-6 grid items-stretch gap-4 sm:grid-cols-3">
-          <Card className="flex h-full min-h-0 flex-col">
-            <CardHeader className="shrink-0 pb-2">
-              <div className="flex flex-row items-center justify-between">
-                <CardTitle className="text-sm font-medium text-[var(--apple-text-secondary)]">
-                  {dashboardPageTranslations("statTotalSpend")}
-                </CardTitle>
-                <Receipt className="h-4 w-4 shrink-0 text-[var(--apple-text-secondary)]" />
-              </div>
-            </CardHeader>
-            <CardContent className="flex flex-1 flex-col justify-end pt-0">
-              <p className="text-2xl font-bold">{formatYen(totalExpense)}</p>
-            </CardContent>
-          </Card>
+      <main className="mx-auto w-full max-w-[980px] flex-1 px-4 py-6 pb-24 md:pb-6">
+        <PageHeader title={dashboardPageTranslations("subtitle")} />
 
-          <Card className="flex h-full min-h-0 flex-col">
-            <CardHeader className="shrink-0 pb-2">
-              <div className="flex flex-row items-center justify-between">
-                <CardTitle className="text-sm font-medium text-[var(--apple-text-secondary)]">
-                  {dashboardPageTranslations("statGroupCount")}
-                </CardTitle>
-                <FolderOpen className="h-4 w-4 shrink-0 text-[var(--apple-text-secondary)]" />
-              </div>
-            </CardHeader>
-            <CardContent className="flex flex-1 flex-col justify-end pt-0">
-              <p className="text-2xl font-bold">{groupCount}</p>
-            </CardContent>
-          </Card>
-
-          <Card className="flex h-full min-h-0 flex-col">
-            <CardHeader className="shrink-0 pb-2">
-              <div className="flex flex-row items-center justify-between">
-                <CardTitle className="text-sm font-medium text-[var(--apple-text-secondary)]">
-                  {dashboardPageTranslations("statAvgPerGroup")}
-                </CardTitle>
-                <TrendingUp className="h-4 w-4 shrink-0 text-[var(--apple-text-secondary)]" />
-              </div>
-            </CardHeader>
-            <CardContent className="flex flex-1 flex-col justify-end pt-0">
-              <p className="text-2xl font-bold">{formatYen(avgPerGroup)}</p>
-            </CardContent>
-          </Card>
-        </div>
+        <DashboardStatsGrid
+          totalExpense={totalExpense}
+          groupCount={groupCount}
+          avgPerGroup={avgPerGroup}
+          labels={{
+            totalSpend: dashboardPageTranslations("statTotalSpend"),
+            groupCount: dashboardPageTranslations("statGroupCount"),
+            avgPerGroup: dashboardPageTranslations("statAvgPerGroup"),
+          }}
+        />
 
         <div className="grid gap-6 lg:grid-cols-2">
           <DashboardSpendingChart
@@ -313,76 +248,26 @@ export default async function DashboardPage({ params }: PageProps) {
             chartByCategory={chartDataByCategory}
             totalFormatted={formatYen(totalExpense)}
             titleByGroup={dashboardChartsTranslations("dashboardTitleByGroup")}
-            titleByCategory={dashboardChartsTranslations(
-              "dashboardTitleByCategory",
-            )}
+            titleByCategory={dashboardChartsTranslations("dashboardTitleByCategory")}
           />
 
-          <Card>
-            <CardHeader className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-              <div>
-                <CardTitle className="flex items-center gap-2 text-base">
-                  <UsersRound className="h-4 w-4" />
-                  {dashboardPageTranslations("groupsCardTitle")}
-                </CardTitle>
-                <CardDescription>
-                  {dashboardPageTranslations("groupsCardDescription")}
-                </CardDescription>
-              </div>
-            </CardHeader>
-            <CardContent>
-              {groups.length > 0 ? (
-                <ul className="space-y-2">
-                  {groups.map((groupItem) => (
-                    <li key={groupItem.group.id}>
-                      <Link
-                        href={`/dashboard/groups/${groupItem.group.id}`}
-                        className="flex min-h-[44px] items-center justify-between rounded-lg border border-[var(--apple-separator)] p-3 transition-colors hover:bg-[var(--apple-fill-tertiary)]/50"
-                      >
-                        <div>
-                          <span className="font-medium text-[var(--apple-link)]">
-                            {groupItem.group.name}
-                          </span>
-                          <span className="ml-2 text-xs text-[var(--apple-text-secondary)]">
-                            {groupItem.group.currency_code}
-                          </span>
-                        </div>
-                        <span className="text-sm font-semibold">
-                          {formatYen(
-                            expenseTotalByGroup.get(groupItem.group.id) ?? 0,
-                          )}
-                        </span>
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <p className="py-4 text-sm text-[var(--apple-text-secondary)]">
-                  {dashboardPageTranslations("emptyGroups")}
-                </p>
-              )}
-              <div className="mt-4">
-                <Link
-                  href="/dashboard/groups/new"
-                  className={cn(buttonVariants(), "w-full min-h-[44px] md:min-h-0")}
-                >
-                  {dashboardPageTranslations("createGroupButton")}
-                </Link>
-              </div>
-              <div className="mt-4">
-                <ReceiptInboxDashboardTools
-                  currentUserId={user.id}
-                  groups={groups.map((groupItem) => ({
-                    id: groupItem.group.id,
-                    name: groupItem.group.name,
-                  }))}
-                />
-              </div>
-              <div className="mt-4">
-                <PromoBanner hidden={dashboardHasPremium} locale={locale} />
-              </div>
-            </CardContent>
-          </Card>
+          <DashboardGroupsList
+            groups={groups.map((groupItem) => ({
+              id: groupItem.group.id,
+              name: groupItem.group.name,
+              currencyCode: groupItem.group.currency_code,
+              totalExpense: expenseTotalByGroup.get(groupItem.group.id) ?? 0,
+            }))}
+            currentUserId={user.id}
+            hasPremium={dashboardHasPremium}
+            locale={locale}
+            labels={{
+              title: dashboardPageTranslations("groupsCardTitle"),
+              description: dashboardPageTranslations("groupsCardDescription"),
+              createButton: dashboardPageTranslations("createGroupButton"),
+              empty: dashboardPageTranslations("emptyGroups"),
+            }}
+          />
         </div>
       </main>
 

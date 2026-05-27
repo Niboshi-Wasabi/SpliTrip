@@ -148,7 +148,7 @@ export function SystemSettingsForm() {
         <textarea
           id="mMsg"
           rows={2}
-          className="border-input w-full rounded-md border px-3 py-2 text-sm"
+          className="w-full rounded-lg border border-[var(--apple-separator)] bg-[var(--apple-surface)] px-3 py-2 text-sm text-[var(--apple-text)] outline-none transition focus:border-[var(--apple-link)] focus:ring-2 focus:ring-[var(--apple-link)]/20 min-h-[44px]"
           value={maintenanceMsg}
           onChange={(event) => setMaintenanceMsg(event.target.value)}
         />

@@ -37,7 +37,7 @@ export function LanguageSwitcher() {
         onClick={() => switchLocale("ja")}
         className={cn(
           "h-8 rounded-full px-3 text-xs font-medium transition sm:text-sm",
-          isJa ? "bg-foreground text-background" : "text-muted-foreground hover:text-foreground",
+          isJa ? "bg-[var(--apple-text)] text-[var(--apple-bg)]" : "text-[var(--apple-text-secondary)] hover:text-[var(--apple-text)]",
         )}
         aria-pressed={isJa}
       >
@@ -49,13 +49,13 @@ export function LanguageSwitcher() {
         onClick={() => switchLocale("en")}
         className={cn(
           "h-8 rounded-full px-3 text-xs font-medium transition sm:text-sm",
-          !isJa ? "bg-foreground text-background" : "text-muted-foreground hover:text-foreground",
+          !isJa ? "bg-[var(--apple-text)] text-[var(--apple-bg)]" : "text-[var(--apple-text-secondary)] hover:text-[var(--apple-text)]",
         )}
         aria-pressed={!isJa}
       >
         EN
       </button>
-      {isPending ? <Loader2 className="ml-1 h-4 w-4 animate-spin text-muted-foreground" /> : null}
+      {isPending ? <Loader2 className="ml-1 h-4 w-4 animate-spin text-[var(--apple-text-secondary)]" /> : null}
     </div>
   );
 }

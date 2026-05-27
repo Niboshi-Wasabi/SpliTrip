@@ -95,8 +95,7 @@ export function AuditLogsTable({ logs }: AuditLogsTableProps) {
 
   return (
     <div className="space-y-4">
-      <div className="rounded-md border">
-        <Table>
+      <Table>
           <TableHeader>
             <TableRow>
               <TableHead>{t("auditColTime")}</TableHead>
@@ -146,7 +145,6 @@ export function AuditLogsTable({ logs }: AuditLogsTableProps) {
             ))}
           </TableBody>
         </Table>
-      </div>
 
       <div className="text-xs text-[var(--apple-text-secondary)] text-center">
         {logs.length} 件の操作履歴を表示中（最新100件まで）

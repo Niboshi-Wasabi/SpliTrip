@@ -83,7 +83,7 @@ const PROVIDER_CONFIG: {
     labelKey: "googleLogin",
     icon: GoogleIcon,
     buttonClassName:
-      "w-full justify-center gap-3 text-base font-medium border border-input hover:bg-[var(--apple-fill-tertiary)] hover:text-[var(--apple-text)]",
+      "w-full justify-center gap-3 text-base font-medium border border-[var(--apple-separator)] hover:bg-[var(--apple-fill-tertiary)] hover:text-[var(--apple-text)]",
   },
   {
     id: "line",

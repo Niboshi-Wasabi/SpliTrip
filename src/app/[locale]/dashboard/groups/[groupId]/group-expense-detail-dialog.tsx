@@ -432,7 +432,7 @@ export function GroupExpenseDetailDialog({
         </DialogHeader>
 
         <div className="space-y-3 text-sm">
-          <div className="space-y-1 rounded-md border border-[var(--apple-separator)] bg-muted/20 p-2.5">
+          <div className="space-y-1 rounded-xl border border-[var(--apple-separator)] bg-[var(--apple-fill-tertiary)] p-2.5">
             <p className="text-xs font-medium text-[var(--apple-text-secondary)]">
               {detailTranslations("descriptionLabel")}
             </p>
@@ -447,7 +447,7 @@ export function GroupExpenseDetailDialog({
                       type="date"
                       value={expenseDateDraft}
                       onChange={(event) => setExpenseDateDraft(event.target.value)}
-                      className="border-input ring-offset-background focus-visible:ring-ring h-10 w-full rounded-md border px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                      className="h-10 w-full rounded-lg border border-[var(--apple-separator)] bg-[var(--apple-surface)] px-3 py-2 text-sm text-[var(--apple-text)] outline-none transition focus:border-[var(--apple-link)] focus:ring-2 focus:ring-[var(--apple-link)]/20 disabled:cursor-not-allowed disabled:opacity-50"
                       disabled={descriptionSaving}
                     />
                   </div>
@@ -462,7 +462,7 @@ export function GroupExpenseDetailDialog({
                           parseExpenseCategoryId(event.target.value),
                         )
                       }
-                      className="border-input ring-offset-background focus-visible:ring-ring h-10 w-full rounded-md border px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                      className="h-10 w-full rounded-lg border border-[var(--apple-separator)] bg-[var(--apple-surface)] px-3 py-2 text-sm text-[var(--apple-text)] outline-none transition focus:border-[var(--apple-link)] focus:ring-2 focus:ring-[var(--apple-link)]/20 disabled:cursor-not-allowed disabled:opacity-50"
                       disabled={descriptionSaving}
                     >
                       {EXPENSE_CATEGORY_IDS.map((categoryId) => (
@@ -476,7 +476,7 @@ export function GroupExpenseDetailDialog({
                 <textarea
                   value={descriptionDraft}
                   onChange={(event) => setDescriptionDraft(event.target.value)}
-                  className="border-input ring-offset-background placeholder:text-[var(--apple-text-secondary)] focus-visible:ring-ring min-h-[72px] w-full rounded-md border px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="min-h-[72px] w-full rounded-lg border border-[var(--apple-separator)] bg-[var(--apple-surface)] px-3 py-2 text-sm text-[var(--apple-text)] placeholder:text-[var(--apple-text-secondary)] outline-none transition focus:border-[var(--apple-link)] focus:ring-2 focus:ring-[var(--apple-link)]/20 disabled:cursor-not-allowed disabled:opacity-50"
                   maxLength={120}
                   disabled={descriptionSaving}
                 />
@@ -681,7 +681,7 @@ export function GroupExpenseDetailDialog({
                 <span>{commentTranslations("loading")}</span>
               </div>
             ) : null}
-            <ul className="max-h-40 space-y-2 overflow-y-auto rounded-md border border-[var(--apple-separator)] bg-muted/20 p-2 text-sm">
+            <ul className="max-h-40 space-y-2 overflow-y-auto rounded-xl border border-[var(--apple-separator)] bg-[var(--apple-fill-tertiary)] p-2 text-sm">
               {commentItems.map((commentRow) => (
                 <li key={commentRow.id} className="rounded /80 p-2">
                   <p className="text-xs text-[var(--apple-text-secondary)]">
@@ -696,7 +696,7 @@ export function GroupExpenseDetailDialog({
               value={commentDraft}
               onChange={(event) => setCommentDraft(event.target.value)}
               placeholder={commentTranslations("placeholder")}
-              className="border-input ring-offset-background placeholder:text-[var(--apple-text-secondary)] focus-visible:ring-ring flex min-h-[88px] w-full rounded-md border px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+              className="flex min-h-[88px] w-full rounded-lg border border-[var(--apple-separator)] bg-[var(--apple-surface)] px-3 py-2 text-sm text-[var(--apple-text)] placeholder:text-[var(--apple-text-secondary)] outline-none transition focus:border-[var(--apple-link)] focus:ring-2 focus:ring-[var(--apple-link)]/20 disabled:cursor-not-allowed disabled:opacity-50"
               maxLength={2000}
             />
             <Button

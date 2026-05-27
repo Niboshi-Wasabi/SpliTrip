@@ -7,28 +7,26 @@ const MEMBER_SKELETON_COUNT = 4;
 function Skeleton({ className }: { className?: string }) {
   return (
     <div
-      className={`animate-pulse rounded-md bg-[var(--apple-fill-tertiary)] ${className ?? ""}`}
+      className={`animate-pulse rounded-lg bg-[var(--apple-fill-tertiary)] ${className ?? ""}`}
     />
   );
 }
 
 export default function DashboardLoading() {
   return (
-    <div className="min-h-screen">
-      <header className="border-b border-[var(--apple-separator)] bg-[var(--apple-card-bg)] shadow-sm">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
+    <div className="flex min-h-dvh flex-col bg-[var(--apple-bg)] text-[var(--apple-text)]">
+      <header className="sticky top-0 z-30 border-b border-[var(--apple-separator)] bg-[var(--apple-nav-bg)] backdrop-blur-xl">
+        <div className="mx-auto flex h-[48px] max-w-[980px] items-center justify-between px-4">
           <div className="flex items-center gap-3">
-            <LogoMark className="text-lg md:text-lg" />
-            <div>
-              <Skeleton className="mb-1 h-5 w-20" />
-              <Skeleton className="h-3 w-28" />
-            </div>
+            <LogoMark className="text-lg" />
           </div>
           <Skeleton className="h-8 w-24" />
         </div>
       </header>
 
-      <main className="mx-auto max-w-6xl px-4 py-6">
+      <main className="mx-auto w-full max-w-[980px] px-4 py-6">
+        <Skeleton className="mb-6 h-9 w-32" />
+
         <div className="mb-6 grid items-stretch gap-4 sm:grid-cols-3">
           {[...Array(STAT_CARD_COUNT)].map((_, cardIndex) => (
             <Card key={cardIndex} className="flex h-full min-h-0 flex-col">
@@ -50,7 +48,7 @@ export default function DashboardLoading() {
             </CardHeader>
             <CardContent>
               <div className="flex h-[300px] items-center justify-center">
-                <div className="h-[220px] w-[220px] animate-pulse rounded-full border-[30px] border-gray-200" />
+                <div className="size-[220px] animate-pulse rounded-full border-[30px] border-[var(--apple-fill-tertiary)]" />
               </div>
             </CardContent>
           </Card>
@@ -61,10 +59,10 @@ export default function DashboardLoading() {
               <Skeleton className="h-4 w-48" />
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
+              <div className="space-y-3">
                 {[...Array(MEMBER_SKELETON_COUNT)].map((_, memberIndex) => (
-                  <div key={memberIndex} className="flex items-center gap-3 rounded-lg border p-3">
-                    <Skeleton className="h-10 w-10 rounded-full" />
+                  <div key={memberIndex} className="flex items-center gap-3 rounded-xl border border-[var(--apple-separator)] p-3">
+                    <Skeleton className="size-10 rounded-full" />
                     <div className="flex-1">
                       <Skeleton className="mb-1 h-4 w-24" />
                       <Skeleton className="h-3 w-32" />

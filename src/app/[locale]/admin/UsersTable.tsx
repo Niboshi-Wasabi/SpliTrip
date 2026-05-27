@@ -320,8 +320,7 @@ export function UsersTable({ users }: UsersTableProps) {
 
   return (
     <div className="space-y-4">
-      <div className="rounded-md border">
-        <Table>
+      <Table>
           <TableHeader>
             <TableRow>
               <TableHead>{t("tableUser")}</TableHead>
@@ -464,7 +463,6 @@ export function UsersTable({ users }: UsersTableProps) {
             })}
           </TableBody>
         </Table>
-      </div>
 
       <div className="text-xs text-[var(--apple-text-secondary)] text-center">
         合計 {users.length} 人のユーザーが登録されています
@@ -493,7 +491,7 @@ export function UsersTable({ users }: UsersTableProps) {
                 : t("deleteDialogFallbackDescription")}
             </DialogDescription>
           </DialogHeader>
-          <div className="rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-700 dark:border-red-900/60 dark:bg-red-950/20 dark:text-red-300">
+          <div className="rounded-2xl border border-rose-500/30 bg-rose-500/10 px-4 py-3 text-sm text-rose-600 dark:text-rose-300">
             {t("deleteDialogWarning")}
           </div>
           {deleteErrorMessage ? (

@@ -22,7 +22,7 @@ const config = {
         light: {
           colors: {
             primary: {
-              DEFAULT: "#4f46e5",
+              DEFAULT: "#0066cc",
               foreground: "#ffffff",
             },
             success: {
@@ -38,7 +38,7 @@ const config = {
         dark: {
           colors: {
             primary: {
-              DEFAULT: "#6366f1",
+              DEFAULT: "#2997ff",
               foreground: "#ffffff",
             },
             success: {

@@ -161,7 +161,7 @@ export function MaintenanceScheduleForm() {
           onChange={(event) =>
             setMessageUrgencySelection(event.target.value as "unset" | "normal" | "high")
           }
-          className="border-input ring-offset-background focus-visible:ring-ring flex h-10 w-full max-w-md rounded-md border px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
+          className="flex h-10 w-full max-w-md rounded-lg border border-[var(--apple-separator)] bg-[var(--apple-surface)] px-3 py-2 text-sm text-[var(--apple-text)] outline-none transition focus:border-[var(--apple-link)] focus:ring-2 focus:ring-[var(--apple-link)]/20"
         >
           <option value="unset">
             {adminTranslations("maintenanceMessageUrgencyUnset")}
@@ -206,7 +206,7 @@ export function MaintenanceScheduleForm() {
             id="maintenance-message-ja"
             rows={12}
             spellCheck={false}
-            className="w-full rounded-md border border-input px-3 py-2 font-mono text-sm leading-relaxed min-h-[200px]"
+            className="w-full rounded-lg border border-[var(--apple-separator)] bg-[var(--apple-surface)] px-3 py-2 font-mono text-sm leading-relaxed text-[var(--apple-text)] outline-none transition focus:border-[var(--apple-link)] focus:ring-2 focus:ring-[var(--apple-link)]/20 min-h-[200px]"
             value={messageJa}
             onChange={(event) => setMessageJa(event.target.value)}
             aria-describedby="maintenance-message-ja-hint"
@@ -239,7 +239,7 @@ export function MaintenanceScheduleForm() {
             id="maintenance-message-en"
             rows={12}
             spellCheck={false}
-            className="w-full rounded-md border border-input px-3 py-2 font-mono text-sm leading-relaxed min-h-[200px]"
+            className="w-full rounded-lg border border-[var(--apple-separator)] bg-[var(--apple-surface)] px-3 py-2 font-mono text-sm leading-relaxed text-[var(--apple-text)] outline-none transition focus:border-[var(--apple-link)] focus:ring-2 focus:ring-[var(--apple-link)]/20 min-h-[200px]"
             value={messageEn}
             onChange={(event) => setMessageEn(event.target.value)}
             aria-describedby="maintenance-message-en-hint"

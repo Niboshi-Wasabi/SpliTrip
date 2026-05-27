@@ -346,7 +346,7 @@ export function GroupExpenseList({
             <div className="pointer-events-none fixed inset-0 z-40 bg-black/25 backdrop-blur-[1px] md:hidden" />
           ) : null}
           <div
-            className={`pointer-events-none fixed z-50 w-[min(92vw,320px)] -translate-x-1/2 rounded-lg border border-zinc-700/60 bg-zinc-950/95 p-3 text-zinc-100 shadow-xl ${
+            className={`pointer-events-none fixed z-50 w-[min(92vw,320px)] -translate-x-1/2 rounded-2xl border border-[var(--apple-separator)] bg-[var(--apple-card-bg)] p-3 text-[var(--apple-text)] shadow-xl backdrop-blur-xl ${
               previewState.isTouchMode ? "-translate-y-1/2" : "-translate-y-full"
             }`}
             style={{
@@ -356,12 +356,12 @@ export function GroupExpenseList({
             role="status"
             aria-live="polite"
           >
-            <p className="mb-2 text-xs tracking-wide text-zinc-300">
+            <p className="mb-2 text-xs tracking-wide text-[var(--apple-text-secondary)]">
               {listTranslations("previewTitle")}
             </p>
             <ul className="space-y-1.5">
               {previewRows.length === 0 ? (
-                <li className="text-xs text-zinc-400">
+                <li className="text-xs text-[var(--apple-text-secondary)]">
                   {listTranslations("previewEmpty")}
                 </li>
               ) : (

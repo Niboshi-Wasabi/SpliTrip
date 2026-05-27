@@ -782,6 +782,14 @@
     "settings": "Settings",
     "logout": "Logout"
   },
+  "AppShell": {
+    "home": "Home",
+    "groups": "Groups",
+    "stats": "Stats",
+    "settings": "Settings",
+    "logout": "Logout",
+    "navigation": "Main navigation"
+  },
   "Ads": {
     "promoTitle": "Book your next stay",
     "promoSubtitle": "Find hotels for your next trip",

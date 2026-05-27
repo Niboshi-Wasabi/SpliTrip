@@ -15,17 +15,17 @@ export default async function AccountDeletedPage({
 
   return (
     <main className="mx-auto flex min-h-[70vh] w-full max-w-2xl items-center px-4 py-12 md:px-6">
-      <Card className="w-full border-zinc-800 bg-zinc-950/70 text-zinc-100">
+      <Card className="w-full border-[var(--apple-separator)] bg-[var(--apple-card-bg)] text-[var(--apple-text)]">
         <CardHeader>
           <CardTitle className="font-sans text-2xl tracking-tight md:text-3xl">
             {t("title")}
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-5">
-          <p className="text-sm leading-relaxed text-zinc-300">
+          <p className="text-sm leading-relaxed text-[var(--apple-text)]">
             {t("description")}
           </p>
-          <p className="text-sm leading-relaxed text-zinc-400">
+          <p className="text-sm leading-relaxed text-[var(--apple-text-secondary)]">
             {t("contactHint")}
           </p>
           <DeletedAccountActions />
