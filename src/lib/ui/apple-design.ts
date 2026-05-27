@@ -70,11 +70,11 @@ export const LP_CONTENT_MAX_WIDTH_PX = 1176;
 /** LP Bento グリッド最大幅 */
 export const LP_BENTO_MAX_WIDTH_PX = 1440;
 
-/** LP コンテンツ幅 */
+/** LP 本文セクションの共通幅（ヒーロー・ユースケース・料金など）。LP ではこちらを使う。 */
 export const APPLE_CONTENT_WIDTH_CLASS =
   "mx-auto w-full max-w-[1176px] px-6 md:px-8";
 
-/** LP フルブリード幅 */
+/** LP のワイドブリード（Bento 全幅など特殊用途のみ。通常セクションは CONTENT_WIDTH） */
 export const APPLE_FULL_WIDTH_CLASS =
   "mx-auto w-full max-w-[1440px] px-6 md:px-8";
 

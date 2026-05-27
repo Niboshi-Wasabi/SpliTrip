@@ -13,7 +13,7 @@ import {
 import {
   APPLE_SECTION_TITLE_CLASS,
   APPLE_SECTION_PADDING_CLASS,
-  APPLE_FULL_WIDTH_CLASS,
+  APPLE_CONTENT_WIDTH_CLASS,
 } from "@/lib/ui/apple-design";
 import { cn } from "@/lib/utils";
 import { LP_SPRING, LP_FADE_UP, LP_STAGGER } from "./landing-motion";
@@ -33,7 +33,7 @@ export function LandingFeatures() {
   return (
     <motion.section
       id="features"
-      className={cn(APPLE_FULL_WIDTH_CLASS, APPLE_SECTION_PADDING_CLASS, "border-t border-[var(--apple-separator)]")}
+      className={cn(APPLE_CONTENT_WIDTH_CLASS, APPLE_SECTION_PADDING_CLASS, "border-t border-[var(--apple-separator)]")}
       initial="hidden"
       whileInView="visible"
       viewport={{ once: true, amount: 0.2 }}

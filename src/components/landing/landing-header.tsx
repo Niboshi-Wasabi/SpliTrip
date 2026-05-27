@@ -7,6 +7,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { LogoMark } from "@/components/logo-mark";
 import { UserAvatarMenu } from "@/components/user-avatar-menu";
+import { APPLE_CONTENT_WIDTH_CLASS } from "@/lib/ui/apple-design";
+import { cn } from "@/lib/utils";
 
 type LandingHeaderProps = {
   isAuthenticated: boolean;
@@ -25,7 +27,12 @@ export function LandingHeader({
 
   return (
     <header className="sticky top-0 z-30 h-12 border-b border-[var(--apple-separator)] bg-black/80 backdrop-blur-xl">
-      <div className="mx-auto flex h-full w-full max-w-[1176px] items-center justify-between px-6 md:px-8">
+      <div
+        className={cn(
+          APPLE_CONTENT_WIDTH_CLASS,
+          "flex h-full items-center justify-between",
+        )}
+      >
         <Link href="/" className="text-[var(--apple-text)]">
           <LogoMark />
         </Link>

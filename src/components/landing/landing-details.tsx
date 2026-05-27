@@ -30,11 +30,16 @@ export function LandingDetails() {
       viewport={{ once: true, amount: 0.2 }}
       variants={LP_STAGGER}
     >
-      <motion.h2 className={APPLE_SECTION_TITLE_CLASS} variants={LP_FADE_UP}>
-        {t("detailed.title")}
-      </motion.h2>
+      <motion.div className="mb-8" variants={LP_FADE_UP}>
+        <h2 className={APPLE_SECTION_TITLE_CLASS}>
+          {t("detailed.title")}
+        </h2>
+        <p className="mt-2 text-sm font-normal text-[var(--apple-text-secondary)]">
+          {t("detailed.subtitle")}
+        </p>
+      </motion.div>
 
-      <div className="mt-8 grid items-stretch gap-4 md:grid-cols-2">
+      <div className="grid items-stretch gap-4 md:grid-cols-2">
         {DETAIL_ENTRIES.map(({ slug, Icon }, detailIndex) => (
           <motion.div
             key={slug}
