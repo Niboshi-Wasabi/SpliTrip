@@ -60,7 +60,7 @@ npm install
 | Google / LINE ログイン利用時 | Supabase・各コンソールのリダイレクト URL と整合させる（`LINE_CHANNEL_*`, `NEXT_PUBLIC_LINE_REDIRECT_URI` 等） |
 | Stripe 利用時 | `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `NEXT_PUBLIC_STRIPE_PAYMENT_LINK` 等 |
 | Gemini OCR 利用時 | `GEMINI_API_KEY` |
-| **システムステータス自動プローブ**（本番の Vercel Cron） | **`CRON_SECRET`**（`Authorization: Bearer …` と一致。未設定だと Cron ルートは 503） |
+| **システムステータス自動プローブ**（本番の Vercel Cron） | **`CRON_SECRET`**（`Authorization: Bearer …` と一致。未設定だと Cron ルートは 503）。将来の拡張候補は [`docs/FEATURES.md`](docs/FEATURES.md) の「システムステータス — 将来の改修」 |
 
 **本番と DB を分けたい**場合は、上記の **「ローカル Supabase」** を使うか、クラウド上で**別プロジェクト**を開発用に用意し、`.env.local` だけを開発用にする方法があります。
 

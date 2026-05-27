@@ -383,6 +383,8 @@ Supabase Dashboard の Advisor 警告の整理方針は **`SUPABASE_SECURITY_ADV
 **RLS:** 有効（**誰でも SELECT可**、`is_admin=true` が INSERT/UPDATE/DELETE）。  
 **マイグレーション:** `20260430200000`（テーブル）、`20260527130000`（`pinned_by_admin`）
 
+**将来の改修（検討・未実装）:** 履歴テーブル（例: `system_status_history`）、プローブ実行メタデータ列（最終成功時刻・失敗理由の要約）、インシデント ID との紐付けなど。現行スキーマは上記 4 列のみ。詳細候補は [`docs/FEATURES.md`](FEATURES.md) の「システムステータス — 将来の改修」。
+
 ---
 
 ## `system_settings`

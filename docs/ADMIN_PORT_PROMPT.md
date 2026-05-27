@@ -21,7 +21,7 @@ SpliTrip（本リポジトリ `tabipay`）の **Admin Control Panel Suite** を�
 | `/admin` | ユーザー KPI・PRO 付与/解除・Stripe 同期・論理削除 |
 | `/admin/announcements` | `app_announcements` CRUD・Markdown・プレビュー |
 | `/admin/maintenance` | `maintenance_schedules` |
-| `/admin/status` | `system_status` 一括更新 |
+| `/admin/status` | `system_status` 一括更新（`pinned_by_admin` で Cron 上書き抑止。将来: 手動プローブ・履歴表示などは [`docs/FEATURES.md`](FEATURES.md) 参照） |
 | `/admin/system` | `system_settings`（全画面メンテ・バナー・プロモ） |
 | `/admin/audit-logs` | `admin_audit_logs` |
 | `/admin/support` | 問い合わせ調査（SpliTrip: グループ+出費） |

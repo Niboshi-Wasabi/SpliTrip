@@ -41,6 +41,22 @@
 | **スケジュールメンテ（DB）** | `maintenance_schedules`（`start_time` / `end_time` / `is_enabled` / 日英告知文 / **`message_urgency`（NULL・`normal`・`high`）**）を `GET/PUT /api/admin/maintenance` で管理。**有効**な行のうち **`high` が1件でもある場合**、事前告知バナー・`/api/maintenance/status` に渡す「現在スケジュール」は **`high` の行のみ**となる（緊急メンテ告知の単独表示。**すべて未設定なら従来どおり**有効行すべてが候補）。開始〜終了の間は `MaintenanceScheduleGuard` がクライアント側で `/{locale}/maintenance` へ遷移（`MAINTENANCE_MODE=true` の強制モードは従来どおりフェイルセーフとして優先）。 |
 | **アプリ内お知らせ（DB）** | 管理画面で `app_announcements` に保存した内容のうち公開中の **最新 1 件**を対象に、ログインユーザーの `user_profiles.last_seen_announcement_id` と比較して未読時のみ **ブラー付きオーバーレイ（What's New モーダル）** を表示。確認ボタンで `POST /api/profile/last-seen-announcement` を呼び、既読化後は再表示しない。未公開（下書き）は RLS で一般ユーザーから参照不可。**公開期限（`expires_at`）** を設定した場合は期限切れ後にヘッダー表示・モーダル表示の両方から自動除外。**LP・公開一覧の表示順**は **`display_order` 昇順**（同値は `priority` 降順 → `created_at` 降順）。**アプリ内ヘッダーストリップ**（`PublishedAppAnnouncements`）は公開最大 5 件を **ローテーション（フェードでタイトル切替）** で表示し、クリックで **`AppAnnouncements.listDialogTitle` の一覧モーダルに全件**（Markdown 本文）を表示。**LP（未ログイン時のみ）**は `LandingWhatsNew` が **`GET /api/public/announcements`** の **先頭1件** を NEW バナーとして表示し、クリックで **`WhatsNewModal`**（Markdown、バナーを閉じたお知らせの ID は `localStorage` の **`splitrip_landing_whats_new_dismissed_id`** に保存。**ログイン済み**は `WhatsNewModalGate` と二重になるためバナー非表示）。**`/{locale}` トップ**および **`/{locale}/maintenance`** ではヘッダーストリップを出さない。 |
 
+### システムステータス — 将来の改修（検討・未実装）
+
+現状は **最小構成**（軽いプローブ + 手動ピン留め + 公開ページの約60秒ポーリング）で運用する。以下は **優先度未定・要件次第** の候補であり、実装を約束するものではない。
+
+| 候補 | 概要 |
+|------|------|
+| **プローブの精緻化** | 失敗回数・レイテンシ閾値に応じた `degraded` / `partial_outage` の段階判定。Stripe / Gemini の HTTP ステータスやレート制限の区別。 |
+| **Web Push の実プローブ** | `POST /api/notifications/web-push` が本番送信に対応したあと、VAPID 設定や購読ストレージの死活をプローブ対象に含める（現状はプレースホルダのため Cron は常に `operational`）。 |
+| **追加コンポーネント** | Storage・Realtime・外部 OAuth プロバイダなど、サービスキーとプローブの拡張。 |
+| **スケジュール・履歴** | `system_status_history` 相当のテーブル、インシデント期間の表示、ステータスページへの Markdown 告知連携。 |
+| **Cron / ポーリング間隔** | `vercel.json` の間隔（現状 5 分）や公開ページの `refreshInterval`（現状 60 秒）の環境変数化、Hobby プラン向けの外部スケジューラ代替手順の明文化。 |
+| **監視連携** | UptimeRobot 等からの Webhook で `system_status` を更新、またはプローブ結果を Sentry / ログ基盤へ送る。 |
+| **管理 UI** | ピン留めの一括解除、プローブ最終実行時刻の表示、手動「今すぐプローブ」ボタン（Cron と同ロジックの管理者専用 API）。 |
+
+実装時は **`src/lib/system-status-probe.ts`**・**`src/app/api/cron/system-status/route.ts`**・**`src/components/status/system-status-public-client.tsx`**・**`docs/DATABASE_TABLES.md`**（`system_status`）をあわせて更新すること。
+
 ---
 
 ## 認証・アカウント
