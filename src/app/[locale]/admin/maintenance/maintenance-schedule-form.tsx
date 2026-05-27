@@ -126,7 +126,7 @@ export function MaintenanceScheduleForm() {
   return (
     <div className="space-y-4">
       {errorMessage ? (
-        <p className="text-sm text-destructive" role="alert">
+        <p className="text-sm text-red-500" role="alert">
           {errorMessage}
         </p>
       ) : null}
@@ -136,7 +136,7 @@ export function MaintenanceScheduleForm() {
         </p>
       ) : null}
 
-      <div className="space-y-3 rounded-lg border border-border p-4">
+      <div className="space-y-3 rounded-lg border border-[var(--apple-separator)] p-4">
         <div className="flex items-center gap-2">
           <input
             id="maintenance-enabled"
@@ -151,7 +151,7 @@ export function MaintenanceScheduleForm() {
         </div>
       </div>
 
-      <div className="space-y-1.5 rounded-lg border border-border p-4">
+      <div className="space-y-1.5 rounded-lg border border-[var(--apple-separator)] p-4">
         <Label htmlFor="maintenance-message-urgency">
           {adminTranslations("maintenanceMessageUrgencyLabel")}
         </Label>
@@ -161,7 +161,7 @@ export function MaintenanceScheduleForm() {
           onChange={(event) =>
             setMessageUrgencySelection(event.target.value as "unset" | "normal" | "high")
           }
-          className="border-input bg-background ring-offset-background focus-visible:ring-ring flex h-10 w-full max-w-md rounded-md border px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
+          className="border-input ring-offset-background focus-visible:ring-ring flex h-10 w-full max-w-md rounded-md border px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
         >
           <option value="unset">
             {adminTranslations("maintenanceMessageUrgencyUnset")}
@@ -173,7 +173,7 @@ export function MaintenanceScheduleForm() {
             {adminTranslations("maintenanceMessageUrgencyHigh")}
           </option>
         </select>
-        <p className="text-xs text-muted-foreground">
+        <p className="text-xs text-[var(--apple-text-secondary)]">
           {adminTranslations("maintenanceMessageUrgencyHint")}
         </p>
       </div>
@@ -206,28 +206,28 @@ export function MaintenanceScheduleForm() {
             id="maintenance-message-ja"
             rows={12}
             spellCheck={false}
-            className="w-full rounded-md border border-input bg-background px-3 py-2 font-mono text-sm leading-relaxed min-h-[200px]"
+            className="w-full rounded-md border border-input px-3 py-2 font-mono text-sm leading-relaxed min-h-[200px]"
             value={messageJa}
             onChange={(event) => setMessageJa(event.target.value)}
             aria-describedby="maintenance-message-ja-hint"
           />
-          <p id="maintenance-message-ja-hint" className="text-xs text-muted-foreground">
+          <p id="maintenance-message-ja-hint" className="text-xs text-[var(--apple-text-secondary)]">
             {markdownEditorTranslations("hint")}
           </p>
-          <p className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
+          <p className="text-[10px] font-medium uppercase tracking-wide text-[var(--apple-text-secondary)]">
             {markdownEditorTranslations("input")}
           </p>
         </div>
         <div className="flex flex-col gap-2 min-h-[200px]">
           <span className="text-sm font-medium">{markdownEditorTranslations("preview")}</span>
-          <div className="min-h-[200px] flex-1 overflow-auto rounded-md border border-border bg-muted/30 p-3">
+          <div className="min-h-[200px] flex-1 overflow-auto rounded-md border border-[var(--apple-separator)] bg-[var(--apple-fill-tertiary)]/30 p-3">
             {messageJa.trim() ? (
               <SafeMarkdown
                 markdown={messageJa}
                 className="prose prose-invert prose-sm max-h-[min(50vh,28rem)] max-w-none"
               />
             ) : (
-              <p className="text-sm text-muted-foreground">—</p>
+              <p className="text-sm text-[var(--apple-text-secondary)]">—</p>
             )}
           </div>
         </div>
@@ -239,28 +239,28 @@ export function MaintenanceScheduleForm() {
             id="maintenance-message-en"
             rows={12}
             spellCheck={false}
-            className="w-full rounded-md border border-input bg-background px-3 py-2 font-mono text-sm leading-relaxed min-h-[200px]"
+            className="w-full rounded-md border border-input px-3 py-2 font-mono text-sm leading-relaxed min-h-[200px]"
             value={messageEn}
             onChange={(event) => setMessageEn(event.target.value)}
             aria-describedby="maintenance-message-en-hint"
           />
-          <p id="maintenance-message-en-hint" className="text-xs text-muted-foreground">
+          <p id="maintenance-message-en-hint" className="text-xs text-[var(--apple-text-secondary)]">
             {markdownEditorTranslations("hint")}
           </p>
-          <p className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
+          <p className="text-[10px] font-medium uppercase tracking-wide text-[var(--apple-text-secondary)]">
             {markdownEditorTranslations("input")}
           </p>
         </div>
         <div className="flex flex-col gap-2 min-h-[200px]">
           <span className="text-sm font-medium">{markdownEditorTranslations("preview")}</span>
-          <div className="min-h-[200px] flex-1 overflow-auto rounded-md border border-border bg-muted/30 p-3">
+          <div className="min-h-[200px] flex-1 overflow-auto rounded-md border border-[var(--apple-separator)] bg-[var(--apple-fill-tertiary)]/30 p-3">
             {messageEn.trim() ? (
               <SafeMarkdown
                 markdown={messageEn}
                 className="prose prose-invert prose-sm max-h-[min(50vh,28rem)] max-w-none"
               />
             ) : (
-              <p className="text-sm text-muted-foreground">—</p>
+              <p className="text-sm text-[var(--apple-text-secondary)]">—</p>
             )}
           </div>
         </div>

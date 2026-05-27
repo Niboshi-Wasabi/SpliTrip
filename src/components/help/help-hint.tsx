@@ -33,7 +33,7 @@ export function HelpHint({ ariaLabel, title, body }: HelpHintProps) {
         type="button"
         variant="ghost"
         size="icon"
-        className="h-9 w-9 shrink-0 text-muted-foreground"
+        className="h-9 w-9 shrink-0 text-[var(--apple-text-secondary)]"
         aria-label={ariaLabel}
         onClick={() => setDialogOpen(true)}
       >
@@ -44,7 +44,7 @@ export function HelpHint({ ariaLabel, title, body }: HelpHintProps) {
           <DialogHeader>
             <DialogTitle>{title}</DialogTitle>
           </DialogHeader>
-          <p className="text-sm leading-relaxed text-muted-foreground">{body}</p>
+          <p className="text-sm leading-relaxed text-[var(--apple-text-secondary)]">{body}</p>
         </DialogContent>
       </Dialog>
     </>

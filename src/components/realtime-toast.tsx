@@ -66,13 +66,13 @@ export function RealtimeToast({ show, onDismiss, message }: Props) {
     <div
       role="status"
       aria-live="polite"
-      className={`fixed bottom-20 left-1/2 z-50 -translate-x-1/2 rounded-full border border-border bg-card px-4 py-2 shadow-lg transition-all duration-300 md:bottom-6 ${
+      className={`fixed bottom-20 left-1/2 z-50 -translate-x-1/2 rounded-full border border-[var(--apple-separator)] bg-[var(--apple-card-bg)] px-4 py-2 shadow-lg transition-all duration-300 md:bottom-6 ${
         exiting
           ? "translate-y-2 opacity-0"
           : "translate-y-0 opacity-100"
       }`}
     >
-      <span className="flex items-center gap-2 text-sm text-foreground">
+      <span className="flex items-center gap-2 text-sm text-[var(--apple-text)]">
         <RefreshCw className="h-3.5 w-3.5 animate-spin text-blue-500" />
         {message || translations("updated")}
       </span>

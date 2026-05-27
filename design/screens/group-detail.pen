@@ -1,0 +1,279 @@
+{
+  "version": "2.10",
+  "variables": {
+    "color.apple.bg": {
+      "type": "color",
+      "value": "#ffffff"
+    },
+    "color.apple.surface": {
+      "type": "color",
+      "value": "#fbfbfd"
+    },
+    "color.apple.text": {
+      "type": "color",
+      "value": "#1d1d1f"
+    },
+    "color.apple.textSecondary": {
+      "type": "color",
+      "value": "#6e6e73"
+    },
+    "color.apple.link": {
+      "type": "color",
+      "value": "#0066cc"
+    },
+    "color.apple.separator": {
+      "type": "color",
+      "value": "rgba(0, 0, 0, 0.08)"
+    },
+    "color.apple.cardBg": {
+      "type": "color",
+      "value": "#ffffff"
+    },
+    "color.apple.navBg": {
+      "type": "color",
+      "value": "rgba(251, 251, 253, 0.8)"
+    },
+    "color.apple.lp.bg": {
+      "type": "color",
+      "value": "#000000"
+    },
+    "color.apple.lp.text": {
+      "type": "color",
+      "value": "#f5f5f7"
+    },
+    "color.apple.lp.link": {
+      "type": "color",
+      "value": "#2997ff"
+    },
+    "spacing.gridUnit": {
+      "type": "number",
+      "value": 8
+    },
+    "radius.insetGroup": {
+      "type": "number",
+      "value": 16
+    },
+    "radius.sheet": {
+      "type": "number",
+      "value": 28
+    },
+    "radius.pill": {
+      "type": "number",
+      "value": 9999
+    },
+    "size.touchMin": {
+      "type": "number",
+      "value": 44
+    },
+    "size.listRowMin": {
+      "type": "number",
+      "value": 52
+    },
+    "size.header": {
+      "type": "number",
+      "value": 48
+    },
+    "size.tabBar": {
+      "type": "number",
+      "value": 56
+    },
+    "size.contentMaxWidth": {
+      "type": "number",
+      "value": 980
+    },
+    "typography.body": {
+      "type": "number",
+      "value": 17
+    },
+    "typography.caption": {
+      "type": "number",
+      "value": 12
+    },
+    "typography.tabLabel": {
+      "type": "number",
+      "value": 11
+    },
+    "typography.largeTitle": {
+      "type": "number",
+      "value": 34
+    },
+    "color.dark.bg": {
+      "type": "color",
+      "value": "#000000"
+    },
+    "color.dark.surface": {
+      "type": "color",
+      "value": "#1d1d1f"
+    },
+    "color.dark.text": {
+      "type": "color",
+      "value": "#f5f5f7"
+    },
+    "color.dark.textSecondary": {
+      "type": "color",
+      "value": "#86868b"
+    },
+    "color.dark.link": {
+      "type": "color",
+      "value": "#2997ff"
+    },
+    "color.dark.separator": {
+      "type": "color",
+      "value": "rgba(255, 255, 255, 0.08)"
+    },
+    "color.dark.cardBg": {
+      "type": "color",
+      "value": "#1d1d1f"
+    },
+    "color.dark.navBg": {
+      "type": "color",
+      "value": "rgba(29, 29, 31, 0.8)"
+    }
+  },
+  "children": [
+    {
+      "id": "group-detail-mobile",
+      "name": "Group Detail / Mobile",
+      "type": "frame",
+      "x": 0,
+      "y": 0,
+      "width": 375,
+      "height": 812,
+      "fill": "$color.apple.bg",
+      "layout": "vertical",
+      "padding": [
+        48,
+        16,
+        56,
+        16
+      ],
+      "gap": 16,
+      "children": [
+        {
+          "id": "detail-mobile-title",
+          "type": "text",
+          "content": "東京旅行",
+          "fontSize": 34,
+          "fontWeight": "700",
+          "fill": "$color.apple.text"
+        },
+        {
+          "id": "detail-mobile-members",
+          "type": "text",
+          "content": "メンバー: 田中, 佐藤, 鈴木, 高橋",
+          "fontSize": 15,
+          "fill": "$color.apple.textSecondary"
+        },
+        {
+          "id": "detail-mobile-expenses-list",
+          "type": "frame",
+          "width": "fill_container",
+          "cornerRadius": "$radius.insetGroup",
+          "fill": "$color.apple.cardBg",
+          "stroke": {
+            "thickness": 1,
+            "fill": "$color.apple.separator"
+          },
+          "layout": "vertical",
+          "children": [
+            {
+              "id": "detail-mobile-expense-1",
+              "type": "frame",
+              "width": "fill_container",
+              "height": 52,
+              "padding": [
+                0,
+                16
+              ],
+              "alignItems": "center",
+              "children": [
+                {
+                  "id": "detail-expense-1-label",
+                  "type": "text",
+                  "content": "ホテル代  田中  ¥24,000",
+                  "fontSize": 17,
+                  "fill": "$color.apple.text"
+                }
+              ]
+            },
+            {
+              "id": "detail-mobile-expense-2",
+              "type": "frame",
+              "width": "fill_container",
+              "height": 52,
+              "padding": [
+                0,
+                16
+              ],
+              "alignItems": "center",
+              "children": [
+                {
+                  "id": "detail-expense-2-label",
+                  "type": "text",
+                  "content": "新幹線  佐藤  ¥13,200",
+                  "fontSize": 17,
+                  "fill": "$color.apple.text"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "detail-mobile-add-expense",
+          "type": "frame",
+          "width": "fill_container",
+          "height": 44,
+          "cornerRadius": "$radius.pill",
+          "fill": "$color.apple.link",
+          "layout": "horizontal",
+          "justifyContent": "center",
+          "alignItems": "center",
+          "children": [
+            {
+              "id": "detail-mobile-add-label",
+              "type": "text",
+              "content": "支出を追加",
+              "fill": "#ffffff",
+              "fontWeight": "500"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "group-detail-desktop",
+      "name": "Group Detail / Desktop",
+      "type": "frame",
+      "x": 420,
+      "y": 0,
+      "width": 1280,
+      "height": 900,
+      "fill": "$color.apple.bg",
+      "layout": "vertical",
+      "padding": [
+        48,
+        120,
+        48,
+        120
+      ],
+      "gap": 24,
+      "children": [
+        {
+          "id": "detail-desktop-title",
+          "type": "text",
+          "content": "東京旅行",
+          "fontSize": 34,
+          "fontWeight": "700",
+          "fill": "$color.apple.text"
+        },
+        {
+          "id": "detail-desktop-desc",
+          "type": "text",
+          "content": "4人グループ  合計 ¥45,000",
+          "fontSize": 17,
+          "fill": "$color.apple.textSecondary"
+        }
+      ]
+    }
+  ]
+}

@@ -165,15 +165,15 @@ export function AdminStepUpPanel({ nextPath = "/admin" }: AdminStepUpPanelProps)
     <div className="w-full max-w-md space-y-6">
       {/* ロゴ */}
       <div className="flex flex-col items-center gap-2 text-center">
-        <LogoMark className="text-4xl text-primary" />
-        <h1 className="text-lg font-semibold text-muted-foreground">SpliTrip Admin</h1>
+        <LogoMark className="text-4xl text-[var(--apple-link)]" />
+        <h1 className="text-lg font-semibold text-[var(--apple-text-secondary)]">SpliTrip Admin</h1>
       </div>
 
       {/* メイン認証カード */}
       <Card className="shadow-xl">
         <CardHeader className="text-center">
-          <div className="mx-auto mb-2 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
-            <Shield className="h-6 w-6 text-primary" />
+          <div className="mx-auto mb-2 flex h-12 w-12 items-center justify-center rounded-full bg-[var(--apple-link)]/10">
+            <Shield className="h-6 w-6 text-[var(--apple-link)]" />
           </div>
           <CardTitle className="text-xl">{t("stepUpTitle")}</CardTitle>
           <CardDescription className="text-sm leading-relaxed">
@@ -226,7 +226,7 @@ export function AdminStepUpPanel({ nextPath = "/admin" }: AdminStepUpPanelProps)
         </CardContent>
       </Card>
 
-      <div className="space-y-2 text-center text-xs text-muted-foreground">
+      <div className="space-y-2 text-center text-xs text-[var(--apple-text-secondary)]">
         <p>
           管理画面へのアクセスには、追加の生体認証が必要です。
         </p>

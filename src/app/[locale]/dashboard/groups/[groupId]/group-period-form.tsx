@@ -101,7 +101,7 @@ type GroupPeriodFormProps = {
 };
 
 const nativeSelectClasses =
-  "h-11 min-h-[44px] w-[calc(33.333%-0.4rem)] min-w-[5rem] shrink-0 rounded-md border border-input bg-background px-2 text-sm shadow-sm md:h-10 md:min-h-0";
+  "h-11 min-h-[44px] w-[calc(33.333%-0.4rem)] min-w-[5rem] shrink-0 rounded-lg border border-[var(--apple-separator)] bg-[var(--apple-surface)] px-2 text-sm shadow-sm md:h-10 md:min-h-0";
 
 export function GroupPeriodForm({
   groupId,
@@ -356,7 +356,7 @@ export function GroupPeriodForm({
 
     return (
       <div className="space-y-2">
-        <p className="text-xs font-medium text-muted-foreground">{labelHeading}</p>
+        <p className="text-xs font-medium text-[var(--apple-text-secondary)]">{labelHeading}</p>
         <div className="flex flex-wrap items-center gap-x-2 gap-y-2">
           <select
             id={`${idPrefixKey}-year`}
@@ -396,7 +396,7 @@ export function GroupPeriodForm({
               </option>
             ))}
           </select>
-          <span className="text-xs tabular-nums text-muted-foreground">
+          <span className="text-xs tabular-nums text-[var(--apple-text-secondary)]">
             {translations("groupPeriodYearLabel")}
           </span>
           <select
@@ -433,7 +433,7 @@ export function GroupPeriodForm({
               ),
             )}
           </select>
-          <span className="text-xs tabular-nums text-muted-foreground">
+          <span className="text-xs tabular-nums text-[var(--apple-text-secondary)]">
             {translations("groupPeriodMonthLabel")}
           </span>
           <select
@@ -462,7 +462,7 @@ export function GroupPeriodForm({
               ),
             )}
           </select>
-          <span className="text-xs tabular-nums text-muted-foreground">
+          <span className="text-xs tabular-nums text-[var(--apple-text-secondary)]">
             {translations("groupPeriodDayLabel")}
           </span>
         </div>
@@ -474,7 +474,7 @@ export function GroupPeriodForm({
     const nonOwnerStart = initialPeriodStartDate ?? "";
     const nonOwnerEnd = initialPeriodEndDate ?? "";
     return (
-      <p className="mt-1 text-xs text-muted-foreground">
+      <p className="mt-1 text-xs text-[var(--apple-text-secondary)]">
         {nonOwnerStart && nonOwnerEnd
           ? translations("groupPeriodValue", {
               start: nonOwnerStart,
@@ -488,7 +488,7 @@ export function GroupPeriodForm({
   if (!editingPeriod) {
     return (
       <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1">
-        <p className="text-xs text-muted-foreground">
+        <p className="text-xs text-[var(--apple-text-secondary)]">
           {committedHasPeriod
             ? translations("groupPeriodValue", {
                 start: buildIsoDateFromTriple(committedStartTriple),
@@ -511,7 +511,7 @@ export function GroupPeriodForm({
   }
 
   return (
-    <div className="mt-3 space-y-4 rounded-lg border border-border bg-card/40 p-3 sm:p-4">
+    <div className="mt-3 space-y-4 rounded-lg border border-[var(--apple-separator)] bg-[var(--apple-card-bg)]/40 p-3 sm:p-4">
       <BoundaryDateFields
         labelHeading={translations("groupPeriodStartLabel")}
         idPrefixKey="period-start"
@@ -586,7 +586,7 @@ export function GroupPeriodForm({
         </Button>
       </div>
       {startIsoDraft.length > 0 && endIsoDraft.length > 0 ? (
-        <p className="text-xs tabular-nums text-muted-foreground">
+        <p className="text-xs tabular-nums text-[var(--apple-text-secondary)]">
           {translations("groupPeriodPreviewHint", {
             start: startIsoDraft,
             end: endIsoDraft,
@@ -594,7 +594,7 @@ export function GroupPeriodForm({
         </p>
       ) : null}
       {errorMessage ? (
-        <p className="text-xs text-destructive" role="alert">
+        <p className="text-xs text-red-500" role="alert">
           {errorMessage}
         </p>
       ) : null}

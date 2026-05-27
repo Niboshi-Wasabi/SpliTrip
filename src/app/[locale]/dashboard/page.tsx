@@ -221,13 +221,13 @@ export default async function DashboardPage({ params }: PageProps) {
   const loginTranslations = await getTranslations("Login");
 
   return (
-    <div className="min-h-screen bg-background">
-      <header className="border-b border-border bg-card shadow-sm">
+    <div className="min-h-screen">
+      <header className="border-b border-[var(--apple-separator)] bg-[var(--apple-card-bg)] shadow-sm">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3">
           <div className="flex items-center gap-3">
             <LogoMark className="text-lg md:text-xl" />
             <div>
-              <p className="text-base font-medium text-muted-foreground">
+              <p className="text-base font-medium text-[var(--apple-text-secondary)]">
                 {dashboardPageTranslations("subtitle")}
               </p>
             </div>
@@ -243,7 +243,7 @@ export default async function DashboardPage({ params }: PageProps) {
               href="/settings"
               className={cn(
                 buttonVariants({ variant: "ghost", size: "sm" }),
-                "hidden text-muted-foreground md:inline-flex",
+                "hidden text-[var(--apple-text-secondary)] md:inline-flex",
               )}
             >
               {bottomNavTranslations("settings")}
@@ -267,10 +267,10 @@ export default async function DashboardPage({ params }: PageProps) {
           <Card className="flex h-full min-h-0 flex-col">
             <CardHeader className="shrink-0 pb-2">
               <div className="flex flex-row items-center justify-between">
-                <CardTitle className="text-sm font-medium text-muted-foreground">
+                <CardTitle className="text-sm font-medium text-[var(--apple-text-secondary)]">
                   {dashboardPageTranslations("statTotalSpend")}
                 </CardTitle>
-                <Receipt className="h-4 w-4 shrink-0 text-muted-foreground" />
+                <Receipt className="h-4 w-4 shrink-0 text-[var(--apple-text-secondary)]" />
               </div>
             </CardHeader>
             <CardContent className="flex flex-1 flex-col justify-end pt-0">
@@ -281,10 +281,10 @@ export default async function DashboardPage({ params }: PageProps) {
           <Card className="flex h-full min-h-0 flex-col">
             <CardHeader className="shrink-0 pb-2">
               <div className="flex flex-row items-center justify-between">
-                <CardTitle className="text-sm font-medium text-muted-foreground">
+                <CardTitle className="text-sm font-medium text-[var(--apple-text-secondary)]">
                   {dashboardPageTranslations("statGroupCount")}
                 </CardTitle>
-                <FolderOpen className="h-4 w-4 shrink-0 text-muted-foreground" />
+                <FolderOpen className="h-4 w-4 shrink-0 text-[var(--apple-text-secondary)]" />
               </div>
             </CardHeader>
             <CardContent className="flex flex-1 flex-col justify-end pt-0">
@@ -295,10 +295,10 @@ export default async function DashboardPage({ params }: PageProps) {
           <Card className="flex h-full min-h-0 flex-col">
             <CardHeader className="shrink-0 pb-2">
               <div className="flex flex-row items-center justify-between">
-                <CardTitle className="text-sm font-medium text-muted-foreground">
+                <CardTitle className="text-sm font-medium text-[var(--apple-text-secondary)]">
                   {dashboardPageTranslations("statAvgPerGroup")}
                 </CardTitle>
-                <TrendingUp className="h-4 w-4 shrink-0 text-muted-foreground" />
+                <TrendingUp className="h-4 w-4 shrink-0 text-[var(--apple-text-secondary)]" />
               </div>
             </CardHeader>
             <CardContent className="flex flex-1 flex-col justify-end pt-0">
@@ -337,13 +337,13 @@ export default async function DashboardPage({ params }: PageProps) {
                     <li key={groupItem.group.id}>
                       <Link
                         href={`/dashboard/groups/${groupItem.group.id}`}
-                        className="flex min-h-[44px] items-center justify-between rounded-lg border border-border p-3 transition-colors hover:bg-muted/50"
+                        className="flex min-h-[44px] items-center justify-between rounded-lg border border-[var(--apple-separator)] p-3 transition-colors hover:bg-[var(--apple-fill-tertiary)]/50"
                       >
                         <div>
-                          <span className="font-medium text-primary">
+                          <span className="font-medium text-[var(--apple-link)]">
                             {groupItem.group.name}
                           </span>
-                          <span className="ml-2 text-xs text-muted-foreground">
+                          <span className="ml-2 text-xs text-[var(--apple-text-secondary)]">
                             {groupItem.group.currency_code}
                           </span>
                         </div>
@@ -357,7 +357,7 @@ export default async function DashboardPage({ params }: PageProps) {
                   ))}
                 </ul>
               ) : (
-                <p className="py-4 text-sm text-muted-foreground">
+                <p className="py-4 text-sm text-[var(--apple-text-secondary)]">
                   {dashboardPageTranslations("emptyGroups")}
                 </p>
               )}
@@ -386,12 +386,12 @@ export default async function DashboardPage({ params }: PageProps) {
         </div>
       </main>
 
-      <footer className="border-t border-border pb-20 pt-6 text-center text-xs text-muted-foreground md:pb-6">
-        <Link href="/terms" className="underline underline-offset-4 hover:text-foreground">
+      <footer className="border-t border-[var(--apple-separator)] pb-20 pt-6 text-center text-xs text-[var(--apple-text-secondary)] md:pb-6">
+        <Link href="/terms" className="underline underline-offset-4 hover:text-[var(--apple-text)]">
           {loginTranslations("terms")}
         </Link>
         <span className="mx-2">·</span>
-        <Link href="/privacy" className="underline underline-offset-4 hover:text-foreground">
+        <Link href="/privacy" className="underline underline-offset-4 hover:text-[var(--apple-text)]">
           {loginTranslations("privacy")}
         </Link>
         <span className="mx-2">·</span>
@@ -399,7 +399,7 @@ export default async function DashboardPage({ params }: PageProps) {
           href={BETA_FEEDBACK_HREF}
           target="_blank"
           rel="noopener noreferrer"
-          className="underline underline-offset-4 hover:text-foreground"
+          className="underline underline-offset-4 hover:text-[var(--apple-text)]"
         >
           {loginTranslations("feedbackForm")}
         </a>

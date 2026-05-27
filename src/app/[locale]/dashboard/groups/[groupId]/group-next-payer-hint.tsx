@@ -82,18 +82,18 @@ export async function GroupNextPayerHint({
           {nextPayerTranslations("cardDescription")}
         </CardDescription>
       </CardHeader>
-      <CardContent className="text-xs text-muted-foreground">
+      <CardContent className="text-xs text-[var(--apple-text-secondary)]">
         {memberUserIds.length === 0 ? (
           <p>{nextPayerTranslations("emptyMembers")}</p>
         ) : showDebtHint && nextPayerSuggestion ? (
           <>
-            <p className="text-sm font-semibold text-foreground">
+            <p className="text-sm font-semibold text-[var(--apple-text)]">
               {suggestedDisplayName}
             </p>
             <p className="mt-1 leading-relaxed">
               {nextPayerTranslations("debtHint")}
             </p>
-            <p className="mt-2 font-mono text-[0.7rem] tabular-nums text-foreground">
+            <p className="mt-2 font-mono text-[0.7rem] tabular-nums text-[var(--apple-text)]">
               {nextPayerTranslations("netBalanceLabel")}{" "}
               {formatMoneyByCurrency(
                 currencyCode,

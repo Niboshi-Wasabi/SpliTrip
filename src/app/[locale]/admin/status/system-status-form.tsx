@@ -144,12 +144,12 @@ export function SystemStatusAdminForm() {
   return (
     <div className="space-y-6">
       {loadErrorMessage ? (
-        <p className="text-sm text-destructive" role="alert">
+        <p className="text-sm text-red-500" role="alert">
           {loadErrorMessage}
         </p>
       ) : null}
       {saveErrorMessage ? (
-        <p className="text-sm text-destructive" role="alert">
+        <p className="text-sm text-red-500" role="alert">
           {saveErrorMessage}
         </p>
       ) : null}
@@ -159,13 +159,13 @@ export function SystemStatusAdminForm() {
         </p>
       ) : null}
 
-      <p className="text-sm text-muted-foreground">{t("systemStatusHint")}</p>
+      <p className="text-sm text-[var(--apple-text-secondary)]">{t("systemStatusHint")}</p>
 
       <div className="space-y-4">
         {orderedSelections.map(({ serviceKey, status }) => (
           <div
             key={serviceKey}
-            className="flex flex-col gap-2 rounded-lg border border-border bg-card/40 p-4 sm:flex-row sm:items-center sm:justify-between"
+            className="flex flex-col gap-2 rounded-lg border border-[var(--apple-separator)] bg-[var(--apple-card-bg)]/40 p-4 sm:flex-row sm:items-center sm:justify-between"
           >
             <div className="min-w-0">
               <p className="font-medium">{t(serviceTranslationKey(serviceKey))}</p>
@@ -188,7 +188,7 @@ export function SystemStatusAdminForm() {
                   }))
                 }
                 disabled={busy}
-                className="border-input bg-background ring-offset-background focus-visible:ring-ring flex h-11 min-h-[44px] w-full rounded-md border px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
+                className="border-input ring-offset-background focus-visible:ring-ring flex h-11 min-h-[44px] w-full rounded-md border px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
               >
                 {SYSTEM_STATUS_VALUES.map((statusValue) => (
                   <option key={statusValue} value={statusValue}>

@@ -80,7 +80,7 @@ export function SupportGroupTool() {
 
   return (
     <div className="space-y-6 max-w-4xl">
-      <p className="text-sm text-muted-foreground">{t("supportPageDescription")}</p>
+      <p className="text-sm text-[var(--apple-text-secondary)]">{t("supportPageDescription")}</p>
       <div className="flex flex-col gap-2 sm:flex-row sm:items-end">
         <div className="min-w-0 flex-1">
           <Label htmlFor="gid">{t("supportGroupIdLabel")}</Label>
@@ -102,7 +102,7 @@ export function SupportGroupTool() {
         </Button>
       </div>
       {errorMessage ? (
-        <p className="text-sm text-destructive" role="alert">
+        <p className="text-sm text-red-500" role="alert">
           {errorMessage}
         </p>
       ) : null}
@@ -111,7 +111,7 @@ export function SupportGroupTool() {
           <p className="text-sm font-medium">
             {t("supportGroupName")}: {group.name}
           </p>
-          <p className="text-xs text-muted-foreground">
+          <p className="text-xs text-[var(--apple-text-secondary)]">
             {t("tableAccount")} / CCY: {group.currency_code}
           </p>
         </div>

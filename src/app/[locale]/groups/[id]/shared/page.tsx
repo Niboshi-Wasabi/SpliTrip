@@ -45,16 +45,16 @@ export default async function GroupSharedReadOnlyPage({
   const sharedTranslations = await getTranslations("SharedGroup");
 
   return (
-    <div className="min-h-screen bg-background px-4 py-10">
+    <div className="min-h-screen px-4 py-10">
       <div className="mx-auto max-w-lg space-y-3">
-        <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+        <p className="text-xs font-medium uppercase tracking-wide text-[var(--apple-text-secondary)]">
           {sharedTranslations("badge")}
         </p>
         <h1 className="text-2xl font-bold tracking-tight">{summary.name}</h1>
-        <p className="text-sm text-muted-foreground">
+        <p className="text-sm text-[var(--apple-text-secondary)]">
           {sharedTranslations("hint")}
         </p>
-        <p className="text-sm tabular-nums text-foreground">
+        <p className="text-sm tabular-nums text-[var(--apple-text)]">
           {sharedTranslations("currencyLabel")}: {summary.currency_code}
         </p>
       </div>

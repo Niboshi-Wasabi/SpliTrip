@@ -31,7 +31,7 @@ export function UpgradeModal({ open, onOpenChange }: Props) {
       <DialogContent className="max-h-[min(90vh,640px)] overflow-y-auto sm:max-w-md">
         <DialogHeader>
           <div className="flex items-center gap-2">
-            <span className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/15 text-primary">
+            <span className="flex h-10 w-10 items-center justify-center rounded-full bg-[var(--apple-link)]/15 text-[var(--apple-link)]">
               <Sparkles className="h-5 w-5" aria-hidden />
             </span>
             <DialogTitle className="text-left text-base leading-snug">
@@ -43,7 +43,7 @@ export function UpgradeModal({ open, onOpenChange }: Props) {
           </DialogDescription>
         </DialogHeader>
 
-        <ul className="space-y-3 rounded-lg border border-border bg-muted/30 p-3 text-sm">
+        <ul className="space-y-3 rounded-lg border border-[var(--apple-separator)] bg-[var(--apple-fill-tertiary)]/30 p-3 text-sm">
           {(
             [
               "benefitOcr",
@@ -68,7 +68,7 @@ export function UpgradeModal({ open, onOpenChange }: Props) {
         >
           {premiumTranslations("ctaComingSoon")}
         </Button>
-        <p className="text-center text-[11px] text-muted-foreground">
+        <p className="text-center text-[11px] text-[var(--apple-text-secondary)]">
           {/* Temporarily disabled while Stripe account review is pending. / Stripe審査対応待ちのため一時的に無効化しています。 */}
           {premiumTranslations("ctaComingSoonHint")}
         </p>

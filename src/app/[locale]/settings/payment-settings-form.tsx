@@ -91,7 +91,7 @@ export function PaymentSettingsForm({
           disabled={paymentSaveDisabled}
           onChange={(changeEvent) => setPaypalMeId(changeEvent.target.value)}
         />
-        <p className="text-xs text-muted-foreground">
+        <p className="text-xs text-[var(--apple-text-secondary)]">
           {translations("paymentPaypalHintLead")}{" "}
           <span className="whitespace-nowrap">
             https://www.paypal.com/paypalme/
@@ -115,11 +115,11 @@ export function PaymentSettingsForm({
             setCashAppCashtag(changeEvent.target.value)
           }
         />
-        <p className="text-xs text-muted-foreground">{translations("paymentCashHint")}</p>
+        <p className="text-xs text-[var(--apple-text-secondary)]">{translations("paymentCashHint")}</p>
       </div>
 
       {error ? (
-        <p className="text-sm text-destructive" role="alert">
+        <p className="text-sm text-red-500" role="alert">
           {error}
         </p>
       ) : null}

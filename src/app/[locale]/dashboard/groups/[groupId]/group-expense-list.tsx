@@ -71,7 +71,7 @@ function MobileExpenseListItem({
     <li className="list-none">
       <button
         type="button"
-        className="w-full rounded-lg border border-border bg-card p-3 text-left text-sm text-card-foreground transition-colors hover:bg-muted/40"
+        className="w-full rounded-lg border border-[var(--apple-separator)] bg-[var(--apple-card-bg)] p-3 text-left text-sm text-[var(--apple-text)] transition-colors hover:bg-[var(--apple-fill-tertiary)]/40"
         onClick={() => onOpenDetail(expense)}
         {...longPress.bind}
       >
@@ -90,7 +90,7 @@ function MobileExpenseListItem({
             />
           </span>
         </div>
-        <div className="mt-1 flex flex-wrap items-center gap-1.5 text-xs text-muted-foreground">
+        <div className="mt-1 flex flex-wrap items-center gap-1.5 text-xs text-[var(--apple-text-secondary)]">
           <span>{categoryDisplayLabel}</span>
           <span>·</span>
           <UserAvatar
@@ -145,7 +145,7 @@ function AmountWithConversion({
   return (
     <>
       {formatted}
-      <span className="ml-1 text-[11px] text-muted-foreground">
+      <span className="ml-1 text-[11px] text-[var(--apple-text-secondary)]">
         (≈ {formatMoneyByCurrency("JPY", Math.round(jpyAmount))})
       </span>
     </>
@@ -226,7 +226,7 @@ export function GroupExpenseList({
 
   if (visibleExpenses.length === 0) {
     return (
-      <p className="py-6 text-center text-sm text-muted-foreground">
+      <p className="py-6 text-center text-sm text-[var(--apple-text-secondary)]">
         {listTranslations("empty")}
       </p>
     );
@@ -265,9 +265,9 @@ export function GroupExpenseList({
       </ul>
 
       <div className="hidden md:block">
-        <div className="overflow-x-auto rounded-lg border border-border">
+        <div className="overflow-x-auto rounded-lg border border-[var(--apple-separator)]">
           <Table>
-            <TableHeader className="bg-muted/50">
+            <TableHeader className="bg-[var(--apple-fill-tertiary)]/50">
               <TableRow>
                 <TableHead className="px-3 py-2">{listTranslations("colCategory")}</TableHead>
                 <TableHead className="px-3 py-2">{listTranslations("colDate")}</TableHead>
@@ -287,7 +287,7 @@ export function GroupExpenseList({
                 return (
                   <TableRow
                     key={expense.id}
-                    className="cursor-pointer transition-colors hover:bg-muted/30"
+                    className="cursor-pointer transition-colors hover:bg-[var(--apple-fill-tertiary)]/30"
                     onClick={() => openDetail(expense)}
                     onMouseEnter={(event) =>
                       openHoverPreview(
@@ -307,7 +307,7 @@ export function GroupExpenseList({
                         <ExpenseCategoryIcon categoryId={categoryId} />
                       </span>
                     </TableCell>
-                    <TableCell className="whitespace-nowrap px-3 py-2.5 text-muted-foreground">
+                    <TableCell className="whitespace-nowrap px-3 py-2.5 text-[var(--apple-text-secondary)]">
                       {expense.expense_date}
                     </TableCell>
                     <TableCell className="px-3 py-2.5 font-medium">
@@ -430,7 +430,7 @@ export function GroupExpenseList({
         exchangeRates={exchangeRates}
       />
       {deleteToastMessage ? (
-        <div className="pointer-events-none fixed right-4 bottom-6 z-50 rounded-md border border-border bg-card px-3 py-2 text-xs shadow-lg">
+        <div className="pointer-events-none fixed right-4 bottom-6 z-50 rounded-md border border-[var(--apple-separator)] bg-[var(--apple-card-bg)] px-3 py-2 text-xs shadow-lg">
           {deleteToastMessage}
         </div>
       ) : null}

@@ -26,16 +26,16 @@ export async function AdminEnvConfigHint({
   return (
     <Card>
       <CardHeader>
-        <CardDescription className="text-destructive">
+        <CardDescription className="text-red-500">
           {t("configErrorIntro")}
         </CardDescription>
         {needsPublic ? (
-          <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+          <p className="mt-3 text-sm leading-relaxed text-[var(--apple-text-secondary)]">
             {t("configErrorPublic")}
           </p>
         ) : null}
         {needsService ? (
-          <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+          <p className="mt-3 text-sm leading-relaxed text-[var(--apple-text-secondary)]">
             {t("configErrorService")}
           </p>
         ) : null}

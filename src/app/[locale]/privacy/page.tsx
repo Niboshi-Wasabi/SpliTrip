@@ -25,7 +25,7 @@ export default async function PrivacyPage({ params }: PageProps) {
       <p>{translations("intro")}</p>
 
       <section>
-        <h2 className="text-xl font-semibold text-foreground">
+        <h2 className="text-xl font-semibold text-[var(--apple-text)]">
           {translations("s1Title")}
         </h2>
         <ul className="mt-2 list-disc space-y-1 pl-6">
@@ -36,7 +36,7 @@ export default async function PrivacyPage({ params }: PageProps) {
       </section>
 
       <section>
-        <h2 className="text-xl font-semibold text-foreground">
+        <h2 className="text-xl font-semibold text-[var(--apple-text)]">
           {translations("s2Title")}
         </h2>
         <ul className="mt-2 list-disc space-y-1 pl-6">
@@ -47,35 +47,35 @@ export default async function PrivacyPage({ params }: PageProps) {
       </section>
 
       <section>
-        <h2 className="text-xl font-semibold text-foreground">
+        <h2 className="text-xl font-semibold text-[var(--apple-text)]">
           {translations("s3Title")}
         </h2>
         <p className="mt-2">{translations("s3Body")}</p>
       </section>
 
       <section>
-        <h2 className="text-xl font-semibold text-foreground">
+        <h2 className="text-xl font-semibold text-[var(--apple-text)]">
           {translations("s4Title")}
         </h2>
         <p className="mt-2">{translations("s4Body")}</p>
       </section>
 
       <section>
-        <h2 className="text-xl font-semibold text-foreground">
+        <h2 className="text-xl font-semibold text-[var(--apple-text)]">
           {translations("s5Title")}
         </h2>
         <p className="mt-2">{translations("s5Body")}</p>
       </section>
 
       <section>
-        <h2 className="text-xl font-semibold text-foreground">
+        <h2 className="text-xl font-semibold text-[var(--apple-text)]">
           {translations("s6Title")}
         </h2>
         <p className="mt-2">{translations("s6Body")}</p>
       </section>
 
       <section>
-        <h2 className="text-xl font-semibold text-foreground">
+        <h2 className="text-xl font-semibold text-[var(--apple-text)]">
           {translations("s7Title")}
         </h2>
         <p className="mt-2">{translations("s7Body")}</p>
@@ -87,28 +87,28 @@ export default async function PrivacyPage({ params }: PageProps) {
       </section>
 
       <section>
-        <h2 className="text-xl font-semibold text-foreground">
+        <h2 className="text-xl font-semibold text-[var(--apple-text)]">
           {translations("s8Title")}
         </h2>
         <p className="mt-2">{translations("s8Body")}</p>
       </section>
 
       <section>
-        <h2 className="text-xl font-semibold text-foreground">
+        <h2 className="text-xl font-semibold text-[var(--apple-text)]">
           {translations("s9Title")}
         </h2>
         <p className="mt-2">{translations("s9Body")}</p>
       </section>
 
       <section>
-        <h2 className="text-xl font-semibold text-foreground">
+        <h2 className="text-xl font-semibold text-[var(--apple-text)]">
           {translations("s10Title")}
         </h2>
         <p className="mt-2">{translations("s10Body")}</p>
       </section>
 
       <section>
-        <h2 className="text-xl font-semibold text-foreground">
+        <h2 className="text-xl font-semibold text-[var(--apple-text)]">
           {translations("s11Title")}
         </h2>
         <p className="mt-2">{translations("s11Body")}</p>

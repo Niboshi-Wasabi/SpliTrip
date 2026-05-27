@@ -24,8 +24,8 @@ export function SupportDeveloper({ variant = "default" }: Props) {
   const hasUrl = externalUrl.length > 0;
 
   const baseClassName = cn(
-    "inline-flex items-center justify-center gap-2 rounded-lg border border-border/50 bg-muted/15 text-muted-foreground transition-colors",
-    "hover:border-border hover:bg-muted/30 hover:text-foreground",
+    "inline-flex items-center justify-center gap-2 rounded-lg border border-[var(--apple-separator)]/50 bg-muted/15 text-[var(--apple-text-secondary)] transition-colors",
+    "hover:border-[var(--apple-separator)] hover:bg-[var(--apple-fill-tertiary)]/30 hover:text-[var(--apple-text)]",
     variant === "compact"
       ? "min-h-[40px] w-full px-2 py-1.5 text-[11px] font-medium"
       : variant === "header"
@@ -101,7 +101,7 @@ export function SupportDeveloper({ variant = "default" }: Props) {
         <Coffee className="h-4 w-4 shrink-0" aria-hidden />
         <span className="min-w-0 flex-1 text-left">
           <span className="block">{label}</span>
-          <span className="mt-0.5 block text-xs font-normal text-muted-foreground">
+          <span className="mt-0.5 block text-xs font-normal text-[var(--apple-text-secondary)]">
             {description}
           </span>
         </span>
@@ -118,7 +118,7 @@ export function SupportDeveloper({ variant = "default" }: Props) {
       <Coffee className="h-4 w-4 shrink-0" aria-hidden />
       <span className="min-w-0 flex-1 text-left">
         <span className="block">{label}</span>
-        <span className="mt-0.5 block text-xs font-normal text-muted-foreground">
+        <span className="mt-0.5 block text-xs font-normal text-[var(--apple-text-secondary)]">
           {description}
         </span>
       </span>

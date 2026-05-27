@@ -1,0 +1,285 @@
+{
+  "version": "2.10",
+  "variables": {
+    "color.apple.bg": {
+      "type": "color",
+      "value": "#ffffff"
+    },
+    "color.apple.surface": {
+      "type": "color",
+      "value": "#fbfbfd"
+    },
+    "color.apple.text": {
+      "type": "color",
+      "value": "#1d1d1f"
+    },
+    "color.apple.textSecondary": {
+      "type": "color",
+      "value": "#6e6e73"
+    },
+    "color.apple.link": {
+      "type": "color",
+      "value": "#0066cc"
+    },
+    "color.apple.separator": {
+      "type": "color",
+      "value": "rgba(0, 0, 0, 0.08)"
+    },
+    "color.apple.cardBg": {
+      "type": "color",
+      "value": "#ffffff"
+    },
+    "color.apple.navBg": {
+      "type": "color",
+      "value": "rgba(251, 251, 253, 0.8)"
+    },
+    "color.apple.lp.bg": {
+      "type": "color",
+      "value": "#000000"
+    },
+    "color.apple.lp.text": {
+      "type": "color",
+      "value": "#f5f5f7"
+    },
+    "color.apple.lp.link": {
+      "type": "color",
+      "value": "#2997ff"
+    },
+    "spacing.gridUnit": {
+      "type": "number",
+      "value": 8
+    },
+    "radius.insetGroup": {
+      "type": "number",
+      "value": 16
+    },
+    "radius.sheet": {
+      "type": "number",
+      "value": 28
+    },
+    "radius.pill": {
+      "type": "number",
+      "value": 9999
+    },
+    "size.touchMin": {
+      "type": "number",
+      "value": 44
+    },
+    "size.listRowMin": {
+      "type": "number",
+      "value": 52
+    },
+    "size.header": {
+      "type": "number",
+      "value": 48
+    },
+    "size.tabBar": {
+      "type": "number",
+      "value": 56
+    },
+    "size.contentMaxWidth": {
+      "type": "number",
+      "value": 980
+    },
+    "typography.body": {
+      "type": "number",
+      "value": 17
+    },
+    "typography.caption": {
+      "type": "number",
+      "value": 12
+    },
+    "typography.tabLabel": {
+      "type": "number",
+      "value": 11
+    },
+    "typography.largeTitle": {
+      "type": "number",
+      "value": 34
+    },
+    "color.dark.bg": {
+      "type": "color",
+      "value": "#000000"
+    },
+    "color.dark.surface": {
+      "type": "color",
+      "value": "#1d1d1f"
+    },
+    "color.dark.text": {
+      "type": "color",
+      "value": "#f5f5f7"
+    },
+    "color.dark.textSecondary": {
+      "type": "color",
+      "value": "#86868b"
+    },
+    "color.dark.link": {
+      "type": "color",
+      "value": "#2997ff"
+    },
+    "color.dark.separator": {
+      "type": "color",
+      "value": "rgba(255, 255, 255, 0.08)"
+    },
+    "color.dark.cardBg": {
+      "type": "color",
+      "value": "#1d1d1f"
+    },
+    "color.dark.navBg": {
+      "type": "color",
+      "value": "rgba(29, 29, 31, 0.8)"
+    }
+  },
+  "children": [
+    {
+      "id": "settings-mobile",
+      "name": "Settings / Mobile",
+      "type": "frame",
+      "x": 0,
+      "y": 0,
+      "width": 375,
+      "height": 812,
+      "fill": "$color.apple.bg",
+      "layout": "vertical",
+      "padding": [
+        48,
+        16,
+        56,
+        16
+      ],
+      "gap": 16,
+      "children": [
+        {
+          "id": "settings-mobile-title",
+          "type": "text",
+          "content": "設定",
+          "fontSize": 34,
+          "fontWeight": "700",
+          "fill": "$color.apple.text"
+        },
+        {
+          "id": "settings-mobile-list",
+          "type": "frame",
+          "width": "fill_container",
+          "cornerRadius": "$radius.insetGroup",
+          "fill": "$color.apple.cardBg",
+          "stroke": {
+            "thickness": 1,
+            "fill": "$color.apple.separator"
+          },
+          "layout": "vertical",
+          "children": [
+            {
+              "id": "settings-row-profile",
+              "type": "frame",
+              "width": "fill_container",
+              "height": 52,
+              "padding": [
+                0,
+                16
+              ],
+              "alignItems": "center",
+              "children": [
+                {
+                  "id": "settings-profile-label",
+                  "type": "text",
+                  "content": "プロフィール",
+                  "fontSize": 17,
+                  "fill": "$color.apple.text"
+                }
+              ]
+            },
+            {
+              "id": "settings-row-language",
+              "type": "frame",
+              "width": "fill_container",
+              "height": 52,
+              "padding": [
+                0,
+                16
+              ],
+              "alignItems": "center",
+              "children": [
+                {
+                  "id": "settings-language-label",
+                  "type": "text",
+                  "content": "言語",
+                  "fontSize": 17,
+                  "fill": "$color.apple.text"
+                }
+              ]
+            },
+            {
+              "id": "settings-row-theme",
+              "type": "frame",
+              "width": "fill_container",
+              "height": 52,
+              "padding": [
+                0,
+                16
+              ],
+              "alignItems": "center",
+              "children": [
+                {
+                  "id": "settings-theme-label",
+                  "type": "text",
+                  "content": "テーマ",
+                  "fontSize": 17,
+                  "fill": "$color.apple.text"
+                }
+              ]
+            },
+            {
+              "id": "settings-row-about",
+              "type": "frame",
+              "width": "fill_container",
+              "height": 52,
+              "padding": [
+                0,
+                16
+              ],
+              "alignItems": "center",
+              "children": [
+                {
+                  "id": "settings-about-label",
+                  "type": "text",
+                  "content": "SpliTrip について",
+                  "fontSize": 17,
+                  "fill": "$color.apple.text"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "settings-desktop",
+      "name": "Settings / Desktop",
+      "type": "frame",
+      "x": 420,
+      "y": 0,
+      "width": 1280,
+      "height": 900,
+      "fill": "$color.apple.bg",
+      "layout": "vertical",
+      "padding": [
+        48,
+        120,
+        48,
+        120
+      ],
+      "gap": 24,
+      "children": [
+        {
+          "id": "settings-desktop-title",
+          "type": "text",
+          "content": "設定",
+          "fontSize": 34,
+          "fontWeight": "700",
+          "fill": "$color.apple.text"
+        }
+      ]
+    }
+  ]
+}

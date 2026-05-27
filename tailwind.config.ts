@@ -1,57 +1,59 @@
 import type { Config } from "tailwindcss";
+import { heroui } from "@heroui/theme";
+import typography from "@tailwindcss/typography";
 
-/**
- * Tailwind entry for tooling; dark mode follows `class` on `html` (theme provider).
- * ツール用設定。ダークは `html` の `class`（テーマプロバイダ）に追従する。
- *
- * Note: Tailwind v4 also defines `dark` via `globals.css` (`@custom-variant`); this flag documents intent.
- * 補足: v4 では `globals.css` の `@custom-variant` も併用。ここは意図の明示と互換用。
- *
- * Print utilities (`print:hidden`, etc.) use `@custom-variant print` in `globals.css` (standard `@media print`).
- * 印刷用ユーティリティは `globals.css` の `@custom-variant print`（`@media print`）に基づく。
- */
 const config = {
+  content: ["./src/**/*.{js,ts,jsx,tsx,mdx}"],
   darkMode: "class",
   theme: {
     extend: {
-      colors: {
-        lp: {
-          navy: "#1A202C",
-          mint: "#34D399",
-          coral: "#FB923C",
-          text: "#F8FAFC",
-          muted: "#CBD5E1",
-        },
-      },
       fontFamily: {
-        /**
-         * 本文スタック。実体は `globals.css` の `--font-serif`（`data-ui-sans` ごと）。
-         * ja は Noto Sans JP 優先、en は Source Serif 4 優先。
-         */
-        serif: [
-          "var(--font-serif)",
-          "var(--font-source-serif)",
-          '"Noto Sans JP"',
-          '"Hiragino Kaku Gothic ProN"',
-          '"Yu Gothic"',
-          '"Meiryo"',
-          "serif",
-        ],
-        /** 明示的な UI ゴシック（`font-sans`）。body の既定は `font-serif`。 */
-        sans: [
-          "ui-sans-serif",
-          "system-ui",
-          "-apple-system",
-          "BlinkMacSystemFont",
-          '"Segoe UI"',
-          "Roboto",
-          '"Helvetica Neue"',
-          "Arial",
-          "sans-serif",
-        ],
+        sans: ["var(--font-sans)", "var(--font-noto-sans-jp)", "sans-serif"],
+        serif: ["var(--font-serif)", "ui-serif", "serif"],
+        mono: ["var(--font-mono)", "ui-monospace", "monospace"],
+        heading: ["var(--font-heading)", "var(--font-sans)", "sans-serif"],
       },
     },
   },
+  plugins: [
+    typography,
+    heroui({
+      themes: {
+        light: {
+          colors: {
+            primary: {
+              DEFAULT: "#4f46e5",
+              foreground: "#ffffff",
+            },
+            success: {
+              DEFAULT: "#059669",
+              foreground: "#ecfdf5",
+            },
+            danger: {
+              DEFAULT: "#e11d48",
+              foreground: "#fff1f2",
+            },
+          },
+        },
+        dark: {
+          colors: {
+            primary: {
+              DEFAULT: "#6366f1",
+              foreground: "#ffffff",
+            },
+            success: {
+              DEFAULT: "#10b981",
+              foreground: "#ecfdf5",
+            },
+            danger: {
+              DEFAULT: "#f43f5e",
+              foreground: "#fff1f2",
+            },
+          },
+        },
+      },
+    }),
+  ],
 } satisfies Config;
 
 export default config;

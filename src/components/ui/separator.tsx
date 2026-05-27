@@ -1,25 +1,22 @@
-"use client"
+"use client";
 
-import { Separator as SeparatorPrimitive } from "@base-ui/react/separator"
+import { Separator as HeroSeparator } from "@heroui/react";
+import { cn } from "@/lib/utils";
 
-import { cn } from "@/lib/utils"
+type SeparatorProps = React.ComponentProps<typeof HeroSeparator>;
 
-function Separator({
-  className,
-  orientation = "horizontal",
-  ...props
-}: SeparatorPrimitive.Props) {
+function Separator({ className, orientation = "horizontal", ...props }: SeparatorProps) {
   return (
-    <SeparatorPrimitive
+    <HeroSeparator
       data-slot="separator"
       orientation={orientation}
       className={cn(
-        "shrink-0 bg-border data-horizontal:h-px data-horizontal:w-full data-vertical:w-px data-vertical:self-stretch",
-        className
+        "shrink-0 bg-[var(--apple-separator)] data-[orientation=horizontal]:h-px data-[orientation=horizontal]:w-full data-[orientation=vertical]:h-full data-[orientation=vertical]:w-px",
+        className,
       )}
       {...props}
     />
-  )
+  );
 }
 
-export { Separator }
+export { Separator };

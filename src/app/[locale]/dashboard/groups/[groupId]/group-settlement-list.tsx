@@ -207,7 +207,7 @@ export function GroupSettlementList({
               <span className="font-medium">
                 {settlementRow.fromDisplayName}
               </span>
-              <span className="text-muted-foreground">→</span>
+              <span className="text-[var(--apple-text-secondary)]">→</span>
               <UserAvatar
                 displayName={settlementRow.toDisplayName}
                 avatarUrl={recipientMember?.avatar_url}
@@ -228,7 +228,7 @@ export function GroupSettlementList({
                     exchangeRates,
                   );
                   return jpyAmount !== null ? (
-                    <span className="ml-1.5 text-xs font-normal text-muted-foreground">
+                    <span className="ml-1.5 text-xs font-normal text-[var(--apple-text-secondary)]">
                       (≈ {formatMoneyByCurrency("JPY", Math.round(jpyAmount))})
                     </span>
                   ) : null;
@@ -281,7 +281,7 @@ export function GroupSettlementList({
         );
       })}
       {copyToastMessage ? (
-        <li className="pointer-events-none fixed right-4 bottom-6 z-50 rounded-md border border-border bg-card px-3 py-2 text-xs shadow-lg">
+        <li className="pointer-events-none fixed right-4 bottom-6 z-50 rounded-md border border-[var(--apple-separator)] bg-[var(--apple-card-bg)] px-3 py-2 text-xs shadow-lg">
           {copyToastMessage}
         </li>
       ) : null}

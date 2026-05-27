@@ -10,7 +10,6 @@
 
 import { useTranslations } from "next-intl";
 import { usePathname } from "@/i18n/navigation";
-import { SupportDeveloper } from "@/components/ads/SupportDeveloper";
 import { Home, Settings, LogOut } from "lucide-react";
 import { createClient } from "@/utils/supabase/client";
 import { isSupabaseConfigured } from "@/utils/supabase/env";
@@ -58,47 +57,49 @@ export function BottomNav() {
 
   return (
     <nav
-      className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-card/95 backdrop-blur-sm md:hidden"
+      className="fixed inset-x-0 bottom-0 z-40 border-t border-[var(--apple-separator)] bg-[var(--apple-nav-bg)] backdrop-blur-xl md:hidden"
       role="navigation"
       aria-label={translations("ariaLabel")}
     >
-      <div className="mx-auto flex max-w-lg items-stretch justify-around">
+      <div className="mx-auto flex h-[56px] max-w-lg items-stretch justify-around">
         <OptimizedLink
           href="/dashboard"
-          className={`flex min-h-[56px] flex-1 flex-col items-center justify-center gap-0.5 text-[11px] transition-colors ${
+          className={`flex min-h-[44px] flex-1 flex-col items-center justify-center gap-0.5 font-sans transition-colors ${
             isDashboard
-              ? "font-semibold text-blue-600 dark:text-blue-400"
-              : "text-muted-foreground hover:text-foreground"
+              ? "text-[var(--apple-link)]"
+              : "text-[var(--apple-text-secondary)]"
           }`}
         >
           <Home className="h-5 w-5" />
-          {translations("home")}
+          <span className="text-[11px] font-medium leading-none">
+            {translations("home")}
+          </span>
         </OptimizedLink>
 
         <OptimizedLink
           href="/settings"
-          className={`flex min-h-[56px] flex-1 flex-col items-center justify-center gap-0.5 text-[11px] transition-colors ${
+          className={`flex min-h-[44px] flex-1 flex-col items-center justify-center gap-0.5 font-sans transition-colors ${
             isSettings
-              ? "font-semibold text-blue-600 dark:text-blue-400"
-              : "text-muted-foreground hover:text-foreground"
+              ? "text-[var(--apple-link)]"
+              : "text-[var(--apple-text-secondary)]"
           }`}
         >
           <Settings className="h-5 w-5" />
-          {translations("settings")}
+          <span className="text-[11px] font-medium leading-none">
+            {translations("settings")}
+          </span>
         </OptimizedLink>
 
         <button
           type="button"
           onClick={() => void handleLogout()}
-          className="flex min-h-[56px] flex-1 flex-col items-center justify-center gap-0.5 text-[11px] text-muted-foreground transition-colors hover:text-foreground"
+          className="flex min-h-[44px] flex-1 flex-col items-center justify-center gap-0.5 font-sans text-[var(--apple-text-secondary)] transition-colors"
         >
           <LogOut className="h-5 w-5" />
-          {translations("logout")}
+          <span className="text-[11px] font-medium leading-none">
+            {translations("logout")}
+          </span>
         </button>
-      </div>
-
-      <div className="border-t border-border/40 bg-muted/10 px-2 py-1.5">
-        <SupportDeveloper variant="compact" />
       </div>
 
       {/* iPhone のセーフエリア分のパディング / Safe area padding for notched iPhones */}

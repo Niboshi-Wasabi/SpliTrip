@@ -109,7 +109,7 @@ export function ReceiptInboxDashboardTools({ currentUserId, groups }: Props) {
             <Inbox className="h-4 w-4" aria-hidden />
             {receiptInboxTranslations("inboxTitle")}
           </span>
-          <span className="rounded-full bg-muted px-2 py-0.5 text-xs">
+          <span className="rounded-full bg-[var(--apple-fill-tertiary)] px-2 py-0.5 text-xs">
             {receiptInboxTranslations("inboxCount", { count })}
           </span>
         </Button>
@@ -126,7 +126,7 @@ export function ReceiptInboxDashboardTools({ currentUserId, groups }: Props) {
 
       {isInboxOpen ? (
         <div className="fixed inset-0 z-50 flex items-end bg-black/40 p-3 md:items-center md:justify-center">
-          <div className="w-full max-w-3xl rounded-xl border border-border bg-background p-4 shadow-xl">
+          <div className="w-full max-w-3xl rounded-xl border border-[var(--apple-separator)] bg-[var(--apple-card-bg)] p-4 shadow-xl">
             <div className="mb-3 flex items-center justify-between">
               <h2 className="text-base font-semibold">
                 {receiptInboxTranslations("inboxTitle")}
@@ -141,12 +141,12 @@ export function ReceiptInboxDashboardTools({ currentUserId, groups }: Props) {
               </Button>
             </div>
             {loading ? (
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <div className="flex items-center gap-2 text-sm text-[var(--apple-text-secondary)]">
                 <Loader2 className="h-4 w-4 animate-spin" />
                 {receiptInboxTranslations("loading")}
               </div>
             ) : items.length === 0 ? (
-              <p className="text-sm text-muted-foreground">
+              <p className="text-sm text-[var(--apple-text-secondary)]">
                 {receiptInboxTranslations("empty")}
               </p>
             ) : (
@@ -154,10 +154,10 @@ export function ReceiptInboxDashboardTools({ currentUserId, groups }: Props) {
                 {items.map((item) => (
                   <div
                     key={item.id}
-                    className="space-y-2 rounded-lg border border-border p-2"
+                    className="space-y-2 rounded-lg border border-[var(--apple-separator)] p-2"
                   >
                     <ReceiptThumbnail blob={item.imageBlob} />
-                    <p className="text-xs text-muted-foreground">
+                    <p className="text-xs text-[var(--apple-text-secondary)]">
                       {new Date(item.createdAt).toLocaleString()}
                     </p>
                     {groups.length > 0 ? (
@@ -207,7 +207,7 @@ export function ReceiptInboxDashboardTools({ currentUserId, groups }: Props) {
       ) : null}
 
       {toastMessage ? (
-        <div className="pointer-events-none fixed right-4 bottom-40 z-50 rounded-md border border-border bg-card px-3 py-2 text-xs shadow-lg md:bottom-20">
+        <div className="pointer-events-none fixed right-4 bottom-40 z-50 rounded-md border border-[var(--apple-separator)] bg-[var(--apple-card-bg)] px-3 py-2 text-xs shadow-lg md:bottom-20">
           {toastMessage}
         </div>
       ) : null}

@@ -7,15 +7,15 @@ const MEMBER_SKELETON_COUNT = 4;
 function Skeleton({ className }: { className?: string }) {
   return (
     <div
-      className={`animate-pulse rounded-md bg-muted ${className ?? ""}`}
+      className={`animate-pulse rounded-md bg-[var(--apple-fill-tertiary)] ${className ?? ""}`}
     />
   );
 }
 
 export default function DashboardLoading() {
   return (
-    <div className="min-h-screen bg-background">
-      <header className="border-b border-border bg-card shadow-sm">
+    <div className="min-h-screen">
+      <header className="border-b border-[var(--apple-separator)] bg-[var(--apple-card-bg)] shadow-sm">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
           <div className="flex items-center gap-3">
             <LogoMark className="text-lg md:text-lg" />

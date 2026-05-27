@@ -84,11 +84,11 @@ export function PostCreateInviteCard({ groupId, inviteToken }: Props) {
         <CardDescription>{translations("description")}</CardDescription>
       </CardHeader>
       <CardContent className="space-y-3">
-        <div className="rounded-md border bg-background px-3 py-2 font-mono text-xs break-all text-muted-foreground">
+        <div className="rounded-md border px-3 py-2 font-mono text-xs break-all text-[var(--apple-text-secondary)]">
           {urlReady ? inviteUrl : translations("urlPending")}
         </div>
         {copyError ? (
-          <p className="text-xs text-destructive" role="alert">
+          <p className="text-xs text-red-500" role="alert">
             {copyError}
           </p>
         ) : null}

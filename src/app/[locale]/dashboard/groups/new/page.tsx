@@ -22,8 +22,8 @@ export default async function NewGroupPage() {
   const t = await getTranslations("GroupNew");
 
   return (
-    <div className="min-h-screen bg-background">
-      <header className="border-b border-border bg-card shadow-sm">
+    <div className="min-h-screen">
+      <header className="border-b border-[var(--apple-separator)] bg-[var(--apple-card-bg)] shadow-sm">
         <div className="mx-auto flex max-w-3xl items-center justify-between gap-3 px-4 py-3">
           <Link
             href="/dashboard"

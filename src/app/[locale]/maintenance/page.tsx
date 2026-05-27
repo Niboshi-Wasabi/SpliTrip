@@ -48,14 +48,14 @@ export default async function MaintenancePage({ params }: PageProps) {
   const hasScheduleMarkdownBody = scheduleMessageMarkdown.trim().length > 0;
 
   return (
-    <div className="flex min-h-[70vh] flex-col items-center justify-center bg-background px-4 py-16">
-      <div className="w-full max-w-xl rounded-xl border border-border bg-card p-8 text-center shadow-sm">
-        <h1 className="text-2xl font-bold tracking-tight text-foreground">
+    <div className="flex min-h-[70vh] flex-col items-center justify-center px-4 py-16">
+      <div className="w-full max-w-xl rounded-xl border border-[var(--apple-separator)] bg-[var(--apple-card-bg)] p-8 text-center shadow-sm">
+        <h1 className="text-2xl font-bold tracking-tight text-[var(--apple-text)]">
           {translations("headline")}
         </h1>
         {hasScheduleMarkdownBody ? (
           <div className="mt-6 text-left">
-            <p className="text-xs font-medium uppercase tracking-widest text-muted-foreground">
+            <p className="text-xs font-medium uppercase tracking-widest text-[var(--apple-text-secondary)]">
               {translations("announcementLabel")}
             </p>
             <SafeMarkdown
@@ -64,7 +64,7 @@ export default async function MaintenancePage({ params }: PageProps) {
             />
           </div>
         ) : (
-          <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
+          <p className="mt-4 text-sm leading-relaxed text-[var(--apple-text-secondary)]">
             {translations("body")}
           </p>
         )}
@@ -78,8 +78,8 @@ export default async function MaintenancePage({ params }: PageProps) {
           >
             {translations("tryAgain")}
           </Link>
-          <div className="rounded-lg border border-border bg-muted/40 px-4 py-3 text-left text-sm text-muted-foreground">
-            <p className="font-medium text-foreground">{translations("adminLoginLead")}</p>
+          <div className="rounded-lg border border-[var(--apple-separator)] bg-[var(--apple-fill-tertiary)]/40 px-4 py-3 text-left text-sm text-[var(--apple-text-secondary)]">
+            <p className="font-medium text-[var(--apple-text)]">{translations("adminLoginLead")}</p>
             <Link
               href="/login/staff"
               className={cn(

@@ -157,8 +157,8 @@ export function GroupExportToolbar({
   return (
     <>
       <div className="mb-6 hidden print:block">
-        <h1 className="text-2xl font-bold text-foreground">{groupName}</h1>
-        <p className="text-sm text-muted-foreground">
+        <h1 className="text-2xl font-bold text-[var(--apple-text)]">{groupName}</h1>
+        <p className="text-sm text-[var(--apple-text-secondary)]">
           {translations("printedAt")}: {printedAtLabel}
         </p>
       </div>
@@ -206,7 +206,7 @@ export function GroupExportToolbar({
           </Button>
         </div>
         {pdfError ? (
-          <p className="text-sm text-destructive" role="alert">
+          <p className="text-sm text-red-500" role="alert">
             {pdfError}
           </p>
         ) : null}

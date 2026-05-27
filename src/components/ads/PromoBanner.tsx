@@ -29,7 +29,7 @@ export async function PromoBanner({ hidden = false, locale }: Props) {
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className="block overflow-hidden rounded-lg border border-border bg-card text-left shadow-sm transition hover:bg-muted/40"
+      className="block overflow-hidden rounded-lg border border-[var(--apple-separator)] bg-[var(--apple-card-bg)] text-left shadow-sm transition hover:bg-[var(--apple-fill-tertiary)]/40"
     >
       <div className="flex flex-col gap-2 p-3 sm:flex-row sm:items-center">
         {imageUrl ? (
@@ -41,10 +41,10 @@ export async function PromoBanner({ hidden = false, locale }: Props) {
           />
         ) : null}
         <div className="min-w-0 flex-1">
-          <p className="text-sm font-medium text-foreground">{label}</p>
-          <p className="mt-0.5 truncate text-xs text-muted-foreground">{href}</p>
+          <p className="text-sm font-medium text-[var(--apple-text)]">{label}</p>
+          <p className="mt-0.5 truncate text-xs text-[var(--apple-text-secondary)]">{href}</p>
         </div>
-        <span className="shrink-0 text-xs text-primary underline">↗</span>
+        <span className="shrink-0 text-xs text-[var(--apple-link)] underline">↗</span>
       </div>
     </a>
   );

@@ -69,8 +69,8 @@ export function GroupReceiptStickyEntry({
 
   if (!imageObjectUrl) {
     return (
-      <div className="rounded-lg border border-border bg-card p-4">
-        <p className="text-sm text-muted-foreground">
+      <div className="rounded-lg border border-[var(--apple-separator)] bg-[var(--apple-card-bg)] p-4">
+        <p className="text-sm text-[var(--apple-text-secondary)]">
           {receiptInboxTranslations("selectedReceiptMissing")}
         </p>
       </div>
@@ -80,12 +80,12 @@ export function GroupReceiptStickyEntry({
   return (
     <section className="grid gap-4 lg:grid-cols-2">
       <div className="space-y-3 lg:sticky lg:top-4 lg:self-start">
-        <div className="rounded-lg border border-border bg-card p-3">
+        <div className="rounded-lg border border-[var(--apple-separator)] bg-[var(--apple-card-bg)] p-3">
           <p className="text-sm font-medium">{receiptInboxTranslations("stickyViewerTitle")}</p>
-          <p className="mt-1 text-xs text-muted-foreground">
+          <p className="mt-1 text-xs text-[var(--apple-text-secondary)]">
             {receiptInboxTranslations("stickyViewerDescription")}
           </p>
-          <label className="mt-3 block text-xs text-muted-foreground">
+          <label className="mt-3 block text-xs text-[var(--apple-text-secondary)]">
             {receiptInboxTranslations("zoomLabel")}
             <input
               type="range"
@@ -98,7 +98,7 @@ export function GroupReceiptStickyEntry({
             />
           </label>
         </div>
-        <div className="max-h-[55vh] overflow-auto rounded-lg border border-border bg-black/5 p-2">
+        <div className="max-h-[55vh] overflow-auto rounded-lg border border-[var(--apple-separator)] bg-black/5 p-2">
           {/* eslint-disable-next-line @next/next/no-img-element -- Blob URL from local IndexedDB */}
           <img
             src={imageObjectUrl}

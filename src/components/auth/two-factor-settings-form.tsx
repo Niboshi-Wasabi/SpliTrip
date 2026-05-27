@@ -79,7 +79,7 @@ export function TwoFactorSettingsForm() {
   }
 
   if (!status) {
-    return <p className="text-sm text-muted-foreground">{t("loading")}</p>;
+    return <p className="text-sm text-[var(--apple-text-secondary)]">{t("loading")}</p>;
   }
 
   return (
@@ -96,10 +96,10 @@ export function TwoFactorSettingsForm() {
           <p className="text-xs">2段階認証が正常に設定されました。2秒後に元のページに戻ります...</p>
         </div>
       )}
-      <p className="text-sm text-muted-foreground">
+      <p className="text-sm text-[var(--apple-text-secondary)]">
         {status.enabled ? t("enabledState") : t("disabledState")}
       </p>
-      <p className="text-xs text-muted-foreground">
+      <p className="text-xs text-[var(--apple-text-secondary)]">
         {t("statusSummary", {
           credentialCount: status.credentialCount,
           backupCount: status.remainingBackupCodes,
@@ -124,7 +124,7 @@ export function TwoFactorSettingsForm() {
           </ul>
         </div>
       ) : null}
-      {error ? <p className="text-sm text-destructive">{error}</p> : null}
+      {error ? <p className="text-sm text-red-500">{error}</p> : null}
     </div>
   );
 }

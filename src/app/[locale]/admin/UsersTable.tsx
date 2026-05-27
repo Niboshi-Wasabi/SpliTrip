@@ -84,7 +84,7 @@ export function UsersTable({ users }: UsersTableProps) {
       case "manual":
         return <Badge variant="outline">{t("sourceManual")}</Badge>;
       default:
-        return <Badge variant="outline" className="text-muted-foreground">{t("sourceNone")}</Badge>;
+        return <Badge variant="outline" className="text-[var(--apple-text-secondary)]">{t("sourceNone")}</Badge>;
     }
   };
 
@@ -312,7 +312,7 @@ export function UsersTable({ users }: UsersTableProps) {
 
   if (users.length === 0) {
     return (
-      <div className="text-center py-8 text-muted-foreground">
+      <div className="text-center py-8 text-[var(--apple-text-secondary)]">
         登録ユーザーが見つかりません。
       </div>
     );
@@ -349,7 +349,7 @@ export function UsersTable({ users }: UsersTableProps) {
                         <div className="font-medium">
                           {user.display_name || "未設定"}
                         </div>
-                        <div className="text-sm text-muted-foreground">
+                        <div className="text-sm text-[var(--apple-text-secondary)]">
                           {user.email || "メール未設定"}
                         </div>
                       </div>
@@ -466,7 +466,7 @@ export function UsersTable({ users }: UsersTableProps) {
         </Table>
       </div>
 
-      <div className="text-xs text-muted-foreground text-center">
+      <div className="text-xs text-[var(--apple-text-secondary)] text-center">
         合計 {users.length} 人のユーザーが登録されています
       </div>
 
@@ -497,7 +497,7 @@ export function UsersTable({ users }: UsersTableProps) {
             {t("deleteDialogWarning")}
           </div>
           {deleteErrorMessage ? (
-            <p className="text-sm text-destructive" role="alert">
+            <p className="text-sm text-red-500" role="alert">
               {deleteErrorMessage}
             </p>
           ) : null}

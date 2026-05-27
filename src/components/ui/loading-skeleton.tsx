@@ -1,3 +1,4 @@
+import { Skeleton as HeroSkeleton } from "@heroui/react";
 import { cn } from "@/lib/utils";
 
 interface SkeletonProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -5,16 +6,16 @@ interface SkeletonProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 export function Skeleton({ className, variant = "default", ...props }: SkeletonProps) {
-  const variants = {
-    default: "bg-muted animate-pulse rounded-md",
-    card: "bg-muted animate-pulse rounded-lg p-4 space-y-3",
-    table: "bg-muted animate-pulse rounded h-8",
-    text: "bg-muted animate-pulse rounded h-4",
-  };
+  const variantClassName = {
+    default: "h-4 rounded-md",
+    card: "h-24 rounded-lg",
+    table: "h-8 rounded-md",
+    text: "h-4 rounded-md",
+  }[variant];
 
   return (
-    <div
-      className={cn(variants[variant], className)}
+    <HeroSkeleton
+      className={cn(variantClassName, className)}
       {...props}
     />
   );
@@ -22,7 +23,7 @@ export function Skeleton({ className, variant = "default", ...props }: SkeletonP
 
 export function CardSkeleton() {
   return (
-    <div className="rounded-lg border border-border bg-card p-4 space-y-3">
+    <div className="space-y-3 rounded-2xl border border-[var(--apple-separator)] bg-[var(--apple-card-bg)] p-4">
       <Skeleton className="h-4 w-1/4" />
       <Skeleton className="h-8 w-16" />
       <Skeleton className="h-3 w-1/2" />
@@ -33,8 +34,8 @@ export function CardSkeleton() {
 export function TableSkeleton({ rows = 5 }: { rows?: number }) {
   return (
     <div className="space-y-2">
-      {Array.from({ length: rows }).map((_, index) => (
-        <Skeleton key={index} variant="table" />
+      {Array.from({ length: rows }).map((_, rowIndex) => (
+        <Skeleton key={rowIndex} variant="table" />
       ))}
     </div>
   );

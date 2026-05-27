@@ -47,19 +47,19 @@ function ChartTooltipContent({
   const details = dataPoint.details ?? [];
 
   return (
-    <div className="rounded-lg border border-border bg-card px-3 py-2 shadow-md">
-      <p className="text-sm font-semibold text-foreground">
+    <div className="rounded-lg border border-[var(--apple-separator)] bg-[var(--apple-card-bg)] px-3 py-2 shadow-md">
+      <p className="text-sm font-semibold text-[var(--apple-text)]">
         {dataPoint.category}
       </p>
-      <p className="text-sm font-bold text-foreground">
+      <p className="text-sm font-bold text-[var(--apple-text)]">
         {formatYen(dataPoint.amount)}
       </p>
       {details.length > 0 ? (
-        <ul className="mt-1.5 space-y-0.5 border-t border-border pt-1.5">
+        <ul className="mt-1.5 space-y-0.5 border-t border-[var(--apple-separator)] pt-1.5">
           {details.slice(0, MAX_DETAIL_LINES).map((detail, detailIndex) => (
             <li
               key={`${detail.description}-${detailIndex}`}
-              className="flex items-baseline justify-between gap-3 text-xs text-muted-foreground"
+              className="flex items-baseline justify-between gap-3 text-xs text-[var(--apple-text-secondary)]"
             >
               <span className="truncate">
                 {detail.description || untitledLabel}
@@ -70,7 +70,7 @@ function ChartTooltipContent({
             </li>
           ))}
           {details.length > MAX_DETAIL_LINES ? (
-            <li className="text-[10px] text-muted-foreground">
+            <li className="text-[10px] text-[var(--apple-text-secondary)]">
               {moreCountLabel.replace(
                 "{count}",
                 String(details.length - MAX_DETAIL_LINES),
@@ -89,7 +89,7 @@ export function CategoryChart({ data }: { data: CategoryData[] }) {
   if (data.length === 0) {
     return (
       <div
-        className="flex items-center justify-center text-muted-foreground"
+        className="flex items-center justify-center text-[var(--apple-text-secondary)]"
         style={{ height: CHART_HEIGHT_PX }}
       >
         {chartTranslations("empty")}

@@ -43,7 +43,7 @@ export default async function RootLayout({
       suppressHydrationWarning
     >
       <body
-        className="font-serif flex min-h-full flex-col bg-background text-foreground antialiased transition-colors"
+        className="font-sans flex min-h-full flex-col text-[var(--apple-text)] antialiased transition-colors"
         suppressHydrationWarning
       >
         <Script src="/theme-bootstrap.js" strategy="beforeInteractive" />

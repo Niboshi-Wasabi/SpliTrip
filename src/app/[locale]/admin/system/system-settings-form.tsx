@@ -118,7 +118,7 @@ export function SystemSettingsForm() {
   return (
     <div className="space-y-6 max-w-2xl">
       {errorMessage ? (
-        <p className="text-sm text-destructive" role="alert">
+        <p className="text-sm text-red-500" role="alert">
           {errorMessage}
         </p>
       ) : null}
@@ -128,7 +128,7 @@ export function SystemSettingsForm() {
         </p>
       ) : null}
 
-      <div className="space-y-3 rounded-lg border border-border p-4">
+      <div className="space-y-3 rounded-lg border border-[var(--apple-separator)] p-4">
         <h2 className="text-sm font-medium">{t("systemMaintenanceBlock")}</h2>
         <div className="flex items-center gap-2">
           <input
@@ -140,7 +140,7 @@ export function SystemSettingsForm() {
           />
           <Label htmlFor="mOn">{t("systemMaintenanceToggle")}</Label>
         </div>
-        <p className="text-xs text-muted-foreground">{t("systemMaintenanceHint")}</p>
+        <p className="text-xs text-[var(--apple-text-secondary)]">{t("systemMaintenanceHint")}</p>
       </div>
 
       <div className="space-y-2">
@@ -148,16 +148,16 @@ export function SystemSettingsForm() {
         <textarea
           id="mMsg"
           rows={2}
-          className="border-input bg-background w-full rounded-md border px-3 py-2 text-sm"
+          className="border-input w-full rounded-md border px-3 py-2 text-sm"
           value={maintenanceMsg}
           onChange={(event) => setMaintenanceMsg(event.target.value)}
         />
-        <p className="text-xs text-muted-foreground">
+        <p className="text-xs text-[var(--apple-text-secondary)]">
           {t("systemMaintenanceBannerHint")}
         </p>
       </div>
 
-      <div className="space-y-3 rounded-lg border border-border p-4">
+      <div className="space-y-3 rounded-lg border border-[var(--apple-separator)] p-4">
         <h2 className="text-sm font-medium">{t("systemPromoBlock")}</h2>
         <div>
           <Label htmlFor="href">URL (href)</Label>

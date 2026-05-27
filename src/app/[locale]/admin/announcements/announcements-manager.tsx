@@ -353,20 +353,20 @@ export function AnnouncementsManager() {
 
     return (
       <div className="space-y-6">
-        <div className="rounded-lg border border-border bg-muted/30 p-4">
+        <div className="rounded-lg border border-[var(--apple-separator)] bg-[var(--apple-fill-tertiary)]/30 p-4">
           <div className="mb-2 flex items-center gap-3">
             <TopicIcon className={`h-5 w-5 ${topicConfig?.color ?? ""}`} />
             <h3 className="font-medium">
               {locale === "en" ? topicConfig?.labelEn : topicConfig?.labelJa}
             </h3>
           </div>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-sm text-[var(--apple-text-secondary)]">
             {topicConfig?.description}
           </p>
         </div>
 
         <div className="grid gap-4 lg:grid-cols-2">
-          <div className="space-y-3 rounded-lg border border-border bg-card p-4">
+          <div className="space-y-3 rounded-lg border border-[var(--apple-separator)] bg-[var(--apple-card-bg)] p-4">
             <h2 className="text-sm font-medium">
               {isEditingMode ? "編集（上書き保存）" : "新規作成"}
             </h2>
@@ -406,7 +406,7 @@ export function AnnouncementsManager() {
                   updateTopicForm(topicType, { expires_at: event.target.value })
                 }
               />
-              <p className="mt-1 text-xs text-muted-foreground">
+              <p className="mt-1 text-xs text-[var(--apple-text-secondary)]">
                 未設定なら無期限で公開されます。
               </p>
             </div>
@@ -417,7 +417,7 @@ export function AnnouncementsManager() {
                 id={`cja_${topicType}`}
                 rows={10}
                 spellCheck={false}
-                className="border-input bg-background ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring mt-2 flex min-h-[120px] w-full rounded-md border px-3 py-2 font-mono text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
+                className="border-input ring-offset-background placeholder:text-[var(--apple-text-secondary)] focus-visible:ring-ring mt-2 flex min-h-[120px] w-full rounded-md border px-3 py-2 font-mono text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
                 value={formData.content_ja}
                 onChange={(event) =>
                   updateTopicForm(topicType, { content_ja: event.target.value })
@@ -425,7 +425,7 @@ export function AnnouncementsManager() {
                 placeholder="日本語の本文（Markdown）"
                 aria-describedby={`cja_hint_${topicType}`}
               />
-              <p id={`cja_hint_${topicType}`} className="mt-1 text-xs text-muted-foreground">
+              <p id={`cja_hint_${topicType}`} className="mt-1 text-xs text-[var(--apple-text-secondary)]">
                 {markdownEditorTranslations("hint")}
               </p>
             </div>
@@ -436,7 +436,7 @@ export function AnnouncementsManager() {
                 id={`cen_${topicType}`}
                 rows={10}
                 spellCheck={false}
-                className="border-input bg-background ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring mt-2 flex min-h-[120px] w-full rounded-md border px-3 py-2 font-mono text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
+                className="border-input ring-offset-background placeholder:text-[var(--apple-text-secondary)] focus-visible:ring-ring mt-2 flex min-h-[120px] w-full rounded-md border px-3 py-2 font-mono text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
                 value={formData.content_en}
                 onChange={(event) =>
                   updateTopicForm(topicType, { content_en: event.target.value })
@@ -444,7 +444,7 @@ export function AnnouncementsManager() {
                 placeholder="English body (Markdown)"
                 aria-describedby={`cen_hint_${topicType}`}
               />
-              <p id={`cen_hint_${topicType}`} className="mt-1 text-xs text-muted-foreground">
+              <p id={`cen_hint_${topicType}`} className="mt-1 text-xs text-[var(--apple-text-secondary)]">
                 {markdownEditorTranslations("hint")}
               </p>
             </div>
@@ -470,7 +470,7 @@ export function AnnouncementsManager() {
                 }}
                 className="mt-1 max-w-[12rem]"
               />
-              <p className="mt-1 text-xs text-muted-foreground">
+              <p className="mt-1 text-xs text-[var(--apple-text-secondary)]">
                 {t("announcementDisplayOrderHint")}
               </p>
             </div>
@@ -486,7 +486,7 @@ export function AnnouncementsManager() {
                       priority: parseInt(event.target.value, 10),
                     })
                   }
-                  className="border-input bg-background ring-offset-background focus-visible:ring-ring flex h-10 w-full rounded-md border px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
+                  className="border-input ring-offset-background focus-visible:ring-ring flex h-10 w-full rounded-md border px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
                 >
                   <option value={0}>通常</option>
                   <option value={1}>高</option>
@@ -498,7 +498,7 @@ export function AnnouncementsManager() {
                   <input
                     type="checkbox"
                     id={`pub_${topicType}`}
-                    className="h-4 w-4 rounded border-border"
+                    className="h-4 w-4 rounded border-[var(--apple-separator)]"
                     checked={formData.is_published}
                     onChange={(event) =>
                       updateTopicForm(topicType, {
@@ -537,13 +537,13 @@ export function AnnouncementsManager() {
             </div>
           </div>
 
-          <div className="space-y-3 rounded-lg border border-border bg-card p-4">
+          <div className="space-y-3 rounded-lg border border-[var(--apple-separator)] bg-[var(--apple-card-bg)] p-4">
             <h2 className="text-sm font-medium">
               {t("announcementPreview")}
             </h2>
-            <div className="space-y-4 rounded-lg border border-border bg-background/70 p-4">
-              <div className="space-y-2 rounded-lg border border-border bg-zinc-900/40 p-3">
-                <p className="text-xs uppercase tracking-widest text-muted-foreground">
+            <div className="space-y-4 rounded-lg border border-[var(--apple-separator)] bg-[var(--apple-surface)]/70 p-4">
+              <div className="space-y-2 rounded-lg border border-[var(--apple-separator)] bg-zinc-900/40 p-3">
+                <p className="text-xs uppercase tracking-widest text-[var(--apple-text-secondary)]">
                   {t("announcementBannerPreview")}
                 </p>
                 <button
@@ -568,7 +568,7 @@ export function AnnouncementsManager() {
                 </button>
               </div>
 
-              <div className="space-y-2 rounded-lg border border-border bg-zinc-950 p-3 text-zinc-100">
+              <div className="space-y-2 rounded-lg border border-[var(--apple-separator)] bg-zinc-950 p-3 text-zinc-100">
                 <p className="text-xs uppercase tracking-widest text-zinc-400">
                   {t("announcementModalPreview")}
                 </p>
@@ -683,7 +683,7 @@ export function AnnouncementsManager() {
                               </Badge>
                             )}
                           </div>
-                          <span className="text-xs text-muted-foreground">
+                          <span className="text-xs text-[var(--apple-text-secondary)]">
                             {announcementRow.title_en || "—"}
                           </span>
                           <div className="flex gap-1">
@@ -724,7 +724,7 @@ export function AnnouncementsManager() {
                             type="button"
                             size="icon"
                             variant="outline"
-                            className="text-destructive min-h-[44px] min-w-[44px]"
+                            className="text-red-500 min-h-[44px] min-w-[44px]"
                             aria-label={t("announcementDelete")}
                             onClick={() => void remove(announcementRow.id)}
                             disabled={busy || deletingAnnouncementId === announcementRow.id}
@@ -770,12 +770,12 @@ export function AnnouncementsManager() {
       <div className="flex items-center justify-between">
         <div className="space-y-1">
           {displayError ? (
-            <p className="text-sm text-destructive" role="alert">
+            <p className="text-sm text-red-500" role="alert">
               {displayError}
             </p>
           ) : null}
           {actionError ? (
-            <p className="text-sm text-destructive" role="alert">
+            <p className="text-sm text-red-500" role="alert">
               {actionError}
             </p>
           ) : null}
@@ -832,7 +832,7 @@ export function AnnouncementsManager() {
 
       {rows.length > 0 && (
         <details className="space-y-3">
-          <summary className="cursor-pointer text-sm font-medium text-muted-foreground hover:text-foreground">
+          <summary className="cursor-pointer text-sm font-medium text-[var(--apple-text-secondary)] hover:text-[var(--apple-text)]">
             全お知らせ一覧を表示（{rows.length}件）
           </summary>
           <div className="max-h-[min(50vh,400px)] overflow-auto rounded-md border">
@@ -874,7 +874,7 @@ export function AnnouncementsManager() {
                                 </Badge>
                               )}
                             </div>
-                            <span className="text-xs text-muted-foreground">
+                            <span className="text-xs text-[var(--apple-text-secondary)]">
                               {announcementRow.title_en || "—"}
                             </span>
                             <div className="flex gap-1">
@@ -916,7 +916,7 @@ export function AnnouncementsManager() {
                             type="button"
                             size="icon"
                             variant="outline"
-                            className="text-destructive min-h-[44px] min-w-[44px]"
+                            className="text-red-500 min-h-[44px] min-w-[44px]"
                             aria-label={t("announcementDelete")}
                             onClick={() => void remove(announcementRow.id)}
                             disabled={busy || deletingAnnouncementId === announcementRow.id}

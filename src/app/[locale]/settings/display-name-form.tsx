@@ -82,13 +82,13 @@ export function DisplayNameForm({ initialDisplayName }: Props) {
           disabled={saving}
           onChange={(changeEvent) => setDisplayName(changeEvent.target.value)}
         />
-        <p className="text-xs text-muted-foreground">
+        <p className="text-xs text-[var(--apple-text-secondary)]">
           {translations("hint")}
         </p>
       </div>
 
       {error ? (
-        <p className="text-sm text-destructive" role="alert">{error}</p>
+        <p className="text-sm text-red-500" role="alert">{error}</p>
       ) : null}
       {message ? (
         <p className="text-sm text-emerald-700 dark:text-emerald-400" role="status">

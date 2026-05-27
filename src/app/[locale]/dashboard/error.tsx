@@ -20,7 +20,7 @@ export default function DashboardError({
   }, [error]);
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background px-4">
+    <div className="flex min-h-screen items-center justify-center px-4">
       <Card className="w-full max-w-md">
         <CardContent className="flex flex-col items-center gap-4 pt-8 text-center">
           <div className="rounded-full bg-red-100 p-3">
@@ -29,15 +29,15 @@ export default function DashboardError({
           <h2 className="text-xl font-semibold">
             {dashboardErrorTranslations("title")}
           </h2>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-sm text-[var(--apple-text-secondary)]">
             {dashboardErrorTranslations("description")}
           </p>
           {process.env.NODE_ENV !== "production" || error?.message ? (
-            <details className="mt-2 w-full text-left text-xs text-muted-foreground">
+            <details className="mt-2 w-full text-left text-xs text-[var(--apple-text-secondary)]">
               <summary className="cursor-pointer">
                 {dashboardErrorTranslations("detailsLabel")}
               </summary>
-              <pre className="mt-1 overflow-auto rounded bg-muted p-2">
+              <pre className="mt-1 overflow-auto rounded bg-[var(--apple-fill-tertiary)] p-2">
                 {error?.message ?? dashboardErrorTranslations("unknownError")}
                 {error?.digest ? `\ndigest: ${error.digest}` : ""}
               </pre>

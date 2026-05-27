@@ -63,10 +63,10 @@ export default async function SettingsPage({ params }: PageProps) {
   if (error) {
     console.error("[API/Action Error - settings get_own_profile]:", error);
     return (
-      <div className="min-h-screen bg-background px-4 py-10">
-        <p className="mx-auto max-w-lg text-sm text-destructive">
+      <div className="min-h-screen bg-[var(--apple-bg)] px-4 py-10 font-sans text-[var(--apple-text)]">
+        <p className="mx-auto max-w-lg text-sm text-rose-600 dark:text-rose-300">
           {t("profileLoadErrorLead")}（
-          <code className="rounded bg-muted px-1">user_profiles</code> の
+          <code className="rounded bg-[var(--apple-fill-tertiary)] px-1">user_profiles</code> の
           {t("profileLoadErrorTrail")}
         </p>
       </div>
@@ -98,12 +98,12 @@ export default async function SettingsPage({ params }: PageProps) {
   const paymentColumnsMissing = row !== null && !("paypal_me_id" in row);
 
   return (
-    <div className="min-h-screen bg-background">
-      <header className="border-b border-border bg-card shadow-sm">
-        <div className="mx-auto flex max-w-lg items-center justify-between gap-3 px-4 py-3">
+    <div className="min-h-screen bg-[var(--apple-bg)] font-sans text-[var(--apple-text)]">
+      <header className="sticky top-0 z-30 h-[48px] border-b border-[var(--apple-separator)] bg-[var(--apple-nav-bg)] backdrop-blur-xl">
+        <div className="mx-auto flex h-full max-w-lg items-center justify-between gap-3 px-4">
           <Link
             href="/dashboard"
-            className={cn(buttonVariants({ variant: "ghost", size: "sm" }), "min-h-[44px] md:min-h-0")}
+            className={cn(buttonVariants({ variant: "ghost", size: "sm" }), "min-h-[44px] text-[var(--apple-text-secondary)]")}
           >
             <ArrowLeft className="mr-1 h-4 w-4" />
             {t("backDashboard")}
@@ -195,7 +195,7 @@ export default async function SettingsPage({ params }: PageProps) {
           </Card>
         ) : null}
         {/* Temporarily hidden while Stripe account review is pending. / Stripe審査対応待ちのため一時的に非表示にしています。 */}
-        <div className="rounded-lg border border-dashed border-border/60 bg-muted/10 p-4">
+        <div className="rounded-lg border border-dashed border-[var(--apple-separator)] bg-[var(--apple-fill-tertiary)] p-4">
           <SupportDeveloper />
         </div>
       </main>

@@ -1,14 +1,19 @@
 ---
-description: shadcn/ui + エディトリアル調LPのデザイン原則
+description: HeroUI + Apple.com 風デザイン原則（LP〜アプリ共通）
 alwaysApply: true
 ---
 
-# UI/UX Design Principles (No AI-template Look)
+# UI/UX Design Principles (Apple.com Web)
 
-- Core stack: always prioritize `shadcn/ui` components (`Button`, `Card`, `Badge` etc.) before custom primitive markup.
-- Typography: keep global base in `font-serif` (Source Serif 4 + Noto Serif JP). H1/H2 must use `tracking-tight` and `leading-none` or `leading-tight` for editorial weight.
-- Dark theme strategy: avoid neon accents; use refined zinc/slate palette (`bg-zinc-950`, `text-zinc-100`, `text-zinc-300`) with minimal accent usage.
-- Whitespace-first layout: primary sections should breathe (`py-24` to `py-32`, generous vertical rhythm). Avoid cramped spacing patterns.
-- Surface treatment: avoid heavy default shadows and obvious borders; use subtle borders (`border-zinc-800` / translucent) and minimal soft shadows only when needed.
-- Badge/label hierarchy: small labels (e.g. BETA) should be `uppercase` with `tracking-widest` to create typographic contrast against large serif headlines.
-
+- **Pencil（設計）:** 新規画面・大きなレイアウト変更は先に [`design/screens/*.pen`](design/screens/) で設計する。**モバイル（375px）とデスクトップ（1280px / md+）の両フレームを必ず用意**（例: `dashboard-mobile` + `dashboard-desktop`）。トークンは [`design/tokens.json`](design/tokens.json) / [`src/lib/design/pencil-tokens.ts`](src/lib/design/pencil-tokens.ts)。セットアップは [`design/PENCIL-SETUP.md`](design/PENCIL-SETUP.md)。
+- **Core stack:** HeroUI (`@heroui/react`) + 共有トークン [`src/lib/ui/apple-design.ts`](src/lib/ui/apple-design.ts) + CSS 変数 [`src/app/globals.css`](src/app/globals.css)。
+- **Typography:** 全体 `font-sans`（`-apple-system` / SF Pro 系 + Noto Sans JP）。LP 見出しは 48–80px / `font-bold` / `tracking-[-0.03em]`。本文は 17–21px。
+- **Color:** semantic Apple 色（`--apple-bg`, `--apple-surface`, `--apple-text`, `--apple-link`, `--apple-separator`）。LP は `--apple-lp-*` ダーク専用。indigo グロー・ネオンアクセントは禁止。
+- **Lists:** inset grouped。角丸 `16px`、行高 `min-h-[52px]`。
+- **Navigation:** モバイル Tab Bar は **5 項目以内**。高さ 56px、アクティブは `--apple-link`。ヘッダー 48px + `backdrop-blur-xl`。
+- **Modals:** モバイルは下からシート（`items-end`）、面は `--apple-card-bg`、角丸 28px。
+- **Buttons:** pill 型 `rounded-full`。Primary は `--apple-link` フィル。
+- **Touch:** 最小 `min-h-[44px]`。
+- **Motion:** 控えめ。LP は `whileInView` の opacity + y（16–20px）。ホバーは shadow のみ（浮き上がり・scale 禁止）。
+- **App shell:** `h-dvh`、モバイル bottom nav + `md+` サイドバー。メイン背景は `--apple-bg`、コンテンツ max-width 980px。
+- **Spacing:** セクション `py-20 md:py-28 lg:py-36`。8pt グリッド（`globals.css` @theme）。

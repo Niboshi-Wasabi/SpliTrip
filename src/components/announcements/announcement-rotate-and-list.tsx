@@ -126,7 +126,7 @@ export function AnnouncementRotateAndList({
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -8 }}
                     transition={{ duration: 0.35, ease: "easeOut" }}
-                    className="font-serif text-sm font-medium tracking-tight text-zinc-100"
+                    className="font-sans text-sm font-medium tracking-tight text-zinc-100"
                   >
                     <span className="line-clamp-2 md:line-clamp-1">
                       {activeTitleDisplayed}
@@ -206,7 +206,7 @@ export function AnnouncementRotateAndList({
           showCloseButton
         >
           <DialogHeader className="shrink-0 border-b border-zinc-800 px-5 py-4 pr-14 text-left">
-            <DialogTitle className="font-serif text-lg leading-tight tracking-tight text-zinc-50">
+            <DialogTitle className="font-sans text-lg leading-tight tracking-tight text-zinc-50">
               {listDialogTitle}
             </DialogTitle>
           </DialogHeader>
@@ -222,7 +222,7 @@ export function AnnouncementRotateAndList({
                     key={announcementItem.id}
                     className="border-b border-zinc-800/80 pb-8 last:border-b-0 last:pb-0"
                   >
-                    <h3 className="font-serif text-base font-semibold tracking-tight text-zinc-50">
+                    <h3 className="font-sans text-base font-semibold tracking-tight text-zinc-50">
                       {itemTitleShown}
                     </h3>
                     {announcementItem.content.trim().length > 0 ? (

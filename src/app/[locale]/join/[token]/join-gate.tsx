@@ -76,7 +76,7 @@ const PROVIDER_CONFIG: {
     labelKey: "googleLogin",
     icon: GoogleIcon,
     buttonClassName:
-      "w-full justify-center gap-3 text-base font-medium border border-input bg-background hover:bg-accent hover:text-accent-foreground",
+      "w-full justify-center gap-3 text-base font-medium border border-input hover:bg-[var(--apple-fill-tertiary)] hover:text-[var(--apple-text)]",
   },
   {
     id: "line",
@@ -248,7 +248,7 @@ export function JoinGate({ token }: Props) {
     !supabaseReady || loadingAction !== null || emailActionBusy || passwordResetBusy;
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-background px-4 py-10">
+    <div className="flex min-h-screen flex-col items-center justify-center px-4 py-10">
       <Card className="w-full max-w-md">
         <CardHeader>
           <CardTitle>{translations("title")}</CardTitle>
@@ -256,7 +256,7 @@ export function JoinGate({ token }: Props) {
         </CardHeader>
         <CardContent className="space-y-4">
           {error ? (
-            <p className="text-sm text-destructive" role="alert">
+            <p className="text-sm text-red-500" role="alert">
               {error}
             </p>
           ) : null}
@@ -328,7 +328,7 @@ export function JoinGate({ token }: Props) {
             <div className="flex items-center justify-between text-sm">
               <button
                 type="button"
-                className="text-muted-foreground underline underline-offset-4 hover:text-foreground"
+                className="text-[var(--apple-text-secondary)] underline underline-offset-4 hover:text-[var(--apple-text)]"
                 onClick={() =>
                   setEmailAuthMode((currentMode) =>
                     currentMode === "signIn" ? "signUp" : "signIn",
@@ -342,7 +342,7 @@ export function JoinGate({ token }: Props) {
               </button>
               <button
                 type="button"
-                className="text-muted-foreground underline underline-offset-4 hover:text-foreground"
+                className="text-[var(--apple-text-secondary)] underline underline-offset-4 hover:text-[var(--apple-text)]"
                 onClick={() => void handleForgotPassword()}
                 disabled={authButtonsDisabled}
               >

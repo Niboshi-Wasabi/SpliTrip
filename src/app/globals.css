@@ -1,210 +1,172 @@
 @import "tailwindcss";
+@import "@heroui/react/styles";
 @plugin "@tailwindcss/typography";
-@import "tw-animate-css";
-@import "shadcn/tailwind.css";
 
 @custom-variant dark (&:is(.dark *));
-
-/* Enables `print:*` utilities (e.g. `print:hidden`) for the export / print flow. */
 @custom-variant print (@media print);
 
-/* Primary UI: Source Serif 4 + locale companions (e.g. Noto Serif JP for ja). */
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  /* Body stack: set per `data-ui-sans` below; `--font-source-serif` comes from `[locale]/layout`. */
-  --font-serif: var(--default-font-family, ui-serif, serif);
-  --font-sans: var(--font-sans);
-  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
-    "Liberation Mono", "Courier New", monospace;
-  --font-heading: var(--font-sans);
-  --color-sidebar-ring: var(--sidebar-ring);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar: var(--sidebar);
-  --color-chart-5: var(--chart-5);
-  --color-chart-4: var(--chart-4);
-  --color-chart-3: var(--chart-3);
-  --color-chart-2: var(--chart-2);
-  --color-chart-1: var(--chart-1);
-  --color-ring: var(--ring);
-  --color-input: var(--input);
-  --color-border: var(--border);
-  --color-destructive: var(--destructive);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-accent: var(--accent);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-muted: var(--muted);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-secondary: var(--secondary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-primary: var(--primary);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-popover: var(--popover);
-  --color-card-foreground: var(--card-foreground);
-  --color-card: var(--card);
-  --radius-sm: calc(var(--radius) * 0.6);
-  --radius-md: calc(var(--radius) * 0.8);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) * 1.4);
-  --radius-2xl: calc(var(--radius) * 1.8);
-  --radius-3xl: calc(var(--radius) * 2.2);
-  --radius-4xl: calc(var(--radius) * 2.6);
-  --ui-button-sm-font-size: 0.8rem;
-}
-
 :root {
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
+  --font-sans:
+    -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display",
+    var(--font-noto-sans-jp), "Hiragino Sans", "Hiragino Kaku Gothic ProN",
+    "Yu Gothic", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-sans);
+  --font-heading: var(--font-sans);
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  --ui-button-sm-font-size: 0.86rem;
+
+  /* Apple.com semantic — light */
+  --apple-bg: #ffffff;
+  --apple-surface: #fbfbfd;
+  --apple-text: #1d1d1f;
+  --apple-text-secondary: #6e6e73;
+  --apple-link: #0066cc;
+  --apple-separator: rgba(0, 0, 0, 0.08);
+  --apple-card-bg: #ffffff;
+  --apple-nav-bg: rgba(251, 251, 253, 0.8);
+  --apple-fill-tertiary: rgba(118, 118, 128, 0.12);
+
+  /* LP ダーク専用（マーケティング） */
+  --apple-lp-bg: #000000;
+  --apple-lp-surface: #1d1d1f;
+  --apple-lp-text: #f5f5f7;
+  --apple-lp-text-secondary: #86868b;
+  --apple-lp-link: #2997ff;
+  --apple-lp-separator: rgba(255, 255, 255, 0.08);
+
+  --lp-card-radius: 28px;
+  --lp-pill-radius: 9999px;
+  --lp-soft-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  --apple-bg: #000000;
+  --apple-surface: #1d1d1f;
+  --apple-text: #f5f5f7;
+  --apple-text-secondary: #86868b;
+  --apple-link: #2997ff;
+  --apple-separator: rgba(255, 255, 255, 0.08);
+  --apple-card-bg: #1d1d1f;
+  --apple-nav-bg: rgba(29, 29, 31, 0.8);
+  --apple-fill-tertiary: rgba(118, 118, 128, 0.24);
+  --lp-soft-shadow: 0 2px 16px rgba(0, 0, 0, 0.4);
+}
+
+html[data-ui-sans="latin"] {
+  --font-sans:
+    -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display",
+    ui-sans-serif, system-ui, sans-serif;
+}
+
+html[data-ui-sans="ja"] {
+  --font-sans:
+    -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display",
+    var(--font-noto-sans-jp), "Hiragino Sans", "Hiragino Kaku Gothic ProN",
+    "Yu Gothic", ui-sans-serif, system-ui, sans-serif;
+}
+
+html[data-ui-mono="fira"] {
+  --font-mono: var(--font-fira-code), ui-monospace, SFMono-Regular, Menlo, Monaco,
+    Consolas, monospace;
+}
+
+@theme inline {
+  --font-display: var(--font-sans);
+
+  --spacing-0: 0px;
+  --spacing-px: 1px;
+  --spacing-0\.5: 0.125rem;
+  --spacing-1: 0.25rem;
+  --spacing-1\.5: 0.375rem;
+  --spacing-2: 0.5rem;
+  --spacing-2\.5: 0.625rem;
+  --spacing-3: 0.75rem;
+  --spacing-3\.5: 0.875rem;
+  --spacing-4: 1rem;
+  --spacing-5: 1.25rem;
+  --spacing-6: 1.5rem;
+  --spacing-7: 1.75rem;
+  --spacing-8: 2rem;
+  --spacing-9: 2.25rem;
+  --spacing-10: 2.5rem;
+  --spacing-11: 2.75rem;
+  --spacing-12: 3rem;
+  --spacing-14: 3.5rem;
+  --spacing-16: 4rem;
+  --spacing-20: 5rem;
+  --spacing-24: 6rem;
+  --spacing-28: 7rem;
+  --spacing-32: 8rem;
+  --spacing-36: 9rem;
+  --spacing-40: 10rem;
+  --spacing-44: 11rem;
+  --spacing-48: 12rem;
+  --spacing-52: 13rem;
+  --spacing-56: 14rem;
+  --spacing-60: 15rem;
+  --spacing-64: 16rem;
+  --spacing-72: 18rem;
+  --spacing-80: 20rem;
+  --spacing-96: 24rem;
 }
 
 @layer base {
-  * {
-    @apply border-border outline-ring/50;
-  }
   body {
-    @apply bg-background text-foreground;
-  }
-  html {
-    @apply font-sans;
-  }
-
-  /*
-   * Per-locale serif stacks: `[locale]/layout` sets `data-ui-sans` / `data-ui-mono` and loads
-   * next/font variables (see `locale-ui-fonts.ts`). Use `font-sans` class for explicit UIゴシック。
-   */
-  html[data-ui-sans="latin"] {
-    --font-serif: var(--font-source-serif), "Times New Roman", ui-serif, serif;
-    --font-sans: var(--font-source-serif), "Times New Roman", ui-serif, serif;
-    --font-heading: var(--font-serif);
-    --ui-button-sm-font-size: 0.8rem;
-  }
-
-  html[data-ui-sans="ja"] {
-    --font-serif: var(--font-source-serif), var(--font-noto-serif-jp), "Noto Serif JP",
-      "Hiragino Mincho ProN", ui-serif, serif;
-    --font-sans: var(--font-source-serif), var(--font-noto-serif-jp), "Noto Serif JP",
-      "Hiragino Mincho ProN", ui-serif, serif;
-    --font-heading: var(--font-serif);
-    --ui-button-sm-font-size: 0.86rem;
-  }
-
-  /* Button small text scale fallback by locale. */
-  html:lang(ja) {
-    --ui-button-sm-font-size: 0.86rem;
-  }
-  html:lang(en) {
-    --ui-button-sm-font-size: 0.8rem;
-  }
-
-  /*
-   * Source Serif 4 tuning (site-wide for latin/en):
-   * provide clearer hierarchy without an overly heavy look.
-   */
-  html[data-ui-sans="latin"] .font-bold,
-  html:lang(en) .font-bold {
-    font-weight: 640;
-  }
-  html[data-ui-sans="latin"] .font-semibold,
-  html:lang(en) .font-semibold {
-    font-weight: 580;
-  }
-  html[data-ui-sans="latin"] .font-medium,
-  html:lang(en) .font-medium {
-    font-weight: 500;
-  }
-
-  /*
-   * Japanese typography tuning (site-wide):
-   * avoid overly heavy rendering while keeping clear hierarchy by class.
-   */
-  html:lang(ja) .font-bold {
-    font-weight: 650;
-  }
-  html:lang(ja) .font-semibold {
-    font-weight: 600;
-  }
-  html:lang(ja) .font-medium {
-    font-weight: 500;
-  }
-
-  html[data-ui-mono="fira"] {
-    --font-mono: var(--font-fira-code), "Fira Mono", Menlo, Consolas, "DejaVu Sans Mono",
-      monospace;
+    @apply font-sans antialiased;
+    background-color: var(--apple-bg);
+    color: var(--apple-text);
   }
 
   @media print {
     body {
       @apply bg-white text-black;
     }
+  }
+}
+
+@layer components {
+  .tabs__indicator {
+    border-radius: 8px;
+    background-color: var(--apple-card-bg);
+    border: 1px solid var(--apple-separator);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+  }
+
+  .apple-segmented-track {
+    @apply rounded-lg p-0.5;
+    background-color: var(--apple-fill-tertiary);
+  }
+}
+
+@layer utilities {
+  .lp-bento-card,
+  .dashboard-bento-card {
+    border-radius: var(--lp-card-radius);
+    transition: box-shadow 0.25s ease, border-color 0.2s ease;
+  }
+
+  .lp-card {
+    border-radius: var(--lp-card-radius);
+    border-color: var(--apple-lp-separator);
+    box-shadow: var(--lp-soft-shadow);
+    background-color: var(--apple-lp-surface);
+  }
+
+  .lp-pill {
+    border-radius: var(--lp-pill-radius);
+  }
+
+  .pb-safe {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  .apple-lp-theme {
+    --apple-bg: var(--apple-lp-bg);
+    --apple-surface: var(--apple-lp-surface);
+    --apple-text: var(--apple-lp-text);
+    --apple-text-secondary: var(--apple-lp-text-secondary);
+    --apple-link: var(--apple-lp-link);
+    --apple-separator: var(--apple-lp-separator);
+    --apple-card-bg: var(--apple-lp-surface);
   }
 }

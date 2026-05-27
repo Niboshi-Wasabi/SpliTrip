@@ -136,7 +136,7 @@ export function GroupInviteButton({ invitePath, groupName }: Props) {
       </Button>
       </div>
       {message ? (
-        <p className="text-xs text-destructive" role="alert">
+        <p className="text-xs text-red-500" role="alert">
           {message}
         </p>
       ) : null}

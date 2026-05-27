@@ -329,7 +329,7 @@ export function TwoFactorGate({ nextPath }: Props) {
           <p className="text-xs">アカウントのセキュリティを向上させるため、まず2段階認証の設定を行います。設定画面に移動しています...</p>
         </div>
       )}
-      <p className="text-sm text-muted-foreground">
+      <p className="text-sm text-[var(--apple-text-secondary)]">
         {needsSetup ? t("setupDescription") : t("verifyDescription")}
       </p>
 
@@ -347,7 +347,7 @@ export function TwoFactorGate({ nextPath }: Props) {
 
       {needsSetup ? (
         <div className="text-center py-4">
-          <div className="inline-flex items-center gap-2 text-sm text-muted-foreground">
+          <div className="inline-flex items-center gap-2 text-sm text-[var(--apple-text-secondary)]">
             <div className="h-4 w-4 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
             設定画面に移動中...
           </div>
@@ -359,7 +359,7 @@ export function TwoFactorGate({ nextPath }: Props) {
       )}
 
       {!needsSetup && (
-        <div className="space-y-2 rounded-md border border-border p-3">
+        <div className="space-y-2 rounded-md border border-[var(--apple-separator)] p-3">
           <p className="text-sm font-medium">{t("backupCodeSectionTitle")}</p>
           <Input
             value={backupCode}

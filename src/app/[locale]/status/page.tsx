@@ -204,7 +204,7 @@ export default async function SystemStatusPage({ params }: PageParams) {
   const SummaryIconPack = statusIconForCode(rollup);
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-screen text-[var(--apple-text)]">
       <header className="border-b border-zinc-800 bg-zinc-950/40">
         <div className="mx-auto flex max-w-3xl items-center gap-3 px-4 py-4">
           <Link
@@ -221,7 +221,7 @@ export default async function SystemStatusPage({ params }: PageParams) {
       </header>
 
       <main className="mx-auto max-w-3xl px-4 py-16 md:py-24">
-        <h1 className="font-serif text-3xl font-semibold tracking-tight text-zinc-100 md:text-4xl">
+        <h1 className="font-sans text-3xl font-semibold tracking-tight text-zinc-100 md:text-4xl">
           {t("pageTitle")}
         </h1>
         <p className="mt-3 text-sm leading-relaxed text-zinc-400">

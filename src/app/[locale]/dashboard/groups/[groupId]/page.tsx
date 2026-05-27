@@ -221,8 +221,8 @@ export default async function GroupDetailPage({ params, searchParams }: PageProp
   });
 
   return (
-    <div className="min-h-screen bg-background">
-      <header className="border-b border-border bg-card shadow-sm print:hidden">
+    <div className="min-h-screen">
+      <header className="border-b border-[var(--apple-separator)] bg-[var(--apple-card-bg)] shadow-sm print:hidden">
         <div className="mx-auto max-w-6xl px-4 py-3">
           <div className="mb-3 flex items-center justify-between gap-2 md:mb-0 md:hidden">
             <Link
@@ -263,7 +263,7 @@ export default async function GroupDetailPage({ params, searchParams }: PageProp
               canEdit={currentUserCanEditGroupName}
             />
             <div className="mt-1.5 flex items-center gap-2">
-              <p className="text-xs text-muted-foreground">
+              <p className="text-xs text-[var(--apple-text-secondary)]">
                 {groupDetailTranslations("memberLine", {
                   currency: group.currency_code,
                   count: members.length,
@@ -276,7 +276,7 @@ export default async function GroupDetailPage({ params, searchParams }: PageProp
                     displayName={memberRow.display_name}
                     avatarUrl={memberRow.avatar_url}
                     size="sm"
-                    className="ring-2 ring-card"
+                    className="ring-2 ring-[var(--apple-card-bg)]"
                   />
                 ))}
               </div>
@@ -377,11 +377,11 @@ export default async function GroupDetailPage({ params, searchParams }: PageProp
           </div>
 
           <div className="space-y-6">
-            <div className="rounded-lg border border-border bg-card p-4 shadow-sm print:hidden">
-              <p className="text-lg font-semibold text-foreground">
+            <div className="rounded-lg border border-[var(--apple-separator)] bg-[var(--apple-card-bg)] p-4 shadow-sm print:hidden">
+              <p className="text-lg font-semibold text-[var(--apple-text)]">
                 {group.name}
               </p>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-xs text-[var(--apple-text-secondary)]">
                 {exportTranslations("printedAt")}: {snapshotPrintedAt}
               </p>
             </div>
@@ -429,7 +429,7 @@ export default async function GroupDetailPage({ params, searchParams }: PageProp
               <span className="block print:hidden">
                 <Link
                   href="/settings"
-                  className="font-medium text-primary underline-offset-4 hover:underline"
+                  className="font-medium text-[var(--apple-link)] underline-offset-4 hover:underline"
                 >
                   {groupDetailTranslations("settlementSettingsLink")}
                 </Link>
@@ -439,7 +439,7 @@ export default async function GroupDetailPage({ params, searchParams }: PageProp
           </CardHeader>
           <CardContent>
             {settlements.length === 0 ? (
-              <p className="py-6 text-center text-sm text-muted-foreground">
+              <p className="py-6 text-center text-sm text-[var(--apple-text-secondary)]">
                 {groupDetailTranslations("settlementEmpty")}
               </p>
             ) : (

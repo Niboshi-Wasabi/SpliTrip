@@ -111,7 +111,7 @@ export function AdminUsersDashboard() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{totalUsers}</div>
-            <p className="text-xs text-muted-foreground">登録済みユーザー</p>
+            <p className="text-xs text-[var(--apple-text-secondary)]">登録済みユーザー</p>
           </CardContent>
         </Card>
 
@@ -122,7 +122,7 @@ export function AdminUsersDashboard() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{proCount}</div>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-xs text-[var(--apple-text-secondary)]">
               {totalUsers > 0 ? Math.round((proCount / totalUsers) * 100) : 0}% がPRO
             </p>
           </CardContent>
@@ -135,7 +135,7 @@ export function AdminUsersDashboard() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{adminCount}</div>
-            <p className="text-xs text-muted-foreground">管理権限を持つユーザー</p>
+            <p className="text-xs text-[var(--apple-text-secondary)]">管理権限を持つユーザー</p>
           </CardContent>
         </Card>
       </div>

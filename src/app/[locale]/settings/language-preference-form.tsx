@@ -57,7 +57,7 @@ export function LanguagePreferenceForm({ initialLanguage }: Props) {
           {LOCALE_DISPLAY_OPTIONS.map((localeOption) => (
             <label
               key={localeOption.locale}
-              className="flex min-h-[44px] cursor-pointer items-center gap-2 rounded-md border border-border bg-card px-3 py-2 text-sm"
+              className="flex min-h-[44px] cursor-pointer items-center gap-2 rounded-md border border-[var(--apple-separator)] bg-[var(--apple-card-bg)] px-3 py-2 text-sm"
             >
               <input
                 type="radio"
@@ -73,7 +73,7 @@ export function LanguagePreferenceForm({ initialLanguage }: Props) {
         </div>
       </div>
       {message ? (
-        <p className="text-sm text-muted-foreground" role="status">
+        <p className="text-sm text-[var(--apple-text-secondary)]" role="status">
           {message}
         </p>
       ) : null}

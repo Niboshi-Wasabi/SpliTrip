@@ -69,9 +69,9 @@ export function DisplayNamePrompt({
 
   if (!editing) {
     return (
-      <div className="flex items-center gap-2 rounded-lg border border-border bg-card px-4 py-2.5">
-        <UserRound className="h-4 w-4 text-muted-foreground" />
-        <span className="text-sm text-foreground">
+      <div className="flex items-center gap-2 rounded-lg border border-[var(--apple-separator)] bg-[var(--apple-card-bg)] px-4 py-2.5">
+        <UserRound className="h-4 w-4 text-[var(--apple-text-secondary)]" />
+        <span className="text-sm text-[var(--apple-text)]">
           {translations("currentLabel")}: <strong>{currentName}</strong>
         </span>
         <Button
@@ -108,7 +108,7 @@ export function DisplayNamePrompt({
               onChange={(changeEvent) => setName(changeEvent.target.value)}
               placeholder={translations("placeholder")}
               maxLength={DISPLAY_NAME_MAX_LENGTH}
-              className="max-w-xs bg-white dark:bg-background"
+              className="max-w-xs bg-white dark:"
               disabled={saving}
               onKeyDown={(keyEvent) => {
                 if (keyEvent.key === "Enter") {
@@ -153,7 +153,7 @@ export function DisplayNamePrompt({
             )}
           </div>
           {error ? (
-            <p className="text-sm text-destructive">{error}</p>
+            <p className="text-sm text-red-500">{error}</p>
           ) : null}
         </div>
       </div>

@@ -62,7 +62,7 @@ export function GroupSpendingChartCard({
             </CardDescription>
           </div>
           <div
-            className="flex w-full shrink-0 gap-1 rounded-lg border border-border bg-muted/30 p-1 sm:w-auto"
+            className="flex w-full shrink-0 gap-1 rounded-lg border border-[var(--apple-separator)] bg-[var(--apple-fill-tertiary)]/30 p-1 sm:w-auto"
             role="tablist"
             aria-label={chartTranslations("toggleAria")}
           >
@@ -73,8 +73,8 @@ export function GroupSpendingChartCard({
               className={cn(
                 "min-h-[44px] flex-1 rounded-md px-3 text-xs font-medium transition-colors sm:min-h-0 sm:flex-none sm:text-sm",
                 mode === "payer"
-                  ? "bg-background text-foreground shadow-sm"
-                  : "text-muted-foreground hover:text-foreground",
+                  ? " text-[var(--apple-text)] shadow-sm"
+                  : "text-[var(--apple-text-secondary)] hover:text-[var(--apple-text)]",
               )}
               onClick={() => setMode("payer")}
             >
@@ -87,8 +87,8 @@ export function GroupSpendingChartCard({
               className={cn(
                 "min-h-[44px] flex-1 rounded-md px-3 text-xs font-medium transition-colors sm:min-h-0 sm:flex-none sm:text-sm",
                 mode === "category"
-                  ? "bg-background text-foreground shadow-sm"
-                  : "text-muted-foreground hover:text-foreground",
+                  ? " text-[var(--apple-text)] shadow-sm"
+                  : "text-[var(--apple-text-secondary)] hover:text-[var(--apple-text)]",
               )}
               onClick={() => setMode("category")}
             >

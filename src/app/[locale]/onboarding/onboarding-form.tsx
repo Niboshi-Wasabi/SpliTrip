@@ -67,16 +67,16 @@ export function OnboardingForm({ suggestedName, nextPath }: Props) {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background px-4">
+    <div className="flex min-h-screen items-center justify-center px-4">
       <div className="w-full max-w-md space-y-8">
         <div className="text-center">
           <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-xl shadow-md ring-1 ring-border">
             <LogoMark className="text-lg md:text-lg" />
           </div>
-          <h1 className="text-2xl font-bold text-foreground">
+          <h1 className="text-2xl font-bold text-[var(--apple-text)]">
             {translations("title")}
           </h1>
-          <p className="mt-2 text-sm text-muted-foreground">
+          <p className="mt-2 text-sm text-[var(--apple-text-secondary)]">
             {translations("description")}
           </p>
         </div>
@@ -96,13 +96,13 @@ export function OnboardingForm({ suggestedName, nextPath }: Props) {
               disabled={submitting}
               className="text-base"
             />
-            <p className="text-xs text-muted-foreground">
+            <p className="text-xs text-[var(--apple-text-secondary)]">
               {translations("hint")}
             </p>
           </div>
 
           {errorMessage ? (
-            <p className="text-sm text-destructive" role="alert">
+            <p className="text-sm text-red-500" role="alert">
               {errorMessage}
             </p>
           ) : null}

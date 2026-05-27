@@ -49,7 +49,7 @@ type ItemLine = {
  * タッチ用の高い行で `items-center` だとラジオがテキストより上に見えるため、上揃え＋微調整で合わせる。
  */
 const RADIO_LABEL_ROW_CLASS =
-  "flex min-h-[44px] cursor-pointer items-start gap-3 rounded-md px-2 py-2 transition-colors hover:bg-muted/50 md:min-h-0 md:py-1";
+  "flex min-h-[44px] cursor-pointer items-start gap-3 rounded-md px-2 py-2 transition-colors hover:bg-[var(--apple-fill-tertiary)]/50 md:min-h-0 md:py-1";
 const RADIO_INPUT_CLASS =
   "mt-[0.3125rem] h-4 w-4 shrink-0 cursor-pointer";
 
@@ -675,7 +675,7 @@ export function GroupExpensePanel({
 
   if (members.length === 0) {
     return (
-      <p className="text-sm text-muted-foreground">
+      <p className="text-sm text-[var(--apple-text-secondary)]">
         {formTranslations("emptyMembers")}
       </p>
     );
@@ -684,7 +684,7 @@ export function GroupExpensePanel({
   return (
     <form
       onSubmit={(formEvent) => void handleSubmit(formEvent)}
-      className="flex flex-col gap-4 rounded-lg border border-border bg-card p-3 sm:p-4"
+      className="flex flex-col gap-4 rounded-lg border border-[var(--apple-separator)] bg-[var(--apple-card-bg)] p-3 sm:p-4"
     >
       <h3 className="text-sm font-semibold">{formTranslations("title")}</h3>
 
@@ -749,7 +749,7 @@ export function GroupExpensePanel({
             </p>
           ) : null}
           {approximateJpyPreview ? (
-            <p className="text-xs text-muted-foreground" role="status">
+            <p className="text-xs text-[var(--apple-text-secondary)]" role="status">
               {formTranslations("jpyPreviewApprox", {
                 amount: approximateJpyPreview,
               })}
@@ -816,7 +816,7 @@ export function GroupExpensePanel({
           max={groupPeriodEndDate ?? undefined}
         />
         {groupPeriodStartDate && groupPeriodEndDate ? (
-          <p className="text-xs text-muted-foreground">
+          <p className="text-xs text-[var(--apple-text-secondary)]">
             {formTranslations("dateRangeHint", {
               start: groupPeriodStartDate,
               end: groupPeriodEndDate,
@@ -901,7 +901,7 @@ export function GroupExpensePanel({
       >
         <p
           id="expense-remainder-policy-heading"
-          className="px-1 text-xs font-medium text-muted-foreground"
+          className="px-1 text-xs font-medium text-[var(--apple-text-secondary)]"
         >
           {formTranslations("remainderHeading")}
         </p>
@@ -979,7 +979,7 @@ export function GroupExpensePanel({
 
       {splitMode === "exact" ? (
         <div className="space-y-2 rounded-md border border-dashed p-3">
-          <p className="text-xs text-muted-foreground">
+          <p className="text-xs text-[var(--apple-text-secondary)]">
             {formTranslations("exactIntro")}
           </p>
           <div className="grid gap-2 sm:grid-cols-2">
@@ -1014,7 +1014,7 @@ export function GroupExpensePanel({
 
       {splitMode === "shares" ? (
         <div className="space-y-2 rounded-md border border-dashed p-3">
-          <p className="text-xs text-muted-foreground">
+          <p className="text-xs text-[var(--apple-text-secondary)]">
             {formTranslations("sharesZeroHint")}
           </p>
           <div className="grid gap-2 sm:grid-cols-2">
@@ -1048,7 +1048,7 @@ export function GroupExpensePanel({
 
       {splitMode === "percent" ? (
         <div className="space-y-2 rounded-md border border-dashed p-3">
-          <p className="text-xs text-muted-foreground">
+          <p className="text-xs text-[var(--apple-text-secondary)]">
             {formTranslations("percentIntro")}
           </p>
           <div className="grid gap-2 sm:grid-cols-2">
@@ -1075,7 +1075,7 @@ export function GroupExpensePanel({
                   }
                   disabled={submitting}
                 />
-                <span className="text-xs text-muted-foreground">%</span>
+                <span className="text-xs text-[var(--apple-text-secondary)]">%</span>
               </div>
             ))}
           </div>
@@ -1085,7 +1085,7 @@ export function GroupExpensePanel({
       {splitMode === "itemized" ? (
         <div className="space-y-3 rounded-md border border-dashed p-3">
           <div className="flex items-center justify-between gap-2">
-            <p className="text-xs text-muted-foreground">
+            <p className="text-xs text-[var(--apple-text-secondary)]">
               {formTranslations("itemizedIntro")}
             </p>
             <Button
@@ -1103,7 +1103,7 @@ export function GroupExpensePanel({
             {itemLines.map((line) => (
               <div
                 key={line.key}
-                className="rounded-lg border bg-muted/30 p-3 space-y-2"
+                className="rounded-lg border bg-[var(--apple-fill-tertiary)]/30 p-3 space-y-2"
               >
                 <div className="flex flex-wrap items-end gap-2">
                   <div className="space-y-1">
@@ -1169,7 +1169,7 @@ export function GroupExpensePanel({
                     </Button>
                   ) : null}
                 </div>
-                <div className="flex flex-wrap items-center gap-2 border-b border-border/60 pb-2">
+                <div className="flex flex-wrap items-center gap-2 border-b border-[var(--apple-separator)]/60 pb-2">
                   <Button
                     type="button"
                     variant="outline"
@@ -1199,7 +1199,7 @@ export function GroupExpensePanel({
                   {members.map((memberRow) => (
                     <label
                       key={memberRow.user_id}
-                      className="flex min-h-[36px] cursor-pointer items-start gap-2 rounded-md px-1 py-0.5 transition-colors hover:bg-muted/50 md:min-h-0"
+                      className="flex min-h-[36px] cursor-pointer items-start gap-2 rounded-md px-1 py-0.5 transition-colors hover:bg-[var(--apple-fill-tertiary)]/50 md:min-h-0"
                     >
                       <input
                         type="checkbox"

@@ -17,7 +17,7 @@ export default async function AccountDeletedPage({
     <main className="mx-auto flex min-h-[70vh] w-full max-w-2xl items-center px-4 py-12 md:px-6">
       <Card className="w-full border-zinc-800 bg-zinc-950/70 text-zinc-100">
         <CardHeader>
-          <CardTitle className="font-serif text-2xl tracking-tight md:text-3xl">
+          <CardTitle className="font-sans text-2xl tracking-tight md:text-3xl">
             {t("title")}
           </CardTitle>
         </CardHeader>

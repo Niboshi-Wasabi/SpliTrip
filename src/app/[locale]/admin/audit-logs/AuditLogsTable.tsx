@@ -87,7 +87,7 @@ export function AuditLogsTable({ logs }: AuditLogsTableProps) {
 
   if (logs.length === 0) {
     return (
-      <div className="text-center py-8 text-muted-foreground">
+      <div className="text-center py-8 text-[var(--apple-text-secondary)]">
         {t("noAuditLogs")}
       </div>
     );
@@ -119,7 +119,7 @@ export function AuditLogsTable({ logs }: AuditLogsTableProps) {
                     <div className="font-medium">
                       {log.admin_display_name || "管理者"}
                     </div>
-                    <div className="text-sm text-muted-foreground">
+                    <div className="text-sm text-[var(--apple-text-secondary)]">
                       {log.admin_email || "メール未設定"}
                     </div>
                   </div>
@@ -129,7 +129,7 @@ export function AuditLogsTable({ logs }: AuditLogsTableProps) {
                     <div className="font-medium">
                       {log.target_display_name || "ユーザー"}
                     </div>
-                    <div className="text-sm text-muted-foreground">
+                    <div className="text-sm text-[var(--apple-text-secondary)]">
                       {log.target_email || "メール未設定"}
                     </div>
                   </div>
@@ -148,7 +148,7 @@ export function AuditLogsTable({ logs }: AuditLogsTableProps) {
         </Table>
       </div>
 
-      <div className="text-xs text-muted-foreground text-center">
+      <div className="text-xs text-[var(--apple-text-secondary)] text-center">
         {logs.length} 件の操作履歴を表示中（最新100件まで）
       </div>
     </div>

@@ -83,7 +83,7 @@ const PROVIDER_CONFIG: {
     labelKey: "googleLogin",
     icon: GoogleIcon,
     buttonClassName:
-      "w-full justify-center gap-3 text-base font-medium border border-input bg-background hover:bg-accent hover:text-accent-foreground",
+      "w-full justify-center gap-3 text-base font-medium border border-input hover:bg-[var(--apple-fill-tertiary)] hover:text-[var(--apple-text)]",
   },
   {
     id: "line",
@@ -277,10 +277,10 @@ export function LoginForm({ staffMaintenanceEntry = false }: LoginFormProps) {
         <ThemeToggle />
       </div>
       <div className="mb-8 flex flex-col items-center gap-2">
-        <div className="flex items-center text-foreground">
+        <div className="flex items-center text-[var(--apple-text)]">
           <LogoMark className="text-4xl md:text-4xl" />
         </div>
-        <p className="text-lg text-muted-foreground">{translations("tagline")}</p>
+        <p className="text-lg text-[var(--apple-text-secondary)]">{translations("tagline")}</p>
       </div>
 
       <Card className="w-full max-w-md shadow-xl">
@@ -375,7 +375,7 @@ export function LoginForm({ staffMaintenanceEntry = false }: LoginFormProps) {
             <div className="flex items-center justify-between text-sm">
               <button
                 type="button"
-                className="text-muted-foreground underline underline-offset-4 hover:text-foreground"
+                className="text-[var(--apple-text-secondary)] underline underline-offset-4 hover:text-[var(--apple-text)]"
                 onClick={() =>
                   setEmailAuthMode((currentMode) =>
                     currentMode === "signIn" ? "signUp" : "signIn",
@@ -389,7 +389,7 @@ export function LoginForm({ staffMaintenanceEntry = false }: LoginFormProps) {
               </button>
               <button
                 type="button"
-                className="text-muted-foreground underline underline-offset-4 hover:text-foreground"
+                className="text-[var(--apple-text-secondary)] underline underline-offset-4 hover:text-[var(--apple-text)]"
                 onClick={() => void handleForgotPassword()}
                 disabled={authButtonsDisabled}
               >
@@ -400,18 +400,18 @@ export function LoginForm({ staffMaintenanceEntry = false }: LoginFormProps) {
         </CardContent>
       </Card>
 
-      <p className="mt-6 text-center text-sm text-muted-foreground">
+      <p className="mt-6 text-center text-sm text-[var(--apple-text-secondary)]">
         {translations("termsPrivacyLead")}
         <Link
           href="/terms"
-          className="underline underline-offset-4 hover:text-primary"
+          className="underline underline-offset-4 hover:text-[var(--apple-link)]"
         >
           {translations("terms")}
         </Link>
         {translations("termsPrivacyJoin")}
         <Link
           href="/privacy"
-          className="underline underline-offset-4 hover:text-primary"
+          className="underline underline-offset-4 hover:text-[var(--apple-link)]"
         >
           {translations("privacy")}
         </Link>

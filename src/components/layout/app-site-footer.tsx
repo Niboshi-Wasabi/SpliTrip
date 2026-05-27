@@ -8,11 +8,11 @@ export function AppSiteFooter() {
   const t = useTranslations("AppFooter");
 
   return (
-    <footer className="mt-auto border-t border-border/60 bg-muted/20 py-3 text-center">
+    <footer className="mt-auto border-t border-[var(--apple-separator)] bg-[var(--apple-surface)] py-3 text-center font-sans">
       <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
         <Link
           href="/status"
-          className="min-h-[44px] inline-flex items-center text-xs text-muted-foreground underline-offset-4 transition-colors hover:text-foreground hover:underline"
+          className="min-h-[44px] inline-flex items-center text-xs text-[var(--apple-text-secondary)] underline-offset-4 transition-colors hover:text-[var(--apple-text)] hover:underline"
         >
           {t("systemStatusLink")}
         </Link>
@@ -20,7 +20,7 @@ export function AppSiteFooter() {
           href={BETA_FEEDBACK_HREF}
           target="_blank"
           rel="noopener noreferrer"
-          className="min-h-[44px] inline-flex items-center text-xs text-muted-foreground underline-offset-4 transition-colors hover:text-foreground hover:underline"
+          className="min-h-[44px] inline-flex items-center text-xs text-[var(--apple-text-secondary)] underline-offset-4 transition-colors hover:text-[var(--apple-text)] hover:underline"
         >
           {t("betaBugReport")}
         </a>

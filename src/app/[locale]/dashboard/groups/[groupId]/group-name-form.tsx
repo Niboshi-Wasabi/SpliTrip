@@ -29,7 +29,7 @@ export function GroupNameForm({
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   if (!canEdit) {
-    return <h1 className="text-lg font-bold text-foreground">{initialName}</h1>;
+    return <h1 className="text-lg font-bold text-[var(--apple-text)]">{initialName}</h1>;
   }
 
   async function handleSave() {
@@ -89,7 +89,7 @@ export function GroupNameForm({
   if (!editing) {
     return (
       <div className="flex items-center gap-2">
-        <h1 className="text-lg font-bold text-foreground">{groupName}</h1>
+        <h1 className="text-lg font-bold text-[var(--apple-text)]">{groupName}</h1>
         <Button
           type="button"
           size="sm"
@@ -142,7 +142,7 @@ export function GroupNameForm({
         </div>
       </div>
       {errorMessage ? (
-        <p className="text-xs text-destructive" role="alert">
+        <p className="text-xs text-red-500" role="alert">
           {errorMessage}
         </p>
       ) : null}

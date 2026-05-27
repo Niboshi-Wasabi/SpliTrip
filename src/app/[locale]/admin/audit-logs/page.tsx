@@ -53,7 +53,7 @@ export default async function AuditLogsPage({ params }: AuditLogsPageProps) {
         <Suspense
           fallback={
             <div className="flex items-center justify-center p-8">
-              <p className="text-sm text-muted-foreground">読み込み中...</p>
+              <p className="text-sm text-[var(--apple-text-secondary)]">読み込み中...</p>
             </div>
           }
         >

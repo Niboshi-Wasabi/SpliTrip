@@ -8,7 +8,7 @@
  * 理由: 明示的な3択の方が理解しやすく、アクセシビリティも確保しやすい。
  */
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
-import { useTheme } from "@/components/theme/splitrip-theme-provider";
+import { useTheme } from "next-themes";
 import { useTranslations } from "next-intl";
 import { ChevronsUpDown, Monitor, Moon, Sun } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -81,7 +81,7 @@ export function ThemeToggle() {
   }
 
   const itemClass =
-    "flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-sm text-foreground hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
+    "flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-sm text-[var(--apple-text)] hover:bg-[var(--apple-fill-tertiary)] hover:text-[var(--apple-text)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--apple-link)]";
 
   return (
     <div className="relative" ref={containerRef}>
@@ -89,7 +89,7 @@ export function ThemeToggle() {
         type="button"
         variant="ghost"
         size="sm"
-        className="gap-1 text-muted-foreground"
+        className="gap-1 text-[var(--apple-text-secondary)]"
         aria-expanded={open}
         aria-haspopup="listbox"
         aria-label={translations("ariaLabel")}
@@ -106,7 +106,7 @@ export function ThemeToggle() {
         <div
           role="listbox"
           aria-label={translations("ariaLabel")}
-          className="absolute right-0 z-50 mt-1 min-w-[11rem] rounded-md border border-border bg-popover p-1 text-popover-foreground shadow-md"
+          className="absolute right-0 z-50 mt-1 min-w-[11rem] rounded-md border border-[var(--apple-separator)] bg-[var(--apple-card-bg)] p-1 text-[var(--apple-text)] shadow-md"
         >
           {(
             [
@@ -120,7 +120,7 @@ export function ThemeToggle() {
               type="button"
               role="option"
               aria-selected={active === choice}
-              className={cn(itemClass, active === choice && "bg-accent")}
+              className={cn(itemClass, active === choice && "bg-[var(--apple-fill-tertiary)]")}
               onClick={() => selectChoice(choice)}
             >
               <Icon className="size-4 shrink-0" aria-hidden />

@@ -432,27 +432,27 @@ export function GroupExpenseDetailDialog({
         </DialogHeader>
 
         <div className="space-y-3 text-sm">
-          <div className="space-y-1 rounded-md border border-border bg-muted/20 p-2.5">
-            <p className="text-xs font-medium text-muted-foreground">
+          <div className="space-y-1 rounded-md border border-[var(--apple-separator)] bg-muted/20 p-2.5">
+            <p className="text-xs font-medium text-[var(--apple-text-secondary)]">
               {detailTranslations("descriptionLabel")}
             </p>
             {editingDescription ? (
               <div className="space-y-2">
                 <div className="grid gap-2 sm:grid-cols-2">
                   <div className="space-y-1">
-                    <label className="text-xs text-muted-foreground">
+                    <label className="text-xs text-[var(--apple-text-secondary)]">
                       {detailTranslations("dateLabel")}
                     </label>
                     <input
                       type="date"
                       value={expenseDateDraft}
                       onChange={(event) => setExpenseDateDraft(event.target.value)}
-                      className="border-input bg-background ring-offset-background focus-visible:ring-ring h-10 w-full rounded-md border px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                      className="border-input ring-offset-background focus-visible:ring-ring h-10 w-full rounded-md border px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                       disabled={descriptionSaving}
                     />
                   </div>
                   <div className="space-y-1">
-                    <label className="text-xs text-muted-foreground">
+                    <label className="text-xs text-[var(--apple-text-secondary)]">
                       {detailTranslations("categoryLabel")}
                     </label>
                     <select
@@ -462,7 +462,7 @@ export function GroupExpenseDetailDialog({
                           parseExpenseCategoryId(event.target.value),
                         )
                       }
-                      className="border-input bg-background ring-offset-background focus-visible:ring-ring h-10 w-full rounded-md border px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                      className="border-input ring-offset-background focus-visible:ring-ring h-10 w-full rounded-md border px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                       disabled={descriptionSaving}
                     >
                       {EXPENSE_CATEGORY_IDS.map((categoryId) => (
@@ -476,7 +476,7 @@ export function GroupExpenseDetailDialog({
                 <textarea
                   value={descriptionDraft}
                   onChange={(event) => setDescriptionDraft(event.target.value)}
-                  className="border-input bg-background ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring min-h-[72px] w-full rounded-md border px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="border-input ring-offset-background placeholder:text-[var(--apple-text-secondary)] focus-visible:ring-ring min-h-[72px] w-full rounded-md border px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                   maxLength={120}
                   disabled={descriptionSaving}
                 />
@@ -511,7 +511,7 @@ export function GroupExpenseDetailDialog({
                   </Button>
                 </div>
                 {descriptionError ? (
-                  <p className="text-xs text-destructive">{descriptionError}</p>
+                  <p className="text-xs text-red-500">{descriptionError}</p>
                 ) : null}
               </div>
             ) : (
@@ -519,7 +519,7 @@ export function GroupExpenseDetailDialog({
                 <p className="text-sm">
                   {expense.description?.trim() || detailTranslations("untitled")}
                 </p>
-                <span className="text-xs text-muted-foreground">
+                <span className="text-xs text-[var(--apple-text-secondary)]">
                   {expense.expense_date} ·{" "}
                   {categoryTranslations(parseExpenseCategoryId(expense.category))}
                 </span>
@@ -539,7 +539,7 @@ export function GroupExpenseDetailDialog({
             )}
           </div>
 
-          <div className="flex flex-wrap items-center gap-2 text-muted-foreground">
+          <div className="flex flex-wrap items-center gap-2 text-[var(--apple-text-secondary)]">
             <span>{categoryTranslations(expenseCategory)}</span>
             <span>·</span>
             <span>{expense.expense_date}</span>
@@ -560,17 +560,17 @@ export function GroupExpenseDetailDialog({
           <p className="text-lg font-semibold tabular-nums">
             {formatMoneyByCurrency(currencyCode, amountNumber)}
             {jpyEquivalent !== null ? (
-              <span className="ml-2 text-xs font-normal text-muted-foreground">
+              <span className="ml-2 text-xs font-normal text-[var(--apple-text-secondary)]">
                 (≈ {formatMoneyByCurrency("JPY", Math.round(jpyEquivalent))})
               </span>
             ) : null}
           </p>
 
           <div className="space-y-1">
-            <p className="text-xs font-medium text-muted-foreground">
+            <p className="text-xs font-medium text-[var(--apple-text-secondary)]">
               {detailTranslations("splitsHeading")}
             </p>
-            <ul className="space-y-1 text-xs text-muted-foreground">
+            <ul className="space-y-1 text-xs text-[var(--apple-text-secondary)]">
               {(expense.expense_splits ?? []).map((splitRow) => {
                 const splitMember = members.find(
                   (memberRow) => memberRow.user_id === splitRow.user_id,
@@ -600,17 +600,17 @@ export function GroupExpenseDetailDialog({
 
           {itemizedLines.length > 0 ? (
             <div className="space-y-1">
-              <p className="text-xs font-medium text-muted-foreground">
+              <p className="text-xs font-medium text-[var(--apple-text-secondary)]">
                 {detailTranslations("itemizedHeading")}
               </p>
-              <ul className="space-y-1 text-xs text-muted-foreground">
+              <ul className="space-y-1 text-xs text-[var(--apple-text-secondary)]">
                 {itemizedLines.map((lineEntry, index) => {
                   const participantNames = lineEntry.participantIds
                     .map((participantId) => actorLabel(participantId, members))
                     .join(", ");
                   return (
                     <li key={`${lineEntry.name ?? "line"}-${index}`}>
-                      <span className="font-medium text-foreground">
+                      <span className="font-medium text-[var(--apple-text)]">
                         {lineEntry.name ??
                           detailTranslations("itemizedUntitled", {
                             index: index + 1,
@@ -629,17 +629,17 @@ export function GroupExpenseDetailDialog({
 
           {expense.receipt_url ? (
             <div className="space-y-2">
-              <p className="text-xs font-medium text-muted-foreground">
+              <p className="text-xs font-medium text-[var(--apple-text-secondary)]">
                 {detailTranslations("receiptHeading")}
               </p>
               {receiptLoading ? (
-                <div className="flex items-center gap-2 text-muted-foreground">
+                <div className="flex items-center gap-2 text-[var(--apple-text-secondary)]">
                   <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
                   <span>{detailTranslations("receiptLoading")}</span>
                 </div>
               ) : null}
               {receiptError ? (
-                <p className="text-xs text-destructive">{receiptError}</p>
+                <p className="text-xs text-red-500">{receiptError}</p>
               ) : null}
               {receiptSrc ? (
                 // Signed Supabase URLs are per-request; static remotePatterns are impractical. / 署名URLは都度変わるため next/image の固定ドメイン指定が難しい
@@ -672,19 +672,19 @@ export function GroupExpenseDetailDialog({
           </div>
 
           <div className="space-y-2 border-t pt-3">
-            <p className="text-xs font-medium text-muted-foreground">
+            <p className="text-xs font-medium text-[var(--apple-text-secondary)]">
               {commentTranslations("heading")}
             </p>
             {commentsLoading ? (
-              <div className="flex items-center gap-2 text-muted-foreground">
+              <div className="flex items-center gap-2 text-[var(--apple-text-secondary)]">
                 <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
                 <span>{commentTranslations("loading")}</span>
               </div>
             ) : null}
-            <ul className="max-h-40 space-y-2 overflow-y-auto rounded-md border border-border bg-muted/20 p-2 text-sm">
+            <ul className="max-h-40 space-y-2 overflow-y-auto rounded-md border border-[var(--apple-separator)] bg-muted/20 p-2 text-sm">
               {commentItems.map((commentRow) => (
-                <li key={commentRow.id} className="rounded bg-background/80 p-2">
-                  <p className="text-xs text-muted-foreground">
+                <li key={commentRow.id} className="rounded /80 p-2">
+                  <p className="text-xs text-[var(--apple-text-secondary)]">
                     {actorLabel(commentRow.author_id, members)} ·{" "}
                     {new Date(commentRow.created_at).toLocaleString()}
                   </p>
@@ -696,7 +696,7 @@ export function GroupExpenseDetailDialog({
               value={commentDraft}
               onChange={(event) => setCommentDraft(event.target.value)}
               placeholder={commentTranslations("placeholder")}
-              className="border-input bg-background ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring flex min-h-[88px] w-full rounded-md border px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+              className="border-input ring-offset-background placeholder:text-[var(--apple-text-secondary)] focus-visible:ring-ring flex min-h-[88px] w-full rounded-md border px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
               maxLength={2000}
             />
             <Button
@@ -718,20 +718,20 @@ export function GroupExpenseDetailDialog({
           </div>
 
           <div className="space-y-2 border-t pt-3">
-            <p className="text-xs font-medium text-muted-foreground">
+            <p className="text-xs font-medium text-[var(--apple-text-secondary)]">
               {detailTranslations("auditHeading")}
             </p>
             {auditLoading ? (
-              <div className="flex items-center gap-2 text-muted-foreground">
+              <div className="flex items-center gap-2 text-[var(--apple-text-secondary)]">
                 <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
                 <span>{detailTranslations("auditLoading")}</span>
               </div>
             ) : null}
             {auditError ? (
-              <p className="text-xs text-destructive">{auditError}</p>
+              <p className="text-xs text-red-500">{auditError}</p>
             ) : null}
             {!auditLoading && auditItems.length === 0 && !auditError ? (
-              <p className="text-xs text-muted-foreground">
+              <p className="text-xs text-[var(--apple-text-secondary)]">
                 {detailTranslations("auditEmpty")}
               </p>
             ) : null}
@@ -741,7 +741,7 @@ export function GroupExpenseDetailDialog({
                 return (
                   <li
                     key={entry.id}
-                    className="rounded-md border border-border bg-muted/30 p-2 text-xs"
+                    className="rounded-md border border-[var(--apple-separator)] bg-[var(--apple-fill-tertiary)]/30 p-2 text-xs"
                   >
                     <div className="flex flex-wrap items-baseline justify-between gap-2">
                       <span className="font-medium">
@@ -753,13 +753,13 @@ export function GroupExpenseDetailDialog({
                               : "auditAction.delete",
                         )}
                       </span>
-                      <span className="text-muted-foreground">{whenReadable}</span>
+                      <span className="text-[var(--apple-text-secondary)]">{whenReadable}</span>
                     </div>
-                    <p className="mt-1 text-muted-foreground">
+                    <p className="mt-1 text-[var(--apple-text-secondary)]">
                       {detailTranslations("auditActor")}:{" "}
                       {actorLabel(entry.actor_id, members)}
                     </p>
-                    <pre className="mt-2 max-h-40 overflow-auto whitespace-pre-wrap break-all rounded bg-background p-2 text-[10px] leading-snug text-foreground">
+                    <pre className="mt-2 max-h-40 overflow-auto whitespace-pre-wrap break-all rounded p-2 text-[10px] leading-snug text-[var(--apple-text)]">
                       {payloadSummary(entry.action, entry.payload)}
                     </pre>
                   </li>
