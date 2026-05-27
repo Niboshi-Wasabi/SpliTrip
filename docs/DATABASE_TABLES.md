@@ -377,10 +377,11 @@ Supabase Dashboard の Advisor 警告の整理方針は **`SUPABASE_SECURITY_ADV
 |------|-----|------|------------|------------|------|
 | `service_key` | `text` | NOT NULL | — | PRIMARY KEY | 固定キー（例: `core_api_database`）。 |
 | `status` | `text` | NOT NULL | — | CHECK（4値） | `operational` / `degraded` / `partial_outage` / `major_outage`（初期シードはすべて `operational`） |
+| `pinned_by_admin` | `boolean` | NOT NULL | `false` | — | `true` の行は Cron ヘルスチェックが `status` を上書きしない（手動での事故対応時）。 |
 | `updated_at` | `timestamptz` | NOT NULL | `now()` | — | 最終更新（トリガーで更新） |
 
 **RLS:** 有効（**誰でも SELECT可**、`is_admin=true` が INSERT/UPDATE/DELETE）。  
-**マイグレーション:** `20260430200000`
+**マイグレーション:** `20260430200000`（テーブル）、`20260527130000`（`pinned_by_admin`）
 
 ---
 
@@ -412,3 +413,4 @@ Supabase Dashboard の Advisor 警告の整理方針は **`SUPABASE_SECURITY_ADV
 | 2026-04-24 | `user_profiles.is_admin` と `admin_audit_logs`（`20260423223000`）を追記 |
 | 2026-04-25 | マイグレーション再照合: `stripe_webhook_events` / `stripe_customer_user_links`（`20260415070000`）を追記。レガシー `public.expenses` について付記 |
 | 2026-04-25 | `app_announcements`, `system_settings` テーブル定義と `user_profiles.last_seen_announcement_id` カラムを追記（FEATURES.md整合性確保） |
+| 2026-05-27 | `system_status.pinned_by_admin`（`20260527130000`） |

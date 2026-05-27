@@ -7,18 +7,60 @@ import {
   parseSystemStatusPayload,
   sortSystemStatusRowsByKnownOrder,
   type SystemOperationalStatus,
+  type SystemStatusAdminRow,
   type SystemStatusServiceKey,
-  type SystemStatusRow,
+  type SystemStatusUpdatePayloadItem,
 } from "@/lib/system-status";
 
 function hasAllServiceKeys(
-  updates: { service_key: SystemStatusServiceKey; status: SystemOperationalStatus }[],
+  updates: readonly SystemStatusUpdatePayloadItem[],
 ): boolean {
   if (updates.length !== SYSTEM_STATUS_SERVICE_KEYS.length) {
     return false;
   }
   const keys = new Set(updates.map((entry) => entry.service_key));
   return SYSTEM_STATUS_SERVICE_KEYS.every((expectedKey) => keys.has(expectedKey));
+}
+
+function mapRowsToAdminPayload(
+  rowsInput: readonly Record<string, unknown>[] | null | undefined,
+): SystemStatusAdminRow[] {
+  const allowedStatuses = [
+    "operational",
+    "degraded",
+    "partial_outage",
+    "major_outage",
+  ] as const satisfies readonly SystemOperationalStatus[];
+
+  const adminRows: SystemStatusAdminRow[] = [];
+  for (const rawCandidate of rowsInput ?? []) {
+    const record = rawCandidate as Record<string, unknown>;
+    const serviceKeyCandidate = record.service_key;
+    const statusCandidate = record.status;
+    if (typeof serviceKeyCandidate !== "string" || typeof statusCandidate !== "string") {
+      continue;
+    }
+    if (
+      !SYSTEM_STATUS_SERVICE_KEYS.includes(
+        serviceKeyCandidate as SystemStatusServiceKey,
+      )
+    ) {
+      continue;
+    }
+    if (!(allowedStatuses as readonly string[]).includes(statusCandidate)) {
+      continue;
+    }
+    const pinRaw = record.pinned_by_admin;
+    adminRows.push({
+      service_key: serviceKeyCandidate as SystemStatusServiceKey,
+      status: statusCandidate as SystemOperationalStatus,
+      updated_at: String(record.updated_at ?? ""),
+      pinned_by_admin: pinRaw === true,
+    });
+  }
+  return sortSystemStatusRowsByKnownOrder(
+    adminRows,
+  ) as SystemStatusAdminRow[];
 }
 
 export async function GET(request: NextRequest) {
@@ -48,7 +90,7 @@ export async function GET(request: NextRequest) {
 
   const { data, error } = await supabase
     .from("system_status")
-    .select("service_key, status, updated_at")
+    .select("service_key, status, updated_at, pinned_by_admin")
     .order("service_key", { ascending: true });
 
   if (error) {
@@ -56,8 +98,14 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ ok: false, message: "query_error" }, { status: 500 });
   }
 
-  const items = sortSystemStatusRowsByKnownOrder((data ?? []) as SystemStatusRow[]);
-  return NextResponse.json({ ok: true, items });
+  const items = mapRowsToAdminPayload(
+    (data ?? []) as Record<string, unknown>[],
+  );
+
+  return NextResponse.json({
+    ok: true,
+    items,
+  });
 }
 
 export async function PUT(request: NextRequest) {
@@ -101,10 +149,12 @@ export async function PUT(request: NextRequest) {
     return NextResponse.json({ ok: false, message: "incomplete_items" }, { status: 400 });
   }
 
-  const beforeSnapshot: Record<string, string> = {};
+  const beforeStatuses: Record<string, string> = {};
+  const beforePins: Record<string, boolean> = {};
+  const pinnedByKeyFromDatabase = new Map<SystemStatusServiceKey, boolean>();
   const { data: previousRows, error: previousError } = await supabase
     .from("system_status")
-    .select("service_key, status");
+    .select("service_key, status, pinned_by_admin");
 
   if (previousError) {
     console.error("[API/Action Error - PUT /api/admin/status read previous]:", previousError);
@@ -112,21 +162,35 @@ export async function PUT(request: NextRequest) {
   }
 
   for (const row of previousRows ?? []) {
-    if (typeof row.service_key === "string" && typeof row.status === "string") {
-      beforeSnapshot[row.service_key] = row.status;
+    if (typeof row.service_key !== "string" || typeof row.status !== "string") {
+      continue;
+    }
+    beforeStatuses[row.service_key] = row.status;
+    const previousPin = row.pinned_by_admin === true;
+    beforePins[row.service_key] = previousPin;
+    if (
+      SYSTEM_STATUS_SERVICE_KEYS.includes(row.service_key as SystemStatusServiceKey)
+    ) {
+      pinnedByKeyFromDatabase.set(
+        row.service_key as SystemStatusServiceKey,
+        previousPin,
+      );
     }
   }
 
   for (const updateItem of parsed.updates) {
-    const { error: upsertError } = await supabase
-      .from("system_status")
-      .upsert(
-        {
-          service_key: updateItem.service_key,
-          status: updateItem.status,
-        },
-        { onConflict: "service_key" },
-      );
+    const nextPin =
+      updateItem.pinned_by_admin ??
+      pinnedByKeyFromDatabase.get(updateItem.service_key) ??
+      false;
+    const { error: upsertError } = await supabase.from("system_status").upsert(
+      {
+        service_key: updateItem.service_key,
+        status: updateItem.status,
+        pinned_by_admin: nextPin,
+      },
+      { onConflict: "service_key" },
+    );
     if (upsertError) {
       console.error("[API/Action Error - PUT /api/admin/status upsert]:", upsertError);
       return NextResponse.json({ ok: false, message: "save_error" }, { status: 500 });
@@ -135,7 +199,7 @@ export async function PUT(request: NextRequest) {
 
   const { data: refreshedRows, error: refreshError } = await supabase
     .from("system_status")
-    .select("service_key, status, updated_at")
+    .select("service_key, status, updated_at, pinned_by_admin")
     .order("service_key", { ascending: true });
 
   if (refreshError) {
@@ -143,10 +207,12 @@ export async function PUT(request: NextRequest) {
     return NextResponse.json({ ok: false, message: "query_error" }, { status: 500 });
   }
 
-  const afterSnapshot: Record<string, string> = {};
+  const afterStatuses: Record<string, string> = {};
+  const afterPins: Record<string, boolean> = {};
   for (const row of refreshedRows ?? []) {
     if (typeof row.service_key === "string" && typeof row.status === "string") {
-      afterSnapshot[row.service_key] = row.status;
+      afterStatuses[row.service_key] = row.status;
+      afterPins[row.service_key] = row.pinned_by_admin === true;
     }
   }
 
@@ -157,16 +223,22 @@ export async function PUT(request: NextRequest) {
       target_user_id: null,
       action: "system_status_update",
       details: {
-        before: beforeSnapshot,
-        after: afterSnapshot,
+        statuses_before: beforeStatuses,
+        statuses_after: afterStatuses,
+        pinned_before: beforePins,
+        pinned_after: afterPins,
       },
     });
   } catch (caughtError) {
     console.error("[API/Action Error - PUT /api/admin/status audit]:", caughtError);
   }
 
+  const responseItems = mapRowsToAdminPayload(
+    (refreshedRows ?? []) as Record<string, unknown>[],
+  );
+
   return NextResponse.json({
     ok: true,
-    items: sortSystemStatusRowsByKnownOrder((refreshedRows ?? []) as SystemStatusRow[]),
+    items: responseItems,
   });
 }

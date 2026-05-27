@@ -8,8 +8,8 @@ SpliTrip（本リポジトリ `tabipay`）の **Admin Control Panel Suite** を�
 |------|------|
 | 管理 UI | `src/app/[locale]/admin/**`, `src/components/admin/**` |
 | 管理 API | `src/app/api/admin/**` |
-| 公開 API | `src/app/api/maintenance/status`, `src/app/api/public/system-status`, `src/app/api/public/announcements` |
-| lib | `src/lib/admin/*`, `src/lib/maintenance*.ts`, `src/lib/system-status.ts`, `src/lib/system-settings.ts`, `src/lib/auth/admin-step-up-guard.ts` |
+| 公開 API | `src/app/api/maintenance/status`, `src/app/api/public/system-status`, `src/app/api/public/announcements`, **`src/app/api/cron/system-status`**（Cron・`CRON_SECRET`） |
+| lib | `src/lib/admin/*`, `src/lib/maintenance*.ts`, `src/lib/system-status.ts`, **`src/lib/system-status-probe.ts`**, `src/lib/system-settings.ts`, `src/lib/auth/admin-step-up-guard.ts` |
 | ガード | `src/proxy.ts` |
 | 仕様 | `docs/FEATURES.md`（メンテナンス・管理画面） |
 | DB | `supabase/migrations/20260423223000_admin_control_panel_foundation.sql` ほか6本（プラン参照） |
