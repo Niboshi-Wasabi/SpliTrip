@@ -808,7 +808,9 @@
     "stats": "統計",
     "settings": "設定",
     "logout": "ログアウト",
-    "navigation": "メインナビゲーション"
+    "navigation": "メインナビゲーション",
+    "collapseSidebar": "サイドバーを格納",
+    "expandSidebar": "サイドバーを展開"
   },
   "Ads": {
     "promoTitle": "次の旅行のホテルを探す",

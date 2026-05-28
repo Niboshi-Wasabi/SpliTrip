@@ -808,7 +808,9 @@
     "stats": "Stats",
     "settings": "Settings",
     "logout": "Logout",
-    "navigation": "Main navigation"
+    "navigation": "Main navigation",
+    "collapseSidebar": "Collapse sidebar",
+    "expandSidebar": "Expand sidebar"
   },
   "Ads": {
     "promoTitle": "Book your next stay",
