@@ -144,6 +144,18 @@ export type GroupDetail = {
   settlements: GroupSettlement[];
 };
 
+function isMissingOptionalGroupColumnError(error: unknown): boolean {
+  if (!error || typeof error !== "object") {
+    return false;
+  }
+  const maybeError = error as { message?: unknown; details?: unknown };
+  const text = `${maybeError.message ?? ""} ${maybeError.details ?? ""}`.toLowerCase();
+  return (
+    text.includes("public_share_token") ||
+    text.includes("settlement_finalized_at")
+  );
+}
+
 /**
  * Full group payload for a member; returns forbidden / not_found codes for RSC routes.
  */
@@ -152,13 +164,39 @@ export async function fetchGroupDetailForUser(
   groupId: string,
   userId: string,
 ): Promise<{ ok: true; data: GroupDetail } | { ok: false; error: string }> {
-  const { data: group, error: groupError } = await supabase
+  let group: GroupRow | null = null;
+  let groupError: unknown = null;
+
+  const primaryGroupResult = await supabase
     .from("groups")
     .select(
       "id, name, currency_code, created_by, created_at, invite_token, period_start_date, period_end_date, public_share_token, settlement_finalized_at",
     )
     .eq("id", groupId)
     .maybeSingle();
+
+  group = (primaryGroupResult.data as GroupRow | null) ?? null;
+  groupError = primaryGroupResult.error;
+
+  // 古いスキーマ（移行前）でもグループ詳細を閲覧できるように後方互換フォールバック。
+  if (groupError && isMissingOptionalGroupColumnError(groupError)) {
+    const fallbackGroupResult = await supabase
+      .from("groups")
+      .select(
+        "id, name, currency_code, created_by, created_at, invite_token, period_start_date, period_end_date",
+      )
+      .eq("id", groupId)
+      .maybeSingle();
+
+    group = fallbackGroupResult.data
+      ? ({
+          ...(fallbackGroupResult.data as GroupRow),
+          public_share_token: undefined,
+          settlement_finalized_at: null,
+        } as GroupRow)
+      : null;
+    groupError = fallbackGroupResult.error;
+  }
 
   if (groupError) {
     console.error("[API/Action Error - fetchGroupDetailForUser group row]:", {
