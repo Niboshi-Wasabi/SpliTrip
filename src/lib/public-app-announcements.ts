@@ -38,39 +38,47 @@ export async function fetchPublishedAnnouncementListForLocale(
   });
   const nowIsoTimestamp = new Date().toISOString();
 
-  const { data, error } = await supabase
-    .from("app_announcements")
-    .select(
-      "id, title_ja, title_en, content_ja, content_en, icon_type, priority, display_order, expires_at, created_at",
-    )
-    .eq("is_published", true)
-    .or(`expires_at.is.null,expires_at.gt.${nowIsoTimestamp}`)
-    .order("display_order", { ascending: true })
-    .order("priority", { ascending: false })
-    .order("created_at", { ascending: false })
-    .limit(5);
+  try {
+    const { data, error } = await supabase
+      .from("app_announcements")
+      .select(
+        "id, title_ja, title_en, content_ja, content_en, icon_type, priority, display_order, expires_at, created_at",
+      )
+      .eq("is_published", true)
+      .or(`expires_at.is.null,expires_at.gt.${nowIsoTimestamp}`)
+      .order("display_order", { ascending: true })
+      .order("priority", { ascending: false })
+      .order("created_at", { ascending: false })
+      .limit(5);
 
-  if (error) {
-    console.error("[fetchPublishedAnnouncementListForLocale]:", error);
+    if (error) {
+      // 公開お知らせは非クリティカルなため、取得失敗時は静かに空配列へフォールバックする。
+      return [];
+    }
+
+    const rows = (data ?? []) as AnnouncementDbRow[];
+    return rows
+      .map((announcementRow) => ({
+        id: announcementRow.id,
+        title:
+          locale === "en"
+            ? announcementRow.title_en
+            : announcementRow.title_ja,
+        content:
+          locale === "en"
+            ? announcementRow.content_en
+            : announcementRow.content_ja,
+      }))
+      .filter(
+        (row) =>
+          (row.title && row.title.trim().length > 0) ||
+          (row.content && row.content.trim().length > 0),
+      );
+  } catch (error) {
+    console.error(
+      "[API/Action Error - fetchPublishedAnnouncementListForLocale]:",
+      error,
+    );
     return [];
   }
-
-  const rows = (data ?? []) as AnnouncementDbRow[];
-  return rows
-    .map((announcementRow) => ({
-      id: announcementRow.id,
-      title:
-        locale === "en"
-          ? announcementRow.title_en
-          : announcementRow.title_ja,
-      content:
-        locale === "en"
-          ? announcementRow.content_en
-          : announcementRow.content_ja,
-    }))
-    .filter(
-      (row) =>
-        (row.title && row.title.trim().length > 0) ||
-        (row.content && row.content.trim().length > 0),
-    );
 }
