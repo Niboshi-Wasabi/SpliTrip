@@ -2,13 +2,20 @@
  * Apple.com 風デザインシステム（LP〜アプリ共通）
  */
 
+/**
+ * LP 向け改行（日本語は句読点で折り返しやすく、単語途中の改行を抑える）。
+ * `text-pretty` / `text-balance` は CJK では不自然な改行になりやすいため使わない。
+ */
+export const APPLE_LP_LINE_BREAK_CLASS = "break-keep [overflow-wrap:anywhere]";
+
+/** LP カード本文・リード文 */
+export const APPLE_LP_BODY_TEXT_CLASS = `text-sm font-normal leading-[1.65] text-[var(--apple-text-secondary)] ${APPLE_LP_LINE_BREAK_CLASS}`;
+
 /** LP ヒーロー見出し */
-export const APPLE_HERO_TITLE_CLASS =
-  "font-sans text-[48px] font-bold leading-[1.05] tracking-[-0.03em] text-[var(--apple-text)] md:text-[64px] lg:text-[80px]";
+export const APPLE_HERO_TITLE_CLASS = `font-sans text-[clamp(2.125rem,6.5vw,5rem)] font-bold leading-[1.12] tracking-[-0.03em] text-[var(--apple-text)] ${APPLE_LP_LINE_BREAK_CLASS}`;
 
 /** LP セクション見出し */
-export const APPLE_SECTION_TITLE_CLASS =
-  "font-sans text-[40px] font-bold leading-[1.08] tracking-[-0.03em] text-[var(--apple-text)] md:text-[56px]";
+export const APPLE_SECTION_TITLE_CLASS = `font-sans text-[clamp(1.75rem,5vw,3.5rem)] font-bold leading-[1.12] tracking-[-0.03em] text-[var(--apple-text)] ${APPLE_LP_LINE_BREAK_CLASS}`;
 
 /** アプリ Large Title */
 export const APPLE_LARGE_TITLE_CLASS =

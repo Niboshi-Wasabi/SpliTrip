@@ -87,7 +87,7 @@ export function HeroSection() {
       </motion.div>
       <motion.h1
         variants={fadeUpVariants}
-        className="mx-auto max-w-4xl text-balance text-3xl font-medium leading-none tracking-tight text-zinc-200 md:text-5xl"
+        className="mx-auto max-w-4xl break-keep text-3xl font-medium leading-[1.12] tracking-tight text-zinc-200 [overflow-wrap:anywhere] md:text-5xl"
       >
         <span className="block text-zinc-200">{t("hero.titleLine1")}</span>
         <span className="mt-2 block font-bold text-zinc-50">
@@ -96,7 +96,7 @@ export function HeroSection() {
       </motion.h1>
       <motion.p
         variants={fadeUpVariants}
-        className="mx-auto max-w-2xl text-pretty text-sm leading-relaxed text-zinc-400 md:text-base"
+        className="mx-auto max-w-2xl break-keep text-sm leading-[1.65] text-zinc-400 [overflow-wrap:anywhere] md:text-base"
       >
         {t("hero.description")}
       </motion.p>

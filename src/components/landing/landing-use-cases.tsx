@@ -5,6 +5,8 @@ import { motion } from "framer-motion";
 import { Mountain, Plane, UsersRound, type LucideIcon } from "lucide-react";
 import {
   APPLE_SECTION_TITLE_CLASS,
+  APPLE_LP_BODY_TEXT_CLASS,
+  APPLE_LP_LINE_BREAK_CLASS,
   APPLE_SECTION_PADDING_CLASS,
   APPLE_CONTENT_WIDTH_CLASS,
 } from "@/lib/ui/apple-design";
@@ -35,7 +37,7 @@ export function LandingUseCases() {
         <h2 className={APPLE_SECTION_TITLE_CLASS}>
           {t("useCases.title")}
         </h2>
-        <p className="mt-2 text-sm font-normal text-[var(--apple-text-secondary)]">
+        <p className={cn("mt-2", APPLE_LP_BODY_TEXT_CLASS)}>
           {t("useCases.subtitle")}
         </p>
       </motion.div>
@@ -58,11 +60,16 @@ export function LandingUseCases() {
                     className="mt-0.5 h-6 w-6 shrink-0 text-[var(--apple-text-secondary)]"
                     aria-hidden
                   />
-                  <h3 className="text-left text-base font-semibold leading-tight tracking-tight text-[var(--apple-text)]">
+                  <h3
+                    className={cn(
+                      "min-w-0 flex-1 text-left text-base font-semibold leading-snug tracking-tight text-[var(--apple-text)]",
+                      APPLE_LP_LINE_BREAK_CLASS,
+                    )}
+                  >
                     {t(`useCases.items.${useCaseId}.title`)}
                   </h3>
                 </div>
-                <p className="flex-1 text-pretty text-left text-sm leading-relaxed font-normal text-[var(--apple-text-secondary)]">
+                <p className={cn("flex-1 text-left", APPLE_LP_BODY_TEXT_CLASS)}>
                   {t(`useCases.items.${useCaseId}.body`)}
                 </p>
               </div>

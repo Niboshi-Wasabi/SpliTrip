@@ -6,6 +6,8 @@ import { Banknote, Check, Receipt } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import {
   APPLE_SECTION_TITLE_CLASS,
+  APPLE_LP_BODY_TEXT_CLASS,
+  APPLE_LP_LINE_BREAK_CLASS,
   APPLE_SECTION_PADDING_CLASS,
   APPLE_CONTENT_WIDTH_CLASS,
 } from "@/lib/ui/apple-design";
@@ -28,7 +30,7 @@ export function LandingPricing() {
         {t("pricing.title")}
       </motion.h2>
       <motion.p
-        className="mt-2 text-sm font-normal text-[var(--apple-text-secondary)]"
+        className={cn("mt-2", APPLE_LP_BODY_TEXT_CLASS)}
         variants={LP_FADE_UP}
       >
         {t("pricing.subtitle")}
@@ -55,7 +57,12 @@ export function LandingPricing() {
                 {t("pricing.free.badge")}
               </Badge>
             </div>
-            <ul className="min-h-0 flex-1 space-y-3 text-left text-sm font-normal text-[var(--apple-text-secondary)]">
+            <ul
+              className={cn(
+                "min-h-0 flex-1 space-y-3 text-left",
+                APPLE_LP_BODY_TEXT_CLASS,
+              )}
+            >
               <li className="flex items-start gap-2">
                 <Check className="mt-0.5 h-4 w-4 shrink-0 text-[var(--apple-link)]" />
                 {t("pricing.free.items.groups")}
@@ -85,7 +92,12 @@ export function LandingPricing() {
                 {t("pricing.pro.badge")}
               </Badge>
             </div>
-            <ul className="min-h-0 flex-1 space-y-3 text-left text-sm font-normal text-[var(--apple-text-secondary)]">
+            <ul
+              className={cn(
+                "min-h-0 flex-1 space-y-3 text-left",
+                APPLE_LP_BODY_TEXT_CLASS,
+              )}
+            >
               <li className="flex items-start gap-2">
                 <Receipt className="mt-0.5 h-4 w-4 shrink-0 text-[var(--apple-text-secondary)]" />
                 {t("pricing.pro.items.export")}
@@ -107,10 +119,15 @@ export function LandingPricing() {
             >
               {t("pricing.proOverlay.badge")}
             </Badge>
-            <p className="max-w-[16rem] text-sm font-semibold text-[var(--apple-text)] md:max-w-xs">
+            <p
+              className={cn(
+                "max-w-md text-sm font-semibold text-[var(--apple-text)]",
+                APPLE_LP_LINE_BREAK_CLASS,
+              )}
+            >
               {t("pricing.proOverlay.title")}
             </p>
-            <p className="max-w-[18rem] text-xs leading-relaxed text-[var(--apple-text-secondary)] md:max-w-sm">
+            <p className={cn("max-w-lg", APPLE_LP_BODY_TEXT_CLASS)}>
               {t("pricing.proOverlay.body")}
             </p>
           </div>

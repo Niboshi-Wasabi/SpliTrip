@@ -8,6 +8,7 @@ import { LandingWhatsNew } from "@/components/landing/LandingWhatsNew";
 import { cn } from "@/lib/utils";
 import {
   APPLE_HERO_TITLE_CLASS,
+  APPLE_LP_LINE_BREAK_CLASS,
   APPLE_BUTTON_PRIMARY_CLASS,
   APPLE_BUTTON_SECONDARY_CLASS,
   APPLE_SECTION_PADDING_CLASS,
@@ -41,7 +42,7 @@ export function LandingHero({
       </section>
 
       <section className={cn(APPLE_SECTION_PADDING_CLASS, "text-center")}>
-        <div className="mx-auto flex max-w-3xl flex-col items-center">
+        <div className="mx-auto flex w-full max-w-4xl flex-col items-center">
           <motion.div
             initial={{ opacity: 0, y: 18 }}
             animate={{ opacity: 1, y: 0 }}
@@ -56,7 +57,7 @@ export function LandingHero({
           </motion.div>
 
           <motion.h1
-            className={cn(APPLE_HERO_TITLE_CLASS, "mx-auto max-w-5xl")}
+            className={cn(APPLE_HERO_TITLE_CLASS, "mx-auto w-full")}
             initial={{ opacity: 0, y: 18 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ ...LP_SPRING, delay: 0.2 }}
@@ -64,13 +65,16 @@ export function LandingHero({
             <span className="block font-medium text-[var(--apple-text-secondary)]">
               {t("hero.titleLine1")}
             </span>
-            <span className="mt-1 block font-bold text-[var(--apple-text)]">
+            <span className="mt-2 block font-bold text-[var(--apple-text)]">
               {t("hero.titleLine2")}
             </span>
           </motion.h1>
 
           <motion.p
-            className="mx-auto mt-8 max-w-3xl text-base font-normal leading-relaxed text-[var(--apple-text-secondary)] md:text-lg"
+            className={cn(
+              "mx-auto mt-8 w-full max-w-3xl text-base font-normal leading-[1.65] text-[var(--apple-text-secondary)] md:text-lg",
+              APPLE_LP_LINE_BREAK_CLASS,
+            )}
             initial={{ opacity: 0, y: 18 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ ...LP_SPRING, delay: 0.4 }}
@@ -99,7 +103,10 @@ export function LandingHero({
           </motion.div>
 
           <motion.p
-            className="mx-auto mt-6 max-w-lg text-xs leading-relaxed text-[var(--apple-text-secondary)]"
+            className={cn(
+              "mx-auto mt-6 max-w-xl text-xs leading-[1.65] text-[var(--apple-text-secondary)]",
+              APPLE_LP_LINE_BREAK_CLASS,
+            )}
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ ...LP_SPRING, delay: 0.65 }}

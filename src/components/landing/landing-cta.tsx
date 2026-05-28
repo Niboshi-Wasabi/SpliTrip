@@ -5,6 +5,9 @@ import { motion } from "framer-motion";
 import { Link } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
 import {
+  APPLE_SECTION_TITLE_CLASS,
+  APPLE_LP_BODY_TEXT_CLASS,
+  APPLE_LP_LINE_BREAK_CLASS,
   APPLE_BUTTON_PRIMARY_CLASS,
   APPLE_BUTTON_SECONDARY_CLASS,
   APPLE_SECTION_PADDING_CLASS,
@@ -40,10 +43,10 @@ export function LandingCta({
         className="flex flex-col items-center rounded-[var(--lp-card-radius)] border border-[var(--apple-separator)] bg-[var(--apple-surface)]/50 px-6 py-14 text-center shadow-[var(--lp-soft-shadow)] backdrop-blur-sm md:px-12"
         variants={LP_FADE_UP}
       >
-        <h2 className="max-w-2xl text-[40px] font-bold leading-[1.08] tracking-[-0.03em] text-[var(--apple-text)] md:text-[56px]">
+        <h2 className={cn("w-full max-w-3xl", APPLE_SECTION_TITLE_CLASS)}>
           {t("closingCta.title")}
         </h2>
-        <p className="mt-4 max-w-lg text-sm leading-relaxed text-[var(--apple-text-secondary)]">
+        <p className={cn("mt-4 w-full max-w-2xl", APPLE_LP_BODY_TEXT_CLASS)}>
           {t("closingCta.body")}
         </p>
         <div className="mt-10 flex w-full max-w-md flex-col items-stretch justify-center gap-3 sm:w-auto sm:max-w-none sm:flex-row">
@@ -60,7 +63,7 @@ export function LandingCta({
             {secondaryCtaLabel}
           </Link>
         </div>
-        <p className="mt-6 text-xs text-[var(--apple-text-secondary)]">
+        <p className={cn("mt-6 max-w-xl text-xs leading-[1.65] text-[var(--apple-text-secondary)]", APPLE_LP_LINE_BREAK_CLASS)}>
           {t("hero.note")}
         </p>
       </motion.div>

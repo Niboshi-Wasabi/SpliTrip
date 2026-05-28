@@ -169,4 +169,11 @@ html[data-ui-mono="fira"] {
     --apple-separator: var(--apple-lp-separator);
     --apple-card-bg: var(--apple-lp-surface);
   }
+
+  /* LP: 日本語の自然な改行（CJK は text-pretty / text-balance を使わない） */
+  .apple-lp-theme :where(h1, h2, h3, h4, p, li, a, button, span) {
+    word-break: keep-all;
+    overflow-wrap: anywhere;
+    text-wrap: wrap;
+  }
 }

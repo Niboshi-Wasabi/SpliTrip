@@ -5,6 +5,8 @@ import { motion } from "framer-motion";
 import { Languages, Link2, QrCode, ShieldCheck } from "lucide-react";
 import {
   APPLE_SECTION_TITLE_CLASS,
+  APPLE_LP_BODY_TEXT_CLASS,
+  APPLE_LP_LINE_BREAK_CLASS,
   APPLE_SECTION_PADDING_CLASS,
   APPLE_CONTENT_WIDTH_CLASS,
 } from "@/lib/ui/apple-design";
@@ -34,7 +36,7 @@ export function LandingDetails() {
         <h2 className={APPLE_SECTION_TITLE_CLASS}>
           {t("detailed.title")}
         </h2>
-        <p className="mt-2 text-sm font-normal text-[var(--apple-text-secondary)]">
+        <p className={cn("mt-2", APPLE_LP_BODY_TEXT_CLASS)}>
           {t("detailed.subtitle")}
         </p>
       </motion.div>
@@ -52,11 +54,16 @@ export function LandingDetails() {
             <div className="flex h-full min-h-0 flex-col border p-5 lp-card transition-shadow duration-300 hover:shadow-lg">
               <div className="mb-3 flex min-h-10 shrink-0 items-start gap-2 text-[var(--apple-text)]">
                 <Icon className="mt-0.5 h-4 w-4 shrink-0 text-[var(--apple-text-secondary)]" />
-                <p className="line-clamp-2 text-left font-medium leading-tight tracking-tight">
+                <p
+                  className={cn(
+                    "min-w-0 flex-1 text-left font-medium leading-snug tracking-tight",
+                    APPLE_LP_LINE_BREAK_CLASS,
+                  )}
+                >
                   {t(`detailed.items.${slug}.title`)}
                 </p>
               </div>
-              <p className="flex-1 text-pretty text-left text-sm leading-relaxed font-normal text-[var(--apple-text-secondary)]">
+              <p className={cn("flex-1 text-left", APPLE_LP_BODY_TEXT_CLASS)}>
                 {t(`detailed.items.${slug}.body`)}
               </p>
             </div>
