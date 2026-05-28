@@ -93,7 +93,14 @@ export default async function GroupDetailPage({ params, searchParams }: PageProp
       groupId,
       userId: user.id,
     });
-    notFound();
+    if (result.error === "group_not_found") {
+      notFound();
+    }
+    if (result.error === "forbidden") {
+      redirect({ href: "/dashboard", locale });
+      return;
+    }
+    throw new Error(`group_detail_load_failed:${result.error}`);
   }
 
   const { group, members, expenses, settlements } = result.data;

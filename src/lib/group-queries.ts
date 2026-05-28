@@ -156,6 +156,18 @@ function isMissingOptionalGroupColumnError(error: unknown): boolean {
   );
 }
 
+function isMissingOptionalGroupMemberColumnError(error: unknown): boolean {
+  if (!error || typeof error !== "object") {
+    return false;
+  }
+  const maybeError = error as { message?: unknown; details?: unknown };
+  const text = `${maybeError.message ?? ""} ${maybeError.details ?? ""}`.toLowerCase();
+  return (
+    text.includes("is_provisional") ||
+    text.includes("provisional_display_name")
+  );
+}
+
 /**
  * Full group payload for a member; returns forbidden / not_found codes for RSC routes.
  */
@@ -212,10 +224,37 @@ export async function fetchGroupDetailForUser(
     return { ok: false, error: "group_not_found" };
   }
 
-  const { data: memberRows, error: membersError } = await supabase
+  let memberRows: Array<{
+    user_id: string;
+    role: string;
+    is_provisional?: boolean | null;
+    provisional_display_name?: string | null;
+  }> | null = null;
+  let membersError: unknown = null;
+
+  const primaryMembersResult = await supabase
     .from("group_members")
     .select("user_id, role, is_provisional, provisional_display_name")
     .eq("group_id", groupId);
+
+  memberRows = primaryMembersResult.data;
+  membersError = primaryMembersResult.error;
+
+  // 古いスキーマ（移行前）でも閲覧可能にするため、仮メンバー用列なしで再取得。
+  if (membersError && isMissingOptionalGroupMemberColumnError(membersError)) {
+    const fallbackMembersResult = await supabase
+      .from("group_members")
+      .select("user_id, role")
+      .eq("group_id", groupId);
+
+    memberRows = (fallbackMembersResult.data ?? []).map((memberRow) => ({
+      user_id: memberRow.user_id,
+      role: memberRow.role,
+      is_provisional: false,
+      provisional_display_name: null,
+    }));
+    membersError = fallbackMembersResult.error;
+  }
 
   if (membersError) {
     console.error("[API/Action Error - fetchGroupDetailForUser members]:", {
