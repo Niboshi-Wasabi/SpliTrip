@@ -46,6 +46,8 @@ import { PromoBanner } from "@/components/ads/PromoBanner";
 import { GroupReceiptStickyEntry } from "./group-receipt-sticky-entry";
 import { GroupNameForm } from "./group-name-form";
 import { GroupPeriodForm } from "./group-period-form";
+import { GroupProvisionalMemberManager } from "./group-provisional-member-manager";
+import { GroupSettlementFinalizePanel } from "./group-settlement-finalize-panel";
 
 export const dynamic = "force-dynamic";
 
@@ -102,6 +104,7 @@ export default async function GroupDetailPage({ params, searchParams }: PageProp
   const currentDisplayName =
     currentMember?.display_name ?? (locale === "ja" ? "ユーザー" : "User");
   const currentUserCanEditGroupName = currentMember?.role === "owner";
+  const currentUserIsGroupOwner = currentMember?.role === "owner";
   const totalGroupExpense = expenses.reduce(
     (sum, expense) => sum + Number(expense.amount),
     0,
@@ -293,6 +296,11 @@ export default async function GroupDetailPage({ params, searchParams }: PageProp
                 {groupDetailTranslations("openSettings")}
               </Link>
             </div>
+            <GroupProvisionalMemberManager
+              groupId={groupId}
+              canManage={currentUserIsGroupOwner}
+              members={members}
+            />
             </div>
             <div className="hidden md:block">
               <ThemeToggle />
@@ -438,6 +446,12 @@ export default async function GroupDetailPage({ params, searchParams }: PageProp
             </CardDescription>
           </CardHeader>
           <CardContent>
+            <GroupSettlementFinalizePanel
+              groupId={groupId}
+              canManage={currentUserIsGroupOwner}
+              isFinalized={Boolean(group.settlement_finalized_at)}
+              publicShareToken={group.public_share_token ?? null}
+            />
             {settlements.length === 0 ? (
               <p className="py-6 text-center text-sm text-[var(--apple-text-secondary)]">
                 {groupDetailTranslations("settlementEmpty")}

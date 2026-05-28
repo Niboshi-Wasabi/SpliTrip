@@ -11,10 +11,10 @@
 
 | テーブル名 | 概要 | 主な作成・変更マイグレーション |
 |------------|------|--------------------------------|
-| `groups` | 割り勘グループ | `20260405120000`, `05160000`, `08120000`, `10120000`（追補） |
-| `group_members` | グループ所属 | `20260405120000`, `08120000` |
-| `group_expenses` | グループの支出 | `20260405120000`, `06230000`, `08120000` |
-| `expense_splits` | 支出の負担按分 | `20260405120000` |
+| `groups` | 割り勘グループ | `20260405120000`, `05160000`, `08120000`, `10120000`（追補）, `20260528030000` |
+| `group_members` | グループ所属 | `20260405120000`, `08120000`, `20260528030000` |
+| `group_expenses` | グループの支出 | `20260405120000`, `06230000`, `08120000`, `20260528030000` |
+| `expense_splits` | 支出の負担按分 | `20260405120000`, `20260528030000` |
 | `user_profiles` | ユーザープロフィール | `06140000`, `05190000`, `05200000`, `07100000`, `08120000`, `09120000`, `12140000`, `22010000`（2FA）, `23223000`（`is_admin`）, `20260425042500`（`last_seen_announcement_id`） |
 | `user_webauthn_credentials` | WebAuthn 2FA 認証器情報 | `20260422010000` |
 | `user_backup_codes` | 2FA バックアップコード（ハッシュ） | `20260422010000` |
@@ -70,6 +70,7 @@ erDiagram
 | `created_at` | `timestamptz` | NOT NULL | `now()` | — | 作成日時 |
 | `invite_token` | `uuid` | NOT NULL | `gen_random_uuid()` | UNIQUE | 招待 URL 用トークン |
 | `public_share_token` | `uuid` | NOT NULL | `gen_random_uuid()` | UNIQUE（インデックス名 `groups_public_share_token_key`） | 閲覧専用共有 URL 用（`/groups/[id]/shared?t=`） |
+| `settlement_finalized_at` | `timestamptz` | NULL | — | — | 精算完了にした日時（NULL は未完了） |
 
 **備考:** `public_share_token` は `20260408120000_world_class_extensions.sql` および追補の `20260410120000_ensure_groups_public_share_token.sql` で追加。  
 **RLS:** 有効（メンバー・作成者のみ参照など。詳細は各マイグレーション）。
@@ -83,8 +84,10 @@ erDiagram
 | 列名 | 型 | NULL | デフォルト | 制約・参照 | 説明 |
 |------|-----|------|------------|------------|------|
 | `group_id` | `uuid` | NOT NULL | — | FK → `groups(id)` ON DELETE CASCADE, PK 一部 | グループ |
-| `user_id` | `uuid` | NOT NULL | — | FK → `auth.users(id)` ON DELETE CASCADE, PK 一部 | ユーザー |
+| `user_id` | `uuid` | NOT NULL | — | PK 一部 | メンバー識別子（通常は `auth.users.id`、仮メンバーは生成 UUID） |
 | `role` | `text` | NOT NULL | `'member'` | CHECK `('owner','member')` | 役割 |
+| `is_provisional` | `boolean` | NOT NULL | `false` | — | 招待前の仮メンバーかどうか |
+| `provisional_display_name` | `text` | NULL | — | CHECK（`is_provisional=true` のとき必須） | 仮メンバー表示名 |
 | `joined_at` | `timestamptz` | NOT NULL | `now()` | — | 参加日時 |
 
 **主キー:** `(group_id, user_id)`  
@@ -100,7 +103,7 @@ erDiagram
 |------|-----|------|------------|------------|------|
 | `id` | `uuid` | NOT NULL | `gen_random_uuid()` | PRIMARY KEY | 支出 ID |
 | `group_id` | `uuid` | NOT NULL | — | FK → `groups(id)` ON DELETE CASCADE | グループ |
-| `payer_id` | `uuid` | NOT NULL | — | FK → `auth.users(id)` ON DELETE RESTRICT | 立替者 |
+| `payer_id` | `uuid` | NOT NULL | — | — | 立替者（`group_members.user_id` のいずれか） |
 | `amount` | `numeric(14,2)` | NOT NULL | — | CHECK `amount > 0` | 金額 |
 | `description` | `text` | NULL | — | — | 摘要 |
 | `expense_date` | `date` | NOT NULL | UTC 基準の当日 | — | 支払日 |
@@ -120,7 +123,7 @@ erDiagram
 | 列名 | 型 | NULL | デフォルト | 制約・参照 | 説明 |
 |------|-----|------|------------|------------|------|
 | `expense_id` | `uuid` | NOT NULL | — | FK → `group_expenses(id)` ON DELETE CASCADE, PK 一部 | 支出 |
-| `user_id` | `uuid` | NOT NULL | — | FK → `auth.users(id)` ON DELETE CASCADE, PK 一部 | 負担ユーザー |
+| `user_id` | `uuid` | NOT NULL | — | PK 一部 | 負担ユーザー（`group_members.user_id` のいずれか） |
 | `amount` | `numeric(14,2)` | NOT NULL | — | CHECK `amount >= 0` | 負担金額 |
 | `ratio` | `numeric(20,8)` | NOT NULL | `1` | CHECK `ratio >= 0` | 比率（按分計算用） |
 

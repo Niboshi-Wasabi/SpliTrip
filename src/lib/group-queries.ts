@@ -22,11 +22,14 @@ export type GroupRow = {
   period_end_date?: string | null;
   /** Read-only share token for `/groups/[id]/shared` (optional until migration applied). */
   public_share_token?: string;
+  settlement_finalized_at?: string | null;
 };
 
 export type GroupMemberRow = {
   user_id: string;
   role: string;
+  is_provisional?: boolean;
+  provisional_display_name?: string | null;
   display_name: string;
   avatar_url: string | null;
   paypal_me_id: string | null;
@@ -152,7 +155,7 @@ export async function fetchGroupDetailForUser(
   const { data: group, error: groupError } = await supabase
     .from("groups")
     .select(
-      "id, name, currency_code, created_by, created_at, invite_token, period_start_date, period_end_date, public_share_token",
+      "id, name, currency_code, created_by, created_at, invite_token, period_start_date, period_end_date, public_share_token, settlement_finalized_at",
     )
     .eq("id", groupId)
     .maybeSingle();
@@ -173,7 +176,7 @@ export async function fetchGroupDetailForUser(
 
   const { data: memberRows, error: membersError } = await supabase
     .from("group_members")
-    .select("user_id, role")
+    .select("user_id, role, is_provisional, provisional_display_name")
     .eq("group_id", groupId);
 
   if (membersError) {
@@ -198,27 +201,19 @@ export async function fetchGroupDetailForUser(
     return { ok: false, error: "forbidden" };
   }
 
-  const { data: profilesRaw, error: profilesError } = await supabase.rpc(
-    "get_group_member_profiles",
-    { p_group_id: groupId },
-  );
-
+  const { data: profiles, error: profilesError } = await supabase
+    .from("user_profiles")
+    .select(
+      "id, display_name, avatar_url, paypal_me_id, cash_app_cashtag, payment_links",
+    )
+    .in("id", memberUserIds);
   if (profilesError) {
-    console.error(
-      "[API/Action Error - fetchGroupDetailForUser profiles (non-fatal)]:",
-      profilesError,
-    );
+    console.error("[API/Action Error - fetchGroupDetailForUser profiles]:", {
+      error: profilesError,
+      groupId,
+      userId,
+    });
   }
-
-  type ProfileRow = {
-    id: string;
-    display_name: string | null;
-    avatar_url: string | null;
-    paypal_me_id: string | null;
-    cash_app_cashtag: string | null;
-    payment_links: unknown;
-  };
-  const profiles = (profilesRaw ?? []) as ProfileRow[];
 
   const displayNameByUserId: Record<string, string> = {};
   const avatarUrlByUserId: Record<string, string | null> = {};
@@ -230,7 +225,7 @@ export async function fetchGroupDetailForUser(
       payment_links: PaymentLinkStored[] | null;
     }
   > = {};
-  for (const profileRow of profiles) {
+  for (const profileRow of profiles ?? []) {
     displayNameByUserId[profileRow.id] =
       profileRow.display_name?.trim() || "ユーザー";
     avatarUrlByUserId[profileRow.id] =
@@ -309,15 +304,25 @@ export async function fetchGroupDetailForUser(
 
   const members: GroupMemberRow[] = membersList.map((memberRow) => {
     const payment = paymentFieldsByUserId[memberRow.user_id];
+    const provisionalName =
+      typeof memberRow.provisional_display_name === "string"
+        ? memberRow.provisional_display_name.trim()
+        : "";
+    const isProvisional = memberRow.is_provisional === true;
     return {
       user_id: memberRow.user_id,
       role: memberRow.role,
+      is_provisional: isProvisional,
+      provisional_display_name: provisionalName.length > 0 ? provisionalName : null,
       display_name:
-        displayNameByUserId[memberRow.user_id] ?? "ユーザー",
-      avatar_url: avatarUrlByUserId[memberRow.user_id] ?? null,
-      paypal_me_id: payment?.paypal_me_id ?? null,
-      cash_app_cashtag: payment?.cash_app_cashtag ?? null,
-      payment_links: payment?.payment_links ?? null,
+        displayNameByUserId[memberRow.user_id] ??
+        (provisionalName.length > 0 ? provisionalName : "メンバー"),
+      avatar_url: isProvisional
+        ? null
+        : (avatarUrlByUserId[memberRow.user_id] ?? null),
+      paypal_me_id: isProvisional ? null : (payment?.paypal_me_id ?? null),
+      cash_app_cashtag: isProvisional ? null : (payment?.cash_app_cashtag ?? null),
+      payment_links: isProvisional ? null : (payment?.payment_links ?? null),
     };
   });
 

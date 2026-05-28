@@ -600,7 +600,10 @@
   "SharedGroup": {
     "badge": "Shared link (read-only)",
     "hint": "No login required. Only the group name and currency are shown here; details stay private to members.",
-    "currencyLabel": "Currency"
+    "settlementHint": "This page shows settlement results at the finalized point only.",
+    "currencyLabel": "Currency",
+    "finalizedAtLabel": "Finalized at",
+    "settlementEmpty": "No transfer rows are needed."
   },
   "GroupExpenseList": {
     "empty": "No expenses yet",
@@ -690,7 +693,22 @@
     "settlementSettingsLink": "Settings",
     "settlementSettingsTrail": " — add your payout links to show send buttons on rows where you pay someone.",
     "settlementEmpty": "No one needs to send money to settle up",
-    "chartUnknownPayer": "Unknown"
+    "chartUnknownPayer": "Unknown",
+    "addProvisionalMember": "Add provisional member",
+    "removeProvisionalMember": "Remove",
+    "provisionalHint": "Add name-only provisional members before they are invited.",
+    "provisionalPrompt": "Enter a provisional member name (max 50 chars)",
+    "provisionalEmpty": "No provisional members yet.",
+    "provisionalAddFailed": "Could not add the provisional member.",
+    "provisionalDeleteFailed": "Could not remove the provisional member.",
+    "completeSettlement": "Finalize settlement",
+    "reopenSettlement": "Reopen settlement",
+    "copySettlementShareLink": "Copy settlement share link",
+    "shareCopied": "Copied",
+    "shareCopyFailed": "Could not copy the share link.",
+    "settlementFinalizeHint": "When entries are complete, finalize settlement to create a share link with settlement results only.",
+    "settlementFinalizedHint": "Settlement is finalized. Reopen in one tap if additional expenses are needed.",
+    "settlementFinalizeFailed": "Could not update settlement status."
   },
   "GroupNextPayer": {
     "cardTitle": "Who should pay next?",

@@ -612,7 +612,10 @@
   "SharedGroup": {
     "badge": "共有リンク（閲覧のみ）",
     "hint": "ログインなしで、グループ名と通貨だけ表示しています。詳しい出費はメンバーだけが見られます。",
-    "currencyLabel": "通貨"
+    "settlementHint": "精算完了時点の結果のみを表示しています。",
+    "currencyLabel": "通貨",
+    "finalizedAtLabel": "精算完了日時",
+    "settlementEmpty": "送金が必要な行はありません。"
   },
   "ExpenseDetail": {
     "untitled": "（無題）",
@@ -690,7 +693,22 @@
     "settlementSettingsLink": "設定",
     "settlementSettingsTrail": "から送金先のリンクを登録すると、あなたが払う側の行に送金ボタンが表示されます。",
     "settlementEmpty": "お互いに払い合う必要はありません",
-    "chartUnknownPayer": "不明"
+    "chartUnknownPayer": "不明",
+    "addProvisionalMember": "仮メンバーを追加",
+    "removeProvisionalMember": "削除",
+    "provisionalHint": "招待前の仮メンバーを登録して精算対象にできます。",
+    "provisionalPrompt": "仮メンバー名を入力してください（50文字以内）",
+    "provisionalEmpty": "仮メンバーはいません。",
+    "provisionalAddFailed": "仮メンバーの追加に失敗しました。",
+    "provisionalDeleteFailed": "仮メンバーの削除に失敗しました。",
+    "completeSettlement": "精算を完了にする",
+    "reopenSettlement": "未完了に戻す",
+    "copySettlementShareLink": "精算結果リンクをコピー",
+    "shareCopied": "コピーしました",
+    "shareCopyFailed": "共有リンクのコピーに失敗しました。",
+    "settlementFinalizeHint": "登録が完了したら精算を完了にし、結果のみの共有リンクを発行できます。",
+    "settlementFinalizedHint": "精算完了中です。必要ならワンタッチで未完了に戻せます。",
+    "settlementFinalizeFailed": "精算状態の更新に失敗しました。"
   },
   "GroupNextPayer": {
     "cardTitle": "次は誰が払う？",
