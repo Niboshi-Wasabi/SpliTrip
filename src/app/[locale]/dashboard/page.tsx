@@ -7,19 +7,12 @@ import { listGroupsForUser } from "@/lib/group-queries";
 import { createClient } from "@/utils/supabase/server";
 import {
   checkNeedsOnboarding,
-  extractDisplayName,
-  extractAvatarUrl,
   getMandatoryPitchHref,
 } from "@/lib/user-profile";
 import { redirect } from "@/i18n/navigation";
-import { UserAvatarMenu } from "@/components/user-avatar-menu";
-import { LogoMark } from "@/components/logo-mark";
-import { ThemeToggle } from "@/components/ThemeToggle";
-import { SupportDeveloper } from "@/components/ads/SupportDeveloper";
 import { DashboardSpendingChart } from "./dashboard-spending-chart";
 import { DashboardStatsGrid } from "./dashboard-stats-grid";
 import { DashboardGroupsList } from "./dashboard-groups-list";
-import { LogoutButton } from "./logout-button";
 import { BETA_FEEDBACK_HREF } from "@/lib/beta-feedback-href";
 import { getCategoryColor, getExpenseCategoryChartColor } from "@/lib/categories";
 import {
@@ -55,24 +48,14 @@ export default async function DashboardPage({ params }: PageProps) {
     return;
   }
 
-  const [ownProfileResponse, roleResponse] = await Promise.all([
-    supabase.rpc("get_own_profile"),
-    supabase.from("user_profiles").select("is_admin").eq("id", user.id).maybeSingle(),
-  ]);
+  const ownProfileResponse = await supabase.rpc("get_own_profile");
   const ownProfile =
     typeof ownProfileResponse.data === "object" && ownProfileResponse.data !== null
       ? (ownProfileResponse.data as {
-          display_name?: string;
-          avatar_url?: string | null;
           premium_access?: boolean;
         })
       : null;
-  const isAdmin = roleResponse.data?.is_admin === true;
   const dashboardHasPremium = ownProfile?.premium_access === true;
-  const currentDisplayName =
-    ownProfile?.display_name ?? extractDisplayName(user);
-  const currentAvatarUrl =
-    ownProfile?.avatar_url ?? extractAvatarUrl(user);
 
   const groupsResult = await listGroupsForUser(supabase, user.id);
   const groups = groupsResult.ok ? groupsResult.items : [];
@@ -199,79 +182,52 @@ export default async function DashboardPage({ params }: PageProps) {
 
   const dashboardChartsTranslations = await getTranslations("GroupCharts");
   const dashboardPageTranslations = await getTranslations("Dashboard");
-  const bottomNavTranslations = await getTranslations("BottomNav");
   const loginTranslations = await getTranslations("Login");
 
   return (
-    <div className="flex min-h-dvh flex-col bg-[var(--apple-bg)] text-[var(--apple-text)]">
-      {/* Header */}
-      <header className="sticky top-0 z-30 border-b border-[var(--apple-separator)] bg-[var(--apple-nav-bg)] backdrop-blur-xl">
-        <div className="mx-auto flex h-[48px] max-w-[980px] items-center justify-between gap-3 px-4">
-          <div className="flex items-center gap-3">
-            <LogoMark className="text-lg" />
-          </div>
-          <div className="hidden min-w-0 flex-1 justify-center md:flex">
-            <SupportDeveloper variant="header" />
-          </div>
-          <div className="flex items-center gap-1 sm:gap-2">
-            <ThemeToggle />
-            <div className="hidden md:block">
-              <LogoutButton />
-            </div>
-            <UserAvatarMenu
-              displayName={currentDisplayName}
-              avatarUrl={currentAvatarUrl}
-              isAdmin={isAdmin}
-              accountAriaLabel={bottomNavTranslations("accountMenu")}
-            />
-          </div>
-        </div>
-      </header>
+    <div className="mx-auto w-full max-w-[980px] px-4 py-6">
+      <PageHeader title={dashboardPageTranslations("subtitle")} />
 
-      <main className="mx-auto w-full max-w-[980px] flex-1 px-4 py-6 pb-24 md:pb-6">
-        <PageHeader title={dashboardPageTranslations("subtitle")} />
+      <DashboardStatsGrid
+        totalExpense={totalExpense}
+        groupCount={groupCount}
+        avgPerGroup={avgPerGroup}
+        labels={{
+          totalSpend: dashboardPageTranslations("statTotalSpend"),
+          groupCount: dashboardPageTranslations("statGroupCount"),
+          avgPerGroup: dashboardPageTranslations("statAvgPerGroup"),
+        }}
+      />
 
-        <DashboardStatsGrid
-          totalExpense={totalExpense}
-          groupCount={groupCount}
-          avgPerGroup={avgPerGroup}
-          labels={{
-            totalSpend: dashboardPageTranslations("statTotalSpend"),
-            groupCount: dashboardPageTranslations("statGroupCount"),
-            avgPerGroup: dashboardPageTranslations("statAvgPerGroup"),
-          }}
+      <div className="grid gap-6 lg:grid-cols-2">
+        <DashboardSpendingChart
+          chartByGroup={chartDataByGroup}
+          chartByCategory={chartDataByCategory}
+          totalFormatted={formatYen(totalExpense)}
+          titleByGroup={dashboardChartsTranslations("dashboardTitleByGroup")}
+          titleByCategory={dashboardChartsTranslations("dashboardTitleByCategory")}
         />
 
-        <div className="grid gap-6 lg:grid-cols-2">
-          <DashboardSpendingChart
-            chartByGroup={chartDataByGroup}
-            chartByCategory={chartDataByCategory}
-            totalFormatted={formatYen(totalExpense)}
-            titleByGroup={dashboardChartsTranslations("dashboardTitleByGroup")}
-            titleByCategory={dashboardChartsTranslations("dashboardTitleByCategory")}
-          />
+        <DashboardGroupsList
+          groups={groups.map((groupItem) => ({
+            id: groupItem.group.id,
+            name: groupItem.group.name,
+            currencyCode: groupItem.group.currency_code,
+            totalExpense: expenseTotalByGroup.get(groupItem.group.id) ?? 0,
+          }))}
+          currentUserId={user.id}
+          hasPremium={dashboardHasPremium}
+          locale={locale}
+          labels={{
+            title: dashboardPageTranslations("groupsCardTitle"),
+            description: dashboardPageTranslations("groupsCardDescription"),
+            createButton: dashboardPageTranslations("createGroupButton"),
+            empty: dashboardPageTranslations("emptyGroups"),
+          }}
+        />
+      </div>
 
-          <DashboardGroupsList
-            groups={groups.map((groupItem) => ({
-              id: groupItem.group.id,
-              name: groupItem.group.name,
-              currencyCode: groupItem.group.currency_code,
-              totalExpense: expenseTotalByGroup.get(groupItem.group.id) ?? 0,
-            }))}
-            currentUserId={user.id}
-            hasPremium={dashboardHasPremium}
-            locale={locale}
-            labels={{
-              title: dashboardPageTranslations("groupsCardTitle"),
-              description: dashboardPageTranslations("groupsCardDescription"),
-              createButton: dashboardPageTranslations("createGroupButton"),
-              empty: dashboardPageTranslations("emptyGroups"),
-            }}
-          />
-        </div>
-      </main>
-
-      <footer className="border-t border-[var(--apple-separator)] pb-20 pt-6 text-center text-xs text-[var(--apple-text-secondary)] md:pb-6">
+      <footer className="mt-8 border-t border-[var(--apple-separator)] pt-6 text-center text-xs text-[var(--apple-text-secondary)]">
         <Link href="/terms" className="underline underline-offset-4 hover:text-[var(--apple-text)]">
           {loginTranslations("terms")}
         </Link>

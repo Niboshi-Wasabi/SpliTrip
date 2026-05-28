@@ -15,37 +15,31 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { ThemeToggle } from "@/components/ThemeToggle";
 import { CreateGroupForm } from "./create-group-form";
 
 export default async function NewGroupPage() {
   const t = await getTranslations("GroupNew");
 
   return (
-    <div className="min-h-screen">
-      <header className="border-b border-[var(--apple-separator)] bg-[var(--apple-card-bg)] shadow-sm">
-        <div className="mx-auto flex max-w-3xl items-center justify-between gap-3 px-4 py-3">
-          <Link
-            href="/dashboard"
-            className={cn(buttonVariants({ variant: "ghost", size: "sm" }), "min-h-[44px] md:min-h-0")}
-          >
-            <ArrowLeft className="mr-1 h-4 w-4" />
-            {t("backDashboard")}
-          </Link>
-          <ThemeToggle />
-        </div>
-      </header>
-      <main className="mx-auto max-w-3xl px-4 py-8 pb-24 md:pb-8">
-        <Card>
-          <CardHeader>
-            <CardTitle>{t("pageTitle")}</CardTitle>
-            <CardDescription>{t("pageDescription")}</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <CreateGroupForm />
-          </CardContent>
-        </Card>
-      </main>
+    <div className="mx-auto max-w-3xl px-4 py-6">
+      <div className="mb-4">
+        <Link
+          href="/dashboard"
+          className={cn(buttonVariants({ variant: "ghost", size: "sm" }), "min-h-[44px] md:min-h-0")}
+        >
+          <ArrowLeft className="mr-1 h-4 w-4" />
+          {t("backDashboard")}
+        </Link>
+      </div>
+      <Card>
+        <CardHeader>
+          <CardTitle>{t("pageTitle")}</CardTitle>
+          <CardDescription>{t("pageDescription")}</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <CreateGroupForm />
+        </CardContent>
+      </Card>
     </div>
   );
 }

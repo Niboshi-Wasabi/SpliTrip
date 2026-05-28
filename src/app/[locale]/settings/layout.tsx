@@ -1,15 +1,14 @@
-import { OpenBetaBanner } from "@/components/beta/open-beta-banner";
 import { AuthAppShell } from "@/components/app/auth-app-shell";
 import { createClient } from "@/utils/supabase/server";
 import { extractDisplayName, extractAvatarUrl } from "@/lib/user-profile";
 
-type DashboardLayoutProps = {
+type SettingsLayoutProps = {
   children: React.ReactNode;
 };
 
-export default async function DashboardLayout({
+export default async function SettingsLayout({
   children,
-}: DashboardLayoutProps) {
+}: SettingsLayoutProps) {
   const supabase = await createClient();
   const {
     data: { user },
@@ -50,7 +49,6 @@ export default async function DashboardLayout({
       avatarUrl={avatarUrl}
       isAdmin={isAdmin}
     >
-      <OpenBetaBanner />
       {children}
     </AuthAppShell>
   );

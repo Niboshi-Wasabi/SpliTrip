@@ -28,7 +28,6 @@ import { GroupSettlementList } from "./group-settlement-list";
 import { createClient } from "@/utils/supabase/server";
 import { GroupExpensePanel } from "./group-expense-panel";
 import { GroupNextPayerHint } from "./group-next-payer-hint";
-import { ThemeToggle } from "@/components/ThemeToggle";
 import { GroupInviteButton } from "./group-invite-button";
 import { GroupExportToolbar } from "./group-export-toolbar";
 import { GroupPremiumShell } from "@/components/premium/group-premium-shell";
@@ -224,36 +223,23 @@ export default async function GroupDetailPage({ params, searchParams }: PageProp
   });
 
   return (
-    <div className="flex min-h-dvh flex-col bg-[var(--apple-bg)] text-[var(--apple-text)]">
-      <header className="sticky top-0 z-30 border-b border-[var(--apple-separator)] bg-[var(--apple-nav-bg)] backdrop-blur-xl print:hidden">
-        <div className="mx-auto max-w-[980px] px-4 py-3">
-          <div className="mb-3 flex items-center justify-between gap-2 md:mb-0 md:hidden">
-            <Link
-              href="/dashboard"
-              className={cn(
-                buttonVariants({ variant: "ghost", size: "sm" }),
-                "min-h-[44px] md:min-h-0",
-              )}
-            >
-              <ArrowLeft className="mr-1 h-4 w-4" />
-              {groupDetailTranslations("backDashboard")}
-            </Link>
-            <ThemeToggle />
-          </div>
+    <>
+      <div className="mx-auto max-w-[980px] px-4 py-3 print:hidden">
+        <div className="mb-3 flex items-center gap-2">
+          <Link
+            href="/dashboard"
+            className={cn(
+              buttonVariants({ variant: "ghost", size: "sm" }),
+              "min-h-[44px] md:min-h-0",
+            )}
+          >
+            <ArrowLeft className="mr-1 h-4 w-4" />
+            {groupDetailTranslations("backDashboard")}
+          </Link>
+        </div>
 
-          <div className="flex flex-col gap-3 md:flex-row md:items-start">
-            <Link
-              href="/dashboard"
-              className={cn(
-                buttonVariants({ variant: "ghost", size: "sm" }),
-                "hidden min-h-[44px] shrink-0 md:inline-flex md:min-h-0",
-              )}
-            >
-              <ArrowLeft className="mr-1 h-4 w-4" />
-              {groupDetailTranslations("backDashboard")}
-            </Link>
-
-            <div className="min-w-0 flex-1">
+        <div className="flex flex-col gap-3 md:flex-row md:items-start">
+          <div className="min-w-0 flex-1">
             <GroupNameForm
               groupId={groupId}
               initialName={group.name}
@@ -301,18 +287,13 @@ export default async function GroupDetailPage({ params, searchParams }: PageProp
               canManage={currentUserIsGroupOwner}
               members={members}
             />
-            </div>
-            <div className="hidden md:block">
-              <ThemeToggle />
-            </div>
           </div>
         </div>
-      </header>
+      </div>
 
       <RealtimeGroupSync groupId={groupId} currentUserId={user.id} />
 
-      {/* pb-24: モバイルのボトムナビ分のクリアランス / Bottom nav clearance on mobile */}
-      <main className="mx-auto w-full max-w-[980px] space-y-6 px-4 py-6 pb-24 md:pb-6">
+      <div className="mx-auto w-full max-w-[980px] space-y-6 px-4 py-6">
         <div className="print:hidden">
           <DisplayNamePrompt currentName={currentDisplayName} groupId={groupId} />
         </div>
@@ -473,7 +454,7 @@ export default async function GroupDetailPage({ params, searchParams }: PageProp
         </Card>
           </div>
         </GroupPremiumShell>
-      </main>
-    </div>
+      </div>
+    </>
   );
 }

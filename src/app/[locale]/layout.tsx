@@ -6,7 +6,6 @@ import { getMessages, getTranslations, setRequestLocale } from "next-intl/server
 import { routing, type AppLocale } from "@/i18n/routing";
 import { SPLITRIP_REQUEST_PATHNAME_HEADER_NAME } from "@/lib/i18n/splitrip-request-headers";
 import { AppProviders } from "@/app/providers";
-import { BottomNav } from "@/components/bottom-nav";
 import { SyncDocumentLocale } from "@/components/i18n/sync-document-locale";
 import { AppSiteFooter } from "@/components/layout/app-site-footer";
 import { PublishedAppAnnouncements } from "@/components/announcements/published-app-announcements";
@@ -105,7 +104,6 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
           <WhatsNewModalGate locale={locale} />
           {children}
           <AppSiteFooter />
-          <BottomNav />
         </AppProviders>
       </NextIntlClientProvider>
     </>

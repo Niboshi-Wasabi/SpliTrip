@@ -87,7 +87,8 @@
 | **等幅フォント** | `ja` / `en` ともに Fira Code 系スタックを利用（最終フォールバックは OS 標準 monospace）。`html[data-ui-mono]`。 |
 | **言語スイッチャー** | `LanguageSwitcher` は **JA / EN トグル**で即時切替。LP ヘッダー・設定ヘッダー等。言語選択モーダル（`language-picker-modal.tsx`）は FAB 以外の導線から利用可能。 |
 | **テーマ** | ライト / ダーク / システム（クライアント側プロバイダ）。 |
-| **モバイル** | ボトムナビ、タッチ向け `min-h-[44px]` などの UI 方針。 |
+| **認証後シェル** | ログイン後の `/dashboard` 系と `/settings` は共通シェル（`AuthAppShell`）で表示。**md+**: 左固定サイドバー（220px、ホーム・設定・admin・ログアウト）＋ヘッダー。**\<md**: BottomNav（ホーム・設定）。サイドバーとモバイル BottomNav のナビ項目は `src/lib/app-navigation.ts` で一元管理。admin シェルは独立のため影響なし。 |
+| **モバイル** | タッチ向け `min-h-[44px]` などの UI 方針。 |
 | **PWA** | `manifest.webmanifest`、テーマカラー等（レイアウト・メタと連動）。アイコン類は `public/icons/icon.svg` を元に `npm run icons:build` で `public/icons/*` と `src/app/icon.png`・`apple-icon.png`・`favicon.ico` を生成。 |
 | **What's New モーダル** | `src/components/ui/WhatsNewModal.tsx` + `src/components/announcements/whats-new-modal-gate.tsx` で有効。`[locale]/layout` にマウントされ、背景ブラー・Fade/Scale アニメーション付きで表示。 |
 
