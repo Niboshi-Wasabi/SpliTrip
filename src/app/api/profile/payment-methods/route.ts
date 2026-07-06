@@ -1,32 +1,17 @@
 /**
- * Persist PayPal.me and Cash App handles on `user_profiles` for settlement deep links.
+ * Persist PayPal.me, Cash App, PayPay, and LINE Pay links on `user_profiles`.
  */
 
 import { NextRequest, NextResponse } from "next/server";
 import { sanitizeCashAppCashtag, sanitizePaypalMeId } from "@/lib/payment-ids";
+import {
+  buildPaymentLinksPayload,
+  normalizeJapanWalletLinkInput,
+} from "@/lib/payment-profile-links";
 import { createClient } from "@/utils/supabase/server";
 
 const INTERNAL_SERVER_ERROR_MESSAGE =
   "サーバーで予期せぬエラーが発生しました。";
-
-function buildPaymentLinksJson(
-  paypalMeId: string | null,
-  cashAppCashtag: string | null,
-): unknown[] {
-  const links: { url: string }[] = [];
-  if (paypalMeId) {
-    links.push({
-      url: `https://www.paypal.com/paypalme/${encodeURIComponent(paypalMeId)}`,
-    });
-  }
-  if (cashAppCashtag) {
-    const tag = cashAppCashtag.replace(/^\$/, "");
-    links.push({
-      url: `https://cash.app/$${encodeURIComponent(tag)}`,
-    });
-  }
-  return links;
-}
 
 export async function PATCH(request: NextRequest) {
   const supabase = await createClient();
@@ -46,6 +31,8 @@ export async function PATCH(request: NextRequest) {
   const body = parsed as {
     paypal_me_id?: unknown;
     cash_app_cashtag?: unknown;
+    paypay_link?: unknown;
+    line_pay_link?: unknown;
   };
 
   const paypalRaw =
@@ -56,6 +43,14 @@ export async function PATCH(request: NextRequest) {
     body.cash_app_cashtag === null || body.cash_app_cashtag === undefined
       ? ""
       : String(body.cash_app_cashtag);
+  const payPayRaw =
+    body.paypay_link === null || body.paypay_link === undefined
+      ? ""
+      : String(body.paypay_link);
+  const linePayRaw =
+    body.line_pay_link === null || body.line_pay_link === undefined
+      ? ""
+      : String(body.line_pay_link);
 
   const paypal_me_id = paypalRaw.trim() === "" ? null : sanitizePaypalMeId(paypalRaw);
   const cash_app_cashtag =
@@ -68,7 +63,22 @@ export async function PATCH(request: NextRequest) {
     return NextResponse.json({ ok: false, message: "invalid_cash_app_cashtag" }, { status: 400 });
   }
 
-  const paymentLinksPayload = buildPaymentLinksJson(paypal_me_id, cash_app_cashtag);
+  const payPayNormalized = normalizeJapanWalletLinkInput(payPayRaw);
+  if (payPayNormalized.invalid) {
+    return NextResponse.json({ ok: false, message: "invalid_paypay_link" }, { status: 400 });
+  }
+
+  const linePayNormalized = normalizeJapanWalletLinkInput(linePayRaw);
+  if (linePayNormalized.invalid) {
+    return NextResponse.json({ ok: false, message: "invalid_line_pay_link" }, { status: 400 });
+  }
+
+  const paymentLinksPayload = buildPaymentLinksPayload({
+    paypalMeId: paypal_me_id,
+    cashAppCashtag: cash_app_cashtag,
+    payPayLink: payPayNormalized.value,
+    linePayLink: linePayNormalized.value,
+  });
 
   const { error } = await supabase.rpc("update_own_payment_methods", {
     p_paypal_me_id: paypal_me_id,
@@ -87,5 +97,7 @@ export async function PATCH(request: NextRequest) {
   return NextResponse.json({
     paypal_me_id,
     cash_app_cashtag,
+    paypay_link: payPayNormalized.value,
+    line_pay_link: linePayNormalized.value,
   });
 }

@@ -10,6 +10,7 @@ import {
 } from "@/lib/group-expense-split-server";
 import { mapSplitModeToDatabaseEnum } from "@/lib/map-split-mode";
 import { parseExpenseCategoryId } from "@/lib/expense-categories";
+import { persistExpenseExchangeSnapshot } from "@/lib/expense-exchange-snapshot";
 import { fetchGroupDetailForUser } from "@/lib/group-queries";
 import { createClient } from "@/utils/supabase/server";
 
@@ -394,6 +395,14 @@ export async function POST(request: NextRequest, context: RouteContext) {
       }
     }
   }
+
+  await persistExpenseExchangeSnapshot({
+    supabase,
+    expenseId: String(expenseId),
+    groupId,
+    groupCurrencyCode: currencyCode,
+    amount,
+  });
 
   return NextResponse.json(
     {

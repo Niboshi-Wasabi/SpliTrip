@@ -28,6 +28,7 @@
 | `stripe_customer_user_links` | Stripe `customer_id` ↔ `auth.users` の紐付け | `20260415070000` |
 | `audit_logs` | 支出の監査ログ | `06230000` |
 | `expense_comments` | 支出へのコメント | `08120000` |
+| `settlement_transactions` | 精算行の送金済みマーク | `20260707120000` |
 
 ---
 
@@ -111,6 +112,9 @@ erDiagram
 | `category` | `text` | NOT NULL | `'other'` | CHECK `food, transport, lodging, sightseeing, other` | カテゴリ |
 | `receipt_url` | `text` | NULL | — | — | Storage `receipts` バケット内のオブジェクトパス（公開 URL ではない） |
 | `split_type` | `expense_split_mode` | NOT NULL | `'EQUAL'` | 型は enum | 割り方の種類（UI の高度な按分と対応） |
+| `reference_currency_code` | `text` | NULL | — | — | 登録時点の参考通貨（通常 JPY） |
+| `reference_exchange_rate` | `numeric(20,8)` | NULL | — | — | グループ通貨 → 参考通貨のレート |
+| `reference_converted_amount` | `numeric(14,2)` | NULL | — | — | 参考通貨換算額（登録時スナップショット） |
 
 **備考:** `split_type` と enum `expense_split_mode` は `20260408120000` で追加。
 
@@ -129,6 +133,28 @@ erDiagram
 
 **主キー:** `(expense_id, user_id)`  
 **インデックス:** `expense_id`（`idx_expense_splits_expense_id`）
+
+---
+
+## `settlement_transactions`
+
+グループ内の精算行（誰→誰へいくら）について、支払人が「送金済み」とマークした記録。
+
+| 列名 | 型 | NULL | デフォルト | 制約・参照 | 説明 |
+|------|-----|------|------------|------------|------|
+| `id` | `uuid` | NOT NULL | `gen_random_uuid()` | PRIMARY KEY | 行 ID |
+| `group_id` | `uuid` | NOT NULL | — | FK → `groups(id)` ON DELETE CASCADE | グループ |
+| `from_user_id` | `uuid` | NOT NULL | — | — | 支払人（`group_members.user_id`） |
+| `to_user_id` | `uuid` | NOT NULL | — | — | 受取人 |
+| `amount` | `numeric(14,2)` | NOT NULL | — | CHECK `> 0` | マーク時点の金額スナップショット |
+| `currency_code` | `text` | NOT NULL | — | — | グループ通貨 |
+| `status` | `text` | NOT NULL | `'paid'` | CHECK `paid \| void` | 有効な送金済みは `paid` のみ |
+| `marked_by_user_id` | `uuid` | NULL | — | FK → `auth.users(id)` ON DELETE SET NULL | マーク操作者 |
+| `marked_at` | `timestamptz` | NOT NULL | `now()` | — | マーク日時 |
+| `created_at` | `timestamptz` | NOT NULL | `now()` | — | 作成日時 |
+
+**一意制約:** `(group_id, from_user_id, to_user_id)` where `status = 'paid'`（部分ユニークインデックス）  
+**RLS:** メンバー SELECT。INSERT は支払人本人のみ。UPDATE（void）は支払人またはオーナー。
 
 ---
 

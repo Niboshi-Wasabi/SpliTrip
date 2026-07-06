@@ -23,6 +23,7 @@ import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
 import { Check, Copy, Wallet } from "lucide-react";
 import confetti from "canvas-confetti";
+import { buildSettlementPairKey } from "@/lib/settlement-transactions";
 import { useGroupOptimisticMutations } from "@/hooks/use-group-optimistic-mutations";
 
 type Props = {
@@ -87,9 +88,9 @@ export function GroupSettlementList({
 }: Props) {
   const settlementTranslations = useTranslations("Settlement");
   const { markSettlementOptimistically } = useGroupOptimisticMutations(groupId);
-  const [settledRowKeys, setSettledRowKeys] = useState<Record<string, boolean>>(
-    {},
-  );
+  const [optimisticPaidPairKeys, setOptimisticPaidPairKeys] = useState<
+    Record<string, boolean>
+  >({});
   const [copyToastMessage, setCopyToastMessage] = useState<string | null>(null);
 
   const currentUserMember = useMemo(
@@ -131,16 +132,26 @@ export function GroupSettlementList({
     }, 1800);
   }
 
-  async function handleMarkAsSettled(rowKey: string): Promise<void> {
+  async function handleMarkAsSettled(
+    pairKey: string,
+    fromUserId: string,
+    toUserId: string,
+    amount: number,
+  ): Promise<void> {
     const markSucceeded = await markSettlementOptimistically({
-      rowKey,
+      fromUserId,
+      toUserId,
+      amount,
       onOptimisticApplied: () => {
-        setSettledRowKeys((previousRows) => ({ ...previousRows, [rowKey]: true }));
+        setOptimisticPaidPairKeys((previousRows) => ({
+          ...previousRows,
+          [pairKey]: true,
+        }));
       },
       onRollback: () => {
-        setSettledRowKeys((previousRows) => {
+        setOptimisticPaidPairKeys((previousRows) => {
           const nextRows = { ...previousRows };
-          delete nextRows[rowKey];
+          delete nextRows[pairKey];
           return nextRows;
         });
       },
@@ -162,9 +173,14 @@ export function GroupSettlementList({
 
   return (
     <ul className="space-y-2">
-      {settlements.map((settlementRow, rowIndex) => {
-        const rowKey = `${settlementRow.fromUserId}-${settlementRow.toUserId}-${rowIndex}`;
-        const rowIsMarkedSettled = settledRowKeys[rowKey] === true;
+      {settlements.map((settlementRow) => {
+        const pairKey = buildSettlementPairKey(
+          settlementRow.fromUserId,
+          settlementRow.toUserId,
+        );
+        const rowIsMarkedSettled =
+          settlementRow.isMarkedPaid === true ||
+          optimisticPaidPairKeys[pairKey] === true;
         const viewerIsDebtor = settlementRow.fromUserId === currentUserId;
         const viewerIsCreditor = settlementRow.toUserId === currentUserId;
         const debtorMember = findMemberByUserId(
@@ -195,7 +211,7 @@ export function GroupSettlementList({
 
         return (
           <li
-            key={rowKey}
+            key={pairKey}
             className="flex min-h-[44px] flex-col gap-2 rounded-lg border p-3 text-sm sm:flex-row sm:flex-wrap sm:items-center sm:justify-between"
           >
             <span className="flex items-center gap-1.5">
@@ -250,7 +266,14 @@ export function GroupSettlementList({
                     className={`min-h-[44px] gap-1.5 text-xs sm:min-h-0 sm:h-7 ${
                       rowIsMarkedSettled ? "scale-[1.03]" : ""
                     }`}
-                    onClick={() => void handleMarkAsSettled(rowKey)}
+                    onClick={() =>
+                      void handleMarkAsSettled(
+                        pairKey,
+                        settlementRow.fromUserId,
+                        settlementRow.toUserId,
+                        settlementRow.amount,
+                      )
+                    }
                   >
                     <Check className="h-3.5 w-3.5" aria-hidden />
                     {rowIsMarkedSettled

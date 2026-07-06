@@ -1,23 +1,134 @@
-# SpliTrip（splitrip）
+# SpliTrip（スプリトリップ）
 
-グループ旅行などの **割り勘・出費記録・精算（送金回数を減らすプラン）** を扱う **Web アプリ（PWA 想定）** です。
+**グループ旅行の割り勘を、記録から精算までひとつに。**
 
-**English:** A **progressive web app** for **group travel expense splitting**, shared ledgers, and **debt-simplification settlements** (fewer transfers).
+| | |
+|---|---|
+| **デモ** | [https://splitrip.net](https://splitrip.net) |
+| **リポジトリ** | [github.com/Niboshi-Wasabi/SpliTrip](https://github.com/Niboshi-Wasabi/SpliTrip) |
+| **種別** | 個人開発 / フルスタック Web アプリ（PWA） |
+| **スタック** | Next.js 16 · React 19 · TypeScript · Supabase · Stripe |
+
+> **English:** A progressive web app for group travel expense splitting — shared ledgers, receipt OCR, and debt-simplification settlements with fewer transfers.
 
 ---
 
-## 主な機能
+## このプロジェクトについて
 
-- **認証:** Google（OAuth / PKCE）、LINE。
-- **グループ:** 作成・招待（トークン / QR）・参加、メンバー表示、閲覧専用共有リンク（`public_share_token`）。
-- **出費:** カテゴリ、均等 / 金額指定 / シェア / パーセント / 品目別、端数ポリシー、領収書ストレージ、コメント・監査ログ。
-- **レシート AI:** Gemini による金額・説明・日付の候補抽出（無料枠あり、PRO は無制限）。
-- **精算:** ネット残差からの送金プラン、送金先リンク（PayPal / Cash App 等）とファビコン表示。
-- **書き出し:** CSV / PDF は **PRO**、ブラウザ印刷は無料でも利用可。
-- **国際化:** **2 言語**（`ja`, `en`）。文言は `messages/ja.json` / `messages/en.json`（next-intl）。
-- **フリーミアム:** `user_profiles.premium_access`。Stripe Checkout / Webhook で PRO 付与。
+SpliTrip は、**複数人での旅行・飲み会などの立替精算**を想定した Web アプリです。出費の入力・按分・可視化に加え、**送金回数を最小化する精算プラン**の提示、**送金先リンクとの連携**までを一つのプロダクトにまとめています。
 
-詳細な機能・API・運用メモは **[`docs/FEATURES.md`](docs/FEATURES.md)** を参照してください。DB スキーマの一覧は **[`docs/DATABASE_TABLES.md`](docs/DATABASE_TABLES.md)** です。
+転職活動のポートフォリオとして、**要件定義から設計・実装・本番運用**まで一通り経験した個人開発プロジェクトです。
+
+### 解決している課題
+
+- 旅行中に立替が増えると、誰がいくら払ったか・誰がいくら負担すべきかが曖昧になる
+- 精算時に「A→B→C…」と送金が増え、手間とミスが発生する
+- レシートや外貨での支払いをあとから振り返りにくい
+
+### アプローチ
+
+- **グループ単位の共有台帳**でリアルタイムに同期
+- **グリーディアルゴリズム**で送金回数を削減した精算プランを自動生成
+- **日本向け UX**（日本語/英語、PayPay・LINE Pay 連携、モバイルファースト）
+- **Supabase RLS** によるマルチテナント的なデータ分離
+
+---
+
+## 主な機能（ユーザー向け）
+
+| 領域 | 内容 |
+|------|------|
+| **認証** | Google（OAuth / PKCE）、LINE、メール/パスワード |
+| **グループ** | 作成・招待（URL / QR）・参加・仮メンバー・閲覧専用共有 |
+| **出費** | 均等 / 金額指定 / シェア / パーセント / 品目別、端数ポリシー、カテゴリ |
+| **レシート** | 撮影→ローカル Inbox、Gemini OCR（金額・日付の候補入力） |
+| **精算** | 最小送金プラン、送金済みマークの永続化、PayPal / Cash App / PayPay / LINE Pay |
+| **可視化** | ダッシュボード、カテゴリ別・グループ別グラフ（Recharts） |
+| **運用基盤** | メンテナンスモード、システムステータスページ、管理画面 |
+| **国際化** | 日本語 / 英語（next-intl） |
+
+詳細は [`docs/FEATURES.md`](docs/FEATURES.md) を参照してください。
+
+---
+
+## 技術的な見どころ（採用担当・エンジニア向け）
+
+実装の深さを確認したい方は、次のドキュメントも参照してください。
+
+- **[アーキテクチャ概要](docs/ARCHITECTURE.md)** — レイヤ構成、認証、データフロー
+- **[DB スキーマ](docs/DATABASE_TABLES.md)** — テーブル定義・RLS
+- **[機能・API 一覧](docs/FEATURES.md)** — エンドポイント・運用メモ
+
+### ハイライト
+
+1. **フルスタック TypeScript**  
+   App Router の Server / Client Components、Route Handlers、Server Actions を用途に応じて使い分け。
+
+2. **Supabase を中核にした BaaS 設計**  
+   Postgres + RLS、Auth（Google / LINE）、Storage（領収書）、Realtime（共同編集時の更新通知）。
+
+3. **精算ロジックの自前実装**  
+   ネット残差からの債務簡約（`simplify-debts`）と、送金済み状態の `settlement_transactions` テーブルでの永続化。
+
+4. **国際化・セキュリティ**  
+   `next-intl` による型安全な i18n、Turnstile、WebAuthn（2FA 基盤）、API エラーの情報漏洩抑制、CI セキュリティスキャン。
+
+5. **本番運用を意識した構成**  
+   カスタムドメイン、Stripe Webhook 冪等処理、GitHub Actions によるヘルスプローブ、メンテナンス・告知の DB 駆動。
+
+### アーキテクチャ（概要）
+
+```mermaid
+flowchart TB
+  subgraph Client["ブラウザ / PWA"]
+    UI[Next.js UI]
+    SW[Service Worker]
+    IDB[IndexedDB レシート Inbox]
+  end
+
+  subgraph Vercel["Vercel"]
+    APP[Next.js App Router]
+    API[Route Handlers / Server Actions]
+    PROXY[src/proxy.ts 認証・i18n・メンテ]
+  end
+
+  subgraph Supabase["Supabase"]
+    AUTH[Auth]
+    DB[(PostgreSQL + RLS)]
+    RT[Realtime]
+    STG[Storage receipts]
+  end
+
+  subgraph External["外部サービス"]
+    STRIPE[Stripe]
+    GEMINI[Google Gemini]
+    FX[Exchange Rate API]
+  end
+
+  UI --> APP
+  APP --> API
+  PROXY --> APP
+  API --> AUTH
+  API --> DB
+  API --> STG
+  UI --> RT
+  API --> STRIPE
+  API --> GEMINI
+  API --> FX
+```
+
+### 品質・テスト
+
+| 項目 | 内容 |
+|------|------|
+| **単体テスト** | Jest（精算ロジック、スプリット計算など） |
+| **CI** | GitHub Actions — セキュリティパターンスキャン（`security-scan.yml`） |
+| **Lint** | ESLint（Next.js 設定） |
+
+```bash
+npm run test
+npm run security:scan
+```
 
 ---
 
@@ -25,22 +136,25 @@
 
 | 領域 | 技術 |
 |------|------|
-| フレームワーク | **Next.js 16**（App Router）、**React 19**、TypeScript |
-| UI | Tailwind CSS、Radix / shadcn 系、Recharts、Framer Motion |
-| バックエンド | **Supabase**（Postgres、Auth、RLS、Storage、Realtime） |
-| i18n | **next-intl** |
-| 課金 | **Stripe**（Webhook: `POST /api/webhook/stripe`） |
-| OCR | **Google Gemini**（`@google/genai`） |
+| フロントエンド | Next.js 16（App Router）、React 19、TypeScript、Tailwind CSS v4 |
+| UI | HeroUI / shadcn 系、Recharts、Framer Motion、Lucide |
+| バックエンド | Supabase（Postgres、Auth、RLS、Storage、Realtime） |
+| 認証 | Google OAuth（PKCE）、LINE、メール/パスワード、WebAuthn（基盤） |
+| i18n | next-intl（ja / en） |
+| 決済 | Stripe（Checkout / Webhook、PRO プラン基盤） |
+| AI | Google Gemini（レシート OCR） |
+| ホスティング | Vercel、Cloudflare DNS |
+| DB マイグレーション | Supabase CLI（`supabase/migrations`） |
 
 ---
 
-## ローカル開発
+## クイックスタート（開発者向け）
 
 ### 前提
 
-- Node.js（プロジェクトに合わせた LTS 推奨）
+- Node.js 20+
 - npm
-- Supabase プロジェクト（URL / anon key。サーバー用途は service role 等は `.env` で管理）
+- Supabase プロジェクト（または [ローカル Supabase](#ローカル-supabase)）
 
 ### セットアップ
 
@@ -50,93 +164,91 @@ cd SpliTrip
 npm install
 ```
 
-ルートに **`.env.local`** を作成し、少なくとも次を設定します（名前は実装・環境に依存します。不足時はビルド・実行時エラーや `docs/FEATURES.md` を参照）。
+ルートに `.env.local` を作成し、最低限次を設定します。
 
-| 変数（例） | 用途 |
-|------------|------|
-| `NEXT_PUBLIC_SUPABASE_URL` / `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase クライアント |
-| `SUPABASE_SERVICE_ROLE_KEY` | Stripe Webhook・サーバー専用処理など（クライアントに埋め込まない）。 |
-| `NEXT_PUBLIC_SITE_URL` | 本番・プレビューで OAuth 等のオリジン解決（例: `https://splitrip.net`） |
-| Google / LINE ログイン利用時 | Supabase・各コンソールのリダイレクト URL と整合させる（`LINE_CHANNEL_*`, `NEXT_PUBLIC_LINE_REDIRECT_URI` 等） |
-| Stripe 利用時 | `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `NEXT_PUBLIC_STRIPE_PAYMENT_LINK` 等 |
-| Gemini OCR 利用時 | `GEMINI_API_KEY` |
-| **システムステータス自動プローブ**（本番） | **Vercel の環境変数**に **`CRON_SECRET`**（`GET /api/cron/system-status` の `Authorization: Bearer …` と一致。未設定だと 503）。**Vercel Hobby は `vercel.json` の Cron が使えない**ため、**GitHub Actions**（`.github/workflows/system-status-cron.yml`、概ね **5 分毎 UTC**）が同じ URL を叩く。**GitHub リポジトリ Secrets** に **`SYSTEM_STATUS_CRON_URL`**（Production の完全 URL。例: `https://splitrip.net/api/cron/system-status`）と **`CRON_SECRET`**（Vercel と同じ値）を設定する。将来の拡張候補は [`docs/FEATURES.md`](docs/FEATURES.md) の「システムステータス — 将来の改修」 |
-
-**本番と DB を分けたい**場合は、上記の **「ローカル Supabase」** を使うか、クラウド上で**別プロジェクト**を開発用に用意し、`.env.local` だけを開発用にする方法があります。
-
-DB スキーマは **`supabase/migrations`** の SQL を Supabase に適用してください。
-
-**リモートが 2 プロジェクトある場合**（本番 / staging など）では、同じリポジトリのマイグレーションを **両方** に反映します。
-
-```bash
-npm run db:login   # 初回・トークン切れのとき
-npm run db:push:all
-```
-
-- デフォルトで次の project ref の順に `link` → `db push --yes` します。  
-  [fdfwnoaqdlfiywtggsfi](https://supabase.com/dashboard/project/fdfwnoaqdlfiywtggsfi) → [qolteiqmcidmfzprkotq](https://supabase.com/dashboard/project/qolteiqmcidmfzprkotq)  
-- 上書き: 環境変数 `SUPABASE_DB_PUSH_REFS=ref1,ref2`（カンマ区切り）  
-- **`supabase db push` が `already exists` で失敗する**ときは、リモートの **マイグレーション履歴テーブル**（CLI の `supabase_migrations`）と実スキーマが食い違っている可能性があります。`npx supabase migration list` で「Remote」列を確認し、既に適用済みのスキーマに対応する分は `npx supabase migration repair <バージョン> --status applied` で履歴だけ整えたうえで、未反映の分だけ `db push` してください（詳細は [Supabase: Migration repair](https://supabase.com/docs/reference/cli/supabase-migration-repair)）。
-
-### ローカル Supabase（本番と DB を分けたいとき）
-
-[Docker Desktop](https://www.docker.com/products/docker-desktop/) など **Docker** が動く前提で、PC 上に Postgres ＋ Auth ＋ API などのスタックを起動します。**本番クラウドとは完全に別**なので、管理画面の PRO 変更の誤操作も本番に届きません（`.env.local` をローカル用に差し替えた場合）。
-
-1. 初回: `npm run db:local:start`（または `npx supabase start`）  
-2. ターミナルに出る **API URL・anon key・service_role** を `.env.local` の `NEXT_PUBLIC_SUPABASE_URL` / `NEXT_PUBLIC_SUPABASE_ANON_KEY` / `SUPABASE_SERVICE_ROLE_KEY` に設定する。`npm run db:local:status` でも再表示できます。  
-3. `npm run dev` でアプリを起動。  
-4. ローカル DB は **空の Auth** なので、サインアップし直すか、必要なら SQL / Studio でダミーデータを入れる。  
-5. 停止: `npm run db:local:stop`
-
-マイグレーションは起動時にローカルへ適用されます。手元で掃除して作り直すときは `npx supabase db reset`（**データ全消去**。`supabase/seed.sql` があれば再実行時に流れます）。OAuth（Google / LINE）はローカル用に Supabase **ローカル**の Auth リダイレクト URL（例: `http://localhost:3000/**`）を [ダッシュボードの該当設定](https://supabase.com/docs/guides/local-development) に合わせる必要があります。
-
-### コマンド
-
-```bash
-npm run dev      # 開発サーバー（http://localhost:3000）
-npm run build    # 本番ビルド
-npm run start    # 本番サーバー
-npm run lint     # ESLint
-npm run test     # Jest
-npm run security:scan # 5観点のセキュリティパターンスキャン
-npm run icons:build  # PWA アイコン等の生成（`scripts/process-app-icon.mjs`）
-```
-
-### セキュリティスキャン（5観点）
-
-`npm run security:scan` は、`node_modules` などを除外した上で以下のパターンを機械検出します。
-
-1. 存在しない（`package.json` 未宣言の）外部パッケージ import
-2. f-string 等での SQL 組み立て（主に Python パターン）
-3. `except: pass` / `except Exception: pass`
-4. ハードコードされたシークレット候補
-5. ユーザー入力とファイルパス結合の危険候補
-
-GitHub Actions でも `master` / `staging` への push と Pull Request で同じスキャンを自動実行します（`.github/workflows/security-scan.yml`）。
-
----
-
-## 本番・デプロイ（概要）
-
-- **想定ホスティング:** Vercel 等。カスタムドメイン例: **`https://splitrip.net`**（詳細は `docs/FEATURES.md` の「本番 URL・カスタムドメイン」）。
-- **環境変数:** 本番・staging ごとに `NEXT_PUBLIC_SITE_URL`、OAuth コールバック、Stripe Webhook の `whsec_...` を揃えること。
-- **ヘルスチェック:** `GET /api/health` — メンテナンス用プロキシの対象外で JSON を返します。
-
----
-
-## ドキュメント・リポジトリ
-
-| パス | 内容 |
+| 変数 | 用途 |
 |------|------|
-| [`docs/FEATURES.md`](docs/FEATURES.md) | 機能一覧、API、メンテモード、Stripe 運用など |
-| [`docs/DATABASE_TABLES.md`](docs/DATABASE_TABLES.md) | `public` スキーマの表・列の参照 |
-| [`requirements.md`](requirements.md) | 要件メモ（存在する場合） |
-| [`AGENTS.md`](AGENTS.md) | Next.js エージェント向け注意 |
+| `NEXT_PUBLIC_SUPABASE_URL` | Supabase プロジェクト URL |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | 匿名キー |
+| `SUPABASE_SERVICE_ROLE_KEY` | サーバー専用（Webhook 等） |
+| `NEXT_PUBLIC_SITE_URL` | OAuth リダイレクト用（例: `http://localhost:3000`） |
 
-リポジトリ: **https://github.com/Niboshi-Wasabi/SpliTrip**（`package.json` の `vercel:git:connect` スクリプトと整合）
+Google / LINE ログイン、Stripe、Gemini を使う場合は [`docs/FEATURES.md`](docs/FEATURES.md) の環境変数一覧を参照してください。
+
+```bash
+npm run dev      # http://localhost:3000
+npm run build
+npm run test
+```
+
+### DB マイグレーション
+
+```bash
+npm run db:login    # 初回のみ
+npm run db:push:all # リモート Supabase へ反映
+```
+
+### ローカル Supabase
+
+Docker 上で本番と分離した DB を使う場合:
+
+```bash
+npm run db:local:start
+npm run db:local:status   # URL / キーを表示
+npm run dev
+```
+
+---
+
+## リポジトリ構成
+
+```
+src/
+  app/           # App Router（ページ・API Route）
+  components/    # UI コンポーネント
+  lib/           # ドメインロジック（精算・按分・i18n 等）
+  hooks/         # SWR + Realtime 連携
+supabase/
+  migrations/    # SQL マイグレーション（RLS 含む）
+messages/        # i18n 辞書（ja.json / en.json）
+docs/            # 機能一覧・DB・アーキテクチャ
+```
+
+---
+
+## ドキュメント
+
+| ドキュメント | 内容 |
+|-------------|------|
+| [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) | アーキテクチャ・設計判断（ポートフォリオ向け） |
+| [`docs/PORTFOLIO.md`](docs/PORTFOLIO.md) | 面接・ピッチ用メモ |
+| [`docs/FEATURES.md`](docs/FEATURES.md) | 機能・API・運用の詳細 |
+| [`docs/DATABASE_TABLES.md`](docs/DATABASE_TABLES.md) | データベース表定義 |
+| [`requirements.md`](requirements.md) | 初期要件メモ（履歴） |
+
+---
+
+## 本番・デプロイ
+
+- **本番 URL:** [https://splitrip.net](https://splitrip.net)
+- **ホスティング:** Vercel
+- **ヘルスチェック:** `GET /api/health`
+- **デプロイ手順・環境変数の詳細:** [`docs/FEATURES.md`](docs/FEATURES.md) の「本番 URL・カスタムドメイン」
+
+---
+
+## 作者について
+
+<!-- 転職活動用: 以下をご自身の情報に差し替えてください -->
+
+| 項目 | 内容 |
+|------|------|
+| **開発** | 個人開発（要件定義〜本番運用） |
+| **GitHub** | [@Niboshi-Wasabi](https://github.com/Niboshi-Wasabi) |
+| **連絡先** | （メール・LinkedIn・Wantedly 等を追記） |
 
 ---
 
 ## ライセンス
 
-`package.json` は `"private": true` です。公開ライセンスはリポジトリのライセンスファイルまたは運用ポリシーに従ってください。
+本リポジトリは `package.json` で `"private": true` です。コードの再利用・公開範囲は作者の判断に従います。

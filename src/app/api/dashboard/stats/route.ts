@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createRouteHandlerSupabaseClient } from "@/utils/supabase/route-handler";
+import { computeUnsettledDashboardSummary } from "@/lib/unsettled-dashboard";
 
 /**
  * ダッシュボード統計API
@@ -7,7 +8,7 @@ import { createRouteHandlerSupabaseClient } from "@/utils/supabase/route-handler
 export async function GET(request: NextRequest) {
   const response = NextResponse.json({ ok: false }, { status: 500 });
   const supabase = createRouteHandlerSupabaseClient(request, response);
-  
+
   if (!supabase) {
     return NextResponse.json({ ok: false, message: "server_error" }, { status: 500 });
   }
@@ -21,13 +22,14 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    // ユーザーが参加しているグループを取得（必要フィールドのみ）
     const { data: userGroups, error: groupsError } = await supabase
       .from("group_members")
-      .select(`
+      .select(
+        `
         group_id,
-        groups!inner(id, name, currency, created_at)
-      `)
+        groups!inner(id, name, currency_code, created_at)
+      `,
+      )
       .eq("user_id", user.id);
 
     if (groupsError) {
@@ -35,21 +37,31 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ ok: false, message: "groups_error" }, { status: 500 });
     }
 
-    const groupIds = userGroups?.map(ug => ug.group_id) || [];
+    const groupIds = userGroups?.map((membershipRow) => membershipRow.group_id) || [];
 
     if (groupIds.length === 0) {
-      const successResponse = NextResponse.json({ 
-        ok: true, 
+      const successResponse = NextResponse.json({
+        ok: true,
         totalExpenses: 0,
         unsettledAmount: 0,
+        unsettledOwedByCurrency: {},
         totalMembers: 0,
-        groupCount: 0
+        groupCount: 0,
       });
-      successResponse.headers.set('Cache-Control', 'private, max-age=120, s-maxage=120');
+      successResponse.headers.set("Cache-Control", "private, max-age=120, s-maxage=120");
       return successResponse;
     }
 
-    // 各グループの出費を取得
+    const currencyByGroupId = new Map<string, string>();
+    for (const membershipRow of userGroups ?? []) {
+      const groupRecord = membershipRow.groups as { currency_code?: string } | null;
+      const currencyCode =
+        typeof groupRecord?.currency_code === "string"
+          ? groupRecord.currency_code
+          : "JPY";
+      currencyByGroupId.set(membershipRow.group_id as string, currencyCode);
+    }
+
     const { data: expenses, error: expensesError } = await supabase
       .from("group_expenses")
       .select("amount, group_id")
@@ -60,7 +72,6 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ ok: false, message: "expenses_error" }, { status: 500 });
     }
 
-    // 各グループのメンバー数を取得
     const { data: allMembers, error: membersError } = await supabase
       .from("group_members")
       .select("group_id, user_id")
@@ -71,31 +82,34 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ ok: false, message: "members_error" }, { status: 500 });
     }
 
-    // 統計を計算
     const totalExpenses =
       expenses?.reduce(
-        (sum, expenseRow) => sum + (expenseRow.amount || 0),
+        (sum, expenseRow) => sum + (Number(expenseRow.amount) || 0),
         0,
       ) || 0;
-    const uniqueMembers = new Set(allMembers?.map((memberRow) => memberRow.user_id) || []);
+    const uniqueMembers = new Set(
+      allMembers?.map((memberRow) => memberRow.user_id) || [],
+    );
     const totalMembers = uniqueMembers.size;
-    
-    // TODO: 実際の未精算額計算ロジックを実装
-    // 現在は仮実装（将来的にはsettlement_transactionsテーブルと照合）
-    const unsettledAmount = 0; // 正確な計算まで0を返す
 
-    const successResponse = NextResponse.json({ 
-      ok: true, 
+    const unsettledSummary = await computeUnsettledDashboardSummary(
+      supabase,
+      user.id,
+      groupIds,
+      currencyByGroupId,
+    );
+
+    const successResponse = NextResponse.json({
+      ok: true,
       totalExpenses,
-      unsettledAmount,
+      unsettledAmount: unsettledSummary.unsettledAmountJpyEstimate,
+      unsettledOwedByCurrency: unsettledSummary.unsettledOwedByCurrency,
       totalMembers,
-      groupCount: groupIds.length
+      groupCount: groupIds.length,
     });
-    
-    // 統計は2分間キャッシュ
-    successResponse.headers.set('Cache-Control', 'private, max-age=120, s-maxage=120');
-    return successResponse;
 
+    successResponse.headers.set("Cache-Control", "private, max-age=120, s-maxage=120");
+    return successResponse;
   } catch (error) {
     console.error("[API Error - dashboard stats]:", error);
     return NextResponse.json({ ok: false, message: "server_error" }, { status: 500 });

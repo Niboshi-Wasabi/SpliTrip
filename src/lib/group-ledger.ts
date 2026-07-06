@@ -50,6 +50,10 @@ export type GroupSettlement = {
   fromDisplayName: string;
   toDisplayName: string;
   amount: number;
+  /** Persisted mark-as-paid when amount still matches snapshot. */
+  isMarkedPaid: boolean;
+  markedPaidAt?: string | null;
+  paidAmountSnapshot?: number | null;
 };
 
 export function computeGroupSettlements(
@@ -66,5 +70,7 @@ export function computeGroupSettlements(
       displayNameByUserId[transfer.fromUserId] ?? transfer.fromUserId,
     toDisplayName: displayNameByUserId[transfer.toUserId] ?? transfer.toUserId,
     amount: transfer.amount,
+    isMarkedPaid: false,
+    markedPaidAt: null,
   }));
 }

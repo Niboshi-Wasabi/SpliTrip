@@ -1,10 +1,13 @@
 "use client";
 
 import { mutate } from "swr";
+import { buildSettlementPairKey } from "@/lib/settlement-transactions";
+import type { GroupSettlement } from "@/lib/group-ledger";
 
 type GroupDetailApiPayload = {
   data?: {
     expenses?: Array<{ id: string }>;
+    settlements?: GroupSettlement[];
   };
 };
 
@@ -23,6 +26,40 @@ function removeExpenseFromCache(
       expenses: normalizedCurrentValue.data.expenses.filter(
         (expenseRow) => expenseRow.id !== expenseId,
       ),
+    },
+  };
+}
+
+function markSettlementPaidInCache(
+  currentValue: GroupDetailApiPayload | undefined,
+  fromUserId: string,
+  toUserId: string,
+  markedAt: string,
+): GroupDetailApiPayload {
+  const normalizedCurrentValue = currentValue ?? {};
+  if (!normalizedCurrentValue.data?.settlements) {
+    return normalizedCurrentValue;
+  }
+  const pairKey = buildSettlementPairKey(fromUserId, toUserId);
+  return {
+    ...normalizedCurrentValue,
+    data: {
+      ...normalizedCurrentValue.data,
+      settlements: normalizedCurrentValue.data.settlements.map((settlementRow) => {
+        if (
+          buildSettlementPairKey(
+            settlementRow.fromUserId,
+            settlementRow.toUserId,
+          ) !== pairKey
+        ) {
+          return settlementRow;
+        }
+        return {
+          ...settlementRow,
+          isMarkedPaid: true,
+          markedPaidAt: markedAt,
+        };
+      }),
     },
   };
 }
@@ -66,26 +103,51 @@ export function useGroupOptimisticMutations(groupId: string) {
   }
 
   async function markSettlementOptimistically(params: {
-    rowKey: string;
+    fromUserId: string;
+    toUserId: string;
+    amount: number;
     onOptimisticApplied: () => void;
     onRollback: () => void;
   }): Promise<boolean> {
-    const { rowKey, onOptimisticApplied, onRollback } = params;
-    void rowKey;
+    const { fromUserId, toUserId, amount, onOptimisticApplied, onRollback } =
+      params;
+    const optimisticMarkedAt = new Date().toISOString();
     onOptimisticApplied();
     try {
       await mutate(
         groupDetailKey,
-        async () => {
-          const response = await fetch(groupDetailKey, { method: "GET" });
+        async (currentValue: GroupDetailApiPayload | undefined) => {
+          const response = await fetch(
+            `/api/groups/${groupId}/settlement-transactions`,
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                from_user_id: fromUserId,
+                to_user_id: toUserId,
+                amount,
+              }),
+            },
+          );
           if (!response.ok) {
-            throw new Error("group_refresh_failed");
+            throw new Error("mark_paid_failed");
           }
-          return (await response.json()) as GroupDetailApiPayload;
+          const body = (await response.json()) as { marked_at?: string };
+          return markSettlementPaidInCache(
+            currentValue,
+            fromUserId,
+            toUserId,
+            body.marked_at ?? optimisticMarkedAt,
+          );
         },
         {
           optimisticData: (currentValue: GroupDetailApiPayload | undefined) =>
-            currentValue ?? {},
+            markSettlementPaidInCache(
+              currentValue,
+              fromUserId,
+              toUserId,
+              optimisticMarkedAt,
+            ),
           rollbackOnError: true,
           revalidate: false,
         },
@@ -94,6 +156,9 @@ export function useGroupOptimisticMutations(groupId: string) {
     } catch {
       onRollback();
       return false;
+    } finally {
+      void mutate(groupDetailKey);
+      void mutate("/api/dashboard/stats");
     }
   }
 

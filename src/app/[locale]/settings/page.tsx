@@ -24,6 +24,7 @@ import { LanguagePreferenceForm } from "./language-preference-form";
 import { PaymentSettingsForm } from "./payment-settings-form";
 import { SupportDeveloper } from "@/components/ads/SupportDeveloper";
 import { isAppLocale } from "@/lib/i18n/next-intl-locale";
+import { extractJapanWalletLinksFromProfile } from "@/lib/payment-profile-links";
 
 export const dynamic = "force-dynamic";
 
@@ -93,6 +94,7 @@ export default async function SettingsPage({ params }: PageProps) {
       ? preferredLanguageValue
     : "ja";
   const paymentColumnsMissing = row !== null && !("paypal_me_id" in row);
+  const japanWalletLinks = extractJapanWalletLinksFromProfile(row?.payment_links);
 
   return (
     <div className="mx-auto max-w-lg space-y-6 px-4 py-8">
@@ -139,6 +141,8 @@ export default async function SettingsPage({ params }: PageProps) {
           <PaymentSettingsForm
             initialPaypalMeId={initialPaypal}
             initialCashAppCashtag={initialCash}
+            initialPayPayLink={japanWalletLinks.payPayLink}
+            initialLinePayLink={japanWalletLinks.linePayLink}
             paymentSaveDisabled={paymentColumnsMissing}
           />
         </CardContent>

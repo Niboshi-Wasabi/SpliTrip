@@ -113,7 +113,7 @@
 
 | 機能 | 内容 |
 |------|------|
-| **出費の追加** | 支払人、金額、説明、日付、**カテゴリ**（食費・交通・宿泊・観光・その他 等）。`group-expense-panel` では **日付チップ（今日/昨日/おととい）**、**品目別の負担者クイック選択（全員/自分のみ）**、**品目名（任意）入力**、**金額のインライン計算（許可した式のみ評価）**、**保存して次を入力**（保存後に支払人・日付・通貨を維持しつつ内容をリセット）に加え、**外貨グループ時の JPY 概算プレビュー（リアルタイム）**を表示。グループ期間が設定されている場合、**出費日付は期間内のみ入力可能**で、期間終了日が過去なら日付チップ（今日/昨日/おととい）は非表示。 |
+| **出費の追加** | 支払人、金額、説明、日付、**カテゴリ**（食費・交通・宿泊・観光・その他 等）。`group-expense-panel` では **日付チップ（今日/昨日/おととい）**、**品目別の負担者クイック選択（全員/自分のみ）**、**品目名（任意）入力**、**金額のインライン計算（許可した式のみ評価）**、**保存して次を入力**（保存後に支払人・日付・通貨を維持しつつ内容をリセット）に加え、**外貨グループ時の JPY 概算プレビュー（リアルタイム）**を表示。登録時に `reference_*` 列へ **JPY 参考レート・換算額をスナップショット保存**（マイグレーション `20260707120000` 以降）。グループ期間が設定されている場合、**出費日付は期間内のみ入力可能**で、期間終了日が過去なら日付チップ（今日/昨日/おととい）は非表示。 |
 | **割り方（スプリット）** | **均等 / 金額指定 / シェア比率 / パーセント / 品目別（項目行）**。端数は **端数ポリシー**（公平な端数配分・支払人負担・特定メンバー・先頭順など）を UI で選択。 |
 | **DB 連携** | `split_type`・`expense_splits` 等で負担行を保持（API・マイグレーションと整合）。 |
 | **出費一覧** | テーブル表示、カテゴリ・日付・金額など。PC は行ホバー 500ms で**内訳プレビュー**、モバイルは**長押し中プレビュー**（参加者アバター・名前・負担額）を表示。 |
@@ -131,7 +131,7 @@
 | 機能 | 内容 |
 |------|------|
 | **精算プラン** | ネット残高から **送金回数を減らす** グリーディな突合（`simplify-debts` / グループ台帳と連携）。 |
-| **精算一覧 UI** | 「誰から誰へいくら」表示。ログインユーザーが **支払う側** の行に **送金ボタン**と**送金済みボタン（マイクロアニメーション）**。受け取る側の行では**請求文コピー**（金額+送金リンク入り）をワンタップ実行。送金済み操作は楽観的UIで即時反映し、通信失敗時はロールバック。 |
+| **精算一覧 UI** | 「誰から誰へいくら」表示。ログインユーザーが **支払う側** の行に **送金ボタン**と**送金済みボタン**（DB `settlement_transactions` に永続化。金額が再計算で変わった場合は未払い扱いに戻る）。受け取る側の行では**請求文コピー**（金額+送金リンク入り）をワンタップ実行。 |
 | **精算完了/再開** | オーナーは `POST /api/groups/[groupId]/settlement` で **精算完了** にできる。完了中は結果共有リンクをコピー可能。追加精算が必要になった場合は **ワンタッチで未完了に戻す**。 |
 | **送金先リンク** | プロフィールの **`payment_links`（JSONB）** 等から URL を解決。**ドメインからファビコン**を表示、失敗時は汎用アイコン。サービス名が分かる場合は **「○○で送金」** 風のラベル。 |
 | **次は誰が払う？** | 残高目安に基づく **次の会計担当のヒント** カード。 |
@@ -166,7 +166,7 @@
 |------|------|
 | **表示名** | 設定・ダッシュボード・プロンプトコンポーネントから変更。API: `PATCH /api/profile/display-name`。 |
 | **表示言語** | `preferred_language` は `ja` / `en` のみを保存。フルリロードで反映。 |
-| **送金先** | `payment_links` 等を API 経由で更新（マイグレーション未適用時はエラーメッセージ）。 |
+| **送金先** | `payment_links` 等を API 経由で更新（PayPal.me / Cash App に加え **PayPay・LINE Pay の HTTPS リンク**）。マイグレーション未適用時はエラーメッセージ。 |
 | **PRO / OCR** | `premium_access`（PRO）、`premium_access_source`（`stripe`＝課金、`manual`＝運営付与）、`ocr_usage_count`（無料の OCR 累計）。認証ユーザーが自分の PRO フラグだけを書き換えることは DB トリガーで拒否。`increment_ocr_usage_if_not_premium` で成功後に加算。 |
 | **支払い管理（PRO）** | Stripe 審査対応が完了するまで UI は一時的に **準備中（Coming Soon）**。課金基盤（Webhook / `premium_access` 判定）は将来再開に備えて保持。 |
 | **管理画面（Admin Control Panel Suite）** | `user_profiles.is_admin = true` のユーザーのみ `/{locale}/admin` にアクセス可能。`proxy.ts` で非管理者はダッシュボードへリダイレクト。**Step-Up 再認証（任意）**: 環境変数 **`ADMIN_STEP_UP_ENABLED=true`** のときのみ、一部管理 API で `requireAdminStepUpOrJson` により **`admin_stepup_verified` Cookie** を要求。未設定のときは要求しない（デフォルト）。**基盤**: `admin_audit_logs`、`app_announcements`、`system_settings`、`maintenance_schedules` テーブル。**管理スイート**: タブ形式UI（`AdminAppShell`、各タブに色分けアイコン）で統合。トップは `listAdminUsers` を1回呼び、概要KPI＋ユーザーテーブルに同じデータを使う。`**GET /api/admin/users` はセッションで `is_admin` を検証**したうえで Service Role 経由の一覧取得。**ユーザー削除（管理）**: Users タブで警告モーダル確認後に削除実行（`POST /api/admin/users/[userId]/delete`）。削除されたユーザーは `user_profiles.deleted_at` を持ち、`proxy.ts` で `/{locale}/account-deleted` に誘導。**お知らせ（管理）**: トピック別タブ＋フォーム横のライブプレビュー（バナー／モーダル系）。本文 (`content_ja`/`content_en`) と **メンテ告知文**は **Markdown（GitHub Flavored + `react-markdown`）** で編集し、生 HTML は解釈しない（XSS 対策）。ユーザー向けは `WhatsNewModal`・LP 公開お知らせ・メンテページの告知欄で同形式レンダリング。`@tailwindcss/typography` の `prose`。公開済み（`is_published`）行は RLS で一般も SELECT 可。**メンテナンス（管理）**: `/{locale}/admin/maintenance` で開始/終了日時と日英告知文を編集。**エンドユーザー向け表示**は `[locale]/layout` の `WhatsNewModalGate` と `MaintenanceScheduleGuard`。**API**: `GET/POST /api/admin/announcements`、`GET/PUT/POST/PATCH /api/admin/maintenance`、`GET /api/admin/audit-logs` 等。**セキュリティ**: 管理操作は `admin_audit_logs` 等。2FA 用監査 `two_factor_security_events` は **ユーザー向け 2FA API** 向け。 |
@@ -216,7 +216,7 @@ where id = '<ユーザーUUID>';
 |------|------------------|
 | 2FA（WebAuthn / Backup） | `GET /api/auth/2fa/status`、`POST` … 各種（**コードは存続。ログイン直後の強制2FAはオフ**） |
 | 管理 | `GET /api/admin/users`（一覧）、`GET /api/admin/audit-logs`；`POST /api/admin/users/[userId]/grant-pro` / `revoke-pro` / `sync-stripe` 等。管理者＋`is_admin` 検証（`GET /api/admin/users`）。 |
-| グループ | `POST /api/groups`、`GET/PATCH …/api/groups/[groupId]` |
+| グループ | `POST /api/groups`、`GET/PATCH …/api/groups/[groupId]`、`POST …/settlement-transactions`（送金済みマーク） |
 | 出費 | `POST/GET …/expenses`、`GET/PATCH/DELETE …/expenses/[expenseId]` |
 | 領収書 | `…/expenses/[expenseId]/receipt` |
 | コメント | `…/expenses/[expenseId]/comments`（GET/POST） |

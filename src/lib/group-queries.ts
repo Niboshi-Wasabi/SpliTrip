@@ -10,6 +10,10 @@ import {
   type ExpenseWithSplits,
   type GroupSettlement,
 } from "@/lib/group-ledger";
+import {
+  applyPaidStatusToSettlements,
+  type SettlementTransactionRow,
+} from "@/lib/settlement-transactions";
 
 export type GroupRow = {
   id: string;
@@ -374,10 +378,32 @@ export async function fetchGroupDetailForUser(
   });
   const ledgerEntries: ExpenseWithSplits[] =
     expensesTyped.map(expenseRowToLedgerEntry);
-  const settlements = computeGroupSettlements(
+  const rawSettlements = computeGroupSettlements(
     ledgerEntries,
     displayNameByUserId,
   );
+
+  let paidRows: SettlementTransactionRow[] = [];
+  const paidResult = await supabase
+    .from("settlement_transactions")
+    .select(
+      "from_user_id, to_user_id, amount, currency_code, marked_at, status",
+    )
+    .eq("group_id", groupId)
+    .eq("status", "paid");
+  if (paidResult.error) {
+    const message = String(paidResult.error.message ?? "").toLowerCase();
+    if (!message.includes("settlement_transactions")) {
+      console.error(
+        "[API/Action Error - fetchGroupDetailForUser settlement_transactions]:",
+        { error: paidResult.error, groupId, userId },
+      );
+    }
+  } else {
+    paidRows = (paidResult.data ?? []) as SettlementTransactionRow[];
+  }
+
+  const settlements = applyPaidStatusToSettlements(rawSettlements, paidRows);
 
   const members: GroupMemberRow[] = membersList.map((memberRow) => {
     const payment = paymentFieldsByUserId[memberRow.user_id];

@@ -50,3 +50,35 @@ export function sanitizeCashAppCashtag(
   }
   return normalized;
 }
+
+/** Accept HTTPS payment deep links for Japan-focused wallets (PayPay / LINE Pay). */
+export function sanitizeJapanPaymentLinkUrl(
+  raw: string | null | undefined,
+): string | null {
+  if (raw == null) {
+    return null;
+  }
+  let normalized = raw.trim();
+  if (!normalized) {
+    return null;
+  }
+  if (!normalized.startsWith("http://") && !normalized.startsWith("https://")) {
+    normalized = `https://${normalized}`;
+  }
+  try {
+    const parsedUrl = new URL(normalized);
+    if (parsedUrl.protocol !== "https:") {
+      return null;
+    }
+    const hostLower = parsedUrl.hostname.toLowerCase();
+    const isPayPay = hostLower.includes("paypay");
+    const isLinePay =
+      hostLower.includes("line.me") || hostLower.includes("linepay");
+    if (!isPayPay && !isLinePay) {
+      return null;
+    }
+    return parsedUrl.toString();
+  } catch {
+    return null;
+  }
+}
