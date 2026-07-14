@@ -1,6 +1,10 @@
-import { NextResponse, type NextRequest } from "next/server";
+import { type NextRequest } from "next/server";
 import { AUTH_ERROR } from "@/lib/auth/auth-error-codes";
 import { redirectLineOAuthFailed } from "@/lib/auth/auth-redirects";
+import {
+  buildSameOriginPostAuthUrl,
+  createAuthSessionBridgeResponse,
+} from "@/lib/auth/auth-session-bridge";
 import { exchangeLineAuthorizationCode } from "@/lib/auth/exchange-line-token";
 import {
   isOAuthStateValid,
@@ -40,9 +44,9 @@ export async function GET(request: NextRequest) {
   }
 
   const cookies = readLineOAuthCookies(request);
+  const fallbackPath = localizedDashboardPathFromRequest(request);
   const postAuthPath =
-    sanitizeRedirectPath(cookies.returnPathFromCookie) ??
-    localizedDashboardPathFromRequest(request);
+    sanitizeRedirectPath(cookies.returnPathFromCookie) ?? fallbackPath;
 
   if (!isOAuthStateValid(cookies, state)) {
     console.error(
@@ -56,7 +60,7 @@ export async function GET(request: NextRequest) {
     return redirectLineOAuthFailed(origin, AUTH_ERROR.LINE_AUTH);
   }
 
-  const { idToken, accessToken: lineAccessToken } = tokenResult;
+  const { idToken } = tokenResult;
 
   const idPayload = decodeJwtPayloadOrNull(idToken);
   if (!idPayload) {
@@ -71,7 +75,11 @@ export async function GET(request: NextRequest) {
     return redirectLineOAuthFailed(origin, AUTH_ERROR.LINE_AUTH);
   }
 
-  const response = NextResponse.redirect(`${origin}${postAuthPath}`);
+  // Prefer 200 HTML + Set-Cookie over 302: flaky Android WebViews drop redirect cookies.
+  // 302 の Cookie を落とす Android WebView 向けに、200 HTML ブリッジでセッションを確定する。
+  const response = createAuthSessionBridgeResponse(
+    buildSameOriginPostAuthUrl(origin, postAuthPath, fallbackPath),
+  );
   clearTwoFactorVerifiedCookie(response);
   clearLineOAuthCookies(response);
 

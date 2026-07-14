@@ -4,10 +4,9 @@
  * 未ログイン向け招待: Google / LINE OAuth のみ（ゲスト匿名は廃止）。
  */
 
-import { useState, type FC } from "react";
+import { useState, useEffect, type FC } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { Loader2 } from "lucide-react";
-import type { Provider } from "@supabase/supabase-js";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -17,7 +16,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { formatOAuthLoginError } from "@/lib/oauth-errors";
 import { localizedJoinPath } from "@/lib/i18n/localized-paths";
 import { createClient } from "@/utils/supabase/client";
 import { isSupabaseConfigured } from "@/utils/supabase/env";
@@ -25,6 +23,16 @@ import { getPublicSiteOrigin } from "@/utils/public-site-url";
 import { TurnstileWidget } from "@/components/auth/TurnstileWidget";
 import { getTurnstileSiteKey } from "@/utils/turnstile/env";
 import { verifyTurnstileTokenOnServer } from "@/lib/turnstile/verify-client";
+import { InAppBrowserOAuthNotice } from "@/components/auth/in-app-browser-oauth-notice";
+import {
+  buildGoogleOAuthContinueUrl,
+  shouldShowInAppBrowserOAuthNotice,
+} from "@/lib/auth/in-app-browser";
+import {
+  clearGoogleOAuthAutoStartLock,
+  consumeGoogleOAuthAutoStartFromLocation,
+  startGoogleOAuth,
+} from "@/lib/auth/start-google-oauth";
 
 type LoginProvider = "google" | "line";
 type EmailAuthMode = "signIn" | "signUp";
@@ -105,10 +113,48 @@ export function JoinGate({ token }: Props) {
   const [success, setSuccess] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+  const [showInAppBrowserNotice, setShowInAppBrowserNotice] = useState(false);
+  const [externalContinueUrl, setExternalContinueUrl] = useState("");
 
   const supabaseReady = isSupabaseConfigured();
   const isTurnstileEnabled = getTurnstileSiteKey().length > 0;
   const joinPath = localizedJoinPath(locale, token);
+
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+    if (shouldShowInAppBrowserOAuthNotice(window.navigator.userAgent)) {
+      setShowInAppBrowserNotice(true);
+      setExternalContinueUrl(
+        buildGoogleOAuthContinueUrl({
+          currentAbsoluteUrl: window.location.href,
+          redirectPath: joinPath,
+        }),
+      );
+    }
+
+    const autoStart = consumeGoogleOAuthAutoStartFromLocation();
+    if (!autoStart.shouldStart) {
+      return;
+    }
+
+    const redirectPath = autoStart.redirectPath ?? joinPath;
+    setLoadingAction("google");
+    void startGoogleOAuth({
+      redirectPath,
+      skipInAppBrowserHandOff: true,
+    }).then((result) => {
+      clearGoogleOAuthAutoStartLock();
+      if (result.status === "error") {
+        setError(result.message);
+        setLoadingAction(null);
+      } else if (result.status === "blocked") {
+        setShowInAppBrowserNotice(true);
+        setLoadingAction(null);
+      }
+    });
+  }, [joinPath]);
 
   async function handleOAuthLogin(provider: LoginProvider) {
     if (!supabaseReady) {
@@ -145,18 +191,23 @@ export function JoinGate({ token }: Props) {
       return;
     }
 
-    const supabase = createClient();
-    const siteOrigin = getPublicSiteOrigin();
-    const { error: authError } = await supabase.auth.signInWithOAuth({
-      provider: provider as Provider,
-      options: {
-        redirectTo: `${siteOrigin}/auth/callback?next=${encodeURIComponent(joinPath)}`,
-      },
-    });
-
-    if (authError) {
-      setError(formatOAuthLoginError(authError));
+    const result = await startGoogleOAuth({ redirectPath: joinPath });
+    if (result.status === "error") {
+      setError(result.message);
       setLoadingAction(null);
+      return;
+    }
+    if (result.status === "blocked" || result.status === "handed_off") {
+      setShowInAppBrowserNotice(true);
+      setExternalContinueUrl(
+        buildGoogleOAuthContinueUrl({
+          currentAbsoluteUrl: window.location.href,
+          redirectPath: joinPath,
+        }),
+      );
+      if (result.status === "blocked") {
+        setLoadingAction(null);
+      }
     }
   }
 
@@ -267,6 +318,10 @@ export function JoinGate({ token }: Props) {
           ) : null}
           {isTurnstileEnabled ? (
             <TurnstileWidget onTokenChange={setTurnstileToken} />
+          ) : null}
+
+          {showInAppBrowserNotice && externalContinueUrl ? (
+            <InAppBrowserOAuthNotice continueUrl={externalContinueUrl} />
           ) : null}
 
           {PROVIDER_CONFIG.map(

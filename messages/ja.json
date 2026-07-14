@@ -34,7 +34,9 @@
     "forgotPassword": "パスワードを忘れた場合",
     "passwordResetSent": "パスワード再設定メールを送信しました。",
     "signUpSuccess": "アカウントを作成しました。メール確認後にログインしてください。",
-    "sending": "送信中…"
+    "sending": "送信中…",
+    "inAppBrowserNotice": "LINEなどのアプリ内ブラウザでは、Googleログイン後にセッションが残らないことがあります。Chromeなど外部ブラウザで開き直してからログインしてください。",
+    "openInExternalBrowser": "外部ブラウザで開く"
   },
   "TwoFactor": {
     "gateTitle": "二段階認証",

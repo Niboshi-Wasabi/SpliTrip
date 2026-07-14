@@ -12,6 +12,7 @@ import { Link } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
 import { buttonVariants } from "@/components/ui/button-variants";
 import { localizedJoinPath } from "@/lib/i18n/localized-paths";
+import { inviteUrlPreferExternalBrowser } from "@/lib/auth/invite-share-url";
 import { cn } from "@/lib/utils";
 import {
   Card,
@@ -55,7 +56,9 @@ export function PostCreateInviteCard({ groupId, inviteToken }: Props) {
     () => "",
   );
   const joinPath = localizedJoinPath(locale, inviteToken);
-  const inviteUrl = origin ? `${origin}${joinPath}` : "";
+  const inviteUrl = origin
+    ? inviteUrlPreferExternalBrowser(`${origin}${joinPath}`)
+    : "";
   const [copied, setCopied] = useState(false);
   const [copyError, setCopyError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);

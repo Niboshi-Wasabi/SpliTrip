@@ -24,13 +24,21 @@ import { localizedDashboardPath } from "@/lib/i18n/localized-paths";
 import { createClient } from "@/utils/supabase/client";
 import { isSupabaseConfigured } from "@/utils/supabase/env";
 import { loginErrorMessageFromQueryParam } from "@/lib/auth/login-error-messages";
-import { formatOAuthLoginError } from "@/lib/oauth-errors";
-import { getPublicSiteOrigin } from "@/utils/public-site-url";
-import type { Provider } from "@supabase/supabase-js";
+import { LANDING_PAGE_BACKGROUND_CLASSNAME } from "@/constants/landing-background";
 import { TurnstileWidget } from "@/components/auth/TurnstileWidget";
 import { getTurnstileSiteKey } from "@/utils/turnstile/env";
 import { verifyTurnstileTokenOnServer } from "@/lib/turnstile/verify-client";
-import { LANDING_PAGE_BACKGROUND_CLASSNAME } from "@/constants/landing-background";
+import { getPublicSiteOrigin } from "@/utils/public-site-url";
+import { InAppBrowserOAuthNotice } from "@/components/auth/in-app-browser-oauth-notice";
+import {
+  buildGoogleOAuthContinueUrl,
+  shouldShowInAppBrowserOAuthNotice,
+} from "@/lib/auth/in-app-browser";
+import {
+  clearGoogleOAuthAutoStartLock,
+  consumeGoogleOAuthAutoStartFromLocation,
+  startGoogleOAuth,
+} from "@/lib/auth/start-google-oauth";
 
 type LoginProvider = "google" | "line";
 type LoadingAction = LoginProvider;
@@ -114,6 +122,8 @@ export function LoginForm({ staffMaintenanceEntry = false }: LoginFormProps) {
   const [emailAuthSuccess, setEmailAuthSuccess] = useState<string | null>(null);
   const [passwordResetBusy, setPasswordResetBusy] = useState(false);
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+  const [showInAppBrowserNotice, setShowInAppBrowserNotice] = useState(false);
+  const [externalContinueUrl, setExternalContinueUrl] = useState("");
   const supabaseReady = isSupabaseConfigured();
   const isTurnstileEnabled = getTurnstileSiteKey().length > 0;
 
@@ -122,11 +132,48 @@ export function LoginForm({ staffMaintenanceEntry = false }: LoginFormProps) {
     [searchParams],
   );
 
+  const dashboardPath = localizedDashboardPath(locale);
+
   useEffect(() => {
     setError(urlErrorMessage);
   }, [urlErrorMessage]);
 
-  const dashboardPath = localizedDashboardPath(locale);
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+    if (shouldShowInAppBrowserOAuthNotice(window.navigator.userAgent)) {
+      setShowInAppBrowserNotice(true);
+      setExternalContinueUrl(
+        buildGoogleOAuthContinueUrl({
+          currentAbsoluteUrl: window.location.href,
+          redirectPath: dashboardPath,
+        }),
+      );
+    }
+
+    const autoStart = consumeGoogleOAuthAutoStartFromLocation();
+    if (!autoStart.shouldStart) {
+      return;
+    }
+
+    const redirectPath = autoStart.redirectPath ?? dashboardPath;
+    setLoadingAction("google");
+    void startGoogleOAuth({
+      redirectPath,
+      skipInAppBrowserHandOff: true,
+    }).then((result) => {
+      clearGoogleOAuthAutoStartLock();
+      if (result.status === "error") {
+        setError(result.message);
+        setLoadingAction(null);
+      } else if (result.status === "blocked") {
+        setShowInAppBrowserNotice(true);
+        setLoadingAction(null);
+      }
+      // redirecting / handed_off: leave loading state while the browser navigates
+    });
+  }, [dashboardPath]);
 
   async function handleLogin(provider: LoginProvider) {
     if (!isSupabaseConfigured()) {
@@ -163,18 +210,23 @@ export function LoginForm({ staffMaintenanceEntry = false }: LoginFormProps) {
       return;
     }
 
-    const supabase = createClient();
-    const siteOrigin = getPublicSiteOrigin();
-    const { error: authError } = await supabase.auth.signInWithOAuth({
-      provider: provider as Provider,
-      options: {
-        redirectTo: `${siteOrigin}/auth/callback?next=${encodeURIComponent(dashboardPath)}`,
-      },
-    });
-
-    if (authError) {
-      setError(formatOAuthLoginError(authError));
+    const result = await startGoogleOAuth({ redirectPath: dashboardPath });
+    if (result.status === "error") {
+      setError(result.message);
       setLoadingAction(null);
+      return;
+    }
+    if (result.status === "blocked" || result.status === "handed_off") {
+      setShowInAppBrowserNotice(true);
+      setExternalContinueUrl(
+        buildGoogleOAuthContinueUrl({
+          currentAbsoluteUrl: window.location.href,
+          redirectPath: dashboardPath,
+        }),
+      );
+      if (result.status === "blocked") {
+        setLoadingAction(null);
+      }
     }
   }
 
@@ -312,6 +364,9 @@ export function LoginForm({ staffMaintenanceEntry = false }: LoginFormProps) {
             <div className="rounded-md bg-emerald-50 p-3 text-center text-sm text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300">
               {emailAuthSuccess}
             </div>
+          ) : null}
+          {showInAppBrowserNotice && externalContinueUrl ? (
+            <InAppBrowserOAuthNotice continueUrl={externalContinueUrl} />
           ) : null}
           {isTurnstileEnabled ? (
             <TurnstileWidget onTokenChange={setTurnstileToken} />

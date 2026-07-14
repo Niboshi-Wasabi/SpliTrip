@@ -34,7 +34,9 @@
     "forgotPassword": "Forgot password?",
     "passwordResetSent": "Password reset email has been sent.",
     "signUpSuccess": "Account created. Please verify your email before signing in.",
-    "sending": "Sending…"
+    "sending": "Sending…",
+    "inAppBrowserNotice": "In some in-app browsers (such as LINE), Google sign-in can look successful without keeping the session. Open this page in Chrome or another system browser, then sign in.",
+    "openInExternalBrowser": "Open in system browser"
   },
   "TwoFactor": {
     "gateTitle": "Two-factor authentication",
